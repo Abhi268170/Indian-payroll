@@ -1,5 +1,9 @@
+using System.Threading.RateLimiting;
 using Hangfire;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using OpenIddict.Abstractions;
 using Payroll.Application.Extensions;
 using Payroll.Infrastructure.Extensions;
@@ -42,16 +46,18 @@ builder.Services.AddOpenIddict()
     .AddServer(options =>
     {
         options.SetTokenEndpointUris("/connect/token");
-        options.SetAuthorizationEndpointUris("/connect/authorize");
-        options.SetUserinfoEndpointUris("/connect/userinfo");
         options.SetRevocationEndpointUris("/connect/revoke");
 
         options.AllowPasswordFlow();
-        options.AllowAuthorizationCodeFlow();
         options.AllowRefreshTokenFlow();
 
-        options.UseReferenceAccessTokens();
+        // Access tokens are self-contained RS256 JWTs (no DB hit per request).
+        // Refresh tokens are DB-backed reference tokens (instantly revocable).
+        options.DisableAccessTokenEncryption();
         options.UseReferenceRefreshTokens();
+
+        options.SetAccessTokenLifetime(TimeSpan.FromMinutes(15));
+        options.SetRefreshTokenLifetime(TimeSpan.FromDays(7));
 
         options.RegisterScopes(
             OpenIddictConstants.Scopes.OpenId,
@@ -60,7 +66,6 @@ builder.Services.AddOpenIddict()
             OpenIddictConstants.Scopes.OfflineAccess,
             "payroll.api");
 
-
         if (builder.Environment.IsDevelopment())
         {
             options.AddDevelopmentEncryptionCertificate();
@@ -68,9 +73,7 @@ builder.Services.AddOpenIddict()
         }
 
         options.UseAspNetCore()
-            .EnableTokenEndpointPassthrough()
-            .EnableAuthorizationEndpointPassthrough()
-            .EnableUserinfoEndpointPassthrough();
+            .EnableTokenEndpointPassthrough();
     })
     .AddValidation(options =>
     {
@@ -88,6 +91,27 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Employee",       p => p.RequireRole("Employee", "HRManager", "PayrollManager", "OrgAdmin"));
 });
 
+// Rate limiting — must be configured before app.UseRateLimiter()
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("auth", limiter =>
+    {
+        limiter.PermitLimit = 5;
+        limiter.Window = TimeSpan.FromMinutes(1);
+        limiter.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        limiter.QueueLimit = 0;
+    });
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
+// Forward real client IP from nginx — required for per-IP rate limiting to work
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Payroll")!)
     .AddRedis(builder.Configuration["Redis:ConnectionString"]!)
@@ -95,16 +119,43 @@ builder.Services.AddHealthChecks()
 
 WebApplication app = builder.Build();
 
+// Run platform migration before app.Run() — ensures DataProtectionKeys table exists
+// before Data Protection bootstraps, and before SeedDataService fires.
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    PlatformDbContext db = scope.ServiceProvider.GetRequiredService<PlatformDbContext>();
+    await db.Database.MigrateAsync();
+}
+
 app.UseSerilogRequestLogging();
 
+// Security headers
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["X-Frame-Options"] = "DENY";
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
+    context.Response.Headers["Referrer-Policy"] = "no-referrer";
+    context.Response.Headers["Content-Security-Policy"] = "default-src 'none'; script-src 'self'";
+    await next();
+});
 
-// Middleware order is critical: tenant resolution BEFORE authentication.
+// Forward headers from nginx before rate limiting (so RemoteIpAddress = real client IP)
+app.UseForwardedHeaders();
+
+app.UseRateLimiter();
+
+// Middleware ordering is load-bearing — do not reorder:
+// 1. TenantResolutionMiddleware — extracts slug from subdomain, sets ITenantContext (pre-auth)
+// 2. UseAuthentication — validates JWT, populates HttpContext.User
+// 3. TenantClaimValidationMiddleware — cross-checks JWT tenant_id against ITenantContext (post-auth)
+// 4. UseAuthorization — role policy enforcement
 app.UseMiddleware<TenantResolutionMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHangfireDashboard("/hangfire");
+app.MapHangfireDashboard("/hangfire").RequireAuthorization("SuperAdmin");
 app.MapHealthChecks("/health");
 
 app.Run();

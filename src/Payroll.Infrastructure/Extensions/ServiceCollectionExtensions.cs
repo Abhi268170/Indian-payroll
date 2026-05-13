@@ -1,5 +1,6 @@
 using Hangfire;
 using Hangfire.PostgreSql;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
@@ -35,9 +36,14 @@ public static class ServiceCollectionExtensions
             .ReplaceService<IModelCacheKeyFactory, TenantModelCacheKeyFactory>();
         });
 
-        // Platform context — public schema only (tenants, OpenIddict, etc.)
+        // Platform context — public schema only (tenants, OpenIddict, Data Protection keys)
         services.AddDbContext<PlatformDbContext>(options =>
             options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
+
+        // Data Protection keys stored in DB — survives container restarts
+        services.AddDataProtection()
+            .PersistKeysToDbContext<PlatformDbContext>()
+            .SetApplicationName("IndianPayroll");
 
         services.AddScoped<ITenantContext, TenantContext>();
         services.AddScoped<ITenantResolver, RedisTenantResolver>();
