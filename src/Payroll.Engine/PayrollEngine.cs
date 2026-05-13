@@ -1,0 +1,48 @@
+using Payroll.Engine.Calculators;
+using Payroll.Engine.Inputs;
+using Payroll.Engine.Outputs;
+
+namespace Payroll.Engine;
+
+public static class PayrollEngine
+{
+    public static IReadOnlyList<PayrollResult> Compute(
+        IReadOnlyList<EmployeeInput> employees,
+        PayrollRunInput runInput,
+        StatutoryConfig config)
+    {
+        List<PayrollResult> results = new(employees.Count);
+        foreach (EmployeeInput emp in employees)
+            results.Add(ComputeOne(emp, runInput, config));
+        return results;
+    }
+
+    private static PayrollResult ComputeOne(
+        EmployeeInput emp,
+        PayrollRunInput run,
+        StatutoryConfig config)
+    {
+        GrossResult gross = GrossCalculator.Compute(emp, run);
+        PFResult pf = PFCalculator.Compute(gross.PFWage, config, emp.PFOptOut, emp.VPFAmount);
+        ESIResult esi = ESICalculator.Compute(gross.GrossWage, config, emp.IsESIExempt, emp.IsPWD);
+        PTResult pt = PTCalculator.Compute(gross.GrossWage, emp.WorkStateCode, config, run);
+        LWFResult lwf = LWFCalculator.Compute(emp.WorkStateCode, config, run);
+        TDSResult tds = TDSCalculator.Compute(
+            gross.AnnualProjectedGross,
+            pt.Amount,
+            pf.EmployeeContribution,
+            emp.PriorEmployerYTDTDSDeducted,
+            config,
+            run.MonthsRemainingInFY);
+
+        decimal netPay = gross.GrossWage
+            - tds.MonthlyTDS
+            - pf.EmployeeContribution
+            - pf.VPFContribution
+            - esi.EmployeeContribution
+            - pt.Amount
+            - lwf.EmployeeAmount;
+
+        return new PayrollResult(emp.EmployeeId, gross, tds, pf, esi, pt, lwf, netPay);
+    }
+}

@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Payroll.Engine</AssemblyName>
+    <RootNamespace>Payroll.Engine</RootNamespace>
+  </PropertyGroup>
+  <!-- Intentionally no packages: pure BCL only. No EF, DI, async, or framework deps. -->
+</Project>

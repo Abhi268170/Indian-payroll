@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Payroll.Domain</AssemblyName>
+    <RootNamespace>Payroll.Domain</RootNamespace>
+  </PropertyGroup>
+  <!-- No package references. Pure C# types only. -->
+</Project>

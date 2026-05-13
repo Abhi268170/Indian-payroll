@@ -1,0 +1,54 @@
+# .NET
+**/bin/
+**/obj/
+*.user
+*.suo
+.vs/
+**/.vs/
+**/TestResults/
+**/coverage/
+*.DotSettings.user
+
+# EF Core migrations — tracked separately, don't ignore committed ones
+# but ignore generated snapshot diffs during review
+**/Migrations/*.Designer.cs
+
+# Secrets — NEVER commit
+secrets/
+*.pfx
+*.p12
+
+# Node
+node_modules/
+web/dist/
+web/.vite/
+web/coverage/
+e2e/playwright-report/
+e2e/test-results/
+.npm/
+
+# Environment
+.env
+.env.local
+.env.*.local
+**/*.env
+
+# Docker
+.docker/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# JetBrains / Rider
+.idea/
+**/*.iml
+
+# NuGet
+*.nupkg
+*.snupkg
+**/packages/
+
+# Logs
+*.log
+logs/

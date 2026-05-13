@@ -1,0 +1,59 @@
+# Dev overrides — exposes ports, disables auto-restart, bypasses pgbouncer
+services:
+  nginx:
+    restart: "no"
+
+  api:
+    restart: "no"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      # Connect directly to db in dev — skip pgbouncer for easier debugging
+      ConnectionStrings__Payroll: "Host=db;Port=5432;Database=payroll;Username=payroll;Password=${DB_PASSWORD};CommandTimeout=30"
+      Encryption__Key: "${ENCRYPTION_KEY}"
+    ports:
+      - "5000:8080"
+
+  worker:
+    restart: "no"
+    environment:
+      # Connect directly to db in dev
+      ConnectionStrings__Payroll: "Host=db;Port=5432;Database=payroll;Username=payroll;Password=${DB_PASSWORD}"
+      Encryption__Key: "${ENCRYPTION_KEY}"
+
+  db:
+    restart: "no"
+    ports:
+      - "5432:5432"
+
+  pgbouncer:
+    restart: "no"
+
+  redis:
+    restart: "no"
+    ports:
+      - "6379:6379"
+
+  minio:
+    restart: "no"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+  mailhog:
+    restart: "no"
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+  prometheus:
+    restart: "no"
+    ports:
+      - "9090:9090"
+
+  grafana:
+    restart: "no"
+    ports:
+      - "3001:3000"
+
+  loki:
+    restart: "no"
