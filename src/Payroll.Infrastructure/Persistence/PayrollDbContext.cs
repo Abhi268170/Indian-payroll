@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Payroll.Domain.Entities;
 using Payroll.Domain.Interfaces;
+using Payroll.Infrastructure.Persistence.EntityConfigurations;
 
 namespace Payroll.Infrastructure.Persistence;
 
@@ -27,6 +28,16 @@ public sealed class PayrollDbContext(
 
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(PayrollDbContext).Assembly);
+        // Apply only tenant-level configs — not PlatformDbContext entity configs
+        modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
+        modelBuilder.ApplyConfiguration(new DepartmentConfiguration());
+        modelBuilder.ApplyConfiguration(new DesignationConfiguration());
+        modelBuilder.ApplyConfiguration(new BranchConfiguration());
+        modelBuilder.ApplyConfiguration(new CostCentreConfiguration());
+        modelBuilder.ApplyConfiguration(new SalaryComponentConfiguration());
+        modelBuilder.ApplyConfiguration(new EmployeeSalaryStructureConfiguration());
+        modelBuilder.ApplyConfiguration(new PayrollRunConfiguration());
+        modelBuilder.ApplyConfiguration(new AuditLogConfiguration());
+        modelBuilder.ApplyConfiguration(new StatutoryToggleConfiguration());
     }
 }

@@ -1,20 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Payroll.Domain.Interfaces;
 
 namespace Payroll.Infrastructure.Persistence;
 
 // Used by dotnet-ef at design time only (migrations add/remove/script).
 // Injects a stub ITenantContext so OnModelCreating does not throw when schema is unresolved.
+// Does NOT register TenantModelCacheKeyFactory — model caching is irrelevant for migration generation.
 internal sealed class PayrollDbContextFactory : IDesignTimeDbContextFactory<PayrollDbContext>
 {
     public PayrollDbContext CreateDbContext(string[] args)
     {
         DbContextOptionsBuilder<PayrollDbContext> options = new();
         options.UseNpgsql("Host=localhost;Database=payroll_design;Username=postgres")
-               .UseSnakeCaseNamingConvention()
-               .ReplaceService<IModelCacheKeyFactory, TenantModelCacheKeyFactory>();
+               .UseSnakeCaseNamingConvention();
         return new PayrollDbContext(options.Options, new DesignTimeTenantContext());
     }
 

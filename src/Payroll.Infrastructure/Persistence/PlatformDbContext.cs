@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Payroll.Domain.Entities;
+using Payroll.Infrastructure.Persistence.EntityConfigurations;
 
 namespace Payroll.Infrastructure.Persistence;
 
@@ -17,6 +18,8 @@ public sealed class PlatformDbContext(DbContextOptions<PlatformDbContext> option
     {
         modelBuilder.HasDefaultSchema("public");
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(PlatformDbContext).Assembly);
+        // Apply only platform-level configs — not PayrollDbContext entity configs
+        modelBuilder.ApplyConfiguration(new TenantConfiguration());
+        modelBuilder.ApplyConfiguration(new ApplicationUserConfiguration());
     }
 }

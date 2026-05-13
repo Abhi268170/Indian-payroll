@@ -10,7 +10,8 @@ internal sealed class PlatformDbContextFactory : IDesignTimeDbContextFactory<Pla
     {
         DbContextOptionsBuilder<PlatformDbContext> options = new();
         options.UseNpgsql("Host=localhost;Database=payroll_design;Username=postgres")
-               .UseSnakeCaseNamingConvention();
+               .UseSnakeCaseNamingConvention()
+               .UseOpenIddict();
         return new PlatformDbContext(options.Options);
     }
 }
