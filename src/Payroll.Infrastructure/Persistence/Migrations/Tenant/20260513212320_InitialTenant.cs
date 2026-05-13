@@ -11,12 +11,8 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsureSchema(
-                name: "migrations_placeholder");
-
             migrationBuilder.CreateTable(
                 name: "audit_logs",
-                schema: "migrations_placeholder",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -37,7 +33,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
 
             migrationBuilder.CreateTable(
                 name: "branches",
-                schema: "migrations_placeholder",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -59,7 +54,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
 
             migrationBuilder.CreateTable(
                 name: "cost_centres",
-                schema: "migrations_placeholder",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -81,7 +75,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
 
             migrationBuilder.CreateTable(
                 name: "departments",
-                schema: "migrations_placeholder",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -104,7 +97,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
 
             migrationBuilder.CreateTable(
                 name: "designations",
-                schema: "migrations_placeholder",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -125,7 +117,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
 
             migrationBuilder.CreateTable(
                 name: "employees",
-                schema: "migrations_placeholder",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -167,7 +158,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
 
             migrationBuilder.CreateTable(
                 name: "payroll_runs",
-                schema: "migrations_placeholder",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -196,7 +186,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
 
             migrationBuilder.CreateTable(
                 name: "salary_components",
-                schema: "migrations_placeholder",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -223,7 +212,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
 
             migrationBuilder.CreateTable(
                 name: "salary_structures",
-                schema: "migrations_placeholder",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -247,7 +235,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
 
             migrationBuilder.CreateTable(
                 name: "statutory_toggles",
-                schema: "migrations_placeholder",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -269,75 +256,63 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
 
             migrationBuilder.CreateIndex(
                 name: "ix_audit_logs_entity_type_entity_id",
-                schema: "migrations_placeholder",
                 table: "audit_logs",
                 columns: new[] { "entity_type", "entity_id" });
 
             migrationBuilder.CreateIndex(
                 name: "ix_audit_logs_tenant_id_occurred_at",
-                schema: "migrations_placeholder",
                 table: "audit_logs",
                 columns: new[] { "tenant_id", "occurred_at" });
 
             migrationBuilder.CreateIndex(
                 name: "ix_branches_tenant_id",
-                schema: "migrations_placeholder",
                 table: "branches",
                 column: "tenant_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_cost_centres_tenant_id",
-                schema: "migrations_placeholder",
                 table: "cost_centres",
                 column: "tenant_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_departments_tenant_id",
-                schema: "migrations_placeholder",
                 table: "departments",
                 column: "tenant_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_designations_tenant_id",
-                schema: "migrations_placeholder",
                 table: "designations",
                 column: "tenant_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_employees_tenant_id",
-                schema: "migrations_placeholder",
                 table: "employees",
                 column: "tenant_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_employees_tenant_id_employee_code",
-                schema: "migrations_placeholder",
                 table: "employees",
                 columns: new[] { "tenant_id", "employee_code" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_payroll_runs_tenant_id_status",
-                schema: "migrations_placeholder",
                 table: "payroll_runs",
                 columns: new[] { "tenant_id", "status" });
 
             migrationBuilder.CreateIndex(
                 name: "ix_salary_components_tenant_id_code",
-                schema: "migrations_placeholder",
                 table: "salary_components",
                 columns: new[] { "tenant_id", "code" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_salary_structures_employee_id_effective_from",
-                schema: "migrations_placeholder",
                 table: "salary_structures",
                 columns: new[] { "employee_id", "effective_from" });
 
             migrationBuilder.CreateIndex(
                 name: "ix_statutory_toggles_tenant_id_module",
-                schema: "migrations_placeholder",
                 table: "statutory_toggles",
                 columns: new[] { "tenant_id", "module" },
                 unique: true);
@@ -347,44 +322,34 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "audit_logs",
-                schema: "migrations_placeholder");
+                name: "audit_logs");
 
             migrationBuilder.DropTable(
-                name: "branches",
-                schema: "migrations_placeholder");
+                name: "branches");
 
             migrationBuilder.DropTable(
-                name: "cost_centres",
-                schema: "migrations_placeholder");
+                name: "cost_centres");
 
             migrationBuilder.DropTable(
-                name: "departments",
-                schema: "migrations_placeholder");
+                name: "departments");
 
             migrationBuilder.DropTable(
-                name: "designations",
-                schema: "migrations_placeholder");
+                name: "designations");
 
             migrationBuilder.DropTable(
-                name: "employees",
-                schema: "migrations_placeholder");
+                name: "employees");
 
             migrationBuilder.DropTable(
-                name: "payroll_runs",
-                schema: "migrations_placeholder");
+                name: "payroll_runs");
 
             migrationBuilder.DropTable(
-                name: "salary_components",
-                schema: "migrations_placeholder");
+                name: "salary_components");
 
             migrationBuilder.DropTable(
-                name: "salary_structures",
-                schema: "migrations_placeholder");
+                name: "salary_structures");
 
             migrationBuilder.DropTable(
-                name: "statutory_toggles",
-                schema: "migrations_placeholder");
+                name: "statutory_toggles");
         }
     }
 }

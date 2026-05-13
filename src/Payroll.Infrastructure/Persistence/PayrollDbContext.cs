@@ -24,7 +24,9 @@ public sealed class PayrollDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Binds all tables in this context to the resolved tenant schema.
-        modelBuilder.HasDefaultSchema(tenantContext.Schema);
+        // Empty at design time (migrations factory) so DDL stays schema-less.
+        if (!string.IsNullOrEmpty(tenantContext.Schema))
+            modelBuilder.HasDefaultSchema(tenantContext.Schema);
 
         base.OnModelCreating(modelBuilder);
 

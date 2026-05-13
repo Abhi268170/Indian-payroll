@@ -1,10 +1,12 @@
 using System.Threading.RateLimiting;
 using Hangfire;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using OpenIddict.Abstractions;
+using OpenIddict.Validation.AspNetCore;
 using Payroll.Application.Extensions;
 using Payroll.Infrastructure.Extensions;
 using Payroll.Infrastructure.Middleware;
@@ -38,6 +40,14 @@ builder.Services
     .AddEntityFrameworkStores<PlatformDbContext>()
     .AddDefaultTokenProviders();
 
+// AddIdentity defaults to cookie challenge — override to OpenIddict bearer for this API-only app.
+builder.Services.Configure<AuthenticationOptions>(options =>
+{
+    options.DefaultAuthenticateScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+    options.DefaultForbidScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+});
+
 builder.Services.AddOpenIddict()
     .AddCore(options =>
     {
@@ -66,14 +76,16 @@ builder.Services.AddOpenIddict()
             OpenIddictConstants.Scopes.OfflineAccess,
             "payroll.api");
 
-        if (builder.Environment.IsDevelopment())
+        OpenIddictServerAspNetCoreBuilder aspNetCoreOptions = options.UseAspNetCore()
+            .EnableTokenEndpointPassthrough();
+
+        if (!builder.Environment.IsProduction())
         {
             options.AddDevelopmentEncryptionCertificate();
             options.AddDevelopmentSigningCertificate();
+            // Allow HTTP for local dev and integration tests (Testcontainers uses plain HTTP)
+            aspNetCoreOptions.DisableTransportSecurityRequirement();
         }
-
-        options.UseAspNetCore()
-            .EnableTokenEndpointPassthrough();
     })
     .AddValidation(options =>
     {

@@ -17,7 +17,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("migrations_placeholder")
                 .HasAnnotation("ProductVersion", "8.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
@@ -80,7 +79,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.HasIndex("TenantId", "OccurredAt")
                         .HasDatabaseName("ix_audit_logs_tenant_id_occurred_at");
 
-                    b.ToTable("audit_logs", "migrations_placeholder");
+                    b.ToTable("audit_logs", (string)null);
                 });
 
             modelBuilder.Entity("Payroll.Domain.Entities.Branch", b =>
@@ -139,7 +138,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.HasIndex("TenantId")
                         .HasDatabaseName("ix_branches_tenant_id");
 
-                    b.ToTable("branches", "migrations_placeholder");
+                    b.ToTable("branches", (string)null);
                 });
 
             modelBuilder.Entity("Payroll.Domain.Entities.CostCentre", b =>
@@ -198,7 +197,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.HasIndex("TenantId")
                         .HasDatabaseName("ix_cost_centres_tenant_id");
 
-                    b.ToTable("cost_centres", "migrations_placeholder");
+                    b.ToTable("cost_centres", (string)null);
                 });
 
             modelBuilder.Entity("Payroll.Domain.Entities.Department", b =>
@@ -261,7 +260,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.HasIndex("TenantId")
                         .HasDatabaseName("ix_departments_tenant_id");
 
-                    b.ToTable("departments", "migrations_placeholder");
+                    b.ToTable("departments", (string)null);
                 });
 
             modelBuilder.Entity("Payroll.Domain.Entities.Designation", b =>
@@ -315,7 +314,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.HasIndex("TenantId")
                         .HasDatabaseName("ix_designations_tenant_id");
 
-                    b.ToTable("designations", "migrations_placeholder");
+                    b.ToTable("designations", (string)null);
                 });
 
             modelBuilder.Entity("Payroll.Domain.Entities.Employee", b =>
@@ -468,7 +467,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .IsUnique()
                         .HasDatabaseName("ix_employees_tenant_id_employee_code");
 
-                    b.ToTable("employees", "migrations_placeholder");
+                    b.ToTable("employees", (string)null);
                 });
 
             modelBuilder.Entity("Payroll.Domain.Entities.EmployeeSalaryStructure", b =>
@@ -532,7 +531,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.HasIndex("EmployeeId", "EffectiveFrom")
                         .HasDatabaseName("ix_salary_structures_employee_id_effective_from");
 
-                    b.ToTable("salary_structures", "migrations_placeholder");
+                    b.ToTable("salary_structures", (string)null);
                 });
 
             modelBuilder.Entity("Payroll.Domain.Entities.PayrollRun", b =>
@@ -611,7 +610,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.HasIndex("TenantId", "Status")
                         .HasDatabaseName("ix_payroll_runs_tenant_id_status");
 
-                    b.ToTable("payroll_runs", "migrations_placeholder");
+                    b.ToTable("payroll_runs", (string)null);
                 });
 
             modelBuilder.Entity("Payroll.Domain.Entities.SalaryComponent", b =>
@@ -693,7 +692,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .IsUnique()
                         .HasDatabaseName("ix_salary_components_tenant_id_code");
 
-                    b.ToTable("salary_components", "migrations_placeholder");
+                    b.ToTable("salary_components", (string)null);
                 });
 
             modelBuilder.Entity("Payroll.Domain.Entities.StatutoryToggle", b =>
@@ -751,7 +750,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .IsUnique()
                         .HasDatabaseName("ix_statutory_toggles_tenant_id_module");
 
-                    b.ToTable("statutory_toggles", "migrations_placeholder");
+                    b.ToTable("statutory_toggles", (string)null);
                 });
 
             modelBuilder.Entity("Payroll.Domain.Entities.PayrollRun", b =>
@@ -772,7 +771,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
 
                             b1.HasKey("PayrollRunId");
 
-                            b1.ToTable("payroll_runs", "migrations_placeholder");
+                            b1.ToTable("payroll_runs");
 
                             b1.WithOwner()
                                 .HasForeignKey("PayrollRunId")

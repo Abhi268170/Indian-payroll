@@ -20,7 +20,7 @@ internal sealed class PayrollDbContextFactory : IDesignTimeDbContextFactory<Payr
     private sealed class DesignTimeTenantContext : ITenantContext
     {
         public Guid TenantId => Guid.Empty;
-        public string Schema => "migrations_placeholder";
+        public string Schema => string.Empty;
         public string Slug => "design-time";
         public bool IsResolved => true;
 
