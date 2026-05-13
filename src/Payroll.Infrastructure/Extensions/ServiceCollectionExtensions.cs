@@ -3,12 +3,14 @@ using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Payroll.Domain.Interfaces;
 using Payroll.Infrastructure.Middleware;
 using Payroll.Infrastructure.Persistence;
 using Payroll.Infrastructure.Security;
+using Payroll.Infrastructure.Services;
 using StackExchange.Redis;
 
 namespace Payroll.Infrastructure.Extensions;
@@ -19,15 +21,13 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        string connectionString = configuration.GetConnectionString("Payroll")
-            ?? throw new InvalidOperationException("Connection string 'Payroll' not configured.");
-        string? redisConnection = configuration["Redis:ConnectionString"]
-            ?? throw new InvalidOperationException("Redis:ConnectionString not configured.");
-
-        // Tenant-scoped DbContext — schema bound at construction via TenantModelCacheKeyFactory
+        // Tenant-scoped DbContext — schema bound at construction via TenantModelCacheKeyFactory.
+        // Connection string read lazily from IConfiguration so WAF test overrides are respected.
         services.AddDbContextFactory<PayrollDbContext>((sp, options) =>
         {
-            options.UseNpgsql(connectionString, npgsql =>
+            string cs = sp.GetRequiredService<IConfiguration>().GetConnectionString("Payroll")
+                ?? throw new InvalidOperationException("Connection string 'Payroll' not configured.");
+            options.UseNpgsql(cs, npgsql =>
             {
                 npgsql.MigrationsHistoryTable("__ef_migrations_history");
                 npgsql.EnableRetryOnFailure(maxRetryCount: 3);
@@ -36,9 +36,14 @@ public static class ServiceCollectionExtensions
             .ReplaceService<IModelCacheKeyFactory, TenantModelCacheKeyFactory>();
         });
 
-        // Platform context — public schema only (tenants, OpenIddict, Data Protection keys)
-        services.AddDbContext<PlatformDbContext>(options =>
-            options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
+        // Platform context — public schema only (tenants, OpenIddict, Data Protection keys).
+        // UseOpenIddict() is required so EF model includes OpenIddict entity configs.
+        services.AddDbContext<PlatformDbContext>((sp, options) =>
+        {
+            string cs = sp.GetRequiredService<IConfiguration>().GetConnectionString("Payroll")
+                ?? throw new InvalidOperationException("Connection string 'Payroll' not configured.");
+            options.UseNpgsql(cs).UseSnakeCaseNamingConvention().UseOpenIddict();
+        });
 
         // Data Protection keys stored in DB — survives container restarts
         services.AddDataProtection()
@@ -50,27 +55,41 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IEncryptionService, AesEncryptionService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        // Redis
-        services.AddSingleton<IConnectionMultiplexer>(_ =>
-            ConnectionMultiplexer.Connect(redisConnection));
-        services.AddStackExchangeRedisCache(options =>
+        // Redis — read lazily for same reason as DbContext
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
         {
-            options.Configuration = redisConnection;
+            string redis = sp.GetRequiredService<IConfiguration>()["Redis:ConnectionString"]
+                ?? throw new InvalidOperationException("Redis:ConnectionString not configured.");
+            return ConnectionMultiplexer.Connect(redis);
         });
+        services.AddStackExchangeRedisCache(options => { });
+        services.AddOptions<RedisCacheOptions>()
+            .Configure<IConfiguration>((opts, cfg) =>
+            {
+                opts.Configuration = cfg["Redis:ConnectionString"]
+                    ?? throw new InvalidOperationException("Redis:ConnectionString not configured.");
+            });
 
-        // Hangfire
-        services.AddHangfire(config => config
-            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
-            .UseSimpleAssemblyNameTypeSerializer()
-            .UseRecommendedSerializerSettings()
-            .UsePostgreSqlStorage(c => c.UseNpgsqlConnection(connectionString),
-                new PostgreSqlStorageOptions { SchemaName = "hangfire" }));
+        // Hangfire — read connection string lazily
+        services.AddHangfire((sp, config) =>
+        {
+            string cs = sp.GetRequiredService<IConfiguration>().GetConnectionString("Payroll")
+                ?? throw new InvalidOperationException("Connection string 'Payroll' not configured.");
+            config
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UsePostgreSqlStorage(c => c.UseNpgsqlConnection(cs),
+                    new PostgreSqlStorageOptions { SchemaName = "hangfire" });
+        });
 
         services.AddHangfireServer(options =>
         {
             options.WorkerCount = Environment.ProcessorCount * 2;
             options.Queues = ["payroll", "reports", "notifications", "default"];
         });
+
+        services.AddHostedService<SeedDataService>();
 
         return services;
     }
