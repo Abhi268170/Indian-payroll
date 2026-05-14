@@ -52,6 +52,9 @@ export const useAuthStore = create<AuthState>()(
         return roles.some(r => userRoles.includes(r))
       },
     }),
-    { name: 'payroll-auth' },
+    {
+      name: 'payroll-auth',
+      partialize: (state) => ({ token: state.token, user: state.user }),
+    },
   ),
 )

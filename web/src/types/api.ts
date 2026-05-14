@@ -46,6 +46,14 @@ export interface EmployeeDto {
   costCentreId: string | null
 }
 
+export interface TenantDto {
+  id: string
+  displayName: string
+  slug: string
+  isActive: boolean
+  createdAt: string
+}
+
 export interface ApiError {
   error?: string
   errors?: string[]

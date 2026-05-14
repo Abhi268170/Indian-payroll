@@ -23,17 +23,15 @@ api.interceptors.response.use(
   },
 )
 
-export async function getToken(
-  username: string,
-  password: string,
-  clientSecret: string,
-): Promise<string> {
+const CLIENT_SECRET = import.meta.env['VITE_CLIENT_SECRET'] ?? 'dev-client-secret-2024'
+
+export async function getToken(username: string, password: string): Promise<string> {
   const params = new URLSearchParams({
     grant_type: 'password',
     username,
     password,
     client_id: 'payroll-api',
-    client_secret: clientSecret,
+    client_secret: CLIENT_SECRET,
     scope: 'openid profile email offline_access payroll.api',
   })
   const resp = await axios.post(`${API_BASE}/connect/token`, params)
