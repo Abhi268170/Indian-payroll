@@ -52,6 +52,8 @@ export interface TenantDto {
   slug: string
   isActive: boolean
   createdAt: string
+  schema?: string
+  adminEmail?: string
 }
 
 export interface ApiError {

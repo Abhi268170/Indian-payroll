@@ -66,6 +66,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITenantSchemaProvisioner, TenantSchemaProvisioner>();
         services.AddScoped<ITokenRevocationService, TokenRevocationService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddSingleton<ITenantCacheService, TenantCacheService>();
 
         // Redis — read lazily for same reason as DbContext
         services.AddSingleton<IConnectionMultiplexer>(sp =>

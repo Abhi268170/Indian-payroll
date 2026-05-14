@@ -21,6 +21,20 @@ public sealed class TenantsController(ISender sender) : ControllerBase
         return Ok(tenants);
     }
 
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> Get(Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            TenantDto tenant = await sender.Send(new GetTenantQuery(id), cancellationToken);
+            return Ok(tenant);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create(
         [FromBody] CreateTenantRequest request,
@@ -41,6 +55,20 @@ public sealed class TenantsController(ISender sender) : ControllerBase
         }
     }
 
+    [HttpPost("{id:guid}/activate")]
+    public async Task<IActionResult> Activate(Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await sender.Send(new ActivateTenantCommand(id), cancellationToken);
+            return NoContent();
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
     [HttpPost("{id:guid}/suspend")]
     public async Task<IActionResult> Suspend(Guid id, CancellationToken cancellationToken)
     {
@@ -52,6 +80,24 @@ public sealed class TenantsController(ISender sender) : ControllerBase
         catch (NotFoundException)
         {
             return NotFound();
+        }
+    }
+
+    [HttpPost("{id:guid}/resend-setup-email")]
+    public async Task<IActionResult> ResendSetupEmail(Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await sender.Send(new ResendSetupEmailCommand(id), cancellationToken);
+            return NoContent();
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+        catch (DomainException ex)
+        {
+            return Conflict(new { error = ex.Message });
         }
     }
 }

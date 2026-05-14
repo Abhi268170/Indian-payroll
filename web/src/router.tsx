@@ -10,6 +10,7 @@ import CostCentresPage from '@/pages/org/CostCentresPage'
 import EmployeesPage from '@/pages/employees/EmployeesPage'
 import TenantsPage from '@/pages/platform/TenantsPage'
 import ProvisionOrgPage from '@/pages/platform/ProvisionOrgPage'
+import OrgDetailPage from '@/pages/platform/OrgDetailPage'
 import SetPasswordPage from '@/pages/auth/SetPasswordPage'
 import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage'
 
@@ -66,6 +67,7 @@ export const router = createBrowserRouter([
       { index: true, element: <Navigate to="/platform/orgs" replace /> },
       { path: 'orgs', element: <TenantsPage /> },
       { path: 'orgs/new', element: <ProvisionOrgPage /> },
+      { path: 'orgs/:id', element: <OrgDetailPage /> },
     ],
   },
   {

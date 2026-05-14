@@ -74,6 +74,17 @@ internal sealed class UserService(
         return WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
     }
 
+    public async Task<string?> GetOrgAdminEmailAsync(
+        Guid tenantId,
+        CancellationToken cancellationToken = default)
+    {
+        IList<ApplicationUser> admins = await userManager.GetUsersInRoleAsync("OrgAdmin");
+        return admins
+            .Where(u => u.TenantId == tenantId)
+            .MinBy(u => u.Id)
+            ?.Email;
+    }
+
     public async Task ResetPasswordAsync(
         string email,
         string token,

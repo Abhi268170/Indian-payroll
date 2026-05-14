@@ -24,4 +24,8 @@ public interface IUserService
         string token,
         string newPassword,
         CancellationToken cancellationToken = default);
+
+    Task<string?> GetOrgAdminEmailAsync(
+        Guid tenantId,
+        CancellationToken cancellationToken = default);
 }

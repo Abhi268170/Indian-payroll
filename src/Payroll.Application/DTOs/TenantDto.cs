@@ -5,4 +5,8 @@ public record TenantDto(
     string DisplayName,
     string Slug,
     bool IsActive,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt)
+{
+    public string? Schema { get; init; }
+    public string? AdminEmail { get; init; }
+}

@@ -48,7 +48,11 @@ export default function TenantsPage(): React.ReactElement {
                 </tr>
               )}
               {tenants?.map(t => (
-                <tr key={t.id} className="hover:bg-gray-50">
+                <tr
+                  key={t.id}
+                  className="hover:bg-gray-50 cursor-pointer"
+                  onClick={() => navigate(`/platform/orgs/${t.id}`)}
+                >
                   <td className="px-4 py-3 text-gray-900 font-medium">{t.displayName}</td>
                   <td className="px-4 py-3">
                     <code className="text-xs bg-gray-100 px-2 py-0.5 rounded">{t.slug}</code>
