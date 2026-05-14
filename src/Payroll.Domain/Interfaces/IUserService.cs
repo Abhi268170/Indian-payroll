@@ -8,4 +8,20 @@ public interface IUserService
         string role,
         Guid tenantId,
         CancellationToken cancellationToken = default);
+
+    Task<Guid> CreateOrgAdminAsync(
+        string email,
+        Guid tenantId,
+        string role,
+        CancellationToken cancellationToken = default);
+
+    Task<string> GeneratePasswordResetTokenAsync(
+        string email,
+        CancellationToken cancellationToken = default);
+
+    Task ResetPasswordAsync(
+        string email,
+        string token,
+        string newPassword,
+        CancellationToken cancellationToken = default);
 }

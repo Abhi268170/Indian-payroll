@@ -3,6 +3,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Payroll.Application.Commands.Platform.Tenants;
+using Payroll.Application.DTOs;
+using Payroll.Application.Queries.Platform;
 using Payroll.Domain.Common;
 
 namespace Payroll.Api.Controllers;
@@ -12,6 +14,13 @@ namespace Payroll.Api.Controllers;
 [Authorize(Policy = "SuperAdmin")]
 public sealed class TenantsController(ISender sender) : ControllerBase
 {
+    [HttpGet]
+    public async Task<IActionResult> List(CancellationToken cancellationToken)
+    {
+        IReadOnlyList<TenantDto> tenants = await sender.Send(new ListTenantsQuery(), cancellationToken);
+        return Ok(tenants);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create(
         [FromBody] CreateTenantRequest request,

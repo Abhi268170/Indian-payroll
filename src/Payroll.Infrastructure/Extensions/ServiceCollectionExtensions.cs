@@ -105,6 +105,7 @@ public static class ServiceCollectionExtensions
 
         // Email
         services.Configure<EmailSettings>(configuration.GetSection("Email"));
+        services.Configure<EmailOptions>(configuration.GetSection("Email"));
         services.AddTransient<IEmailService, SmtpEmailService>();
         services.AddTransient<IEmailJobDispatcher, HangfireEmailJobDispatcher>();
 
