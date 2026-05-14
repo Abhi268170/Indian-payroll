@@ -21,6 +21,10 @@ public sealed class PayrollDbContext(
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<StatutoryToggle> StatutoryToggles => Set<StatutoryToggle>();
 
+    // Exposed for TenantModelCacheKeyFactory which lives in EF Core's internal SP
+    // and cannot use constructor injection of ITenantContext.
+    internal string TenantSchema => tenantContext.Schema;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Binds all tables in this context to the resolved tenant schema.

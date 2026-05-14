@@ -39,6 +39,8 @@ public sealed class PayrollWebApplicationFactory : WebApplicationFactory<Program
                 ["SUPERADMIN_EMAIL"] = "superadmin@test.local",
                 ["SUPERADMIN_PASSWORD"] = "SuperAdmin@Test1234!",
                 ["OPENIDDICT_CLIENT_SECRET"] = "test-client-secret",
+                // 32-byte test key for AesEncryptionService (not used in production)
+                ["Encryption:Key"] = "dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleXRlc3Q=",
             });
         });
 
