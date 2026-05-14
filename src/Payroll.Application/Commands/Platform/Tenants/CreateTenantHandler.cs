@@ -1,5 +1,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Payroll.Application.Interfaces;
 using Payroll.Domain.Common;
 using Payroll.Domain.Entities;
 using Payroll.Domain.Interfaces;
@@ -10,6 +12,9 @@ internal sealed class CreateTenantHandler(
     ITenantRepository repository,
     IPlatformUnitOfWork unitOfWork,
     ITenantSchemaProvisioner provisioner,
+    IUserService userService,
+    IEmailJobDispatcher emailJobDispatcher,
+    IOptions<EmailOptions> emailOptions,
     ILogger<CreateTenantHandler> logger) : IRequestHandler<CreateTenantCommand, Guid>
 {
     public async Task<Guid> Handle(CreateTenantCommand command, CancellationToken cancellationToken)
@@ -39,9 +44,18 @@ internal sealed class CreateTenantHandler(
             }
             await repository.DeleteAsync(tenant, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
-            throw new InvalidOperationException($"Failed to provision tenant schema.", ex);
+            throw new InvalidOperationException("Failed to provision tenant schema.", ex);
         }
+
+        await userService.CreateOrgAdminAsync(command.AdminEmail, tenant.Id, "OrgAdmin", cancellationToken);
+
+        string token = await userService.GeneratePasswordResetTokenAsync(command.AdminEmail, cancellationToken);
+        string setPasswordUrl = BuildSetPasswordUrl(emailOptions.Value.BaseUrl, token, command.AdminEmail, command.Slug);
+        emailJobDispatcher.EnqueueWelcomeEmail(command.AdminEmail, command.Slug, setPasswordUrl);
 
         return tenant.Id;
     }
+
+    private static string BuildSetPasswordUrl(string baseUrl, string token, string email, string slug)
+        => $"{baseUrl}/set-password?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(email)}&slug={Uri.EscapeDataString(slug)}";
 }

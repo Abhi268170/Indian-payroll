@@ -18,5 +18,10 @@ internal sealed class CreateTenantCommandValidator : AbstractValidator<CreateTen
             .NotEmpty()
             .Matches(SlugPattern)
             .WithMessage("Slug must be 3–63 lowercase alphanumeric characters and hyphens, no leading or trailing hyphens.");
+
+        RuleFor(x => x.AdminEmail)
+            .NotEmpty()
+            .EmailAddress()
+            .MaximumLength(320);
     }
 }

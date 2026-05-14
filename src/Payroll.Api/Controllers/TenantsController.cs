@@ -28,7 +28,7 @@ public sealed class TenantsController(ISender sender) : ControllerBase
     {
         try
         {
-            Guid id = await sender.Send(new CreateTenantCommand(request.DisplayName, request.Slug), cancellationToken);
+            Guid id = await sender.Send(new CreateTenantCommand(request.DisplayName, request.Slug, request.AdminEmail), cancellationToken);
             return Created($"/api/tenants/{id}", new { id, displayName = request.DisplayName, slug = request.Slug });
         }
         catch (ValidationException ex)
@@ -56,4 +56,4 @@ public sealed class TenantsController(ISender sender) : ControllerBase
     }
 }
 
-public record CreateTenantRequest(string DisplayName, string Slug);
+public record CreateTenantRequest(string DisplayName, string Slug, string AdminEmail);
