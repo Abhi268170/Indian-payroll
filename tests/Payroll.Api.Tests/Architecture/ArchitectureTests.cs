@@ -60,16 +60,19 @@ public sealed class ArchitectureTests
     [Fact]
     public void IAllowWithoutTenant_Implementors_MustBeInPlatformNamespace()
     {
-        // Enforces the convention: only SuperAdmin-level commands may bypass tenant validation.
-        // All such commands must live in Payroll.Application.Commands.Platform.
-        Types.InAssembly(typeof(ApplicationAssemblyMarker).Assembly)
+        // Enforces the convention: only SuperAdmin-level commands/queries may bypass tenant validation.
+        // They must live in Payroll.Application.Commands.Platform or Payroll.Application.Queries.Platform.
+        IEnumerable<Type> types = Types.InAssembly(typeof(ApplicationAssemblyMarker).Assembly)
              .That()
              .ImplementInterface(typeof(IAllowWithoutTenant))
-             .Should()
-             .ResideInNamespaceStartingWith("Payroll.Application.Commands.Platform")
-             .GetResult()
-             .IsSuccessful
-             .Should().BeTrue("IAllowWithoutTenant types must reside in Payroll.Application.Commands.Platform");
+             .GetTypes();
+
+        bool allInPlatform = types.All(t =>
+            t.Namespace?.StartsWith("Payroll.Application.Commands.Platform") == true ||
+            t.Namespace?.StartsWith("Payroll.Application.Queries.Platform") == true);
+
+        allInPlatform.Should().BeTrue(
+            "IAllowWithoutTenant types must reside in Payroll.Application.Commands.Platform or Payroll.Application.Queries.Platform");
     }
 
     [Fact]

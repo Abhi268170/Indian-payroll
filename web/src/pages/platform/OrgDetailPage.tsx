@@ -7,7 +7,7 @@ export default function OrgDetailPage(): React.ReactElement {
   const { id } = useParams<{ id: string }>()
   const queryClient = useQueryClient()
 
-  const { data: tenant, isLoading, isError } = useQuery<TenantDto>({
+  const { data: tenant, isLoading, isError, error } = useQuery<TenantDto>({
     queryKey: ['platform-tenant', id],
     queryFn: () => api.get<TenantDto>(`/api/tenants/${id}`).then(r => r.data),
     enabled: !!id,
@@ -43,9 +43,12 @@ export default function OrgDetailPage(): React.ReactElement {
   }
 
   if (isError || !tenant) {
+    const status = (error as { response?: { status?: number } })?.response?.status
+    const msg = status ? `Error ${status}` : 'Request failed'
     return (
-      <div className="flex items-center justify-center py-20">
-        <p className="text-sm text-red-500">Organisation not found.</p>
+      <div className="flex flex-col items-center justify-center py-20 gap-2">
+        <p className="text-sm text-red-500">Failed to load organisation. ({msg})</p>
+        <Link to="/platform/orgs" className="text-sm text-gray-500 hover:text-gray-700">← Back</Link>
       </div>
     )
   }
