@@ -1,9 +1,6 @@
-function App(): React.ReactElement {
-  return (
-    <div>
-      <h1>Indian Payroll</h1>
-    </div>
-  )
-}
+import { RouterProvider } from 'react-router-dom'
+import { router } from './router'
 
-export default App
+export default function App(): React.ReactElement {
+  return <RouterProvider router={router} />
+}

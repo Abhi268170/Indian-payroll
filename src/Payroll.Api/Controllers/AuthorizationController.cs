@@ -20,7 +20,7 @@ public sealed class AuthorizationController(
     SignInManager<ApplicationUser> signInManager,
     PlatformDbContext platformDb) : ControllerBase
 {
-    [HttpPost("~/connect/token"), IgnoreAntiforgeryToken]
+    [HttpPost("~/connect/token"), IgnoreAntiforgeryToken, Microsoft.AspNetCore.RateLimiting.EnableRateLimiting("auth")]
     public async Task<IActionResult> Exchange(CancellationToken cancellationToken)
     {
         OpenIddictRequest request = HttpContext.GetOpenIddictServerRequest()

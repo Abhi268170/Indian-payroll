@@ -131,6 +131,22 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownProxies.Clear();
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("frontend", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5173",
+                "http://payroll.localhost:5173",
+                "http://*.payroll.localhost:5173")
+            .SetIsOriginAllowedToAllowWildcardSubdomains()
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 builder.Services.AddHealthChecks()
     .AddNpgSql(builder.Configuration.GetConnectionString("Payroll")!)
     .AddRedis(builder.Configuration["Redis:ConnectionString"]!)
@@ -147,6 +163,7 @@ using (IServiceScope scope = app.Services.CreateScope())
 }
 
 app.UseSerilogRequestLogging();
+app.UseCors("frontend");
 
 // Security headers
 app.Use(async (context, next) =>
