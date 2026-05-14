@@ -85,6 +85,9 @@ builder.Services.AddOpenIddict()
             options.AddDevelopmentSigningCertificate();
             // Allow HTTP for local dev and integration tests (Testcontainers uses plain HTTP)
             aspNetCoreOptions.DisableTransportSecurityRequirement();
+            // Fix issuer to a stable value so tokens issued from one Host remain valid
+            // when validated from a different Host (e.g., tenant-scoped integration tests).
+            options.SetIssuer(new Uri("https://localhost"));
         }
     })
     .AddValidation(options =>
@@ -164,6 +167,7 @@ app.UseRateLimiter();
 // 4. UseAuthorization — role policy enforcement
 app.UseMiddleware<TenantResolutionMiddleware>();
 app.UseAuthentication();
+app.UseMiddleware<TenantClaimValidationMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
