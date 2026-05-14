@@ -87,6 +87,9 @@
     <PackageVersion Include="Respawn" Version="6.2.1" />
     <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.4.0" />
   </ItemGroup>
+  <ItemGroup Label="Email">
+    <PackageVersion Include="MailKit" Version="4.16.0" />
+  </ItemGroup>
   <ItemGroup Label="OpenAPI UI">
     <PackageVersion Include="Scalar.AspNetCore" Version="2.0.0" />
   </ItemGroup>

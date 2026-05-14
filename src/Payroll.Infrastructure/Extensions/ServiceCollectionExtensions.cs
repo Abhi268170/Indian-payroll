@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Payroll.Application.Interfaces;
 using Payroll.Domain.Interfaces;
+using Payroll.Infrastructure.Email;
 using Payroll.Infrastructure.Middleware;
 using Payroll.Infrastructure.Persistence;
 using Payroll.Infrastructure.Security;
@@ -100,6 +102,11 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddHostedService<SeedDataService>();
+
+        // Email
+        services.Configure<EmailSettings>(configuration.GetSection("Email"));
+        services.AddTransient<IEmailService, SmtpEmailService>();
+        services.AddTransient<IEmailJobDispatcher, HangfireEmailJobDispatcher>();
 
         return services;
     }
