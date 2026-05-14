@@ -64,6 +64,7 @@ public sealed class AuthorizationController(
         {
             identity.SetClaim("tenant_id", user.TenantId.Value.ToString());
             identity.SetClaim("tenant_schema", tenant.Schema);
+            identity.SetClaim("tenant_slug", tenant.Slug);
         }
 
         ClaimsPrincipal principal = new(identity);

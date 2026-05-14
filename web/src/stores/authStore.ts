@@ -6,6 +6,7 @@ interface DecodedToken {
   email: string
   role: string | string[]
   tenant_id?: string
+  tenant_slug?: string
   exp: number
 }
 

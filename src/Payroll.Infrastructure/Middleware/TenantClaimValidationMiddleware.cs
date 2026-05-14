@@ -8,16 +8,17 @@ namespace Payroll.Infrastructure.Middleware;
 // Must be registered AFTER UseAuthentication (so HttpContext.User is populated)
 // and BEFORE UseAuthorization (so a 403 fires before role policy evaluation).
 //
-// Four-case predicate (IsResolved × claim-present):
-//   IsResolved=false + no claim   → pass  (SuperAdmin on base domain)
-//   IsResolved=false + claim      → 403   (tenant user calling base domain)
-//   IsResolved=true  + match      → pass
-//   IsResolved=true  + mismatch   → 403
+// Five-case predicate (IsResolved × claim-present):
+//   IsResolved=false + no claim          → pass  (SuperAdmin on base domain, or anon)
+//   IsResolved=false + claim + resolves  → pass  (tenant user, no subdomain — dev or direct API)
+//   IsResolved=false + claim + not found → 403
+//   IsResolved=true  + claim match       → pass
+//   IsResolved=true  + claim mismatch    → 403
 public sealed class TenantClaimValidationMiddleware(
     RequestDelegate next,
     ILogger<TenantClaimValidationMiddleware> logger)
 {
-    public async Task InvokeAsync(HttpContext context, ITenantContext tenantContext)
+    public async Task InvokeAsync(HttpContext context, ITenantContext tenantContext, ITenantResolver resolver)
     {
         if (context.User.Identity?.IsAuthenticated != true)
         {
@@ -26,6 +27,7 @@ public sealed class TenantClaimValidationMiddleware(
         }
 
         string? tenantIdClaim = context.User.FindFirstValue("tenant_id");
+        string? tenantSlugClaim = context.User.FindFirstValue("tenant_slug");
 
         if (!tenantContext.IsResolved && tenantIdClaim is null)
         {
@@ -34,18 +36,24 @@ public sealed class TenantClaimValidationMiddleware(
             return;
         }
 
-        if (!tenantContext.IsResolved && tenantIdClaim is not null)
+        if (!tenantContext.IsResolved && tenantSlugClaim is not null)
         {
-            logger.LogWarning(
-                "TENANT_MISMATCH: tenant user (claim={TenantId}) called base domain",
-                tenantIdClaim);
-            context.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return;
+            // No subdomain (local dev / direct API call) — resolve from JWT slug claim.
+            // Security is maintained: TenantId from DB must match tenant_id claim below.
+            TenantInfo? tenant = await resolver.ResolveAsync(tenantSlugClaim, context.RequestAborted);
+            if (tenant is null || !tenant.IsActive)
+            {
+                logger.LogWarning("TENANT_RESOLVE_FAILED: slug from claim={Slug}", tenantSlugClaim);
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                return;
+            }
+            tenantContext.SetTenant(tenant);
         }
 
-        // IsResolved == true beyond this point
+        // IsResolved == true beyond this point (either from subdomain or claim above)
         if (tenantIdClaim is not null
             && Guid.TryParse(tenantIdClaim, out Guid claimedId)
+            && tenantContext.IsResolved
             && claimedId == tenantContext.TenantId)
         {
             await next(context);
@@ -55,7 +63,7 @@ public sealed class TenantClaimValidationMiddleware(
         logger.LogWarning(
             "TENANT_MISMATCH: claim={ClaimedId} context={ContextId}",
             tenantIdClaim ?? "<absent>",
-            tenantContext.TenantId);
+            tenantContext.IsResolved ? tenantContext.TenantId.ToString() : "<unresolved>");
         context.Response.StatusCode = StatusCodes.Status403Forbidden;
     }
 }
