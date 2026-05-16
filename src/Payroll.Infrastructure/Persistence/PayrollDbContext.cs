@@ -16,6 +16,7 @@ public sealed class PayrollDbContext(
     public DbSet<Designation> Designations => Set<Designation>();
     public DbSet<CostCentre> CostCentres => Set<CostCentre>();
     public DbSet<BusinessUnit> BusinessUnits => Set<BusinessUnit>();
+    public DbSet<OrgProfile> OrgProfiles => Set<OrgProfile>();
 
     // Exposed for TenantModelCacheKeyFactory which lives in EF Core's internal SP
     // and cannot use constructor injection of ITenantContext.
@@ -36,5 +37,6 @@ public sealed class PayrollDbContext(
         modelBuilder.ApplyConfiguration(new DesignationConfiguration());
         modelBuilder.ApplyConfiguration(new CostCentreConfiguration());
         modelBuilder.ApplyConfiguration(new BusinessUnitConfiguration());
+        modelBuilder.ApplyConfiguration(new OrgProfileConfiguration());
     }
 }

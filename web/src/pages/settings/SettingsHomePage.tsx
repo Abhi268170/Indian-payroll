@@ -31,6 +31,7 @@ const SECTIONS: SettingsSection[] = [
         iconBg: 'bg-emerald-50',
         iconColor: 'text-emerald-600',
         items: [
+          { label: 'Organisation Profile', to: '/settings/org-profile' },
           { label: 'Work Locations', to: '/settings/work-locations' },
           { label: 'Departments', to: '/settings/departments' },
           { label: 'Designations', to: '/settings/designations' },

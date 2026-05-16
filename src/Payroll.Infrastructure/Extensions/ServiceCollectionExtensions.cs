@@ -1,3 +1,5 @@
+using Amazon.Runtime;
+using Amazon.S3;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.DataProtection;
@@ -6,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Payroll.Application.Interfaces;
 using Payroll.Domain.Interfaces;
 using Payroll.Infrastructure.Email;
@@ -14,6 +17,7 @@ using Payroll.Infrastructure.Persistence;
 using Payroll.Infrastructure.Persistence.Repositories;
 using Payroll.Infrastructure.Security;
 using Payroll.Infrastructure.Services;
+using Payroll.Infrastructure.Storage;
 using StackExchange.Redis;
 
 namespace Payroll.Infrastructure.Extensions;
@@ -57,6 +61,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITenantResolver, RedisTenantResolver>();
         services.AddSingleton<IEncryptionService, AesEncryptionService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IOrgProfileRepository, OrgProfileRepository>();
         services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IWorkLocationRepository, WorkLocationRepository>();
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
@@ -102,6 +107,21 @@ public static class ServiceCollectionExtensions
             options.WorkerCount = Environment.ProcessorCount * 2;
             options.Queues = ["payroll", "reports", "notifications", "default"];
         });
+
+        // MinIO / S3 file storage
+        services.Configure<MinioOptions>(configuration.GetSection("Storage:Minio"));
+        services.AddSingleton<IAmazonS3>(sp =>
+        {
+            MinioOptions opts = sp.GetRequiredService<IOptions<MinioOptions>>().Value;
+            string serviceUrl = opts.UseHttps ? $"https://{opts.Endpoint}" : $"http://{opts.Endpoint}";
+            AmazonS3Config s3Config = new()
+            {
+                ServiceURL = serviceUrl,
+                ForcePathStyle = true,
+            };
+            return new AmazonS3Client(new BasicAWSCredentials(opts.AccessKey, opts.SecretKey), s3Config);
+        });
+        services.AddScoped<IFileStorageService, MinioFileStorageService>();
 
         services.AddHostedService<SeedDataService>();
 

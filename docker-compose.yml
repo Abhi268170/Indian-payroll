@@ -34,6 +34,11 @@ services:
       Email__Host: mailhog
       Email__Port: "1025"
       Email__UseSsl: "false"
+      Storage__Minio__Endpoint: "minio:9000"
+      Storage__Minio__AccessKey: "payroll"
+      Storage__Minio__SecretKey: "${MINIO_PASSWORD}"
+      Storage__Minio__BucketName: "payroll"
+      Storage__Minio__UseHttps: "false"
     secrets:
       - db_password
     depends_on:
