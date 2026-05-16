@@ -93,7 +93,7 @@ export default function BusinessUnitsPage(): ReactElement {
                   <Edit2 className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => handleDelete(bu)}
+                  onClick={() => { handleDelete(bu) }}
                   className="inline-flex items-center justify-center w-8 h-8 rounded-full text-[var(--color-error)] hover:bg-red-50 transition-colors"
                   title="Delete"
                 >

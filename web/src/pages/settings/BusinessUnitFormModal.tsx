@@ -33,7 +33,7 @@ export default function BusinessUnitFormModal({ businessUnitId, onClose, onSaved
 
   const { data: businessUnit } = useQuery({
     queryKey: ['business-unit', businessUnitId],
-    queryFn: () => api.get<BusinessUnit>(`/api/v1/business-units/${businessUnitId}`).then(r => r.data),
+    queryFn: () => api.get<BusinessUnit>(`/api/v1/business-units/${businessUnitId ?? ''}`).then(r => r.data),
     enabled: isEdit,
   })
 
@@ -50,7 +50,7 @@ export default function BusinessUnitFormModal({ businessUnitId, onClose, onSaved
     mutationFn: (data: FormData) =>
       api.post('/api/v1/business-units', {
         name: data.name,
-        description: data.description || null,
+        description: data.description ?? null,
       }),
     onSuccess: () => {
       toastSuccess('Business Unit created')
@@ -63,9 +63,9 @@ export default function BusinessUnitFormModal({ businessUnitId, onClose, onSaved
 
   const updateMutation = useMutation({
     mutationFn: (data: FormData) =>
-      api.put(`/api/v1/business-units/${businessUnitId}`, {
+      api.put(`/api/v1/business-units/${businessUnitId ?? ''}`, {
         name: data.name,
-        description: data.description || null,
+        description: data.description ?? null,
       }),
     onSuccess: () => {
       toastSuccess('Business Unit updated')
@@ -94,13 +94,15 @@ export default function BusinessUnitFormModal({ businessUnitId, onClose, onSaved
         </div>
         <form
           className="space-y-4 p-5"
-          onSubmit={handleSubmit(data => {
-            if (isEdit) {
-              updateMutation.mutate(data)
-            } else {
-              createMutation.mutate(data)
-            }
-          })}
+          onSubmit={e => {
+            void handleSubmit(data => {
+              if (isEdit) {
+                updateMutation.mutate(data)
+              } else {
+                createMutation.mutate(data)
+              }
+            })(e)
+          }}
         >
           <Input
             label="Business Unit Name"

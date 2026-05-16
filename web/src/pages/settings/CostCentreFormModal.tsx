@@ -33,7 +33,7 @@ export default function CostCentreFormModal({ costCentreId, onClose, onSaved }: 
 
   const { data: costCentre } = useQuery({
     queryKey: ['cost-centre', costCentreId],
-    queryFn: () => api.get<CostCentre>(`/api/v1/cost-centres/${costCentreId}`).then(r => r.data),
+    queryFn: () => api.get<CostCentre>(`/api/v1/cost-centres/${costCentreId ?? ''}`).then(r => r.data),
     enabled: isEdit,
   })
 
@@ -50,7 +50,7 @@ export default function CostCentreFormModal({ costCentreId, onClose, onSaved }: 
     mutationFn: (data: FormData) =>
       api.post('/api/v1/cost-centres', {
         name: data.name,
-        code: data.code || null,
+        code: data.code ?? null,
       }),
     onSuccess: () => {
       toastSuccess('Cost Centre created')
@@ -63,9 +63,9 @@ export default function CostCentreFormModal({ costCentreId, onClose, onSaved }: 
 
   const updateMutation = useMutation({
     mutationFn: (data: FormData) =>
-      api.put(`/api/v1/cost-centres/${costCentreId}`, {
+      api.put(`/api/v1/cost-centres/${costCentreId ?? ''}`, {
         name: data.name,
-        code: data.code || null,
+        code: data.code ?? null,
       }),
     onSuccess: () => {
       toastSuccess('Cost Centre updated')
@@ -94,13 +94,15 @@ export default function CostCentreFormModal({ costCentreId, onClose, onSaved }: 
         </div>
         <form
           className="space-y-4 p-5"
-          onSubmit={handleSubmit(data => {
-            if (isEdit) {
-              updateMutation.mutate(data)
-            } else {
-              createMutation.mutate(data)
-            }
-          })}
+          onSubmit={e => {
+            void handleSubmit(data => {
+              if (isEdit) {
+                updateMutation.mutate(data)
+              } else {
+                createMutation.mutate(data)
+              }
+            })(e)
+          }}
         >
           <Input
             label="Cost Centre Name"

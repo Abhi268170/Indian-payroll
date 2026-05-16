@@ -32,7 +32,7 @@ export default function DesignationFormModal({ designationId, onClose, onSaved }
 
   const { data: designation } = useQuery({
     queryKey: ['designation', designationId],
-    queryFn: () => api.get<Designation>(`/api/v1/designations/${designationId}`).then(r => r.data),
+    queryFn: () => api.get<Designation>(`/api/v1/designations/${designationId ?? ''}`).then(r => r.data),
     enabled: isEdit,
   })
 
@@ -56,7 +56,7 @@ export default function DesignationFormModal({ designationId, onClose, onSaved }
 
   const updateMutation = useMutation({
     mutationFn: (data: FormData) =>
-      api.put(`/api/v1/designations/${designationId}`, { name: data.name }),
+      api.put(`/api/v1/designations/${designationId ?? ''}`, { name: data.name }),
     onSuccess: () => {
       toastSuccess('Designation updated')
       onSaved()
@@ -84,13 +84,15 @@ export default function DesignationFormModal({ designationId, onClose, onSaved }
         </div>
         <form
           className="space-y-4 p-5"
-          onSubmit={handleSubmit(data => {
-            if (isEdit) {
-              updateMutation.mutate(data)
-            } else {
-              createMutation.mutate(data)
-            }
-          })}
+          onSubmit={e => {
+            void handleSubmit(data => {
+              if (isEdit) {
+                updateMutation.mutate(data)
+              } else {
+                createMutation.mutate(data)
+              }
+            })(e)
+          }}
         >
           <Input
             label="Designation Name"

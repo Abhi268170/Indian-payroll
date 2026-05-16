@@ -103,7 +103,7 @@ export default function DepartmentsPage(): ReactElement {
                       <Edit2 className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => handleDelete(dept)}
+                      onClick={() => { handleDelete(dept); }}
                       className="inline-flex items-center justify-center w-8 h-8 rounded-full text-[var(--color-error)] hover:bg-red-50 transition-colors"
                       title="Delete"
                     >

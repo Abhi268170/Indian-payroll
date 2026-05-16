@@ -34,7 +34,7 @@ export default function DepartmentFormModal({ departmentId, onClose, onSaved }: 
 
   const { data: department } = useQuery({
     queryKey: ['department', departmentId],
-    queryFn: () => api.get<Department>(`/api/v1/departments/${departmentId}`).then(r => r.data),
+    queryFn: () => api.get<Department>(`/api/v1/departments/${departmentId ?? ''}`).then(r => r.data),
     enabled: isEdit,
   })
 
@@ -52,8 +52,8 @@ export default function DepartmentFormModal({ departmentId, onClose, onSaved }: 
     mutationFn: (data: FormData) =>
       api.post('/api/v1/departments', {
         name: data.name,
-        code: data.code || null,
-        description: data.description || null,
+        code: data.code ?? null,
+        description: data.description ?? null,
       }),
     onSuccess: () => {
       toastSuccess('Department created')
@@ -66,10 +66,10 @@ export default function DepartmentFormModal({ departmentId, onClose, onSaved }: 
 
   const updateMutation = useMutation({
     mutationFn: (data: FormData) =>
-      api.put(`/api/v1/departments/${departmentId}`, {
+      api.put(`/api/v1/departments/${departmentId ?? ''}`, {
         name: data.name,
-        code: data.code || null,
-        description: data.description || null,
+        code: data.code ?? null,
+        description: data.description ?? null,
       }),
     onSuccess: () => {
       toastSuccess('Department updated')
@@ -98,13 +98,15 @@ export default function DepartmentFormModal({ departmentId, onClose, onSaved }: 
         </div>
         <form
           className="space-y-4 p-5"
-          onSubmit={handleSubmit(data => {
-            if (isEdit) {
-              updateMutation.mutate(data)
-            } else {
-              createMutation.mutate(data)
-            }
-          })}
+          onSubmit={e => {
+            void handleSubmit(data => {
+              if (isEdit) {
+                updateMutation.mutate(data)
+              } else {
+                createMutation.mutate(data)
+              }
+            })(e)
+          }}
         >
           <Input
             label="Department Name"
