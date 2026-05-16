@@ -46,6 +46,7 @@ public sealed class OrgStructureTests
         {
             DisplayName = displayName,
             Slug = slug,
+            AdminEmail = $"admin@{slug}.test",
         });
         response.EnsureSuccessStatusCode();
         Dictionary<string, object>? body = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>();
@@ -104,19 +105,28 @@ public sealed class OrgStructureTests
         return request;
     }
 
+    // ── Work Locations ──────────────────────────────────────────────────────────
+
     [Fact]
-    public async Task CreateBranch_AsOrgAdmin_Returns201()
+    public async Task CreateWorkLocation_AsOrgAdmin_Returns201()
     {
         HttpClient client = _factory.CreateClient();
         string superToken = await GetSuperAdminTokenAsync(client);
         (Guid tenantId, string slug) = await ProvisionTenantAsync(
-            client, superToken, "OrgStruct Corp A", "orgstruct-a");
+            client, superToken, "WorkLoc Corp A", "workloc-a");
         string orgToken = await CreateTenantUserAndGetTokenAsync(
-            client, tenantId, "orgadmin@orgstruct-a.test", "OrgAdmin@Test1!", Roles.OrgAdmin);
+            client, tenantId, "orgadmin@workloc-a.test", "OrgAdmin@Test1!", Roles.OrgAdmin);
 
         using HttpRequestMessage request = TenantRequest(
-            HttpMethod.Post, "/api/org/branches", orgToken, slug,
-            new { Name = "Head Office", State = "MH" });
+            HttpMethod.Post, "/api/v1/work-locations", orgToken, slug,
+            new
+            {
+                Name = "Head Office",
+                State = "Maharashtra",
+                AddressLine1 = "1st Floor, Bandra Kurla Complex",
+                City = "Mumbai",
+                PinCode = "400051",
+            });
         HttpResponseMessage response = await client.SendAsync(request);
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -125,16 +135,16 @@ public sealed class OrgStructureTests
     }
 
     [Fact]
-    public async Task CreateBranch_Unauthenticated_Returns401()
+    public async Task CreateWorkLocation_Unauthenticated_Returns401()
     {
         HttpClient client = _factory.CreateClient();
         string superToken = await GetSuperAdminTokenAsync(client);
         (_, string slug) = await ProvisionTenantAsync(
-            client, superToken, "OrgStruct Corp B", "orgstruct-b");
+            client, superToken, "WorkLoc Corp B", "workloc-b");
 
-        HttpRequestMessage request = new(HttpMethod.Post, "/api/org/branches")
+        HttpRequestMessage request = new(HttpMethod.Post, "/api/v1/work-locations")
         {
-            Content = JsonContent.Create(new { Name = "Branch 1", State = "KA" }),
+            Content = JsonContent.Create(new { Name = "Branch 1", State = "Karnataka" }),
         };
         request.Headers.Host = TenantHost(slug);
         HttpResponseMessage response = await client.SendAsync(request);
@@ -143,105 +153,239 @@ public sealed class OrgStructureTests
     }
 
     [Fact]
-    public async Task CreateBranch_InvalidName_Returns400()
+    public async Task CreateWorkLocation_EmptyName_Returns400()
     {
         HttpClient client = _factory.CreateClient();
         string superToken = await GetSuperAdminTokenAsync(client);
         (Guid tenantId, string slug) = await ProvisionTenantAsync(
-            client, superToken, "OrgStruct Corp C", "orgstruct-c");
+            client, superToken, "WorkLoc Corp C", "workloc-c");
         string orgToken = await CreateTenantUserAndGetTokenAsync(
-            client, tenantId, "orgadmin@orgstruct-c.test", "OrgAdmin@Test1!", Roles.OrgAdmin);
+            client, tenantId, "orgadmin@workloc-c.test", "OrgAdmin@Test1!", Roles.OrgAdmin);
 
         using HttpRequestMessage request = TenantRequest(
-            HttpMethod.Post, "/api/org/branches", orgToken, slug,
-            new { Name = "", State = "MH" });
+            HttpMethod.Post, "/api/v1/work-locations", orgToken, slug,
+            new { Name = "", State = "Maharashtra" });
         HttpResponseMessage response = await client.SendAsync(request);
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
-    public async Task ListBranches_ReturnsOnlyTenantBranches()
+    public async Task CreateWorkLocation_InvalidState_Returns400()
+    {
+        HttpClient client = _factory.CreateClient();
+        string superToken = await GetSuperAdminTokenAsync(client);
+        (Guid tenantId, string slug) = await ProvisionTenantAsync(
+            client, superToken, "WorkLoc Corp D", "workloc-d");
+        string orgToken = await CreateTenantUserAndGetTokenAsync(
+            client, tenantId, "orgadmin@workloc-d.test", "OrgAdmin@Test1!", Roles.OrgAdmin);
+
+        using HttpRequestMessage request = TenantRequest(
+            HttpMethod.Post, "/api/v1/work-locations", orgToken, slug,
+            new { Name = "Bangalore Office", State = "NotARealState" });
+        HttpResponseMessage response = await client.SendAsync(request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task CreateWorkLocation_InvalidPinCode_Returns400()
+    {
+        HttpClient client = _factory.CreateClient();
+        string superToken = await GetSuperAdminTokenAsync(client);
+        (Guid tenantId, string slug) = await ProvisionTenantAsync(
+            client, superToken, "WorkLoc Corp E", "workloc-e");
+        string orgToken = await CreateTenantUserAndGetTokenAsync(
+            client, tenantId, "orgadmin@workloc-e.test", "OrgAdmin@Test1!", Roles.OrgAdmin);
+
+        using HttpRequestMessage request = TenantRequest(
+            HttpMethod.Post, "/api/v1/work-locations", orgToken, slug,
+            new { Name = "Office", State = "Delhi", PinCode = "ABCDEF" });
+        HttpResponseMessage response = await client.SendAsync(request);
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task ListWorkLocations_ReturnsOnlyTenantLocations()
     {
         HttpClient client = _factory.CreateClient();
         string superToken = await GetSuperAdminTokenAsync(client);
         (Guid tenantIdA, string slugA) = await ProvisionTenantAsync(
-            client, superToken, "List Branches A", "listbranch-a");
+            client, superToken, "List WL Tenant A", "listwl-a");
         (Guid tenantIdB, string slugB) = await ProvisionTenantAsync(
-            client, superToken, "List Branches B", "listbranch-b");
+            client, superToken, "List WL Tenant B", "listwl-b");
 
         string tokenA = await CreateTenantUserAndGetTokenAsync(
-            client, tenantIdA, "admin@listbranch-a.test", "Admin@Test1!", Roles.OrgAdmin);
+            client, tenantIdA, "orguser@listwl-a.test", "Admin@Test1!", Roles.OrgAdmin);
         string tokenB = await CreateTenantUserAndGetTokenAsync(
-            client, tenantIdB, "admin@listbranch-b.test", "Admin@Test1!", Roles.OrgAdmin);
+            client, tenantIdB, "orguser@listwl-b.test", "Admin@Test1!", Roles.OrgAdmin);
 
-        // Create a branch in tenant A
+        // Create a work location in tenant A
         using HttpRequestMessage createReq = TenantRequest(
-            HttpMethod.Post, "/api/org/branches", tokenA, slugA,
-            new { Name = "Tenant A Branch", State = "DL" });
+            HttpMethod.Post, "/api/v1/work-locations", tokenA, slugA,
+            new { Name = "Tenant A Office", State = "Delhi" });
         (await client.SendAsync(createReq)).EnsureSuccessStatusCode();
 
-        // List branches as tenant B — should see zero
-        using HttpRequestMessage listReq = TenantRequest(HttpMethod.Get, "/api/org/branches", tokenB, slugB);
+        // List work locations as tenant B — should see zero
+        using HttpRequestMessage listReq = TenantRequest(
+            HttpMethod.Get, "/api/v1/work-locations", tokenB, slugB);
         HttpResponseMessage listResponse = await client.SendAsync(listReq);
 
         listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        List<Dictionary<string, object>>? branches =
+        List<Dictionary<string, object>>? locations =
             await listResponse.Content.ReadFromJsonAsync<List<Dictionary<string, object>>>();
-        branches.Should().BeEmpty("tenant B must not see tenant A branches");
+        locations.Should().BeEmpty("tenant B must not see tenant A work locations");
     }
 
     [Fact]
-    public async Task CreateDepartment_AsOrgAdmin_Returns201()
+    public async Task GetWorkLocation_Returns200()
     {
         HttpClient client = _factory.CreateClient();
         string superToken = await GetSuperAdminTokenAsync(client);
         (Guid tenantId, string slug) = await ProvisionTenantAsync(
-            client, superToken, "Dept Corp A", "dept-corp-a");
+            client, superToken, "Get WL Corp", "getwl-a");
         string orgToken = await CreateTenantUserAndGetTokenAsync(
-            client, tenantId, "orgadmin@dept-a.test", "OrgAdmin@Test1!", Roles.OrgAdmin);
+            client, tenantId, "orgadmin@getwl-a.test", "OrgAdmin@Test1!", Roles.OrgAdmin);
 
-        using HttpRequestMessage request = TenantRequest(
-            HttpMethod.Post, "/api/org/departments", orgToken, slug,
-            new { Name = "Engineering", Code = "ENG" });
-        HttpResponseMessage response = await client.SendAsync(request);
+        // Create
+        using HttpRequestMessage createReq = TenantRequest(
+            HttpMethod.Post, "/api/v1/work-locations", orgToken, slug,
+            new { Name = "Chennai Hub", State = "TamilNadu", PinCode = "600001" });
+        HttpResponseMessage createResp = await client.SendAsync(createReq);
+        createResp.EnsureSuccessStatusCode();
+        Dictionary<string, object>? created = await createResp.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+        string id = created!["id"].ToString()!;
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        // Get
+        using HttpRequestMessage getReq = TenantRequest(
+            HttpMethod.Get, $"/api/v1/work-locations/{id}", orgToken, slug);
+        HttpResponseMessage getResp = await client.SendAsync(getReq);
+
+        getResp.StatusCode.Should().Be(HttpStatusCode.OK);
+        Dictionary<string, object>? body = await getResp.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+        body.Should().ContainKey("id");
+        body!["name"].ToString().Should().Be("Chennai Hub");
     }
 
     [Fact]
-    public async Task CreateDesignation_AsOrgAdmin_Returns201()
+    public async Task GetWorkLocation_NotFound_Returns404()
     {
         HttpClient client = _factory.CreateClient();
         string superToken = await GetSuperAdminTokenAsync(client);
         (Guid tenantId, string slug) = await ProvisionTenantAsync(
-            client, superToken, "Desig Corp A", "desig-corp-a");
+            client, superToken, "Get WL 404", "getwl-404");
         string orgToken = await CreateTenantUserAndGetTokenAsync(
-            client, tenantId, "orgadmin@desig-a.test", "OrgAdmin@Test1!", Roles.OrgAdmin);
+            client, tenantId, "orgadmin@getwl-404.test", "OrgAdmin@Test1!", Roles.OrgAdmin);
 
-        using HttpRequestMessage request = TenantRequest(
-            HttpMethod.Post, "/api/org/designations", orgToken, slug,
-            new { Name = "Software Engineer" });
-        HttpResponseMessage response = await client.SendAsync(request);
+        Guid randomId = Guid.NewGuid();
+        using HttpRequestMessage getReq = TenantRequest(
+            HttpMethod.Get, $"/api/v1/work-locations/{randomId}", orgToken, slug);
+        HttpResponseMessage response = await client.SendAsync(getReq);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
-    public async Task CreateCostCentre_AsOrgAdmin_Returns201()
+    public async Task UpdateWorkLocation_Returns204()
     {
         HttpClient client = _factory.CreateClient();
         string superToken = await GetSuperAdminTokenAsync(client);
         (Guid tenantId, string slug) = await ProvisionTenantAsync(
-            client, superToken, "CC Corp A", "cc-corp-a");
+            client, superToken, "Update WL Corp", "updatewl-a");
         string orgToken = await CreateTenantUserAndGetTokenAsync(
-            client, tenantId, "orgadmin@cc-a.test", "OrgAdmin@Test1!", Roles.OrgAdmin);
+            client, tenantId, "orgadmin@updatewl-a.test", "OrgAdmin@Test1!", Roles.OrgAdmin);
 
-        using HttpRequestMessage request = TenantRequest(
-            HttpMethod.Post, "/api/org/cost-centres", orgToken, slug,
-            new { Name = "IT Department", Code = "CC-IT" });
-        HttpResponseMessage response = await client.SendAsync(request);
+        // Create
+        using HttpRequestMessage createReq = TenantRequest(
+            HttpMethod.Post, "/api/v1/work-locations", orgToken, slug,
+            new { Name = "Pune Office", State = "Maharashtra" });
+        HttpResponseMessage createResp = await client.SendAsync(createReq);
+        createResp.EnsureSuccessStatusCode();
+        Dictionary<string, object>? created = await createResp.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+        string id = created!["id"].ToString()!;
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        // Update — state must not change even if we want it to (not in payload)
+        using HttpRequestMessage updateReq = TenantRequest(
+            HttpMethod.Put, $"/api/v1/work-locations/{id}", orgToken, slug,
+            new { Name = "Pune HQ", AddressLine1 = "Hinjewadi Phase 1", City = "Pune", PinCode = "411057" });
+        HttpResponseMessage updateResp = await client.SendAsync(updateReq);
+
+        updateResp.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        // Verify name updated and state unchanged
+        using HttpRequestMessage getReq = TenantRequest(
+            HttpMethod.Get, $"/api/v1/work-locations/{id}", orgToken, slug);
+        HttpResponseMessage getResp = await client.SendAsync(getReq);
+        Dictionary<string, object>? body = await getResp.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+        body!["name"].ToString().Should().Be("Pune HQ");
+        body["state"].ToString().Should().Be("Maharashtra");
+    }
+
+    [Fact]
+    public async Task DeleteWorkLocation_Returns204()
+    {
+        HttpClient client = _factory.CreateClient();
+        string superToken = await GetSuperAdminTokenAsync(client);
+        (Guid tenantId, string slug) = await ProvisionTenantAsync(
+            client, superToken, "Delete WL Corp", "deletewl-a");
+        string orgToken = await CreateTenantUserAndGetTokenAsync(
+            client, tenantId, "orgadmin@deletewl-a.test", "OrgAdmin@Test1!", Roles.OrgAdmin);
+
+        // Create
+        using HttpRequestMessage createReq = TenantRequest(
+            HttpMethod.Post, "/api/v1/work-locations", orgToken, slug,
+            new { Name = "Hyderabad Branch", State = "Telangana" });
+        HttpResponseMessage createResp = await client.SendAsync(createReq);
+        createResp.EnsureSuccessStatusCode();
+        Dictionary<string, object>? created = await createResp.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+        string id = created!["id"].ToString()!;
+
+        // Delete
+        using HttpRequestMessage deleteReq = TenantRequest(
+            HttpMethod.Delete, $"/api/v1/work-locations/{id}", orgToken, slug);
+        HttpResponseMessage deleteResp = await client.SendAsync(deleteReq);
+
+        deleteResp.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        // Verify it's gone (soft deleted, hidden by query filter)
+        using HttpRequestMessage getReq = TenantRequest(
+            HttpMethod.Get, $"/api/v1/work-locations/{id}", orgToken, slug);
+        HttpResponseMessage getResp = await client.SendAsync(getReq);
+        getResp.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task ToggleActive_Deactivate_Returns204()
+    {
+        HttpClient client = _factory.CreateClient();
+        string superToken = await GetSuperAdminTokenAsync(client);
+        (Guid tenantId, string slug) = await ProvisionTenantAsync(
+            client, superToken, "Toggle WL Corp", "togglewl-a");
+        string orgToken = await CreateTenantUserAndGetTokenAsync(
+            client, tenantId, "orgadmin@togglewl-a.test", "OrgAdmin@Test1!", Roles.OrgAdmin);
+
+        // Create
+        using HttpRequestMessage createReq = TenantRequest(
+            HttpMethod.Post, "/api/v1/work-locations", orgToken, slug,
+            new { Name = "Kolkata Office", State = "WestBengal" });
+        HttpResponseMessage createResp = await client.SendAsync(createReq);
+        createResp.EnsureSuccessStatusCode();
+        Dictionary<string, object>? created = await createResp.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+        string id = created!["id"].ToString()!;
+
+        // Deactivate
+        using HttpRequestMessage deactivateReq = TenantRequest(
+            HttpMethod.Post, $"/api/v1/work-locations/{id}/deactivate", orgToken, slug);
+        HttpResponseMessage deactivateResp = await client.SendAsync(deactivateReq);
+
+        deactivateResp.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        // Verify isActive = false
+        using HttpRequestMessage getReq = TenantRequest(
+            HttpMethod.Get, $"/api/v1/work-locations/{id}", orgToken, slug);
+        HttpResponseMessage getResp = await client.SendAsync(getReq);
+        Dictionary<string, object>? body = await getResp.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+        body!["isActive"].ToString().Should().Be("False");
     }
 }

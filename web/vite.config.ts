@@ -11,4 +11,12 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    host: true,
+    port: 5173,
+    watch: {
+      // polling required for Docker volume mounts on WSL2
+      usePolling: true,
+    },
+  },
 })

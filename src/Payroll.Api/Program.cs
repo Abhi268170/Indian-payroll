@@ -160,6 +160,15 @@ using (IServiceScope scope = app.Services.CreateScope())
 {
     PlatformDbContext db = scope.ServiceProvider.GetRequiredService<PlatformDbContext>();
     await db.Database.MigrateAsync();
+
+    // Apply any pending tenant migrations to all existing tenant schemas.
+    // New tenants get migrations via TenantSchemaProvisioner.ProvisionAsync();
+    // existing tenants need this on every startup after a new migration is added.
+    Payroll.Domain.Interfaces.ITenantSchemaProvisioner provisioner =
+        scope.ServiceProvider.GetRequiredService<Payroll.Domain.Interfaces.ITenantSchemaProvisioner>();
+    List<string> schemas = await db.Tenants.Select(t => t.Schema).ToListAsync();
+    foreach (string schema in schemas)
+        await provisioner.ProvisionAsync(schema);
 }
 
 app.UseSerilogRequestLogging();

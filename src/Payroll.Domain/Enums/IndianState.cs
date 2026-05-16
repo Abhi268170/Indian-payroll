@@ -1,10 +1,42 @@
 namespace Payroll.Domain.Enums;
 
-// ISO 3166-2:IN two-letter state codes
 public enum IndianState
 {
-    AN, AP, AR, AS, BR, CG, CH, DD, DL, DN,
-    GA, GJ, HP, HR, JH, JK, KA, KL, LA, LD,
-    MH, ML, MN, MP, MZ, NL, OR, PB, PY, RJ,
-    SK, TG, TN, TR, UP, UT, WB
+    AndhraPradesh,
+    ArunachalPradesh,
+    Assam,
+    Bihar,
+    Chhattisgarh,
+    Goa,
+    Gujarat,
+    Haryana,
+    HimachalPradesh,
+    Jharkhand,
+    Karnataka,
+    Kerala,
+    MadhyaPradesh,
+    Maharashtra,
+    Manipur,
+    Meghalaya,
+    Mizoram,
+    Nagaland,
+    Odisha,
+    Punjab,
+    Rajasthan,
+    Sikkim,
+    TamilNadu,
+    Telangana,
+    Tripura,
+    UttarPradesh,
+    Uttarakhand,
+    WestBengal,
+    // Union Territories
+    AndamanAndNicobar,
+    Chandigarh,
+    DadraAndNagarHaveliAndDamanAndDiu,
+    Delhi,
+    JammuAndKashmir,
+    Ladakh,
+    Lakshadweep,
+    Puducherry,
 }
