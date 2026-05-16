@@ -83,6 +83,7 @@ export default function OrgProfilePage(): ReactElement {
   const { success: toastSuccess, error: toastError } = useToast()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [logoVersion, setLogoVersion] = useState(0)
+  const [logoObjectUrl, setLogoObjectUrl] = useState<string | null>(null)
 
   const { data: profile, isLoading } = useQuery<OrgProfileDto>({
     queryKey: ['org-profile'],
@@ -97,6 +98,24 @@ export default function OrgProfilePage(): ReactElement {
       city: '', state: '', pinCode: '',
     },
   })
+
+  useEffect(() => {
+    if (profile?.hasLogo !== true) {
+      return () => { /* nothing to revoke */ }
+    }
+    let cancelled = false
+    let objectUrl: string | null = null
+    void api.get<Blob>('/api/v1/org-profile/logo', { responseType: 'blob' }).then(r => {
+      if (!cancelled) {
+        objectUrl = URL.createObjectURL(r.data)
+        setLogoObjectUrl(prev => { if (prev) URL.revokeObjectURL(prev); return objectUrl })
+      }
+    })
+    return () => {
+      cancelled = true
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+    }
+  }, [profile?.hasLogo, logoVersion])
 
   useEffect(() => {
     if (profile) {
@@ -117,9 +136,7 @@ export default function OrgProfilePage(): ReactElement {
     }
   }, [profile, reset])
 
-  const logoSrc = profile?.hasLogo === true
-    ? `/api/v1/org-profile/logo?v=${String(logoVersion)}`
-    : null
+  const logoSrc = logoObjectUrl
 
   const updateMutation = useMutation({
     mutationFn: (data: FormData) =>
@@ -165,6 +182,7 @@ export default function OrgProfilePage(): ReactElement {
     mutationFn: () => api.delete('/api/v1/org-profile/logo'),
     onSuccess: () => {
       toastSuccess('Logo removed')
+      setLogoObjectUrl(prev => { if (prev) URL.revokeObjectURL(prev); return null })
       void qc.invalidateQueries({ queryKey: ['org-profile'] })
     },
     onError: () => { toastError('Failed to remove logo') },
