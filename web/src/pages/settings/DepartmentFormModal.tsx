@@ -13,7 +13,7 @@ import type { Department } from './DepartmentsPage'
 const schema = z.object({
   name: z.string().min(1, 'Department Name is required').max(150),
   code: z.string().max(20).optional().or(z.literal('')),
-  description: z.string().max(500).optional().or(z.literal('')),
+  description: z.string().max(250).optional().or(z.literal('')),
 })
 
 type FormData = z.infer<typeof schema>
@@ -122,8 +122,8 @@ export default function DepartmentFormModal({ departmentId, onClose, onSaved }: 
             <label className="block text-[13px] font-medium text-[var(--color-text-primary)] mb-2">Description</label>
             <textarea
               className="w-full px-3 py-2 border border-[var(--color-border)] rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-              placeholder="Max 500 characters"
-              maxLength={500}
+              placeholder="Max 250 characters"
+              maxLength={250}
               {...register('description')}
             />
             {errors.description && <p className="text-xs text-[var(--color-error)] mt-1">{errors.description.message}</p>}
