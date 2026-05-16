@@ -1,0 +1,134 @@
+- generic:
+  - iframe
+  - generic [ref=e13742]:
+    - generic [ref=e13743]: Please make sure pre-payment is not a date in the future.
+    - button [ref=e14841] [cursor=pointer]:
+      - img [ref=e14842]
+  - generic [ref=e5]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e6] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e7]
+    - generic [ref=e23160]:
+      - generic [ref=e23162]:
+        - generic [ref=e23163]:
+          - button "All Settings" [ref=e23164] [cursor=pointer]:
+            - img [ref=e23165]
+          - button [ref=e23170] [cursor=pointer]:
+            - img [ref=e23171]
+          - generic [ref=e23173]:
+            - generic [ref=e23174]: All Settings
+            - generic [ref=e23175]: lerno
+        - generic [ref=e23177]:
+          - combobox "Search" [active] [ref=e23181]
+          - img [ref=e23182]
+        - button "Close Settings" [ref=e23186] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e23187]
+      - generic [ref=e23189]:
+        - navigation [ref=e23190]:
+          - generic [ref=e23192]:
+            - group [ref=e23193]:
+              - heading "Organisation Settings" [level=2] [ref=e23194]
+              - generic [ref=e23195]:
+                - region "Organisation" [ref=e23197]:
+                  - generic [ref=e23198]:
+                    - heading "Organisation" [level=3] [ref=e23199] [cursor=pointer]:
+                      - button "Organisation" [ref=e23200]:
+                        - img [ref=e23201]
+                        - generic [ref=e23203]: Organisation
+                    - text:      
+                - generic [ref=e23217]:
+                  - region "Users and Roles" [ref=e23218]:
+                    - generic [ref=e23219]:
+                      - heading "Users and Roles" [level=3] [ref=e23220] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e23221]:
+                          - img [ref=e23222]
+                          - generic [ref=e23224]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e23230]:
+                    - generic [ref=e23231]:
+                      - heading "Taxes" [level=3] [ref=e23232] [cursor=pointer]:
+                        - button "Taxes" [ref=e23233]:
+                          - img [ref=e23234]
+                          - generic [ref=e23236]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e23241]:
+                  - generic [ref=e23242]:
+                    - heading "Setup & Configurations" [level=3] [ref=e23243] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e23244]:
+                        - img [ref=e23245]
+                        - generic [ref=e23247]: Setup & Configurations
+                    - text:     
+                - region "Customisations" [ref=e23260]:
+                  - generic [ref=e23261]:
+                    - heading "Customisations" [level=3] [ref=e23262] [cursor=pointer]:
+                      - button "Customisations" [expanded] [ref=e23263]:
+                        - img [ref=e23264]
+                        - generic [ref=e23266]: Customisations
+                    - region "Customisations" [ref=e23383]:
+                      - generic [ref=e23267]:
+                        - link "Email Templates" [ref=e23268] [cursor=pointer]:
+                          - /url: "#/settings/email-templates"
+                          - generic [ref=e23269]: Email Templates
+                          - text: 
+                        - link "Sender Email Preferences" [ref=e23270] [cursor=pointer]:
+                          - /url: "#/settings/email-preference"
+                          - generic [ref=e23271]: Sender Email Preferences
+                          - text: 
+                        - link "Salary Templates" [ref=e23272] [cursor=pointer]:
+                          - /url: "#/settings/salary-templates"
+                          - generic [ref=e23273]: Salary Templates
+                          - text: 
+                        - link "PDF Templates" [ref=e23274] [cursor=pointer]:
+                          - /url: "#/settings/templates/regular-payslip"
+                          - generic [ref=e23275]: PDF Templates
+                          - text: 
+                        - link "Reporting Tags" [ref=e23276] [cursor=pointer]:
+                          - /url: "#/settings/advanced-reportingtags"
+                          - generic [ref=e23277]: Reporting Tags
+                          - text: 
+                - region "Automations" [ref=e23279]:
+                  - generic [ref=e23280]:
+                    - heading "Automations" [level=3] [ref=e23281] [cursor=pointer]:
+                      - button "Automations" [ref=e23282]:
+                        - img [ref=e23283]
+                        - generic [ref=e23285]: Automations
+                    - text:    
+            - group [ref=e23295]:
+              - heading "Module Settings" [level=2] [ref=e23296]
+              - generic [ref=e23297]:
+                - region "General" [ref=e23299]:
+                  - generic [ref=e23300]:
+                    - heading "General" [level=3] [ref=e23301] [cursor=pointer]:
+                      - button "General" [ref=e23302]:
+                        - img [ref=e23303]
+                        - generic [ref=e23305]: General
+                    - text:     
+                - region "Payments" [ref=e23318]:
+                  - generic [ref=e23319]:
+                    - heading "Payments" [level=3] [ref=e23320] [cursor=pointer]:
+                      - button "Payments" [ref=e23321]:
+                        - img [ref=e23322]
+                        - generic [ref=e23324]: Payments
+                    - text: 
+            - group [ref=e23328]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e23329]
+              - generic [ref=e23330]:
+                - region "Integrations" [ref=e23332]:
+                  - generic [ref=e23333]:
+                    - heading "Integrations" [level=3] [ref=e23334] [cursor=pointer]:
+                      - button "Integrations" [ref=e23335]:
+                        - img [ref=e23336]
+                        - generic [ref=e23338]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e23343]:
+                  - generic [ref=e23344]:
+                    - heading "Developer Data" [level=3] [ref=e23345] [cursor=pointer]:
+                      - button "Developer Data" [ref=e23346]:
+                        - img [ref=e23347]
+                        - generic [ref=e23349]: Developer Data
+                    - text:   
+        - main [ref=e23432]
+  - status [ref=e269]: Settings Email Templates page loaded.
+  - text:       Chats  Contacts   

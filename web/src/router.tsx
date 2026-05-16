@@ -10,6 +10,7 @@ import DesignationsPage from '@/pages/settings/DesignationsPage'
 import CostCentresPage from '@/pages/settings/CostCentresPage'
 import BusinessUnitsPage from '@/pages/settings/BusinessUnitsPage'
 import OrgProfilePage from '@/pages/settings/OrgProfilePage'
+import PaySchedulesPage from '@/pages/settings/PaySchedulesPage'
 import LoginPage from '@/pages/LoginPage'
 import DashboardPage from '@/pages/DashboardPage'
 import TenantsPage from '@/pages/platform/TenantsPage'
@@ -77,6 +78,7 @@ export const router = createBrowserRouter([
           { path: 'cost-centres', element: <CostCentresPage /> },
           { path: 'business-units', element: <BusinessUnitsPage /> },
           { path: 'org-profile', element: <OrgProfilePage /> },
+          { path: 'pay-schedule', element: <PaySchedulesPage /> },
         ],
       },
     ],

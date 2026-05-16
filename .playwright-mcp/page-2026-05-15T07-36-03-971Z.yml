@@ -1,0 +1,242 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e528]:
+      - generic [ref=e530]:
+        - generic [ref=e531]:
+          - button "All Settings" [ref=e532] [cursor=pointer]:
+            - img [ref=e533]
+          - button [ref=e538] [cursor=pointer]:
+            - img [ref=e539]
+          - generic [ref=e541]:
+            - generic [ref=e542]: All Settings
+            - generic [ref=e543]: lerno
+        - generic [ref=e545]:
+          - combobox "Search" [ref=e549]
+          - img [ref=e550]
+        - button "Close Settings" [ref=e554] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e555]
+      - generic [ref=e557]:
+        - navigation [ref=e558]:
+          - generic [ref=e560]:
+            - group [ref=e561]:
+              - heading "Organisation Settings" [level=2] [ref=e562]
+              - generic [ref=e563]:
+                - region "Organisation" [ref=e565]:
+                  - generic [ref=e566]:
+                    - heading "Organisation" [level=3] [ref=e567] [cursor=pointer]:
+                      - button "Organisation" [ref=e568]:
+                        - img [ref=e1844]
+                        - generic [ref=e571]: Organisation
+                    - text:      
+                - generic [ref=e585]:
+                  - region "Users and Roles" [ref=e586]:
+                    - generic [ref=e587]:
+                      - heading "Users and Roles" [level=3] [ref=e588] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e589]:
+                          - img [ref=e1848]
+                          - generic [ref=e592]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e598]:
+                    - generic [ref=e599]:
+                      - heading "Taxes" [level=3] [ref=e600] [cursor=pointer]:
+                        - button "Taxes" [ref=e601]:
+                          - img [ref=e1852]
+                          - generic [ref=e604]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e609]:
+                  - generic [ref=e610]:
+                    - heading "Setup & Configurations" [level=3] [ref=e611] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e612]:
+                        - img [ref=e1856]
+                        - generic [ref=e615]: Setup & Configurations
+                    - text:     
+                - region "Customisations" [ref=e628]:
+                  - generic [ref=e629]:
+                    - heading "Customisations" [level=3] [ref=e630] [cursor=pointer]:
+                      - button "Customisations" [ref=e631]:
+                        - img [ref=e1860]
+                        - generic [ref=e634]: Customisations
+                    - text:     
+                - region "Automations" [ref=e647]:
+                  - generic [ref=e648]:
+                    - heading "Automations" [level=3] [ref=e649] [cursor=pointer]:
+                      - button "Automations" [ref=e650]:
+                        - img [ref=e1864]
+                        - generic [ref=e653]: Automations
+                    - text:    
+            - group [ref=e663]:
+              - heading "Module Settings" [level=2] [ref=e664]
+              - generic [ref=e665]:
+                - region "General" [ref=e667]:
+                  - generic [ref=e668]:
+                    - heading "General" [level=3] [ref=e669] [cursor=pointer]:
+                      - button "General" [ref=e670]:
+                        - img [ref=e1868]
+                        - generic [ref=e673]: General
+                    - text:     
+                - region "Payments" [ref=e686]:
+                  - generic [ref=e687]:
+                    - heading "Payments" [level=3] [ref=e688] [cursor=pointer]:
+                      - button "Payments" [ref=e689]:
+                        - img [ref=e1872]
+                        - generic [ref=e692]: Payments
+                    - text: 
+            - group [ref=e696]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e697]
+              - generic [ref=e698]:
+                - region "Integrations" [ref=e700]:
+                  - generic [ref=e701]:
+                    - heading "Integrations" [level=3] [ref=e702] [cursor=pointer]:
+                      - button "Integrations" [ref=e703]:
+                        - img [ref=e1876]
+                        - generic [ref=e706]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e711]:
+                  - generic [ref=e712]:
+                    - heading "Developer Data" [level=3] [ref=e713] [cursor=pointer]:
+                      - button "Developer Data" [expanded] [active] [ref=e714]:
+                        - img [ref=e1878]
+                        - generic [ref=e717]: Developer Data
+                    - region "Developer Data" [ref=e1363]:
+                      - generic [ref=e718]:
+                        - link "Connections" [ref=e719] [cursor=pointer]:
+                          - /url: "#/settings/developer-space/connections"
+                          - generic [ref=e720]: Connections
+                          - text: 
+                        - link "Incoming Webhooks" [ref=e721] [cursor=pointer]:
+                          - /url: "#/settings/developer-space/incomingwebhooks"
+                          - generic [ref=e722]: Incoming Webhooks
+                          - text: 
+                        - link "Data Backup" [ref=e723] [cursor=pointer]:
+                          - /url: "#/settings/data-backup"
+                          - generic [ref=e724]: Data Backup
+                          - text: 
+        - main [ref=e1628]:
+          - generic [ref=e1630]:
+            - heading "Organisation Profile" [level=3] [ref=e1631]
+            - generic [ref=e1633]: "Organisation ID: 60071806579"
+          - generic [ref=e1635]:
+            - generic [ref=e1637]:
+              - generic [ref=e1638]:
+                - generic [ref=e1639]: Organisation Logo
+                - generic [ref=e1640]:
+                  - generic [ref=e1643]:
+                    - generic [ref=e1644]:
+                      - img [ref=e1645]
+                      - text: Upload Logo
+                    - button "Choose File" [ref=e1648] [cursor=pointer]
+                  - generic [ref=e1650]:
+                    - generic [ref=e1651]: This logo will be displayed on documents such as Payslip and TDS Worksheet.
+                    - text: "Preferred Image Size: 240 x 240 pixels @ 72 DPI, Maximum size of 1MB. Accepted File Formats: PNG, JPG, and JPEG"
+              - generic [ref=e1652]:
+                - generic [ref=e1653]: Organisation Name*
+                - generic [ref=e1654]: This is your registered business name which will appear in all the forms and payslips.
+                - textbox "Organisation Name*" [ref=e1656]: lerno
+              - generic [ref=e1657]:
+                - generic [ref=e1658]:
+                  - generic [ref=e1659]: Business Location*
+                  - textbox "Business Location*" [disabled] [ref=e1661]: India
+                - generic [ref=e1662]:
+                  - generic [ref=e1663]: Industry*
+                  - generic [ref=e1666]:
+                    - combobox "Select an industry type" [ref=e1668]:
+                      - generic [ref=e1669] [cursor=pointer]:
+                        - generic "Technology" [ref=e1670]
+                        - img [ref=e1673]
+                    - status [ref=e1675]
+              - generic [ref=e1676]:
+                - generic [ref=e1677]:
+                  - generic [ref=e1678]: Date Format*
+                  - generic [ref=e1681]:
+                    - combobox "Date Format*" [ref=e1683]:
+                      - generic [ref=e1684] [cursor=pointer]:
+                        - generic "dd/MM/yyyy [ 15/05/2026 ]" [ref=e1685]
+                        - img [ref=e1688]
+                    - status [ref=e1690]
+                - generic [ref=e1691]:
+                  - generic [ref=e1692]: Field Separator
+                  - generic [ref=e1695]:
+                    - combobox "Field Separator" [ref=e1697]:
+                      - generic [ref=e1698] [cursor=pointer]:
+                        - generic / [ref=e1699]
+                        - img [ref=e1702]
+                    - status [ref=e1704]
+            - generic [ref=e1706]:
+              - generic [ref=e1707]:
+                - generic [ref=e1708]: Organisation Address*
+                - generic [ref=e1709]: This will be considered as the address of your primary work location.
+              - generic [ref=e1710]:
+                - textbox "Address Line 1" [ref=e1712]: lerno
+                - textbox "Address Line 2" [ref=e1714]: kazhakoottam
+                - generic [ref=e1716]:
+                  - generic [ref=e1719]:
+                    - combobox "Select a state" [ref=e1721]:
+                      - generic [ref=e1722] [cursor=pointer]:
+                        - generic "Kerala" [ref=e1723]
+                        - img [ref=e1726]
+                    - status [ref=e1728]
+                  - textbox "City" [ref=e1730]: thiruvananthapuram
+                  - textbox "PIN Code" [ref=e1732]: "695010"
+            - generic [ref=e1734]:
+              - generic [ref=e1735]:
+                - generic [ref=e1736]: Filing Address
+                - generic [ref=e1737]: This registered address will be used across all Forms and Payslips.
+              - generic [ref=e1740]:
+                - generic [ref=e1742]:
+                  - generic [ref=e1743]: Head Office
+                  - link "Change" [ref=e1745] [cursor=pointer]:
+                    - /url: "#/settings/orgprofile?change_filing_address=true"
+                    - img [ref=e1746]
+                    - text: Change
+                - generic [ref=e1748]:
+                  - paragraph [ref=e1749]: lerno
+                  - paragraph [ref=e1750]: kazhakoottam
+                  - paragraph [ref=e1751]: thiruvananthapuram, Kerala 695010
+            - generic [ref=e1752]:
+              - generic [ref=e1753]: Contact Information
+              - generic [ref=e1754]:
+                - generic [ref=e1755]:
+                  - generic [ref=e1756]:
+                    - generic [ref=e1757]: Primary Contact Email Address
+                    - generic [ref=e1758]: This email address receives reminders and email notifications from Zoho Payroll.
+                    - generic [ref=e1760]:
+                      - img [ref=e1763]
+                      - generic [ref=e1771]:
+                        - generic [ref=e1772]: abhijithss2255
+                        - generic [ref=e1773]: abhijithss2255@gmail.com
+                  - generic [ref=e1774]:
+                    - generic [ref=e1775]: Emails Are Sent Through
+                    - generic [ref=e1776]: You can configure the email addresses that would be used in the sender address field for emails sent via Zoho Payroll.
+                    - generic [ref=e1777]:
+                      - img [ref=e1780]
+                      - generic [ref=e1782]:
+                        - generic [ref=e1783]: Email address of
+                        - generic [ref=e1784]: message-service@mail.zohopayroll.in
+                - generic [ref=e1787]:
+                  - img [ref=e1789]
+                  - generic [ref=e1791]:
+                    - text: Your primary contact's email address belongs to a public domain. So, emails will be sent from message-service@mail.zohopayroll.in to prevent them from landing in the Spam folder. If you still want to send emails using the public domain,
+                    - link "Change Setting" [ref=e1793] [cursor=pointer]:
+                      - /url: "#"
+                - link "Configure Sender Email Preferences" [ref=e1797] [cursor=pointer]:
+                  - /url: "#/settings/email-preference"
+                  - text: Configure Sender Email Preferences
+                  - img [ref=e1798]
+            - separator [ref=e1800]
+            - generic [ref=e1801]:
+              - button "Save" [ref=e1802] [cursor=pointer]
+              - paragraph [ref=e1804]: "* indicates mandatory fields"
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Settings Organisation Profile page loaded.
+  - text:       Chats  Contacts   

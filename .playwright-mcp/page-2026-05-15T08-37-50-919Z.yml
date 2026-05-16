@@ -1,0 +1,194 @@
+- generic [active]:
+  - iframe
+  - generic [ref=e934]:
+    - generic [ref=e938]: You cannot update salary details without configuring a pay schedule. Navigate to Settings > Pay Schedule to configure it and try again.
+    - button [ref=e1251] [cursor=pointer]:
+      - img [ref=e1252]
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e1312]:
+      - generic [ref=e1314]:
+        - generic [ref=e1315]:
+          - button "All Settings" [ref=e1316] [cursor=pointer]:
+            - img [ref=e1317]
+          - button [ref=e1322] [cursor=pointer]:
+            - img [ref=e1323]
+          - generic [ref=e1325]:
+            - generic [ref=e1326]: All Settings
+            - generic [ref=e1327]: lerno
+        - generic [ref=e1329]:
+          - combobox "Search" [ref=e1333]
+          - img [ref=e1334]
+        - button "Close Settings" [ref=e1338] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e1339]
+      - generic [ref=e1341]:
+        - navigation [ref=e1342]:
+          - generic [ref=e1344]:
+            - group [ref=e1345]:
+              - heading "Organisation Settings" [level=2] [ref=e1346]
+              - generic [ref=e1347]:
+                - region "Organisation" [ref=e1349]:
+                  - generic [ref=e1350]:
+                    - heading "Organisation" [level=3] [ref=e1351] [cursor=pointer]:
+                      - button "Organisation" [ref=e1352]:
+                        - img [ref=e1353]
+                        - generic [ref=e1355]: Organisation
+                    - text:      
+                - generic [ref=e1369]:
+                  - region "Users and Roles" [ref=e1370]:
+                    - generic [ref=e1371]:
+                      - heading "Users and Roles" [level=3] [ref=e1372] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e1373]:
+                          - img [ref=e1374]
+                          - generic [ref=e1376]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e1382]:
+                    - generic [ref=e1383]:
+                      - heading "Taxes" [level=3] [ref=e1384] [cursor=pointer]:
+                        - button "Taxes" [ref=e1385]:
+                          - img [ref=e1386]
+                          - generic [ref=e1388]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e1393]:
+                  - generic [ref=e1394]:
+                    - heading "Setup & Configurations" [level=3] [ref=e1395] [cursor=pointer]:
+                      - button "Setup & Configurations" [expanded] [ref=e1396]:
+                        - img [ref=e1397]
+                        - generic [ref=e1399]: Setup & Configurations
+                    - region "Setup & Configurations" [ref=e1535]:
+                      - generic [ref=e1400]:
+                        - link "Pay Schedule" [ref=e1401] [cursor=pointer]:
+                          - /url: "#/settings/pay-schedules"
+                          - generic [ref=e1402]: Pay Schedule
+                          - text: 
+                        - link "Statutory Components" [ref=e1403] [cursor=pointer]:
+                          - /url: "#/settings/statutory-details/list"
+                          - generic [ref=e1404]: Statutory Components
+                          - text: 
+                        - link "Salary Components" [ref=e1405] [cursor=pointer]:
+                          - /url: "#/settings/salary-components/earnings"
+                          - generic [ref=e1406]: Salary Components
+                          - text: 
+                        - link "Employee Portal" [ref=e1407] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences"
+                          - generic [ref=e1408]: Employee Portal
+                          - text: 
+                        - link "Claims and Declarations" [ref=e1409] [cursor=pointer]:
+                          - /url: "#/settings/preferences/fbp"
+                          - generic [ref=e1410]: Claims and Declarations
+                          - text: 
+                - region "Customisations" [ref=e1412]:
+                  - generic [ref=e1413]:
+                    - heading "Customisations" [level=3] [ref=e1414] [cursor=pointer]:
+                      - button "Customisations" [ref=e1415]:
+                        - img [ref=e1416]
+                        - generic [ref=e1418]: Customisations
+                    - text:     
+                - region "Automations" [ref=e1431]:
+                  - generic [ref=e1432]:
+                    - heading "Automations" [level=3] [ref=e1433] [cursor=pointer]:
+                      - button "Automations" [ref=e1434]:
+                        - img [ref=e1435]
+                        - generic [ref=e1437]: Automations
+                    - text:    
+            - group [ref=e1447]:
+              - heading "Module Settings" [level=2] [ref=e1448]
+              - generic [ref=e1449]:
+                - region "General" [ref=e1451]:
+                  - generic [ref=e1452]:
+                    - heading "General" [level=3] [ref=e1453] [cursor=pointer]:
+                      - button "General" [ref=e1454]:
+                        - img [ref=e1455]
+                        - generic [ref=e1457]: General
+                    - text:     
+                - region "Payments" [ref=e1470]:
+                  - generic [ref=e1471]:
+                    - heading "Payments" [level=3] [ref=e1472] [cursor=pointer]:
+                      - button "Payments" [ref=e1473]:
+                        - img [ref=e1474]
+                        - generic [ref=e1476]: Payments
+                    - text: 
+            - group [ref=e1480]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e1481]
+              - generic [ref=e1482]:
+                - region "Integrations" [ref=e1484]:
+                  - generic [ref=e1485]:
+                    - heading "Integrations" [level=3] [ref=e1486] [cursor=pointer]:
+                      - button "Integrations" [ref=e1487]:
+                        - img [ref=e1488]
+                        - generic [ref=e1490]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e1495]:
+                  - generic [ref=e1496]:
+                    - heading "Developer Data" [level=3] [ref=e1497] [cursor=pointer]:
+                      - button "Developer Data" [ref=e1498]:
+                        - img [ref=e1499]
+                        - generic [ref=e1501]: Developer Data
+                    - text:   
+        - main [ref=e1536]:
+          - heading "Pay Schedule" [level=3] [ref=e1538]
+          - form [ref=e1540]:
+            - generic [ref=e1541]:
+              - heading "Work Week" [level=4] [ref=e1542]
+              - generic [ref=e1543]: Select your organisation’s working days.*
+              - generic [ref=e1544]: These days will be considered when calculating payable days and loss of pay.
+              - generic [ref=e1546]:
+                - paragraph [ref=e1548] [cursor=pointer]: SUN
+                - paragraph [ref=e1550] [cursor=pointer]: MON
+                - paragraph [ref=e1552] [cursor=pointer]: TUE
+                - paragraph [ref=e1554] [cursor=pointer]: WED
+                - paragraph [ref=e1556] [cursor=pointer]: THU
+                - paragraph [ref=e1558] [cursor=pointer]: FRI
+                - paragraph [ref=e1560] [cursor=pointer]: SAT
+              - generic [ref=e1606]: Select at least 4 days.
+            - generic [ref=e1562]:
+              - generic [ref=e1563]:
+                - heading "Salary Calculation Method" [level=4] [ref=e1564]
+                - radiogroup "Select how monthly salary should be calculated.*" [ref=e1565]:
+                  - heading "Select how monthly salary should be calculated.*" [level=5] [ref=e1567]
+                  - generic [ref=e1568]:
+                    - radio "Actual days in a month" [checked] [ref=e1569] [cursor=pointer]
+                    - generic [ref=e1570] [cursor=pointer]: Actual days in a month
+                  - generic [ref=e1571]:
+                    - radio "Based on fixed working days per month" [ref=e1572] [cursor=pointer]
+                    - generic [ref=e1573] [cursor=pointer]:
+                      - text: Based on fixed working days per month
+                      - img [ref=e1575]
+              - generic [ref=e1578]:
+                - heading "Pay Date" [level=4] [ref=e1579]
+                - radiogroup "Select when employees should be paid.*" [ref=e1580]:
+                  - heading "Select when employees should be paid.*" [level=5] [ref=e1582]
+                  - generic [ref=e1583]:
+                    - radio "On the last day of every month" [ref=e1584] [cursor=pointer]
+                    - generic [ref=e1585] [cursor=pointer]: On the last day of every month
+                  - generic [ref=e1586]:
+                    - radio "on day" [ref=e1587] [cursor=pointer]
+                    - generic [ref=e1589] [cursor=pointer]: on day
+                    - generic [ref=e1592]:
+                      - combobox "Select a week day on which you want to pay." [disabled] [ref=e1594]:
+                        - generic:
+                          - generic "1"
+                          - generic:
+                            - generic:
+                              - img
+                      - status [ref=e1595]
+                    - generic [ref=e1596]: of every month
+            - generic [ref=e1598]:
+              - text: "Note:"
+              - generic [ref=e1599]: If the selected pay date falls on a non-working day or holiday, payment will be processed on the previous working day.
+            - separator [ref=e1600]
+            - generic [ref=e1602]:
+              - button "Save" [ref=e1603] [cursor=pointer]
+              - paragraph [ref=e1605]: All fields are mandatory
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Settings Pay Schedule page loaded.
+  - text:       Chats  Contacts   

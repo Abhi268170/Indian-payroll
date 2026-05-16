@@ -1,0 +1,183 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e1275]:
+      - navigation:
+        - generic [ref=e1277]:
+          - img "Zoho Payroll" [ref=e1278]
+          - generic [ref=e1279]: Payroll
+        - generic [ref=e1283]:
+          - button "Advanced Search" [ref=e1284] [cursor=pointer]:
+            - img [ref=e1285]
+          - textbox "Search in Employee" [ref=e1289]
+        - generic [ref=e1291]:
+          - generic [ref=e1294] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e1296] [cursor=pointer]
+          - button "lerno" [ref=e1300] [cursor=pointer]:
+            - generic [ref=e1301]: lerno
+            - img [ref=e1302]
+          - button "Refer and Earn" [ref=e1306] [cursor=pointer]:
+            - img [ref=e1307]
+          - button "Notifications" [ref=e1311] [cursor=pointer]:
+            - generic [ref=e1312]:
+              - generic [ref=e1313]: "4"
+              - img [ref=e1314]
+          - button "Settings" [ref=e1317] [cursor=pointer]:
+            - img [ref=e1318]
+          - button "A" [ref=e1323] [cursor=pointer]:
+            - generic [ref=e1324]: A
+          - img [ref=e1341] [cursor=pointer]
+    - generic [ref=e74]:
+      - complementary [ref=e1344]:
+        - navigation [ref=e1345]:
+          - list [ref=e1347]:
+            - listitem [ref=e1348]:
+              - link "Dashboard" [ref=e1349] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - img [ref=e1528]
+                - generic [ref=e1353]: Dashboard
+            - listitem [ref=e1354]:
+              - link "Employees" [ref=e1355] [cursor=pointer]:
+                - /url: "#/people/employees"
+                - img [ref=e1531]
+                - generic [ref=e1358]: Employees
+            - listitem [ref=e1359]:
+              - link "Pay Runs" [ref=e1360] [cursor=pointer]:
+                - /url: "#/payruns"
+                - img [ref=e1533]
+                - generic [ref=e1364]: Pay Runs
+            - listitem [ref=e1365]:
+              - list [ref=e1366]:
+                - listitem [ref=e1367]:
+                  - button "Approvals" [ref=e1369] [cursor=pointer]:
+                    - heading "Approvals" [level=3] [ref=e1370]:
+                      - button "Approvals" [ref=e1371]:
+                        - img [ref=e1536]
+                        - generic [ref=e1377]: Approvals
+                        - img [ref=e1378]
+            - listitem [ref=e1380]:
+              - list [ref=e1381]:
+                - listitem [ref=e1382]:
+                  - button "Taxes & Forms" [ref=e1384] [cursor=pointer]:
+                    - heading "Taxes & Forms" [level=3] [ref=e1385]:
+                      - button "Taxes & Forms" [ref=e1386]:
+                        - img [ref=e1539]
+                        - generic [ref=e1394]: Taxes & Forms
+                        - img [ref=e1395]
+            - listitem [ref=e1397]:
+              - link "Loans" [ref=e1398] [cursor=pointer]:
+                - /url: "#/loans"
+                - img [ref=e1544]
+                - generic [ref=e1402]: Loans
+            - listitem [ref=e1403]:
+              - link "Giving" [ref=e1404] [cursor=pointer]:
+                - /url: "#/donations"
+                - img [ref=e1547]
+                - generic [ref=e1407]: Giving
+            - listitem [ref=e1408]:
+              - link "Documents" [ref=e1409] [cursor=pointer]:
+                - /url: "#/documents/folder"
+                - img [ref=e1549]
+                - generic [ref=e1412]: Documents
+            - listitem [ref=e1413]:
+              - link "Reports" [ref=e1414] [cursor=pointer]:
+                - /url: "#/reports?selectedGroup=payroll_overview"
+                - img [ref=e1551]
+                - generic [ref=e1418]: Reports
+            - listitem [ref=e1419]:
+              - link "Settings" [ref=e1420] [cursor=pointer]:
+                - /url: "#/settings"
+                - img [ref=e1554]
+                - generic [ref=e1424]: Settings
+          - button "Collapse/Expand" [ref=e1431] [cursor=pointer]:
+            - img [ref=e1557]
+      - main [ref=e1435]:
+        - generic [ref=e1560]:
+          - button "View the reports sidebar" [ref=e1562] [cursor=pointer]:
+            - img [ref=e1563]
+          - generic [ref=e1571]:
+            - generic [ref=e1572]:
+              - link "Payroll Overview" [ref=e1574] [cursor=pointer]:
+                - /url: "#/reports?selectedGroup=payroll_overview"
+              - heading "Payroll Summary From 01/05/2025 To 31/05/2025" [level=3] [ref=e1577]:
+                - strong [ref=e1578]: Payroll Summary
+                - generic [ref=e1580]: From 01/05/2025 To 31/05/2025
+            - generic [ref=e1581]:
+              - button "Export as" [ref=e1583] [cursor=pointer]
+              - button "Show History" [ref=e1584] [cursor=pointer]:
+                - img [ref=e1585]
+              - button "Close this report." [ref=e1589] [cursor=pointer]:
+                - img [ref=e1590]
+          - generic [ref=e1593]:
+            - generic [ref=e1594]:
+              - img [ref=e1595]
+              - text: "Filters :"
+            - generic [ref=e1597]:
+              - generic [ref=e1598] [cursor=pointer]:
+                - generic [ref=e1599]: "Date Range :"
+                - generic [ref=e1600]: Custom
+                - img [ref=e1602]
+              - button "More Filters" [ref=e1604] [cursor=pointer]:
+                - img [ref=e1605]
+                - text: More Filters
+              - button "Run Report" [disabled] [ref=e1607]
+          - generic [ref=e1609]:
+            - generic [ref=e1612]:
+              - generic [ref=e1613]:
+                - img [ref=e1614]
+                - text: "Compare With :"
+              - button "None" [ref=e1617] [cursor=pointer]:
+                - generic [ref=e1618]:
+                  - text: None
+                  - img [ref=e1619]
+            - generic [ref=e1621]:
+              - heading "lerno" [level=4] [ref=e1622]
+              - heading "Payroll Summary" [level=3] [ref=e1623]
+              - generic [ref=e1624]: From 01/05/2025 To 31/05/2025
+            - table [ref=e1626]:
+              - rowgroup [ref=e1627]:
+                - row "Pay Components Amount (₹)" [ref=e1628]:
+                  - columnheader "Pay Components" [ref=e1629]
+                  - columnheader "Amount (₹)" [ref=e1630]
+              - rowgroup [ref=e1631]:
+                - row "Earnings" [ref=e1632]:
+                  - cell "Earnings" [ref=e1633]
+                - row "No data to display" [ref=e1634]:
+                  - cell "No data to display" [ref=e1635]
+                - row "Benefits" [ref=e1636]:
+                  - cell "Benefits" [ref=e1637]
+                - row "No statutories were included during this period" [ref=e1638]:
+                  - cell "No statutories were included during this period" [ref=e1639]
+                - row "Donations" [ref=e1640]:
+                  - cell "Donations" [ref=e1641]
+                - row "No data to display" [ref=e1642]:
+                  - cell "No data to display" [ref=e1643]
+                - row "Deductions" [ref=e1644]:
+                  - cell "Deductions" [ref=e1645]
+                - row "No deductions were applied in this period" [ref=e1646]:
+                  - cell "No deductions were applied in this period" [ref=e1647]
+                - row "Taxes" [ref=e1648]:
+                  - cell "Taxes" [ref=e1649]
+                - row "No data to display" [ref=e1650]:
+                  - cell "No data to display" [ref=e1651]
+                - row "Reimbursements" [ref=e1652]:
+                  - cell "Reimbursements" [ref=e1653]
+                - row "No data to display" [ref=e1654]:
+                  - cell "No data to display" [ref=e1655]
+              - rowgroup [ref=e1656]:
+                - row "Net Pay" [ref=e1657]:
+                  - cell "Net Pay" [ref=e1658]
+                  - cell [ref=e1659]
+    - dialog [ref=e1660]
+  - generic [ref=e271] [cursor=pointer]:
+    - generic [ref=e272]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e273]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e275]: Don't show again
+  - status [ref=e276]: Reports page loaded.
+  - text:       Chats  Contacts   

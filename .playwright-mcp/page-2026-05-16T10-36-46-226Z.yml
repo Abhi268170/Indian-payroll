@@ -1,0 +1,241 @@
+- generic:
+  - iframe
+  - generic [ref=e935]:
+    - img [ref=e937]
+    - generic [ref=e939]: EPF details updated successfully.
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e533]:
+      - generic [ref=e535]:
+        - generic [ref=e536]:
+          - button "All Settings" [ref=e537] [cursor=pointer]:
+            - img [ref=e538]
+          - button [ref=e543] [cursor=pointer]:
+            - img [ref=e544]
+          - generic [ref=e546]:
+            - generic [ref=e547]: All Settings
+            - generic [ref=e548]: lerno
+        - generic [ref=e550]:
+          - combobox "Search" [ref=e554]
+          - img [ref=e555]
+        - button "Close Settings" [ref=e559] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e560]
+      - generic [ref=e562]:
+        - navigation [ref=e563]:
+          - generic [ref=e565]:
+            - group [ref=e566]:
+              - heading "Organisation Settings" [level=2] [ref=e567]
+              - generic [ref=e568]:
+                - region "Organisation" [ref=e570]:
+                  - generic [ref=e571]:
+                    - heading "Organisation" [level=3] [ref=e572] [cursor=pointer]:
+                      - button "Organisation" [ref=e573]:
+                        - img [ref=e574]
+                        - generic [ref=e576]: Organisation
+                    - text:      
+                - generic [ref=e590]:
+                  - region "Users and Roles" [ref=e591]:
+                    - generic [ref=e592]:
+                      - heading "Users and Roles" [level=3] [ref=e593] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e594]:
+                          - img [ref=e595]
+                          - generic [ref=e597]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e603]:
+                    - generic [ref=e604]:
+                      - heading "Taxes" [level=3] [ref=e605] [cursor=pointer]:
+                        - button "Taxes" [ref=e606]:
+                          - img [ref=e607]
+                          - generic [ref=e609]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e614]:
+                  - generic [ref=e615]:
+                    - heading "Setup & Configurations" [level=3] [ref=e616] [cursor=pointer]:
+                      - button "Setup & Configurations" [expanded] [ref=e617]:
+                        - img [ref=e618]
+                        - generic [ref=e620]: Setup & Configurations
+                    - region "Setup & Configurations" [ref=e774]:
+                      - generic [ref=e621]:
+                        - link "Pay Schedule" [ref=e622] [cursor=pointer]:
+                          - /url: "#/settings/pay-schedules"
+                          - generic [ref=e623]: Pay Schedule
+                          - text: 
+                        - link "Statutory Components" [ref=e624] [cursor=pointer]:
+                          - /url: "#/settings/statutory-details/list"
+                          - generic [ref=e625]: Statutory Components
+                          - text: 
+                        - link "Salary Components" [ref=e626] [cursor=pointer]:
+                          - /url: "#/settings/salary-components/earnings"
+                          - generic [ref=e627]: Salary Components
+                          - text: 
+                        - link "Employee Portal" [ref=e628] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences"
+                          - generic [ref=e629]: Employee Portal
+                          - text: 
+                        - link "Claims and Declarations" [ref=e630] [cursor=pointer]:
+                          - /url: "#/settings/preferences/fbp"
+                          - generic [ref=e631]: Claims and Declarations
+                          - text: 
+                - region "Customisations" [ref=e633]:
+                  - generic [ref=e634]:
+                    - heading "Customisations" [level=3] [ref=e635] [cursor=pointer]:
+                      - button "Customisations" [ref=e636]:
+                        - img [ref=e637]
+                        - generic [ref=e639]: Customisations
+                    - text:     
+                - region "Automations" [ref=e652]:
+                  - generic [ref=e653]:
+                    - heading "Automations" [level=3] [ref=e654] [cursor=pointer]:
+                      - button "Automations" [ref=e655]:
+                        - img [ref=e656]
+                        - generic [ref=e658]: Automations
+                    - text:    
+            - group [ref=e668]:
+              - heading "Module Settings" [level=2] [ref=e669]
+              - generic [ref=e670]:
+                - region "General" [ref=e672]:
+                  - generic [ref=e673]:
+                    - heading "General" [level=3] [ref=e674] [cursor=pointer]:
+                      - button "General" [ref=e675]:
+                        - img [ref=e676]
+                        - generic [ref=e678]: General
+                    - text:     
+                - region "Payments" [ref=e691]:
+                  - generic [ref=e692]:
+                    - heading "Payments" [level=3] [ref=e693] [cursor=pointer]:
+                      - button "Payments" [ref=e694]:
+                        - img [ref=e695]
+                        - generic [ref=e697]: Payments
+                    - text: 
+            - group [ref=e701]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e702]
+              - generic [ref=e703]:
+                - region "Integrations" [ref=e705]:
+                  - generic [ref=e706]:
+                    - heading "Integrations" [level=3] [ref=e707] [cursor=pointer]:
+                      - button "Integrations" [ref=e708]:
+                        - img [ref=e709]
+                        - generic [ref=e711]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e716]:
+                  - generic [ref=e717]:
+                    - heading "Developer Data" [level=3] [ref=e718] [cursor=pointer]:
+                      - button "Developer Data" [ref=e719]:
+                        - img [ref=e720]
+                        - generic [ref=e722]: Developer Data
+                    - text:   
+        - main [ref=e940]:
+          - generic [ref=e941]:
+            - heading "Statutory Components" [level=3] [ref=e942]
+            - button "Instant Helper" [ref=e943] [cursor=pointer]:
+              - img [ref=e944]
+            - navigation [ref=e948]:
+              - list [ref=e949]:
+                - listitem [ref=e950]:
+                  - link "EPF" [ref=e951] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list"
+                - listitem [ref=e952]:
+                  - link "ESI" [ref=e953] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/esi"
+                - listitem [ref=e954]:
+                  - link "Professional Tax" [ref=e955] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/pt"
+                - listitem [ref=e956]:
+                  - link "Labour Welfare Fund" [ref=e957] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/lwf"
+                - listitem [ref=e958]:
+                  - link "Statutory Bonus" [ref=e959] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/statutory-bonus"
+          - generic [ref=e960]:
+            - generic [ref=e961]:
+              - heading "Employees' Provident Fund Edit Employees' Provident Fund" [level=5] [ref=e962]:
+                - text: Employees' Provident Fund
+                - link "Edit Employees' Provident Fund" [ref=e963] [cursor=pointer]:
+                  - /url: "#/settings/statutory-details/edit-epf-details"
+                  - img [ref=e964]
+              - generic [ref=e966]:
+                - generic [ref=e967]:
+                  - generic [ref=e968]: EPF Number
+                  - generic [ref=e969]: KA/KAR/1234567/001
+                - generic [ref=e970]:
+                  - generic [ref=e971]: Deduction Cycle
+                  - generic [ref=e972]: Monthly
+                - generic [ref=e973]:
+                  - generic [ref=e974]: Employee Contribution Rate
+                  - generic [ref=e975]: 12% of Actual PF Wage
+                - generic [ref=e976]:
+                  - generic [ref=e977]: Employer Contribution Rate
+                  - generic [ref=e978]:
+                    - text: 12% of Actual PF Wage
+                    - button "(View Splitup)" [ref=e979] [cursor=pointer]
+                - generic [ref=e980]:
+                  - generic [ref=e981]:
+                    - text: Contribution Preferences
+                    - generic [ref=e982]: (Included in Salary Structure)
+                  - generic [ref=e983]:
+                    - generic [ref=e984]:
+                      - img [ref=e985]: 
+                      - text: Employer's PF contribution
+                    - generic [ref=e988]:
+                      - img [ref=e989]
+                      - text: EDLI contribution
+                    - generic [ref=e991]:
+                      - img [ref=e992]
+                      - text: Admin charges
+                - generic [ref=e994]:
+                  - generic [ref=e995]: Allow Employee level Override
+                  - generic [ref=e996]: "No"
+                - generic [ref=e997]:
+                  - generic [ref=e998]: Pro-rate Restricted PF Wage
+                  - generic [ref=e999]: "No"
+                - generic [ref=e1000]:
+                  - generic [ref=e1001]: Consider applicable salary components based on LOP
+                  - generic [ref=e1002]: Yes (when PF wage is less than ₹15,000)
+                - generic [ref=e1003]:
+                  - generic [ref=e1004]: Eligible for ABRY Scheme
+                  - generic [ref=e1005]: "No"
+              - button "Disable EPF" [ref=e1006] [cursor=pointer]:
+                - img [ref=e1007]
+                - text: Disable EPF
+            - generic [ref=e1013]:
+              - paragraph [ref=e1014]: Sample EPF Calculation
+              - paragraph [ref=e1015]: "Let's assume the PF wage is ₹ 20,000. The breakup of contribution will be:"
+              - generic [ref=e1016]:
+                - paragraph [ref=e1017]: Employee's Contribution
+                - table [ref=e1018]:
+                  - rowgroup [ref=e1019]:
+                    - row "EPF (12% of 20000) ₹ 2400" [ref=e1020]:
+                      - cell "EPF (12% of 20000)" [ref=e1021]:
+                        - text: EPF
+                        - generic [ref=e1022]: (12% of 20000)
+                      - cell "₹ 2400" [ref=e1023]
+                - paragraph [ref=e1024]: Employer's Contribution
+                - table [ref=e1025]:
+                  - rowgroup [ref=e1026]:
+                    - row "EPS (8.33% of 20000 (Max of ₹ 15,000)) ₹ 1250" [ref=e1027]:
+                      - cell "EPS (8.33% of 20000 (Max of ₹ 15,000))" [ref=e1028]:
+                        - text: EPS
+                        - generic [ref=e1029]: (8.33% of 20000 (Max of ₹ 15,000))
+                      - cell "₹ 1250" [ref=e1030]
+                    - row "EPF (12% of 20000 - EPS) ₹ 1150" [ref=e1031]:
+                      - cell "EPF (12% of 20000 - EPS)" [ref=e1032]:
+                        - text: EPF
+                        - generic [ref=e1033]: (12% of 20000 - EPS)
+                      - cell "₹ 1150" [ref=e1034]
+                  - rowgroup [ref=e1035]:
+                    - row "Total ₹ 2400" [ref=e1036]:
+                      - cell "Total" [ref=e1037]
+                      - cell "₹ 2400" [ref=e1038]
+              - generic [ref=e1039]:
+                - img [ref=e1041]
+                - generic [ref=e1043]:
+                  - text: Do you want to preview EPF calculation for multiple cases, based on the preferences you have configured ?
+                  - button "Preview EPF Calculation" [ref=e1045] [cursor=pointer]:
+                    - img [ref=e1046]
+                    - text: Preview EPF Calculation
+  - status [ref=e531]: Settings EPF page loaded.
+  - text:       Chats  Contacts   

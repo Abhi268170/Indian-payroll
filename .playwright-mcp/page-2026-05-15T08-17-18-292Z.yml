@@ -1,0 +1,153 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e7569]:
+      - generic [ref=e7571]:
+        - generic [ref=e7572]:
+          - button "All Settings" [ref=e7573] [cursor=pointer]:
+            - img [ref=e7574]
+          - button [ref=e7579] [cursor=pointer]:
+            - img [ref=e7580]
+          - generic [ref=e7582]:
+            - generic [ref=e7583]: All Settings
+            - generic [ref=e7584]: lerno
+        - generic [ref=e7586]:
+          - combobox "Search" [ref=e7590]
+          - img [ref=e7591]
+        - button "Close Settings" [ref=e7595] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e7596]
+      - generic [ref=e7598]:
+        - navigation [ref=e7599]:
+          - generic [ref=e7601]:
+            - group [ref=e7602]:
+              - heading "Organisation Settings" [level=2] [ref=e7603]
+              - generic [ref=e7604]:
+                - region "Organisation" [ref=e7606]:
+                  - generic [ref=e7607]:
+                    - heading "Organisation" [level=3] [ref=e7608] [cursor=pointer]:
+                      - button "Organisation" [ref=e7609]:
+                        - img [ref=e7610]
+                        - generic [ref=e7612]: Organisation
+                    - text:      
+                - generic [ref=e7626]:
+                  - region "Users and Roles" [ref=e7627]:
+                    - generic [ref=e7628]:
+                      - heading "Users and Roles" [level=3] [ref=e7629] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e7630]:
+                          - img [ref=e7631]
+                          - generic [ref=e7633]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e7639]:
+                    - generic [ref=e7640]:
+                      - heading "Taxes" [level=3] [ref=e7641] [cursor=pointer]:
+                        - button "Taxes" [ref=e7642]:
+                          - img [ref=e7643]
+                          - generic [ref=e7645]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e7650]:
+                  - generic [ref=e7651]:
+                    - heading "Setup & Configurations" [level=3] [ref=e7652] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e7653]:
+                        - img [ref=e7654]
+                        - generic [ref=e7656]: Setup & Configurations
+                    - text:     
+                - region "Customisations" [ref=e7669]:
+                  - generic [ref=e7670]:
+                    - heading "Customisations" [level=3] [ref=e7671] [cursor=pointer]:
+                      - button "Customisations" [ref=e7672]:
+                        - img [ref=e8098]
+                        - generic [ref=e7675]: Customisations
+                    - text:     
+                - region "Automations" [ref=e7688]:
+                  - generic [ref=e7689]:
+                    - heading "Automations" [level=3] [ref=e7690] [cursor=pointer]:
+                      - button "Automations" [ref=e7691]:
+                        - img [ref=e8399]
+                        - generic [ref=e7694]: Automations
+                    - region "Automations" [ref=e8128]:
+                      - generic [ref=e7695]:
+                        - link "Workflow Rules" [ref=e7696] [cursor=pointer]:
+                          - /url: "#/settings/automation/workflows"
+                          - generic [ref=e7697]: Workflow Rules
+                          - text: 
+                        - link "Actions" [ref=e7698] [cursor=pointer]:
+                          - /url: "#/settings/automation/actions/alerts"
+                          - generic [ref=e7699]: Actions
+                          - text: 
+                        - link "Schedules" [ref=e7700] [cursor=pointer]:
+                          - /url: "#/settings/automation/schedules"
+                          - generic [ref=e7701]: Schedules
+                          - text: 
+                        - link "Workflow Logs" [ref=e7702] [cursor=pointer]:
+                          - /url: "#/settings/automation/logs/alerts"
+                          - generic [ref=e7703]: Workflow Logs
+                          - text: 
+            - group [ref=e7704]:
+              - heading "Module Settings" [level=2] [ref=e7705]
+              - generic [ref=e7706]:
+                - region "General" [ref=e7708]:
+                  - generic [ref=e7709]:
+                    - heading "General" [level=3] [ref=e7710] [cursor=pointer]:
+                      - button "General" [expanded] [ref=e7711]:
+                        - img [ref=e8401]
+                        - generic [ref=e7714]: General
+                    - region "General":
+                      - generic [ref=e7715]:
+                        - link "Employees & Contractors" [ref=e7716] [cursor=pointer]:
+                          - /url: "#/settings/employee/contractor"
+                          - generic [ref=e7717]: Employees & Contractors
+                          - text: 
+                        - link "Pay Runs" [ref=e7718] [cursor=pointer]:
+                          - /url: "#/settings/payrun/custom-approval/list"
+                          - generic [ref=e7719]: Pay Runs
+                          - text: 
+                        - link "Salary Revisions" [ref=e7720] [cursor=pointer]:
+                          - /url: "#/settings/salary-revision/custom-approval/list"
+                          - generic [ref=e7721]: Salary Revisions
+                          - text: 
+                        - link "Leave & Attendance" [ref=e7722] [cursor=pointer]:
+                          - /url: "#/settings/holiday-leave/enable-module"
+                          - generic [ref=e7723]: Leave & Attendance
+                          - text: 
+                        - link "Loans" [ref=e7724] [cursor=pointer]:
+                          - /url: "#/settings/loan/custom-field/list"
+                          - generic [ref=e7725]: Loans
+                          - text: 
+                - region "Payments" [ref=e7727]:
+                  - generic [ref=e7728]:
+                    - heading "Payments" [level=3] [ref=e7729] [cursor=pointer]:
+                      - button "Payments" [ref=e7730]:
+                        - img [ref=e7731]
+                        - generic [ref=e7733]: Payments
+                    - text: 
+            - group [ref=e7737]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e7738]
+              - generic [ref=e7739]:
+                - region "Integrations" [ref=e7741]:
+                  - generic [ref=e7742]:
+                    - heading "Integrations" [level=3] [ref=e7743] [cursor=pointer]:
+                      - button "Integrations" [ref=e7744]:
+                        - img [ref=e7745]
+                        - generic [ref=e7747]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e7752]:
+                  - generic [ref=e7753]:
+                    - heading "Developer Data" [level=3] [ref=e7754] [cursor=pointer]:
+                      - button "Developer Data" [ref=e7755]:
+                        - img [ref=e7756]
+                        - generic [ref=e7758]: Developer Data
+                    - text:   
+        - main [ref=e8403]
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Settings Automations Alerts History page loaded.
+  - text:       Chats  Contacts   

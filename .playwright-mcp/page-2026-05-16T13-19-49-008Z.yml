@@ -1,0 +1,288 @@
+- generic:
+  - iframe
+  - generic [ref=e329]:
+    - generic [ref=e333]: Employee not found.
+    - button [ref=e884] [cursor=pointer]:
+      - img [ref=e885]
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e335]:
+      - navigation:
+        - generic [ref=e337]:
+          - img "Zoho Payroll" [ref=e338]
+          - generic [ref=e339]: Payroll
+        - generic [ref=e343]:
+          - button "Advanced Search" [ref=e344] [cursor=pointer]:
+            - img [ref=e345]
+          - textbox "Search in Employee" [ref=e349]
+        - generic [ref=e351]:
+          - generic [ref=e354] [cursor=pointer]: Your trial expires in 13 day(s).
+          - button "Upgrade" [ref=e356] [cursor=pointer]
+          - button "lerno" [ref=e360] [cursor=pointer]:
+            - generic [ref=e361]: lerno
+            - img [ref=e362]
+          - button "Refer and Earn" [ref=e366] [cursor=pointer]:
+            - img [ref=e367]
+          - button "Notifications" [ref=e371] [cursor=pointer]:
+            - generic [ref=e372]:
+              - generic [ref=e514]: "5"
+              - img [ref=e373]
+          - button "Settings" [ref=e376] [cursor=pointer]:
+            - img [ref=e377]
+          - button "A" [ref=e515] [cursor=pointer]:
+            - generic [ref=e383]: A
+          - img [ref=e401] [cursor=pointer]
+    - generic [ref=e5]:
+      - complementary [ref=e404]:
+        - navigation [ref=e405]:
+          - generic [ref=e406]:
+            - list [ref=e407]:
+              - listitem [ref=e408]:
+                - link "Dashboard" [ref=e409] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e410]
+                  - generic [ref=e413]: Dashboard
+              - listitem [ref=e414]:
+                - link "Employees" [ref=e415] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e416]
+                  - generic [ref=e418]: Employees
+              - listitem [ref=e419]:
+                - link "Pay Runs" [ref=e420] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e421]
+                  - generic [ref=e424]: Pay Runs
+              - listitem [ref=e425]:
+                - list [ref=e426]:
+                  - listitem [ref=e427]:
+                    - button "Approvals" [ref=e429] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e430]:
+                        - button "Approvals" [ref=e431]:
+                          - img [ref=e432]
+                          - img [ref=e434]
+                          - generic [ref=e437]: Approvals
+                          - img [ref=e438]
+              - listitem [ref=e446]:
+                - list [ref=e447]:
+                  - listitem [ref=e448]:
+                    - button "Taxes & Forms" [ref=e450] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e451]:
+                        - button "Taxes & Forms" [ref=e452]:
+                          - img [ref=e667]
+                          - img [ref=e455]
+                          - generic [ref=e460]: Taxes & Forms
+                          - img [ref=e461]
+              - listitem [ref=e471]:
+                - link "Loans" [ref=e472] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e473]
+                  - generic [ref=e476]: Loans
+              - listitem [ref=e477]:
+                - link "Giving" [ref=e478] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e479]
+                  - generic [ref=e481]: Giving
+              - listitem
+              - listitem [ref=e482]:
+                - link "Documents" [ref=e483] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e484]
+                  - generic [ref=e486]: Documents
+              - listitem [ref=e487]:
+                - link "Reports" [ref=e488] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e489]
+                  - generic [ref=e492]: Reports
+              - listitem [ref=e493]:
+                - link "Settings" [ref=e494] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e495]
+                  - generic [ref=e498]: Settings
+            - link "Contact Support" [ref=e502] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e503]
+          - button "Collapse/Expand" [ref=e505] [cursor=pointer]:
+            - img [ref=e506]
+      - main [ref=e509]:
+        - generic [ref=e1471]:
+          - generic [ref=e1472]:
+            - generic [ref=e1473]:
+              - generic [ref=e1474]:
+                - generic [ref=e1475]: V
+                - generic [ref=e1476]:
+                  - generic [ref=e1477]:
+                    - generic [ref=e1478]: EMP003 -
+                    - generic [ref=e1479]: Vikram Nair
+                    - generic [ref=e1480]: Active
+                  - generic [ref=e1481]: Engineering Manager
+              - generic [ref=e1482]:
+                - button "Add" [ref=e1484] [cursor=pointer]
+                - generic [ref=e1485]:
+                  - button "Show dropdown menu" [expanded] [ref=e1486] [cursor=pointer]:
+                    - img [ref=e1487]
+                  - listbox [ref=e1489]:
+                    - button "Add / Update Vehicle Details" [active] [ref=e1490] [cursor=pointer]
+                    - separator [ref=e1491]
+                    - button "Delete Employee" [ref=e1493] [cursor=pointer]
+                - button "Close" [ref=e1494] [cursor=pointer]:
+                  - img [ref=e1495]
+            - navigation [ref=e1498]:
+              - list [ref=e1499]:
+                - listitem [ref=e1500]:
+                  - link "Overview" [ref=e1501] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000034014"
+                - listitem [ref=e1502]:
+                  - link "Salary Details" [ref=e1503] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000034014/salary-details"
+                - listitem [ref=e1504]:
+                  - link "Investments" [ref=e1505] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000034014/investments-and-proofs"
+                - listitem [ref=e1506]:
+                  - link "Payslips & Forms" [ref=e1507] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000034014/payslips-and-forms"
+                - listitem [ref=e1508]:
+                  - link "Loans" [ref=e1509] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000034014/loans"
+          - generic [ref=e1511]:
+            - img [ref=e1513]
+            - generic [ref=e1515]:
+              - text: This employee's profile is incomplete.
+              - link "Complete now" [ref=e1516] [cursor=pointer]:
+                - /url: "#/people/employees/3848927000000034014/edit/personal-details"
+          - generic [ref=e1517]:
+            - generic [ref=e1518]:
+              - heading "Basic Information Edit" [level=4] [ref=e1519]:
+                - text: Basic Information
+                - button "Edit" [ref=e1520] [cursor=pointer]:
+                  - img [ref=e1521]
+              - generic [ref=e1523]:
+                - generic [ref=e1524]:
+                  - generic [ref=e1526]:
+                    - generic [ref=e1527]: Name
+                    - generic [ref=e1528]: Vikram Nair
+                  - generic [ref=e1530]:
+                    - generic [ref=e1531]: Email Address
+                    - generic [ref=e1532]: vikram.nair@lerno.com
+                  - generic [ref=e1534]:
+                    - generic [ref=e1535]: Mobile Number
+                    - generic [ref=e1536]: "9876543212"
+                  - generic [ref=e1538]:
+                    - generic [ref=e1539]: Date of Joining
+                    - generic [ref=e1540]: 01/01/2025
+                  - generic [ref=e1542]:
+                    - generic [ref=e1543]: Gender
+                    - generic [ref=e1544]: Male
+                - generic [ref=e1545]:
+                  - generic [ref=e1547]:
+                    - generic [ref=e1548]: Work Location
+                    - generic [ref=e1549]: Head Office
+                  - generic [ref=e1551]:
+                    - generic [ref=e1552]: Designation
+                    - generic [ref=e1553]: Engineering Manager
+                  - generic [ref=e1555]:
+                    - generic [ref=e1556]: Departments
+                    - generic [ref=e1557]: Engineering
+                  - generic [ref=e1558]:
+                    - generic [ref=e1559]: Portal Access
+                    - generic [ref=e1561]:
+                      - generic [ref=e1562]:
+                        - img [ref=e1563]
+                        - text: Disabled
+                      - button "(Enable)" [ref=e1565] [cursor=pointer]
+            - generic [ref=e1566]:
+              - heading "Statutory Information Edit" [level=4] [ref=e1567]:
+                - text: Statutory Information
+                - link "Edit" [ref=e1568] [cursor=pointer]:
+                  - /url: "#/people/employees/3848927000000034014/edit-statutory-details"
+                  - button "Edit" [ref=e1569]:
+                    - img [ref=e1570]
+              - generic [ref=e1572]:
+                - generic [ref=e1573]:
+                  - generic [ref=e1574]:
+                    - generic [ref=e1575]: EPF
+                    - generic [ref=e1576]:
+                      - generic [ref=e1577]:
+                        - img [ref=e1578]
+                        - text: Disabled
+                      - button "(Enable)" [ref=e1580] [cursor=pointer]
+                  - generic [ref=e1581]:
+                    - generic [ref=e1582]: ESI
+                    - generic [ref=e1583]:
+                      - generic [ref=e1584]:
+                        - img [ref=e1585]
+                        - text: Disabled
+                      - button "(Enable)" [ref=e1587] [cursor=pointer]
+                - generic [ref=e1588]:
+                  - generic [ref=e1589]:
+                    - generic [ref=e1590]: Professional Tax
+                    - generic [ref=e1591]:
+                      - generic [ref=e1592]:
+                        - img [ref=e1593]
+                        - text: Enabled
+                      - button "(Disable)" [ref=e1596] [cursor=pointer]
+                  - generic [ref=e1597]:
+                    - generic [ref=e1598]: Labour Welfare Fund
+                    - generic [ref=e1599]:
+                      - generic [ref=e1600]:
+                        - img [ref=e1601]
+                        - text: Disabled
+                      - button "(Enable)" [ref=e1603] [cursor=pointer]
+            - generic [ref=e1604]:
+              - heading "Personal Information" [level=4] [ref=e1605]
+              - generic [ref=e1606]:
+                - generic [ref=e1607]:
+                  - generic [ref=e1609]:
+                    - generic [ref=e1610]: Date of Birth
+                    - generic [ref=e1611]: "-"
+                  - generic [ref=e1613]:
+                    - generic [ref=e1614]: Father's Name
+                    - generic [ref=e1615]: "-"
+                  - generic [ref=e1617]:
+                    - generic [ref=e1618]: PAN
+                    - generic [ref=e1619]: "-"
+                - generic [ref=e1620]:
+                  - generic [ref=e1622]:
+                    - generic [ref=e1623]: Email Address
+                    - generic [ref=e1624]: "-"
+                  - generic [ref=e1625]:
+                    - generic [ref=e1626]: Residential Address
+                    - generic [ref=e1627]: "-"
+                  - generic [ref=e1629]:
+                    - generic [ref=e1630]: Differently Abled Type
+                    - generic [ref=e1631]: None
+            - generic [ref=e1632]:
+              - heading "Payment Information Edit" [level=4] [ref=e1633]:
+                - text: Payment Information
+                - button "Edit" [ref=e1634] [cursor=pointer]:
+                  - button "Edit" [ref=e1635]:
+                    - img [ref=e1636]
+              - generic [ref=e1638]:
+                - generic [ref=e1639]:
+                  - generic [ref=e1641]:
+                    - generic [ref=e1642]: Payment Mode
+                    - generic [ref=e1643]: Manual Bank Transfer
+                  - generic [ref=e1644]:
+                    - generic [ref=e1645]: Account Number
+                    - generic [ref=e1646]:
+                      - generic [ref=e1647]: XXXX1234
+                      - button "Show A/C No" [ref=e1649] [cursor=pointer]
+                  - generic [ref=e1651]:
+                    - generic [ref=e1652]: Account Holder Name
+                    - generic [ref=e1653]: Vikram Nair
+                - generic [ref=e1654]:
+                  - generic [ref=e1656]:
+                    - generic [ref=e1657]: Bank Name
+                    - generic [ref=e1658]: ICICI Bank
+                  - generic [ref=e1660]:
+                    - generic [ref=e1661]: IFSC
+                    - generic [ref=e1662]: ICIC0001234
+                  - generic [ref=e1664]:
+                    - generic [ref=e1665]: Account Type
+                    - generic [ref=e1666]: Savings
+    - dialog [ref=e1667]
+  - status [ref=e292]: Employees Overview page loaded.
+  - text:       Chats  Contacts   

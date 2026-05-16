@@ -1,0 +1,200 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e7]: IP
+        - generic [ref=e8]: Indian Payroll
+      - navigation [ref=e9]:
+        - link "Settings" [ref=e10] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e11]
+          - text: Settings
+      - generic [ref=e14]:
+        - generic [ref=e15]:
+          - generic [ref=e17]: DE
+          - paragraph [ref=e18]: demoAdmin@yopmail.com
+        - button "Sign out" [ref=e19]:
+          - img [ref=e20]
+          - text: Sign out
+    - generic [ref=e23]:
+      - banner [ref=e24]:
+        - generic [ref=e25]:
+          - generic [ref=e26]: demo
+          - generic [ref=e27]: DE
+      - main [ref=e28]:
+        - generic [ref=e29]:
+          - generic [ref=e30]:
+            - generic [ref=e31]:
+              - generic [ref=e33]: IP
+              - generic [ref=e34]: Settings
+            - button "Close Settings" [ref=e35]:
+              - img [ref=e36]
+              - text: Close Settings
+          - generic [ref=e39]:
+            - navigation [ref=e40]:
+              - generic [ref=e41]:
+                - button "Org Structure" [ref=e42]:
+                  - generic [ref=e43]: Org Structure
+                  - img [ref=e44]
+                - list [ref=e46]:
+                  - listitem [ref=e47]:
+                    - link "Work Locations" [ref=e48] [cursor=pointer]:
+                      - /url: /settings/work-locations
+                  - listitem [ref=e49]:
+                    - link "Departments" [ref=e50] [cursor=pointer]:
+                      - /url: /settings/departments
+                  - listitem [ref=e51]:
+                    - link "Designations" [ref=e52] [cursor=pointer]:
+                      - /url: /settings/designations
+                  - listitem [ref=e53]:
+                    - link "Cost Centres" [ref=e54] [cursor=pointer]:
+                      - /url: /settings/cost-centres
+                  - listitem [ref=e55]:
+                    - link "Business Units" [ref=e56] [cursor=pointer]:
+                      - /url: /settings/business-units
+              - generic [ref=e57]:
+                - button "Setup & Configuration" [ref=e58]:
+                  - generic [ref=e59]: Setup & Configuration
+                  - img [ref=e60]
+                - list [ref=e62]:
+                  - listitem [ref=e63]:
+                    - link "Pay Schedule" [ref=e64] [cursor=pointer]:
+                      - /url: /settings/pay-schedule
+                  - listitem [ref=e65]:
+                    - link "Salary Components" [ref=e66] [cursor=pointer]:
+                      - /url: /settings/salary-components
+                  - listitem [ref=e67]:
+                    - link "Salary Structures" [ref=e68] [cursor=pointer]:
+                      - /url: /settings/salary-structures
+                  - listitem [ref=e69]:
+                    - link "Statutory Components" [ref=e70] [cursor=pointer]:
+                      - /url: /settings/statutory
+              - generic [ref=e71]:
+                - button "Taxes" [ref=e72]:
+                  - generic [ref=e73]: Taxes
+                  - img [ref=e74]
+                - list [ref=e76]:
+                  - listitem [ref=e77]:
+                    - link "Tax Details" [ref=e78] [cursor=pointer]:
+                      - /url: /settings/tax-details
+            - generic [ref=e80]:
+              - heading "Organisation Profile" [level=1] [ref=e81]
+              - generic [ref=e82]:
+                - heading "Company Logo" [level=2] [ref=e83]
+                - generic [ref=e84]:
+                  - img [ref=e176]
+                  - generic [ref=e90]:
+                    - paragraph [ref=e91]: PNG or JPEG, max 2 MB
+                    - button "Upload Logo" [ref=e180]:
+                      - img [ref=e158]
+                      - text: Upload Logo
+              - generic [ref=e97]:
+                - generic [ref=e98]:
+                  - heading "Basic Details" [level=2] [ref=e99]
+                  - generic [ref=e100]:
+                    - generic [ref=e101]:
+                      - generic [ref=e102]: Company Name*
+                      - textbox "Company Name*" [ref=e104]: Acme Pvt Ltd
+                    - generic [ref=e105]:
+                      - generic [ref=e106]: Legal Name
+                      - textbox "Legal Name" [ref=e108]: Acme Private Limited
+                      - paragraph [ref=e109]: If different from company name
+                    - generic [ref=e110]:
+                      - generic [ref=e111]: Company PAN
+                      - textbox "Company PAN" [ref=e113]:
+                        - /placeholder: AAAAA9999A
+                        - text: AABCA1234Z
+                    - generic [ref=e114]:
+                      - generic [ref=e115]: GSTIN
+                      - textbox "GSTIN" [ref=e117]:
+                        - /placeholder: 22AAAAA0000A1Z5
+                        - text: 29AABCA1234Z1Z5
+                    - generic [ref=e118]:
+                      - generic [ref=e119]: Website
+                      - textbox "Website" [ref=e121]:
+                        - /placeholder: https://example.com
+                        - text: https://acme.example.com
+                    - generic [ref=e122]:
+                      - generic [ref=e123]: Industry
+                      - combobox "Industry" [ref=e124]:
+                        - option "Select industry"
+                        - option "Information Technology" [selected]
+                        - option "Manufacturing"
+                        - option "Healthcare"
+                        - option "Finance & Banking"
+                        - option "Retail & E-Commerce"
+                        - option "Education"
+                        - option "Construction & Real Estate"
+                        - option "Logistics & Transportation"
+                        - option "Hospitality & Tourism"
+                        - option "Media & Entertainment"
+                        - option "Consulting & Professional Services"
+                        - option "Agriculture"
+                        - option "Telecommunications"
+                        - option "Other"
+                    - generic [ref=e125]:
+                      - generic [ref=e126]: Date of Incorporation
+                      - textbox "Date of Incorporation" [ref=e128]: 2010-06-15
+                - generic [ref=e129]:
+                  - heading "Registered Address" [level=2] [ref=e130]
+                  - generic [ref=e131]:
+                    - generic [ref=e133]:
+                      - generic [ref=e134]: Address Line 1
+                      - textbox "Address Line 1" [ref=e136]: 123 MG Road
+                    - generic [ref=e138]:
+                      - generic [ref=e139]: Address Line 2
+                      - textbox "Address Line 2" [ref=e141]: Koramangala
+                    - generic [ref=e142]:
+                      - generic [ref=e143]: City
+                      - textbox "City" [ref=e145]: Bengaluru
+                    - generic [ref=e146]:
+                      - generic [ref=e147]: Pin Code
+                      - textbox "Pin Code" [ref=e149]:
+                        - /placeholder: 6 digits
+                        - text: "560034"
+                    - generic [ref=e151]:
+                      - generic [ref=e152]: State
+                      - combobox "State" [ref=e153]:
+                        - option "Select state"
+                        - option "Andhra Pradesh"
+                        - option "Arunachal Pradesh"
+                        - option "Assam"
+                        - option "Bihar"
+                        - option "Chhattisgarh"
+                        - option "Goa"
+                        - option "Gujarat"
+                        - option "Haryana"
+                        - option "Himachal Pradesh"
+                        - option "Jharkhand"
+                        - option "Karnataka" [selected]
+                        - option "Kerala"
+                        - option "Madhya Pradesh"
+                        - option "Maharashtra"
+                        - option "Manipur"
+                        - option "Meghalaya"
+                        - option "Mizoram"
+                        - option "Nagaland"
+                        - option "Odisha"
+                        - option "Punjab"
+                        - option "Rajasthan"
+                        - option "Sikkim"
+                        - option "Tamil Nadu"
+                        - option "Telangana"
+                        - option "Tripura"
+                        - option "Uttar Pradesh"
+                        - option "Uttarakhand"
+                        - option "West Bengal"
+                        - option "Andaman & Nicobar Islands"
+                        - option "Chandigarh"
+                        - option "Dadra & Nagar Haveli and Daman & Diu"
+                        - option "Delhi"
+                        - option "Jammu & Kashmir"
+                        - option "Ladakh"
+                        - option "Lakshadweep"
+                        - option "Puducherry"
+                - button "Save Profile" [ref=e155]
+  - generic [ref=e181]:
+    - img [ref=e183]
+    - paragraph [ref=e187]: Logo removed
+    - button "Dismiss" [ref=e188]:
+      - img [ref=e189]

@@ -1,0 +1,165 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e2696]:
+      - navigation:
+        - generic [ref=e2698]:
+          - img "Zoho Payroll" [ref=e2699]
+          - generic [ref=e2700]: Payroll
+        - generic [ref=e2704]:
+          - button "Advanced Search" [ref=e2705] [cursor=pointer]:
+            - img [ref=e2706]
+          - textbox "Search in Employee" [ref=e2710]
+        - generic [ref=e2712]:
+          - generic [ref=e2715] [cursor=pointer]: Your trial expires in 13 day(s).
+          - button "Upgrade" [ref=e2717] [cursor=pointer]
+          - button "lerno" [ref=e2721] [cursor=pointer]:
+            - generic [ref=e2722]: lerno
+            - img [ref=e2723]
+          - button "Refer and Earn" [ref=e2727] [cursor=pointer]:
+            - img [ref=e2728]
+          - button "Notifications" [ref=e2732] [cursor=pointer]:
+            - generic [ref=e2733]:
+              - generic [ref=e2891]: "4"
+              - img [ref=e2734]
+          - button "Settings" [ref=e2737] [cursor=pointer]:
+            - img [ref=e2738]
+          - button "A" [ref=e2892] [cursor=pointer]:
+            - generic [ref=e2744]: A
+          - img [ref=e2762] [cursor=pointer]
+    - generic [ref=e74]:
+      - complementary [ref=e2765]:
+        - navigation [ref=e2766]:
+          - generic [ref=e2767]:
+            - list [ref=e2768]:
+              - link "Getting Started" [ref=e2769] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e2771]:
+                  - generic [ref=e2772]:
+                    - img [ref=e2774]
+                    - text: Getting Started
+                  - img [ref=e2778]
+              - listitem [ref=e2780]:
+                - link "Dashboard" [ref=e2781] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e2782]
+                  - generic [ref=e2785]: Dashboard
+              - listitem [ref=e2786]:
+                - link "Employees" [ref=e2787] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e2788]
+                  - generic [ref=e2790]: Employees
+              - listitem [ref=e2791]:
+                - link "Pay Runs" [ref=e2792] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e2793]
+                  - generic [ref=e2796]: Pay Runs
+              - listitem [ref=e2797]:
+                - list [ref=e2798]:
+                  - listitem [ref=e2799]:
+                    - button "Approvals" [ref=e2801] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e2802]:
+                        - button "Approvals" [ref=e2803]:
+                          - img [ref=e2804]
+                          - img [ref=e2806]
+                          - generic [ref=e2809]: Approvals
+                          - img [ref=e2810]
+              - listitem [ref=e2818]:
+                - list [ref=e2819]:
+                  - listitem [ref=e2820]:
+                    - button "Taxes & Forms" [ref=e2822] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e2823]:
+                        - button "Taxes & Forms" [ref=e2824]:
+                          - img [ref=e2825]
+                          - img [ref=e2827]
+                          - generic [ref=e2832]: Taxes & Forms
+                          - img [ref=e2833]
+              - listitem [ref=e2843]:
+                - link "Loans" [ref=e2844] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e2845]
+                  - generic [ref=e2848]: Loans
+              - listitem [ref=e2849]:
+                - link "Giving" [ref=e2850] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e2851]
+                  - generic [ref=e2853]: Giving
+              - listitem
+              - listitem [ref=e2854]:
+                - link "Documents" [ref=e2855] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e2856]
+                  - generic [ref=e2858]: Documents
+              - listitem [ref=e2859]:
+                - link "Reports" [ref=e2860] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e2861]
+                  - generic [ref=e2864]: Reports
+              - listitem [ref=e2865]:
+                - link "Settings" [ref=e2866] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e2867]
+                  - generic [ref=e2870]: Settings
+            - link "Contact Support" [ref=e2874] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e2875]
+          - button "Collapse/Expand" [ref=e2877] [cursor=pointer]:
+            - img [ref=e2878]
+      - main [ref=e2881]:
+        - generic [ref=e3535]:
+          - generic [ref=e3536]:
+            - generic [ref=e3537]:
+              - generic [ref=e3538]:
+                - generic [ref=e3539]: A
+                - generic [ref=e3540]:
+                  - generic [ref=e3541]:
+                    - generic [ref=e3542]: EMP001 -
+                    - generic [ref=e3543]: Arjun Mehta
+                    - generic [ref=e3544]: Active
+                  - generic [ref=e3545]: Senior Software Engineer
+              - generic [ref=e3546]:
+                - button "Add" [ref=e3548] [cursor=pointer]
+                - button "Show dropdown menu" [ref=e3550] [cursor=pointer]:
+                  - img [ref=e3551]
+                - button "Close" [ref=e3553] [cursor=pointer]:
+                  - img [ref=e3554]
+            - navigation [ref=e3557]:
+              - list [ref=e3558]:
+                - listitem [ref=e3559]:
+                  - link "Overview" [ref=e3560] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948"
+                - listitem [ref=e3561]:
+                  - link "Salary Details" [ref=e3562] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948/salary-details"
+                - listitem [ref=e3563]:
+                  - link "Investments" [ref=e3564] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948/investments-and-proofs"
+                - listitem [ref=e3565]:
+                  - link "Payslips & Forms" [ref=e3566] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948/payslips-and-forms"
+                - listitem [ref=e3567]:
+                  - link "Loans" [ref=e3568] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948/loans"
+          - generic [ref=e3570]:
+            - generic [ref=e3571]:
+              - button "IT Declaration" [ref=e3572] [cursor=pointer]
+              - button "Proof Of Investments" [ref=e3573] [cursor=pointer]
+            - generic [ref=e3574]:
+              - img [ref=e3575]
+              - 'button "Period : 2026 - 27" [ref=e3580] [cursor=pointer]':
+                - generic [ref=e3581]: "Period :"
+                - text: 2026 - 27
+            - generic [ref=e3585]:
+              - img [ref=e3586]
+              - generic [ref=e3587]: IT Declaration submission is locked for this employee
+              - generic [ref=e3588]: You can either allow the employee to submit IT Declaration through the portal or submit it on their behalf
+              - link "Submit Declaration" [ref=e3589] [cursor=pointer]:
+                - /url: "#/people/employees/3848927000000032948/investment-declaration/new?tax_regime=with_exemptions"
+    - dialog [ref=e3590]
+  - status [ref=e531]: Employees Investments & Proofs page loaded.
+  - text:       Chats  Contacts   

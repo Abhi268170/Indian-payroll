@@ -1,0 +1,188 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e5]:
+      - navigation:
+        - generic [ref=e7]:
+          - img "Zoho Payroll" [ref=e8]
+          - generic [ref=e9]: Payroll
+        - generic [ref=e13]:
+          - button "Advanced Search" [ref=e14] [cursor=pointer]:
+            - img [ref=e15]
+          - textbox "Search in Employee" [ref=e19]
+        - generic [ref=e21]:
+          - generic [ref=e24] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e26] [cursor=pointer]
+          - button "lerno" [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]: lerno
+            - img [ref=e32]
+          - button "Refer and Earn" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+          - button "Notifications" [ref=e41] [cursor=pointer]:
+            - generic [ref=e42]:
+              - generic [ref=e2038]: "2"
+              - img [ref=e43]
+          - button "Settings" [ref=e46] [cursor=pointer]:
+            - img [ref=e47]
+          - button "A" [ref=e52] [cursor=pointer]:
+            - generic [ref=e53]: A
+          - img [ref=e70] [cursor=pointer]
+    - generic [ref=e73]:
+      - complementary [ref=e74]:
+        - navigation [ref=e75]:
+          - generic [ref=e76]:
+            - list [ref=e77]:
+              - link "Getting Started" [ref=e78] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e80]:
+                  - generic [ref=e81]:
+                    - img [ref=e83]
+                    - text: Getting Started
+                  - img [ref=e87]
+              - listitem [ref=e89]:
+                - link "Dashboard" [ref=e90] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e91]
+                  - generic [ref=e94]: Dashboard
+              - listitem [ref=e95]:
+                - link "Employees" [ref=e96] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e97]
+                  - generic [ref=e99]: Employees
+              - listitem [ref=e100]:
+                - link "Pay Runs" [ref=e101] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e102]
+                  - generic [ref=e105]: Pay Runs
+              - listitem [ref=e106]:
+                - list [ref=e107]:
+                  - listitem [ref=e108]:
+                    - button "Approvals" [ref=e110] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e111]:
+                        - button "Approvals" [ref=e112]:
+                          - img [ref=e113]
+                          - img [ref=e115]
+                          - generic [ref=e118]: Approvals
+                          - img [ref=e119]
+              - listitem [ref=e121]:
+                - link "Form 16" [ref=e122] [cursor=pointer]:
+                  - /url: "#/taxes-and-forms/form16"
+                  - img [ref=e123]
+                  - generic [ref=e127]: Form 16
+              - listitem [ref=e128]:
+                - link "Loans" [ref=e129] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e130]
+                  - generic [ref=e133]: Loans
+              - listitem [ref=e134]:
+                - link "Giving" [ref=e135] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e136]
+                  - generic [ref=e138]: Giving
+              - listitem
+              - listitem [ref=e139]:
+                - link "Documents" [ref=e140] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e141]
+                  - generic [ref=e143]: Documents
+              - listitem [ref=e144]:
+                - link "Reports" [ref=e145] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e146]
+                  - generic [ref=e149]: Reports
+              - listitem [ref=e150]:
+                - link "Settings" [ref=e151] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e152]
+                  - generic [ref=e155]: Settings
+            - link "Contact Support" [ref=e159] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e160]
+            - generic [ref=e162]:
+              - paragraph [ref=e163]: Track TDS Liabilities and Generate Form 24Q
+              - button "View Details" [ref=e164] [cursor=pointer]
+          - button "Collapse/Expand" [ref=e165] [cursor=pointer]:
+            - img [ref=e166]
+      - main [ref=e169]:
+        - generic [ref=e534]:
+          - generic [ref=e2573]:
+            - navigation [ref=e2574]:
+              - list [ref=e2575]:
+                - listitem [ref=e2576]:
+                  - link "Run Payroll" [ref=e2577] [cursor=pointer]:
+                    - /url: "#/payruns"
+                - listitem [ref=e2578]:
+                  - link "Payroll History" [ref=e2579] [cursor=pointer]:
+                    - /url: "#/payruns/payroll-history"
+            - generic [ref=e2581]:
+              - button [ref=e2583] [cursor=pointer]:
+                - img [ref=e2584]
+              - button "Instant Helper" [ref=e2586] [cursor=pointer]:
+                - img [ref=e2587]
+          - generic [ref=e2594] [cursor=pointer]:
+            - generic [ref=e2595]: "Payroll Type:"
+            - generic [ref=e2597]:
+              - generic [ref=e2598]:
+                - combobox "Payroll Type:" [expanded] [ref=e2599]:
+                  - generic [ref=e2600]:
+                    - generic [ref=e2601]: All
+                    - img [ref=e2604]
+                - generic [ref=e2623]:
+                  - generic [ref=e2625]:
+                    - generic [ref=e2627]: ⚲
+                    - textbox [active] [ref=e2628]
+                  - listbox "dropdown options" [ref=e2630]:
+                    - option "All" [selected] [ref=e2631]:
+                      - generic "All" [ref=e2633]:
+                        - generic [ref=e2634]: All
+                        - img [ref=e2636]
+                    - option "Regular Payroll" [ref=e2638]:
+                      - generic "Regular Payroll" [ref=e2640]:
+                        - generic [ref=e2641]: Regular Payroll
+                    - option "Past Payroll" [ref=e2642]:
+                      - generic "Past Payroll" [ref=e2644]:
+                        - generic [ref=e2645]: Past Payroll
+                    - option "Final Settlement Payroll" [ref=e2646]:
+                      - generic "Final Settlement Payroll" [ref=e2648]:
+                        - generic [ref=e2649]: Final Settlement Payroll
+                    - option "One Time Payout" [ref=e2650]:
+                      - generic "One Time Payout" [ref=e2652]:
+                        - generic [ref=e2653]: One Time Payout
+                    - option "Off Cycle Payroll" [ref=e2654]:
+                      - generic "Off Cycle Payroll" [ref=e2656]:
+                        - generic [ref=e2657]: Off Cycle Payroll
+                    - option "Bulk Final Settlement Payroll" [ref=e2658]:
+                      - generic "Bulk Final Settlement Payroll" [ref=e2660]:
+                        - generic [ref=e2661]: Bulk Final Settlement Payroll
+                    - option "Resettlement Payroll" [ref=e2662]:
+                      - generic "Resettlement Payroll" [ref=e2664]:
+                        - generic [ref=e2665]: Resettlement Payroll
+              - status [ref=e2606]
+          - table [ref=e2608]:
+            - rowgroup [ref=e2609]:
+              - row "Payment Date Payroll Type Details Payroll Status" [ref=e2610]:
+                - columnheader "Payment Date" [ref=e2611]
+                - columnheader "Payroll Type" [ref=e2612]
+                - columnheader "Details" [ref=e2613]
+                - columnheader "Payroll Status" [ref=e2614]
+            - rowgroup [ref=e2615]:
+              - row "30/04/2026 Regular Payroll 01/04/2026 - 30/04/2026 Paid" [ref=e2616] [cursor=pointer]:
+                - cell "30/04/2026" [ref=e2617]
+                - cell "Regular Payroll" [ref=e2618]
+                - cell "01/04/2026 - 30/04/2026" [ref=e2619]:
+                  - button "01/04/2026 - 30/04/2026" [ref=e2620]
+                - cell "Paid" [ref=e2621]:
+                  - generic [ref=e2622]: Paid
+  - generic [ref=e524] [cursor=pointer]:
+    - generic [ref=e525]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e526]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e528]: Don't show again
+  - status [ref=e529]: Pay Runs Payroll History page loaded.
+  - text:       Chats  Contacts   

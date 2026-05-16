@@ -1,0 +1,97 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "MailHog MailHog" [ref=e6] [cursor=pointer]:
+        - /url: "#"
+        - img "MailHog" [ref=e7]
+        - text: MailHog
+      - generic [ref=e8]:
+        - search [ref=e9]:
+          - generic [ref=e10]:
+            - generic: 
+            - textbox "Search" [ref=e11]
+        - list [ref=e12]:
+          - listitem [ref=e13]:
+            - link "GitHub GitHub" [ref=e14] [cursor=pointer]:
+              - /url: https://github.com/mailhog/MailHog
+              - img "GitHub" [ref=e15]
+              - text: GitHub
+  - generic [ref=e17]:
+    - generic [ref=e18]:
+      - list [ref=e19]:
+        - listitem [ref=e20]:
+          - link " Connected" [ref=e21] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e22]: 
+            - text: Connected
+        - listitem [ref=e23]:
+          - link "Inbox (1)" [ref=e24] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=e25]:
+          - link " Delete all messages" [ref=e26] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e27]: 
+            - text: Delete all messages
+      - generic [ref=e28]:
+        - heading "Jim" [level=3] [ref=e29]
+        - paragraph [ref=e30]:
+          - text: Jim is a chaos monkey.
+          - link "Find out more at GitHub" [ref=e31] [cursor=pointer]:
+            - /url: https://github.com/mailhog/MailHog/blob/master/docs/JIM.md
+          - text: .
+        - link "Enable Jim" [ref=e33] [cursor=pointer]:
+          - /url: "#"
+    - generic [ref=e34]:
+      - generic [ref=e53]:
+        - button "" [ref=e54] [cursor=pointer]:
+          - generic [ref=e55]: 
+        - button "" [ref=e56] [cursor=pointer]:
+          - generic [ref=e57]: 
+        - link "" [ref=e58] [cursor=pointer]:
+          - /url: api/v1/messages/6SNbGlea7IU1gyy4suin39y8QZa4J0jZb3bCNXhs_lk=@mailhog.example/download
+          - generic [ref=e59]: 
+        - button "" [ref=e60] [cursor=pointer]:
+          - generic [ref=e61]: 
+      - generic [ref=e62]:
+        - generic [ref=e63]:
+          - table [ref=e65]:
+            - rowgroup [ref=e66]:
+              - row "From noreply@payroll.local" [ref=e67]:
+                - rowheader "From" [ref=e68]
+                - cell "noreply@payroll.local" [ref=e69]
+              - row "Subject Welcome to Indian Payroll — Set Your Password" [ref=e70]:
+                - rowheader "Subject" [ref=e71]
+                - cell "Welcome to Indian Payroll — Set Your Password" [ref=e72]:
+                  - strong [ref=e73]: Welcome to Indian Payroll — Set Your Password
+              - row "To demoAdmin@yopmail.com" [ref=e74]:
+                - rowheader "To" [ref=e75]
+                - cell "demoAdmin@yopmail.com" [ref=e76]
+          - button "Show headers " [ref=e78] [cursor=pointer]:
+            - text: Show headers
+            - generic [ref=e79]: 
+        - generic [ref=e80]:
+          - list [ref=e81]:
+            - listitem [ref=e82]:
+              - link "HTML" [ref=e83]:
+                - /url: "#preview-html"
+            - listitem [ref=e84]:
+              - link "Plain text" [ref=e85] [cursor=pointer]:
+                - /url: "#preview-plain"
+            - listitem [ref=e86]:
+              - link "Source" [ref=e87] [cursor=pointer]:
+                - /url: "#preview-source"
+          - iframe [ref=e89]:
+            - generic [active] [ref=f3e1]:
+              - paragraph [ref=f3e2]:
+                - text: Welcome to
+                - strong [ref=f3e3]: Indian Payroll
+                - text: "!"
+              - paragraph [ref=f3e4]:
+                - text: Your organisation
+                - strong [ref=f3e5]: demo
+                - text: has been provisioned.
+              - paragraph [ref=f3e6]: "Set your password to get started:"
+              - paragraph [ref=f3e7]:
+                - link "http://localhost:5173/set-password?token=Q2ZESjhPbHZnV2M3S3pOS2x5clZTUEtIVndqcCs0ckpEcHRsS3VEZ3l6VWw0T2w1aisvdjJMZjY0ZEg1cDUrcnBmMWI5dmVKd21vc1JkbmwrY0N0ekVtK1Y4dTVGTDVQZW4xZ2J3RWxZcWNzUUtVMHl5S0ZVTGhqMWxjRS9QTHBsRXlpVVA1RmtzeHg3ekxndjRwcjMxZndSQ1gxTVJENmcxeXl3RE1UMG1GS3B3NmlrN1VHSGppL2s3dThMSis0MnZ6bm1ETW0vaEp3QU5XazRhKzNIRmU5WWFPMkVNKzlXQi9FbDdVaGpQeXEvbWxr&email=demoAdmin%40yopmail.com&slug=demo" [ref=f3e8] [cursor=pointer]:
+                  - /url: http://localhost:5173/set-password?token=Q2ZESjhPbHZnV2M3S3pOS2x5clZTUEtIVndqcCs0ckpEcHRsS3VEZ3l6VWw0T2w1aisvdjJMZjY0ZEg1cDUrcnBmMWI5dmVKd21vc1JkbmwrY0N0ekVtK1Y4dTVGTDVQZW4xZ2J3RWxZcWNzUUtVMHl5S0ZVTGhqMWxjRS9QTHBsRXlpVVA1RmtzeHg3ekxndjRwcjMxZndSQ1gxTVJENmcxeXl3RE1UMG1GS3B3NmlrN1VHSGppL2s3dThMSis0MnZ6bm1ETW0vaEp3QU5XazRhKzNIRmU5WWFPMkVNKzlXQi9FbDdVaGpQeXEvbWxr&email=demoAdmin%40yopmail.com&slug=demo
+              - paragraph [ref=f3e9]: This link expires in 72 hours.

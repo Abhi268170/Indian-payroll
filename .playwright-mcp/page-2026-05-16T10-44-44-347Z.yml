@@ -1,0 +1,219 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e2696]:
+      - navigation:
+        - generic [ref=e2698]:
+          - img "Zoho Payroll" [ref=e2699]
+          - generic [ref=e2700]: Payroll
+        - generic [ref=e2704]:
+          - button "Advanced Search" [ref=e2705] [cursor=pointer]:
+            - img [ref=e2706]
+          - textbox "Search in Employee" [ref=e2710]
+        - generic [ref=e2712]:
+          - generic [ref=e2715] [cursor=pointer]: Your trial expires in 13 day(s).
+          - button "Upgrade" [ref=e2717] [cursor=pointer]
+          - button "lerno" [ref=e2721] [cursor=pointer]:
+            - generic [ref=e2722]: lerno
+            - img [ref=e2723]
+          - button "Refer and Earn" [ref=e2727] [cursor=pointer]:
+            - img [ref=e2728]
+          - button "Notifications" [ref=e2732] [cursor=pointer]:
+            - generic [ref=e2733]:
+              - generic [ref=e2891]: "4"
+              - img [ref=e2734]
+          - button "Settings" [ref=e2737] [cursor=pointer]:
+            - img [ref=e2738]
+          - button "A" [ref=e2892] [cursor=pointer]:
+            - generic [ref=e2744]: A
+          - img [ref=e2762] [cursor=pointer]
+    - generic [ref=e74]:
+      - complementary [ref=e2765]:
+        - navigation [ref=e2766]:
+          - generic [ref=e2767]:
+            - list [ref=e2768]:
+              - link "Getting Started" [ref=e2769] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e2771]:
+                  - generic [ref=e2772]:
+                    - img [ref=e2774]
+                    - text: Getting Started
+                  - img [ref=e2778]
+              - listitem [ref=e2780]:
+                - link "Dashboard" [ref=e2781] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e2782]
+                  - generic [ref=e2785]: Dashboard
+              - listitem [ref=e2786]:
+                - link "Employees" [ref=e2787] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e2788]
+                  - generic [ref=e2790]: Employees
+              - listitem [ref=e2791]:
+                - link "Pay Runs" [ref=e2792] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e2793]
+                  - generic [ref=e2796]: Pay Runs
+              - listitem [ref=e2797]:
+                - list [ref=e2798]:
+                  - listitem [ref=e2799]:
+                    - button "Approvals" [ref=e2801] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e2802]:
+                        - button "Approvals" [ref=e2803]:
+                          - img [ref=e2804]
+                          - img [ref=e2806]
+                          - generic [ref=e2809]: Approvals
+                          - img [ref=e2810]
+              - listitem [ref=e2818]:
+                - list [ref=e2819]:
+                  - listitem [ref=e2820]:
+                    - button "Taxes & Forms" [ref=e2822] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e2823]:
+                        - button "Taxes & Forms" [ref=e2824]:
+                          - img [ref=e2825]
+                          - img [ref=e2827]
+                          - generic [ref=e2832]: Taxes & Forms
+                          - img [ref=e2833]
+              - listitem [ref=e2843]:
+                - link "Loans" [ref=e2844] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e2845]
+                  - generic [ref=e2848]: Loans
+              - listitem [ref=e2849]:
+                - link "Giving" [ref=e2850] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e2851]
+                  - generic [ref=e2853]: Giving
+              - listitem
+              - listitem [ref=e2854]:
+                - link "Documents" [ref=e2855] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e2856]
+                  - generic [ref=e2858]: Documents
+              - listitem [ref=e2859]:
+                - link "Reports" [ref=e2860] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e2861]
+                  - generic [ref=e2864]: Reports
+              - listitem [ref=e2865]:
+                - link "Settings" [ref=e2866] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e2867]
+                  - generic [ref=e2870]: Settings
+            - link "Contact Support" [ref=e2874] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e2875]
+          - button "Collapse/Expand" [ref=e2877] [cursor=pointer]:
+            - img [ref=e2878]
+      - main [ref=e2881]:
+        - generic [ref=e3823]:
+          - generic [ref=e3825]:
+            - heading "Add Employee" [level=3] [ref=e3826]
+            - list [ref=e3828]:
+              - listitem [ref=e3829]:
+                - generic [ref=e3830]: "1"
+                - link "Basic Details":
+                  - /url: "#"
+              - listitem [ref=e3831]
+              - listitem [ref=e3832]:
+                - generic [ref=e3833]: "2"
+                - link "Salary Details":
+                  - /url: "#"
+              - listitem [ref=e3834]
+              - listitem [ref=e3835]:
+                - generic [ref=e3836]: "3"
+                - link "Personal Details":
+                  - /url: "#"
+              - listitem [ref=e3837]
+              - listitem [ref=e3838]:
+                - generic [ref=e3839]: "4"
+                - link "Payment Information":
+                  - /url: "#"
+              - listitem
+          - generic [ref=e3841]:
+            - generic [ref=e3843]:
+              - generic [ref=e3845]:
+                - generic [ref=e3846]: Employee Name*
+                - combobox "Employee Name*" [ref=e3851]
+                - textbox "Employee Name*" [ref=e3853]:
+                  - /placeholder: Middle Name
+                - textbox "Employee Name*" [ref=e3855]:
+                  - /placeholder: Last Name
+              - generic [ref=e3856]:
+                - generic [ref=e3857]: Employee ID*
+                - textbox "Employee ID*" [ref=e3859]
+              - generic [ref=e3860]:
+                - generic [ref=e3861]: Date of Joining *
+                - textbox "Date of Joining *" [ref=e3863]:
+                  - /placeholder: dd/MM/yyyy
+              - generic [ref=e3864]:
+                - generic [ref=e3865]: Work Email*
+                - combobox "abc@xyz.com" [ref=e3870]
+              - generic [ref=e3871]:
+                - generic [ref=e3872]: Mobile Number
+                - textbox "Mobile Number" [ref=e3873]
+              - generic [ref=e3876] [cursor=pointer]:
+                - checkbox "Employee is a Director/person with substantial interest in the company." [ref=e3877]
+                - text: Employee is a Director/person with substantial interest in the company.
+                - img [ref=e3880]
+              - generic [ref=e3882]:
+                - generic [ref=e3883]: Gender *
+                - generic [ref=e3886]:
+                  - combobox "Gender *" [ref=e3888]:
+                    - generic [ref=e3889] [cursor=pointer]:
+                      - generic [ref=e3890]: Select
+                      - img [ref=e3893]
+                  - status [ref=e3895]
+              - generic [ref=e3896]:
+                - generic [ref=e3897]: Work Location *
+                - generic [ref=e3900]:
+                  - combobox "Work Location *" [ref=e3902]:
+                    - generic [ref=e3903] [cursor=pointer]:
+                      - generic "Head Office ( lerno,kazhakoottam,thiruvananthapuram,Kerala-695010 )" [ref=e3904]
+                      - img [ref=e3907]
+                  - button "Clear Selection" [ref=e3909] [cursor=pointer]:
+                    - img [ref=e3910]
+                  - status [ref=e3912]
+              - generic [ref=e3913]:
+                - generic [ref=e3914]: Designation *
+                - generic [ref=e3917]:
+                  - combobox "Designation *" [ref=e3919]:
+                    - generic [ref=e3920] [cursor=pointer]:
+                      - generic [ref=e3921]: Select
+                      - img [ref=e3924]
+                  - status [ref=e3926]
+              - generic [ref=e3927]:
+                - generic [ref=e3928]: Department *
+                - generic [ref=e3931]:
+                  - combobox "Department *" [ref=e3933]:
+                    - generic [ref=e3934] [cursor=pointer]:
+                      - generic [ref=e3935]: Select
+                      - img [ref=e3938]
+                  - status [ref=e3940]
+              - generic [ref=e3941]:
+                - generic [ref=e3943] [cursor=pointer]:
+                  - checkbox "Enable Portal Access" [ref=e3944]
+                  - text: Enable Portal Access
+                - generic [ref=e3945]: The employee will be able to view payslips, submit their IT declaration and create reimbursement claims through the employee portal.
+            - separator [ref=e3946]
+            - generic [ref=e3948]:
+              - button "Save and Continue" [ref=e3949] [cursor=pointer]
+              - link "Cancel" [ref=e3950] [cursor=pointer]:
+                - /url: "#/people/employees"
+              - paragraph [ref=e3952]: "* indicates mandatory fields"
+    - generic [ref=e3954]:
+      - dialog:
+        - generic [ref=e3957]:
+          - img [ref=e3959]
+          - generic [ref=e3961]:
+            - paragraph [ref=e3962]: You might have some unsaved changes. Are you sure you want to leave this page?
+            - generic [ref=e3963]:
+              - button "Stay on this page" [active] [ref=e3964] [cursor=pointer]
+              - button "Leave this page" [ref=e3965] [cursor=pointer]
+  - status [ref=e531]: Employees | New page loaded.
+  - text:       Chats  Contacts   

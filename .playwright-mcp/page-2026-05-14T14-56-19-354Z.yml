@@ -1,0 +1,8 @@
+- generic [active] [ref=e1]:
+  - img [ref=e4]
+  - contentinfo [ref=e17]:
+    - generic [ref=e18]:
+      - text: © 2026,
+      - link "Zoho Corporation Pvt. Ltd." [ref=e19] [cursor=pointer]:
+        - /url: http://www.zohocorp.com/
+      - text: All Rights Reserved.

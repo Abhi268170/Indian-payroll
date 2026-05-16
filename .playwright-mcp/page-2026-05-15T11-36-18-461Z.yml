@@ -1,0 +1,157 @@
+- generic:
+  - iframe
+  - generic [ref=e5]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e6] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e7]
+    - generic [ref=e12323]:
+      - generic [ref=e12325]:
+        - generic [ref=e12326]:
+          - button "All Settings" [ref=e12327] [cursor=pointer]:
+            - img [ref=e12328]
+          - button [ref=e12333] [cursor=pointer]:
+            - img [ref=e12334]
+          - generic [ref=e12336]:
+            - generic [ref=e12337]: All Settings
+            - generic [ref=e12338]: lerno
+        - generic [ref=e12340]:
+          - combobox "Search" [active] [ref=e12344]
+          - img [ref=e12345]
+        - button "Close Settings" [ref=e12349] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e12350]
+      - generic [ref=e12352]:
+        - navigation [ref=e12353]:
+          - generic [ref=e12355]:
+            - group [ref=e12356]:
+              - heading "Organisation Settings" [level=2] [ref=e12357]
+              - generic [ref=e12358]:
+                - region "Organisation" [ref=e12360]:
+                  - generic [ref=e12361]:
+                    - heading "Organisation" [level=3] [ref=e12362] [cursor=pointer]:
+                      - button "Organisation" [ref=e12363]:
+                        - img [ref=e12364]
+                        - generic [ref=e12366]: Organisation
+                    - text:      
+                - generic [ref=e12367]:
+                  - region "Users and Roles" [ref=e12368]:
+                    - generic [ref=e12369]:
+                      - heading "Users and Roles" [level=3] [ref=e12370] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e12371]:
+                          - img [ref=e12372]
+                          - generic [ref=e12374]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e12375]:
+                    - generic [ref=e12376]:
+                      - heading "Taxes" [level=3] [ref=e12377] [cursor=pointer]:
+                        - button "Taxes" [ref=e12378]:
+                          - img [ref=e12379]
+                          - generic [ref=e12381]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e12383]:
+                  - generic [ref=e12384]:
+                    - heading "Setup & Configurations" [level=3] [ref=e12385] [cursor=pointer]:
+                      - button "Setup & Configurations" [expanded] [ref=e12386]:
+                        - img [ref=e12387]
+                        - generic [ref=e12389]: Setup & Configurations
+                    - region "Setup & Configurations" [ref=e12390]:
+                      - generic [ref=e12391]:
+                        - link "Pay Schedule" [ref=e12392] [cursor=pointer]:
+                          - /url: "#/settings/pay-schedules"
+                          - generic [ref=e12393]: Pay Schedule
+                          - text: 
+                        - link "Statutory Components" [ref=e12394] [cursor=pointer]:
+                          - /url: "#/settings/statutory-details/list"
+                          - generic [ref=e12395]: Statutory Components
+                          - text: 
+                        - link "Salary Components" [ref=e12396] [cursor=pointer]:
+                          - /url: "#/settings/salary-components/earnings"
+                          - generic [ref=e12397]: Salary Components
+                          - text: 
+                        - link "Employee Portal" [ref=e12398] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences"
+                          - generic [ref=e12399]: Employee Portal
+                          - text: 
+                        - link "Claims and Declarations" [ref=e12400] [cursor=pointer]:
+                          - /url: "#/settings/preferences/fbp"
+                          - generic [ref=e12401]: Claims and Declarations
+                          - text: 
+                - region "Customisations" [ref=e12403]:
+                  - generic [ref=e12404]:
+                    - heading "Customisations" [level=3] [ref=e12405] [cursor=pointer]:
+                      - button "Customisations" [ref=e12406]:
+                        - img [ref=e12407]
+                        - generic [ref=e12409]: Customisations
+                    - text:     
+                - region "Automations" [ref=e12411]:
+                  - generic [ref=e12412]:
+                    - heading "Automations" [level=3] [ref=e12413] [cursor=pointer]:
+                      - button "Automations" [ref=e12414]:
+                        - img [ref=e12415]
+                        - generic [ref=e12417]: Automations
+                    - text:    
+            - group [ref=e12418]:
+              - heading "Module Settings" [level=2] [ref=e12419]
+              - generic [ref=e12420]:
+                - region "General" [ref=e12422]:
+                  - generic [ref=e12423]:
+                    - heading "General" [level=3] [ref=e12424] [cursor=pointer]:
+                      - button "General" [ref=e12425]:
+                        - img [ref=e12426]
+                        - generic [ref=e12428]: General
+                    - text:     
+                - region "Payments" [ref=e12430]:
+                  - generic [ref=e12431]:
+                    - heading "Payments" [level=3] [ref=e12432] [cursor=pointer]:
+                      - button "Payments" [ref=e12433]:
+                        - img [ref=e12434]
+                        - generic [ref=e12436]: Payments
+                    - text: 
+            - group [ref=e12437]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e12438]
+              - generic [ref=e12439]:
+                - region "Integrations" [ref=e12441]:
+                  - generic [ref=e12442]:
+                    - heading "Integrations" [level=3] [ref=e12443] [cursor=pointer]:
+                      - button "Integrations" [ref=e12444]:
+                        - img [ref=e12445]
+                        - generic [ref=e12447]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e12449]:
+                  - generic [ref=e12450]:
+                    - heading "Developer Data" [level=3] [ref=e12451] [cursor=pointer]:
+                      - button "Developer Data" [ref=e12452]:
+                        - img [ref=e12453]
+                        - generic [ref=e12455]: Developer Data
+                    - text:   
+        - main [ref=e12456]:
+          - generic [ref=e12457]:
+            - heading "Statutory Components" [level=3] [ref=e12458]
+            - button "Instant Helper" [ref=e12459] [cursor=pointer]:
+              - img [ref=e12460]
+            - navigation [ref=e12464]:
+              - list [ref=e12465]:
+                - listitem [ref=e12466]:
+                  - link "EPF" [ref=e12467] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list"
+                - listitem [ref=e12468]:
+                  - link "ESI" [ref=e12469] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/esi"
+                - listitem [ref=e12470]:
+                  - link "Professional Tax" [ref=e12471] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/pt"
+                - listitem [ref=e12472]:
+                  - link "Labour Welfare Fund" [ref=e12473] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/lwf"
+                - listitem [ref=e12474]:
+                  - link "Statutory Bonus" [ref=e12475] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/statutory-bonus"
+          - generic [ref=e12477]:
+            - img [ref=e12478]
+            - heading "Are you registered for EPF?" [level=3] [ref=e12479]
+            - generic [ref=e12480]: Any organisation with 20 or more employees must register for the Employee Provident Fund (EPF) scheme, a retirement benefit plan for all salaried employees.
+            - link "Enable EPF" [ref=e12481] [cursor=pointer]:
+              - /url: "#/settings/statutory-details/edit-epf-details"
+  - status [ref=e269]: Settings EPF page loaded.
+  - text:       Chats  Contacts   

@@ -1,0 +1,148 @@
+- generic:
+  - iframe
+  - generic [ref=e5]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e6] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e7]
+    - banner "Top Band" [ref=e9]:
+      - navigation:
+        - generic [ref=e11]:
+          - img "Zoho Payroll" [ref=e12]
+          - generic [ref=e13]: Payroll
+        - generic [ref=e17]:
+          - button "Advanced Search" [ref=e18] [cursor=pointer]:
+            - img [ref=e19]
+          - textbox "Search in Employee" [ref=e23]
+        - generic [ref=e25]:
+          - generic [ref=e28] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e30] [cursor=pointer]
+          - button "lerno" [ref=e34] [cursor=pointer]:
+            - generic [ref=e35]: lerno
+            - img [ref=e36]
+          - button "Refer and Earn" [ref=e40] [cursor=pointer]:
+            - img [ref=e41]
+          - button "Notifications" [ref=e45] [cursor=pointer]:
+            - generic [ref=e46]:
+              - generic [ref=e187]: "4"
+              - img [ref=e47]
+          - button "Settings" [ref=e50] [cursor=pointer]:
+            - img [ref=e51]
+          - button "A" [ref=e188] [cursor=pointer]:
+            - generic [ref=e57]: A
+          - img [ref=e75] [cursor=pointer]
+    - generic [ref=e78]:
+      - complementary [ref=e79]:
+        - navigation [ref=e80]:
+          - generic [ref=e81]:
+            - list [ref=e82]:
+              - listitem [ref=e83]:
+                - link "Dashboard" [ref=e84] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e85]
+                  - generic [ref=e88]: Dashboard
+              - listitem [ref=e89]:
+                - link "Employees" [ref=e90] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e91]
+                  - generic [ref=e93]: Employees
+              - listitem [ref=e94]:
+                - link "Pay Runs" [ref=e95] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e96]
+                  - generic [ref=e99]: Pay Runs
+              - listitem [ref=e100]:
+                - list [ref=e101]:
+                  - listitem [ref=e102]:
+                    - button "Approvals" [ref=e104] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e105]:
+                        - button "Approvals" [ref=e106]:
+                          - img [ref=e400]
+                          - img [ref=e109]
+                          - generic [ref=e112]: Approvals
+                          - img [ref=e113]
+              - listitem [ref=e121]:
+                - list [ref=e122]:
+                  - listitem [ref=e123]:
+                    - button "Taxes & Forms" [ref=e125] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e126]:
+                        - button "Taxes & Forms" [expanded] [ref=e127]:
+                          - img [ref=e413]
+                          - img [ref=e130]
+                          - generic [ref=e135]: Taxes & Forms
+                          - img [ref=e136]
+                    - list "Taxes & Forms" [ref=e189]:
+                      - listitem [ref=e138]:
+                        - link "TDS Liabilities" [ref=e139] [cursor=pointer]:
+                          - /url: "#/taxes-and-forms/tax-liabilities/pending"
+                      - listitem [ref=e140]:
+                        - link "Challans" [ref=e141] [cursor=pointer]:
+                          - /url: "#/taxes-and-forms/tax-payments/unassociated"
+                      - listitem [ref=e142]:
+                        - link "Form 24Q" [ref=e143] [cursor=pointer]:
+                          - /url: "#/taxes-and-forms/form24q"
+                      - listitem [ref=e144]:
+                        - link "Form 16" [ref=e145] [cursor=pointer]:
+                          - /url: "#/taxes-and-forms/form16"
+              - listitem [ref=e146]:
+                - link "Loans" [ref=e147] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e148]
+                  - generic [ref=e151]: Loans
+              - listitem [ref=e152]:
+                - link "Giving" [ref=e153] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e154]
+                  - generic [ref=e156]: Giving
+              - listitem
+              - listitem [ref=e157]:
+                - link "Documents" [ref=e158] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e159]
+                  - generic [ref=e161]: Documents
+              - listitem [ref=e162]:
+                - link "Reports" [ref=e163] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e164]
+                  - generic [ref=e167]: Reports
+              - listitem [ref=e168]:
+                - link "Settings" [ref=e169] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e170]
+                  - generic [ref=e173]: Settings
+            - link "Contact Support" [ref=e177] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e178]
+          - button "Collapse/Expand" [ref=e180] [cursor=pointer]:
+            - img [ref=e181]
+      - main [ref=e184]:
+        - generic [ref=e415]:
+          - generic [ref=e416]:
+            - navigation [ref=e417]:
+              - list [ref=e418]:
+                - listitem [ref=e419]:
+                  - link "Unassociated" [ref=e420] [cursor=pointer]:
+                    - /url: "#/taxes-and-forms/tax-payments/unassociated"
+                - listitem [ref=e421]:
+                  - link "Associated" [ref=e422] [cursor=pointer]:
+                    - /url: "#/taxes-and-forms/tax-payments/associated"
+            - generic [ref=e424]:
+              - button "New" [active] [ref=e426] [cursor=pointer]:
+                - img [ref=e427]
+                - generic [ref=e429]: New
+              - button "Instant Helper" [ref=e430] [cursor=pointer]:
+                - img [ref=e431]
+          - generic [ref=e435]:
+            - img [ref=e436]
+            - heading "You have no unassociated Challans as of now." [level=4] [ref=e437]
+            - paragraph [ref=e438]: Your Challans will be displayed here if you have payment amount that hasn't been associated to TDS liabilities. You can record a new Challan and associate it's payment amount to TDS liabilities.
+    - tooltip "Record Challan" [ref=e487]: Record Challan
+  - generic [ref=e191] [cursor=pointer]:
+    - generic [ref=e192]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e193]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e195]: Don't show again
+  - status [ref=e186]: Challans page loaded.
+  - text:       Chats  Contacts   

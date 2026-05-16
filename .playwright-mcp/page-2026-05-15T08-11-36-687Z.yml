@@ -1,0 +1,125 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e6120]:
+      - generic [ref=e6894]:
+        - generic [ref=e6895]:
+          - generic [ref=e6896]: Build your Template
+          - generic [ref=e6897]: Include active salary components
+        - generic [ref=e6898]:
+          - list [ref=e6899]:
+            - listitem [ref=e6900]:
+              - heading "Earnings" [level=3] [ref=e6904]:
+                - button "Earnings" [ref=e6905] [cursor=pointer]:
+                  - generic [ref=e6906]:
+                    - text: Earnings
+                    - img [ref=e6908]
+            - listitem [ref=e6910]:
+              - heading "Reimbursements" [level=3] [ref=e6914]:
+                - button "Reimbursements" [ref=e6915] [cursor=pointer]:
+                  - generic [ref=e6916]:
+                    - text: Reimbursements
+                    - img [ref=e6918]
+            - listitem [ref=e6920]:
+              - heading "FBP Components" [level=3] [ref=e6924]:
+                - button "FBP Components" [ref=e6925] [cursor=pointer]:
+                  - generic [ref=e6926]:
+                    - text: FBP Components
+                    - img [ref=e6928]
+            - listitem [ref=e6930]:
+              - heading "Benefits" [level=3] [ref=e6934]:
+                - button "Benefits" [ref=e6935] [cursor=pointer]:
+                  - generic [ref=e6936]:
+                    - text: Benefits
+                    - img [ref=e6938]
+            - listitem [ref=e6940]:
+              - heading "One Time Earnings" [level=3] [ref=e6944]:
+                - button "One Time Earnings" [ref=e6945] [cursor=pointer]:
+                  - generic [ref=e6946]:
+                    - text: One Time Earnings
+                    - img [ref=e6948]
+          - generic [ref=e6950]:
+            - img [ref=e6952]
+            - img [ref=e6959]
+      - generic [ref=e6961]:
+        - heading "New Salary Template Close" [level=3] [ref=e6964]:
+          - text: New Salary Template
+          - link "Close" [ref=e6966] [cursor=pointer]:
+            - /url: "#/settings/salary-templates"
+            - img [ref=e6967]
+        - generic [ref=e6971]:
+          - generic [ref=e6972]:
+            - generic [ref=e6973]: Template Name *
+            - generic [ref=e6974]: Description
+          - generic [ref=e6975]:
+            - textbox "Template Name *" [ref=e6977]
+            - textbox "Description" [ref=e6979]:
+              - /placeholder: Max 500 Characters
+          - generic [ref=e6983]:
+            - generic [ref=e6986]:
+              - generic [ref=e6987]: Annual CTC
+              - generic [ref=e6990]:
+                - generic [ref=e6992]: ₹
+                - generic [ref=e6993]: per year
+                - spinbutton [active] [ref=e6994]: "0"
+            - table [ref=e6996]:
+              - rowgroup [ref=e6997]:
+                - row "Salary Components Calculation Type Monthly Amount Annual Amount" [ref=e6998]:
+                  - columnheader "Salary Components" [ref=e6999]
+                  - columnheader "Calculation Type" [ref=e7000]
+                  - columnheader "Monthly Amount" [ref=e7001]
+                  - columnheader "Annual Amount" [ref=e7002]
+                  - columnheader [ref=e7003]
+              - rowgroup [ref=e7004]:
+                - row "Earnings" [ref=e7005]:
+                  - cell "Earnings" [ref=e7006]
+                - row "Basic % of CTC 0" [ref=e7007]:
+                  - cell "Basic" [ref=e7008]:
+                    - generic [ref=e7010]: Basic
+                  - cell "% of CTC" [ref=e7011]:
+                    - generic [ref=e7013]:
+                      - spinbutton [ref=e7014]: "50.00"
+                      - generic [ref=e7015]: "% of CTC"
+                  - cell [ref=e7016]:
+                    - spinbutton [disabled] [ref=e7017]: "0"
+                  - cell "0" [ref=e7018]
+                  - cell [ref=e7019]
+                - row "Fixed Allowance Monthly CTC - Sum of all other components Fixed amount 0 0" [ref=e7020]:
+                  - cell "Fixed Allowance Monthly CTC - Sum of all other components" [ref=e7021]:
+                    - generic [ref=e7023]:
+                      - text: Fixed Allowance
+                      - img [ref=e7026]
+                      - generic [ref=e7028]: Monthly CTC - Sum of all other components
+                  - cell "Fixed amount" [ref=e7029]
+                  - cell "0" [ref=e7030]
+                  - cell "0" [ref=e7031]
+                  - cell [ref=e7032]
+              - rowgroup [ref=e7033]:
+                - row [ref=e7034]:
+                  - cell [ref=e7035]
+                - row "Cost to Company ₹0 ₹0" [ref=e7036]:
+                  - cell "Cost to Company ₹0 ₹0" [ref=e7037]:
+                    - table [ref=e7038]:
+                      - row "Cost to Company ₹0 ₹0" [ref=e7039]:
+                        - cell "Cost to Company" [ref=e7040]:
+                          - strong [ref=e7041]: Cost to Company
+                        - cell "₹0" [ref=e7042]:
+                          - strong [ref=e7043]: ₹0
+                        - cell "₹0" [ref=e7044]:
+                          - strong [ref=e7045]: ₹0
+                        - cell [ref=e7046]
+            - generic [ref=e7048]:
+              - button "Save" [ref=e7049] [cursor=pointer]
+              - button "Cancel" [ref=e7050] [cursor=pointer]
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Settings Salary Templates page loaded.
+  - text:       Chats  Contacts   

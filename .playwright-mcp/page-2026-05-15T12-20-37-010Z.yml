@@ -1,0 +1,206 @@
+- generic:
+  - iframe
+  - generic [ref=e13742]:
+    - generic [ref=e13743]: Please make sure pre-payment is not a date in the future.
+    - button [ref=e14841] [cursor=pointer]:
+      - img [ref=e14842]
+  - generic [ref=e5]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e6] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e7]
+    - generic [ref=e22348]:
+      - generic [ref=e22350]:
+        - generic [ref=e22351]:
+          - button "All Settings" [ref=e22352] [cursor=pointer]:
+            - img [ref=e22353]
+          - button [ref=e22358] [cursor=pointer]:
+            - img [ref=e22359]
+          - generic [ref=e22361]:
+            - generic [ref=e22362]: All Settings
+            - generic [ref=e22363]: lerno
+        - generic [ref=e22365]:
+          - combobox "Search" [ref=e22369]
+          - img [ref=e22370]
+        - button "Close Settings" [ref=e22374] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e22375]
+      - generic [ref=e22377]:
+        - navigation [ref=e22378]:
+          - generic [ref=e22380]:
+            - group [ref=e22381]:
+              - heading "Organisation Settings" [level=2] [ref=e22382]
+              - generic [ref=e22383]:
+                - region "Organisation" [ref=e22385]:
+                  - generic [ref=e22386]:
+                    - heading "Organisation" [level=3] [ref=e22387] [cursor=pointer]:
+                      - button "Organisation" [ref=e22388]:
+                        - img [ref=e22389]
+                        - generic [ref=e22391]: Organisation
+                    - text:      
+                - generic [ref=e22405]:
+                  - region "Users and Roles" [ref=e22406]:
+                    - generic [ref=e22407]:
+                      - heading "Users and Roles" [level=3] [ref=e22408] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e22409]:
+                          - img [ref=e22410]
+                          - generic [ref=e22412]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e22418]:
+                    - generic [ref=e22419]:
+                      - heading "Taxes" [level=3] [ref=e22420] [cursor=pointer]:
+                        - button "Taxes" [ref=e22421]:
+                          - img [ref=e22422]
+                          - generic [ref=e22424]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e22429]:
+                  - generic [ref=e22430]:
+                    - heading "Setup & Configurations" [level=3] [ref=e22431] [cursor=pointer]:
+                      - button "Setup & Configurations" [expanded] [ref=e22432]:
+                        - img [ref=e22697]
+                        - generic [ref=e22435]: Setup & Configurations
+                    - region "Setup & Configurations" [ref=e22734]:
+                      - generic [ref=e22436]:
+                        - link "Pay Schedule" [ref=e22437] [cursor=pointer]:
+                          - /url: "#/settings/pay-schedules"
+                          - generic [ref=e22438]: Pay Schedule
+                          - text: 
+                        - link "Statutory Components" [ref=e22439] [cursor=pointer]:
+                          - /url: "#/settings/statutory-details/list"
+                          - generic [ref=e22440]: Statutory Components
+                          - text: 
+                        - link "Salary Components" [ref=e22441] [cursor=pointer]:
+                          - /url: "#/settings/salary-components/earnings"
+                          - generic [ref=e22442]: Salary Components
+                          - text: 
+                        - link "Employee Portal" [ref=e22443] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences"
+                          - generic [ref=e22444]: Employee Portal
+                          - text: 
+                        - link "Claims and Declarations" [ref=e22445] [cursor=pointer]:
+                          - /url: "#/settings/preferences/fbp"
+                          - generic [ref=e22446]: Claims and Declarations
+                          - text: 
+                - region "Customisations" [ref=e22448]:
+                  - generic [ref=e22449]:
+                    - heading "Customisations" [level=3] [ref=e22450] [cursor=pointer]:
+                      - button "Customisations" [ref=e22451]:
+                        - img [ref=e22699]
+                        - generic [ref=e22454]: Customisations
+                    - text:     
+                - region "Automations" [ref=e22467]:
+                  - generic [ref=e22468]:
+                    - heading "Automations" [level=3] [ref=e22469] [cursor=pointer]:
+                      - button "Automations" [ref=e22470]:
+                        - img [ref=e22471]
+                        - generic [ref=e22473]: Automations
+                    - text:    
+            - group [ref=e22483]:
+              - heading "Module Settings" [level=2] [ref=e22484]
+              - generic [ref=e22485]:
+                - region "General" [ref=e22487]:
+                  - generic [ref=e22488]:
+                    - heading "General" [level=3] [ref=e22489] [cursor=pointer]:
+                      - button "General" [ref=e22490]:
+                        - img [ref=e22491]
+                        - generic [ref=e22493]: General
+                    - text:     
+                - region "Payments" [ref=e22506]:
+                  - generic [ref=e22507]:
+                    - heading "Payments" [level=3] [ref=e22508] [cursor=pointer]:
+                      - button "Payments" [ref=e22509]:
+                        - img [ref=e22510]
+                        - generic [ref=e22512]: Payments
+                    - text: 
+            - group [ref=e22516]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e22517]
+              - generic [ref=e22518]:
+                - region "Integrations" [ref=e22520]:
+                  - generic [ref=e22521]:
+                    - heading "Integrations" [level=3] [ref=e22522] [cursor=pointer]:
+                      - button "Integrations" [ref=e22523]:
+                        - img [ref=e22524]
+                        - generic [ref=e22526]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e22531]:
+                  - generic [ref=e22532]:
+                    - heading "Developer Data" [level=3] [ref=e22533] [cursor=pointer]:
+                      - button "Developer Data" [ref=e22534]:
+                        - img [ref=e22535]
+                        - generic [ref=e22537]: Developer Data
+                    - text:   
+        - main [ref=e22701]:
+          - generic [ref=e22702]:
+            - heading "Employee Portal" [level=3] [ref=e22704]
+            - list [ref=e22705]:
+              - listitem [ref=e22706]:
+                - link "Preferences" [ref=e22707] [cursor=pointer]:
+                  - /url: "#/settings/portal/preferences"
+              - listitem [ref=e22708]:
+                - link "Web Tabs" [ref=e22709] [cursor=pointer]:
+                  - /url: "#/settings/portal/webtabs"
+          - generic [ref=e22735]:
+            - form [ref=e22736]:
+              - generic [ref=e22737]:
+                - generic [ref=e22738]:
+                  - generic [ref=e22739]:
+                    - generic [ref=e22740]: Enable Portal Access Active
+                    - generic [ref=e22741]: The employee portal allows your employees to access their salary information and perform payroll related activities like declaring their Flexible Benefit Plan (FBP) and submitting investment proofs for approval.
+                  - button [ref=e22743] [cursor=pointer]
+                - generic [ref=e22746]:
+                  - generic [ref=e22748]:
+                    - generic [ref=e22749]: Banner Message
+                    - generic [ref=e22750]:
+                      - text: Send important notifications or announcements to your employees using this space. The message you enter here will be displayed at the top of the Home page in the Employee Self-service Portal.
+                      - button "View Sample Preview" [ref=e22751] [cursor=pointer]:
+                        - img [ref=e22752]
+                        - text: View Sample Preview
+                    - generic [ref=e22755]:
+                      - generic [ref=e22756]: Enter Banner Message
+                      - textbox "Enter Banner Message" [ref=e22757]
+                    - generic [ref=e22758]:
+                      - generic [ref=e22759]: Select till when this message must be displayed in the portal
+                      - textbox "Select till when this message must be displayed in the portal" [ref=e22760]:
+                        - /placeholder: dd/MM/yyyy
+                  - generic [ref=e22762]:
+                    - generic [ref=e22763]:
+                      - generic [ref=e22764]: Portal Contact Information
+                      - generic [ref=e22765]: This is the email address to which your employees can send queries through the portal.
+                    - generic [ref=e22766]:
+                      - generic [ref=e22767]:
+                        - img [ref=e22770]
+                        - generic [ref=e22772]:
+                          - generic [ref=e22773]: abhijithss2255
+                          - generic [ref=e22774]: abhijithss2255@gmail.com
+                      - heading "Manage Contacts" [level=5] [ref=e22776]:
+                        - link "Manage Contacts" [ref=e22777] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences?configure_emails=true"
+                          - img [ref=e22778]
+                          - text: Manage Contacts
+                  - generic [ref=e22781]:
+                    - generic [ref=e22782]: Document Management
+                    - generic [ref=e22784]:
+                      - checkbox "Show documents in employee portal Enable this option to make documents visible for employees to access in the employee portal." [ref=e22785] [cursor=pointer]
+                      - text: Show documents in employee portal
+                      - generic [ref=e22786]: Enable this option to make documents visible for employees to access in the employee portal.
+              - button "Save" [ref=e22789] [cursor=pointer]
+            - list [ref=e22791]:
+              - listitem [ref=e22792]:
+                - img [ref=e22793]
+                - text: Quick links
+              - listitem [ref=e22795]:
+                - link "Flexible Benefit Plan" [ref=e22796] [cursor=pointer]:
+                  - /url: "#/settings/preferences/fbp"
+              - listitem [ref=e22797]:
+                - link "Reimbursement Claims" [ref=e22798] [cursor=pointer]:
+                  - /url: "#/settings/preferences/reimbursement"
+              - listitem [ref=e22799]:
+                - link "Income Tax Declaration" [ref=e22800] [cursor=pointer]:
+                  - /url: "#/settings/preferences/it-declaration"
+              - listitem [ref=e22801]:
+                - link "Proof Of Investments" [ref=e22802] [cursor=pointer]:
+                  - /url: "#/settings/preferences/proof-of-investment"
+          - button "Instant Helper" [ref=e22803] [cursor=pointer]:
+            - img [ref=e22804]
+  - status [ref=e269]: Settings page loaded.
+  - text:       Chats  Contacts   

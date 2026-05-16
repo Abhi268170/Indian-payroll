@@ -1,0 +1,552 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e6]:
+      - link "Zoho" [ref=e8] [cursor=pointer]:
+        - /url: /
+      - list [ref=e10]:
+        - listitem [ref=e11] [cursor=pointer]:
+          - link "People Organize, automate, and simplify your HR processes." [ref=e12]:
+            - /url: /people/?src=zGlobalRelatedProducts
+            - text: People
+        - listitem [ref=e13] [cursor=pointer]:
+          - link "Recruit Intuitive recruiting platform built to provide hiring solutions." [ref=e14]:
+            - /url: /recruit/?src=zGlobalRelatedProducts
+            - text: Recruit
+        - listitem [ref=e15] [cursor=pointer]:
+          - link "Books Powerful accounting platform for growing businesses." [ref=e16]:
+            - /url: /books/?src=zGlobalRelatedProducts
+            - text: Books
+        - listitem [ref=e17] [cursor=pointer]:
+          - link "Mail Secure email service for teams of all sizes." [ref=e18]:
+            - /url: /mail/?src=zGlobalRelatedProducts
+            - text: Mail
+        - listitem [ref=e19] [cursor=pointer]:
+          - link "Expense Effortless expense reporting platform." [ref=e20]:
+            - /url: /expense/?src=zGlobalRelatedProducts
+            - text: Expense
+        - listitem [ref=e21] [cursor=pointer]:
+          - link "ERP ERP software built for businesses to run faster and smarter operations." [ref=e22]:
+            - /url: /en-in/erp/?src=zGlobalRelatedProducts
+            - text: ERP
+        - listitem [ref=e23] [cursor=pointer]: All Products
+      - link "Sign In" [ref=e26] [cursor=pointer]:
+        - /url: https://accounts.zoho.com/signin?servicename=ZohoPayroll&signupurl=https://www.zoho.com/in/payroll/signup/index.html
+    - generic [ref=e28]:
+      - link "Zoho Payroll Homepage" [ref=e29] [cursor=pointer]:
+        - /url: /in/payroll/
+      - list [ref=e32]:
+        - listitem [ref=e33]:
+          - link "Features" [ref=e34] [cursor=pointer]:
+            - /url: /in/payroll/features/
+        - listitem [ref=e35]:
+          - link "Pricing" [ref=e36] [cursor=pointer]:
+            - /url: /in/payroll/pricing/
+        - listitem [ref=e37]:
+          - link "Integrations" [ref=e38] [cursor=pointer]:
+            - /url: /in/payroll/payroll-integrations/
+        - listitem [ref=e39]:
+          - button "Resources" [ref=e40] [cursor=pointer]:
+            - text: Resources
+            - img [ref=e41]
+        - listitem [ref=e43]:
+          - link "Support" [ref=e44] [cursor=pointer]:
+            - /url: /in/payroll/contact-support.html
+  - main [ref=e45]:
+    - generic [ref=e47]:
+      - generic [ref=e48]:
+        - heading "Payroll made easy, scalable, and compliant" [level=1] [ref=e49]
+        - paragraph [ref=e50]: Transform outdated payroll practices and build a better workplace for your business with Zoho Payroll.
+      - generic [ref=e51]:
+        - link "Start My Free Trial" [ref=e52] [cursor=pointer]:
+          - /url: /in/payroll/signup/
+        - button "Request a demo" [ref=e53] [cursor=pointer]
+      - generic [ref=e54]:
+        - generic [ref=e57]:
+          - img "Payroll software India-employee screen" [ref=e58]
+          - img "Payroll software for India-payroll process" [ref=e59]
+        - img "Payroll software dashboard with payroll overview" [ref=e61]
+        - generic [ref=e62]:
+          - img "Payroll software India-employee portal" [ref=e63]
+          - img "Online payroll software India edition employee app" [ref=e64]
+    - generic [ref=e65]:
+      - generic [ref=e66]:
+        - heading "Loved by India's famous startups and world renowned brands" [level=2] [ref=e67]
+        - generic [ref=e68]:
+          - img "dexian" [ref=e69]
+          - img "vedatya" [ref=e70]
+          - img "geeks-for-geeks" [ref=e71]
+          - img "securityhq" [ref=e72]
+          - img "leegality-logo" [ref=e73]
+      - generic [ref=e75]:
+        - img [ref=e77]
+        - list [ref=e83]:
+          - listitem [ref=e84]:
+            - img [ref=e85]
+            - paragraph [ref=e88]: ‌Nation-wide compliance across all offices in India
+          - listitem [ref=e89]:
+            - img [ref=e90]
+            - paragraph [ref=e92]: ‌17,000+ employees get paid every month
+    - generic [ref=e94]:
+      - heading "Effortless payroll" [level=2] [ref=e95]
+      - heading "Get to know Zoho Payroll. Software that makes hard things easy" [level=3] [ref=e96]
+      - generic [ref=e97]:
+        - generic [ref=e98]:
+          - generic [ref=e99]:
+            - heading "Personalize salary components" [level=4] [ref=e100]
+            - paragraph [ref=e101]: Accommodate diverse salary structures that suit each employee and your organisation hierarchy with custom earnings, and deductions.
+          - img "Personalize salary components" [ref=e102]
+        - generic [ref=e103]:
+          - generic [ref=e104]:
+            - heading "Deliver salaries online" [level=4] [ref=e105]
+            - paragraph [ref=e106]: Zoho Payroll has joined hands with reputed banks in India and auto-generates bank advice so you can pay employees online.
+          - img "Deliver salaries online" [ref=e107]
+        - generic [ref=e108]:
+          - generic [ref=e109]:
+            - heading "Simplify contractor payments" [level=4] [ref=e110]
+            - paragraph [ref=e111]: Add contractors, set their reporting roles, handle TDS automatically, and manage their payouts along with employees in one smooth workflow.
+          - img "Simplify contractor payments" [ref=e112]
+        - generic [ref=e113]:
+          - generic [ref=e114]:
+            - heading "Secure payroll with multi-level approvals" [level=4] [ref=e115]
+            - paragraph [ref=e116]: Ensure every pay run passes through the right hands with multi-level approvals, keeping your process completely reliable.
+          - img "Secure payroll with multi-level approvals" [ref=e117]
+        - generic [ref=e118]:
+          - generic [ref=e119]:
+            - heading "Get instant insights with powerful reports" [level=4] [ref=e120]
+            - paragraph [ref=e121]: With auto-generated reports, you'll get a clear picture of your payroll costs, employee salaries, and more, so you can make smarter, data-backed decisions.
+          - img "Get instant insights with powerful reports" [ref=e122]
+        - generic [ref=e123]:
+          - generic [ref=e124]:
+            - heading "Effortless scalability" [level=4] [ref=e125]
+            - paragraph [ref=e126]: From budding start-ups to established large businesses, we help simplify your payroll.
+          - img "Effortless scalability" [ref=e127]
+    - generic [ref=e129]:
+      - img "Leave types in Zoho payroll" [ref=e130]
+      - generic [ref=e131]:
+        - heading "Leave and Attendance" [level=2] [ref=e132]
+        - heading "Manage leave and attendance, built-in." [level=3] [ref=e133]
+        - paragraph [ref=e134]: Create custom leave types, allow employees to apply for leaves, approve or reject leaves, manage attendance - all from within Zoho Payroll.
+      - img "Employee check-in from the ESS portal" [ref=e135]
+    - generic [ref=e138]:
+      - generic [ref=e139]:
+        - heading "Simplified compliance" [level=2] [ref=e140]
+        - heading "Stay compliant, without thinking about compliance" [level=3] [ref=e141]
+        - paragraph [ref=e142]: We handle regionally intricate and distinct compliance regulations all across India, so you don't have to.
+        - img "Security shield with tick – robust payroll security" [ref=e143]
+      - list [ref=e144]:
+        - listitem [ref=e145]:
+          - generic [ref=e146]:
+            - img [ref=e147]
+            - heading "Automated adjustments" [level=4] [ref=e151]
+          - paragraph [ref=e152]: Adapt easily to the ever-changing tax laws.
+        - listitem [ref=e153]:
+          - generic [ref=e154]:
+            - img [ref=e155]
+            - heading "Tax forms" [level=4] [ref=e159]
+          - paragraph [ref=e160]: Download tax forms like 12BB, 24Q, TDS, and Form 16 instantly with e-signature capability built-in.
+        - listitem [ref=e161]:
+          - generic [ref=e162]:
+            - img [ref=e163]
+            - heading "PF, ESI, LWF, PT, and IT" [level=4] [ref=e167]
+          - paragraph [ref=e168]: Keep your business on legal footing across 28 states.
+        - listitem [ref=e169]:
+          - generic [ref=e170]:
+            - img [ref=e171]
+            - heading "Ready-to-file reports" [level=4] [ref=e175]
+          - paragraph [ref=e176]: Auto-generate pre-formatted statutory and tax reports for faster filing.
+    - generic [ref=e177]:
+      - generic [ref=e178]:
+        - heading "Employee self-service portal" [level=2] [ref=e179]
+        - heading "Give your team a modern payroll experience" [level=3] [ref=e180]
+        - generic [ref=e181]:
+          - button "Web and Mobile app" [ref=e182] [cursor=pointer]
+          - button "Instant Payslips" [ref=e183] [cursor=pointer]
+          - button "Digitisation" [ref=e184] [cursor=pointer]
+          - button "Communication" [ref=e185] [cursor=pointer]
+      - generic [ref=e186]:
+        - generic [ref=e187] [cursor=pointer]:
+          - generic [ref=e188]:
+            - heading "Make payroll data accessible anywhere" [level=4] [ref=e189]
+            - paragraph [ref=e190]: Let employees download payslip, tax worksheets, and Form 16s at their convenience, using their web app and mobile, instantly.
+          - img "Make payroll data accessible anywhere" [ref=e192]
+        - generic [ref=e193] [cursor=pointer]:
+          - generic [ref=e194]:
+            - heading "Notify as soon as you pay" [level=4] [ref=e195]
+            - paragraph [ref=e196]: Automatically send salary notification and when you release payslips.
+          - img "Notify as soon as you pay" [ref=e198]
+        - generic [ref=e199] [cursor=pointer]:
+          - generic [ref=e200]:
+            - heading "Digitise payroll operations" [level=4] [ref=e201]
+            - paragraph [ref=e202]: Collect reimbursement requests, IT declarations, and POI submissions online.
+          - img "Digitise payroll operations" [ref=e204]
+        - generic [ref=e205] [cursor=pointer]:
+          - generic [ref=e206]:
+            - heading "Interact with employees in real time" [level=4] [ref=e207]
+            - paragraph [ref=e208]: Replace back-and-forth email threads and handle employee questions faster.
+          - img "Interact with employees in real time" [ref=e210]
+    - generic [ref=e211]:
+      - heading "Integrations" [level=2] [ref=e212]
+      - heading "Natively built. Deeply connected. Inherently collaborative" [level=3] [ref=e213]
+      - paragraph [ref=e214]: Leverage the power of the ever evolving Zoho ecosystem and keep your HR, Payroll, and Finance teams on the same page.
+    - generic [ref=e217]:
+      - generic [ref=e218]:
+        - heading "Custom Integrations" [level=2] [ref=e219]
+        - heading "We can work with systems you already love" [level=3] [ref=e220]
+        - paragraph [ref=e221]: Bring data from your existing systems like Workday, SAP, Oracle, UKG, and Microsoft to streamline things without disrupting your way of doing things through custom integrations.
+        - link "Get in Touch" [ref=e222] [cursor=pointer]:
+          - /url: /in/payroll/contact-support.html
+      - img "Custom integration with existing ERP" [ref=e223]
+    - generic [ref=e225]:
+      - heading "Customise" [level=2] [ref=e226]
+      - heading "Customise and automate the way you want" [level=3] [ref=e227]:
+        - text: Customise and automate
+        - text: the way you want
+      - paragraph [ref=e228]: Build new feature on top of an already powerful platform and make Zoho Payroll work the way you want.
+      - img [ref=e229]
+    - generic [ref=e231]:
+      - generic [ref=e232]:
+        - heading "Advanced Features" [level=2] [ref=e233]
+        - heading "Powerfully engineered to back your unique processes" [level=3] [ref=e234]
+      - list [ref=e236]:
+        - listitem [ref=e237]:
+          - generic [ref=e238]:
+            - img [ref=e239]
+            - heading "Formula based earnings" [level=4] [ref=e245]
+          - paragraph [ref=e246]: Apply formulae to your salary components instead of manually calculating and ensure accuracy.
+        - listitem [ref=e247]:
+          - generic [ref=e248]:
+            - img [ref=e249]
+            - heading "Reporting tags" [level=4] [ref=e255]
+          - paragraph [ref=e256]: Create Tags, associate them with employees and get detailed, customised payroll reports to gain deeper insights.
+        - listitem [ref=e257]:
+          - generic [ref=e258]:
+            - img [ref=e259]
+            - heading "Scheduled earnings" [level=4] [ref=e265]
+          - paragraph [ref=e266]: Configure bonuses or variable pay for employees in advance as a part of any future pay runs.
+        - listitem [ref=e267]:
+          - generic [ref=e268]:
+            - img [ref=e269]
+            - heading "Off-cycle payrun" [level=4] [ref=e275]
+          - paragraph [ref=e276]: Do not wait until the next pay run to pay the bonus and withheld salaries.
+        - listitem [ref=e277]:
+          - generic [ref=e278]:
+            - img [ref=e279]
+            - heading "Document management" [level=4] [ref=e283]
+          - paragraph [ref=e284]: Store and share employee and organizational documents.
+    - generic [ref=e285]:
+      - generic [ref=e286]:
+        - heading "Testimonials" [level=2] [ref=e287]
+        - heading "Loved by both customers and critics" [level=3] [ref=e288]
+      - generic [ref=e290]:
+        - generic [ref=e291]:
+          - img "KRG Technologies logo" [ref=e293]
+          - generic [ref=e294]:
+            - paragraph [ref=e295]: Switching from ADP to Zoho Payroll has been a game-changer for us. The struggle of uploading Excel files is a thing of the past. Now, with Zoho Payroll, it's a seamless process, and we've not only saved precious time but also streamlined our operations like never before.
+            - generic [ref=e297]:
+              - paragraph [ref=e298]: Gnana Jayanthi
+              - paragraph [ref=e299]: Associate manager, KRG Technologies Pvt ltd
+        - generic [ref=e300]:
+          - img "Easy outdesk logo" [ref=e302]
+          - generic [ref=e303]:
+            - paragraph [ref=e304]: Zoho Payroll upgraded our payroll operations. Now, we don't have to spend endless hours sending out payslips after each pay run. With its automation, the process is seamless and efficient.
+            - generic [ref=e306]:
+              - paragraph [ref=e307]: Shahid- Finance manager
+              - paragraph [ref=e308]: Easy outdesk
+        - generic [ref=e309]:
+          - img "Ecotech Services logo" [ref=e311]
+          - generic [ref=e312]:
+            - paragraph [ref=e313]: Our previous payroll software had limited customization options. With Zoho Payroll, we customize according to our policies, and processing pay runs is smooth and efficient. I now spend 110 fewer hours on payroll administration.
+            - generic [ref=e315]:
+              - paragraph [ref=e316]: Anjali Raval
+              - paragraph [ref=e317]: People Manager, Ecotech Services.
+        - generic [ref=e318]:
+          - img "Lifesight logo" [ref=e320]
+          - generic [ref=e321]:
+            - paragraph [ref=e322]: Zoho Payroll's integration with banks and other Zoho applications simplifies salary payouts and associated tasks like payroll accounting, business expense reimbursements, and syncing LOP.
+            - generic [ref=e324]:
+              - paragraph [ref=e325]: Satish Pattnaik
+              - paragraph [ref=e326]: Finance controller, Lifesight
+      - generic [ref=e327]:
+        - button "Go to Previous testimonial" [disabled] [ref=e328]:
+          - img [ref=e329]
+          - text: Go to Previous testimonial
+        - button "Go to Next testimonial" [ref=e332] [cursor=pointer]:
+          - img [ref=e333]
+          - text: Go to Next testimonial
+    - generic [ref=e336]:
+      - heading "Cloud payroll system for growing businesses" [level=2] [ref=e337]
+      - generic [ref=e338]:
+        - link "Start My Free Trial" [ref=e339] [cursor=pointer]:
+          - /url: /in/payroll/signup
+        - button "Request Demo" [ref=e340] [cursor=pointer]
+  - contentinfo [ref=e341]:
+    - generic [ref=e342]:
+      - generic [ref=e343]:
+        - generic [ref=e344]:
+          - generic [ref=e345]:
+            - heading "Help & Resources" [level=4] [ref=e346]
+            - generic [ref=e347]:
+              - list [ref=e349]:
+                - listitem [ref=e350]:
+                  - heading "About Zoho Payroll" [level=5] [ref=e351]
+                - listitem [ref=e352]:
+                  - link "Pricing" [ref=e353] [cursor=pointer]:
+                    - /url: /in/payroll/pricing/
+                - listitem [ref=e354]:
+                  - link "Features" [ref=e355] [cursor=pointer]:
+                    - /url: /in/payroll/features/
+                - listitem [ref=e356]:
+                  - link "Integrations" [ref=e357] [cursor=pointer]:
+                    - /url: /in/payroll/integrations/
+                - listitem [ref=e358]:
+                  - link "Customers" [ref=e359] [cursor=pointer]:
+                    - /url: /in/payroll/customer-testimonial/
+                - listitem [ref=e360]:
+                  - link "Employee Onboarding" [ref=e361] [cursor=pointer]:
+                    - /url: /in/payroll/employees-onboarding/
+                - listitem [ref=e362]:
+                  - link "Payroll Management" [ref=e363] [cursor=pointer]:
+                    - /url: /in/payroll/online-payroll-management/
+                - listitem [ref=e364]:
+                  - link "Payroll Processing" [ref=e365] [cursor=pointer]:
+                    - /url: /in/payroll/payroll-processing/
+                - listitem [ref=e366]:
+                  - link "Employee Self-service Portal" [ref=e367] [cursor=pointer]:
+                    - /url: /in/payroll/employee-self-service-portal/
+                - listitem [ref=e368]:
+                  - link "Statutory compliance and Reporting" [ref=e369] [cursor=pointer]:
+                    - /url: /in/payroll/payroll-compliance/
+              - generic [ref=e370]:
+                - list [ref=e372]:
+                  - listitem [ref=e373]:
+                    - heading "Resources" [level=5] [ref=e374]
+                  - listitem [ref=e375]:
+                    - link "Help" [ref=e376] [cursor=pointer]:
+                      - /url: /in/payroll/help/
+                  - listitem [ref=e377]:
+                    - link "Frequently Asked Questions" [ref=e378] [cursor=pointer]:
+                      - /url: /in/payroll/kb/
+                  - listitem [ref=e379]:
+                    - link "Webinars" [ref=e380] [cursor=pointer]:
+                      - /url: /in/payroll/webinars/
+                  - listitem [ref=e381]:
+                    - link "Academy" [ref=e382] [cursor=pointer]:
+                      - /url: /in/payroll/academy/?src=website-footer-link
+                  - listitem [ref=e383]:
+                    - link "What's New" [ref=e384] [cursor=pointer]:
+                      - /url: /in/payroll/whats-new/
+                - list [ref=e386]:
+                  - listitem [ref=e387]:
+                    - heading "Payroll Partners" [level=5] [ref=e388]
+                  - listitem [ref=e389]:
+                    - link "Payroll Partnership Program" [ref=e390] [cursor=pointer]:
+                      - /url: /in/payroll/partner/
+                  - listitem [ref=e391]:
+                    - link "Find a Payroll Partner" [ref=e392] [cursor=pointer]:
+                      - /url: /in/payroll/find-zoho-payroll-partner/
+                  - listitem [ref=e393]:
+                    - link "Become a Partner" [ref=e394] [cursor=pointer]:
+                      - /url: /partners/partner-signup.html#finance
+              - list [ref=e396]:
+                - listitem [ref=e397]:
+                  - heading "Quick Links" [level=5] [ref=e398]
+                - listitem [ref=e399]:
+                  - link "What is Payroll?" [ref=e400] [cursor=pointer]:
+                    - /url: https://www.zoho.com/blog/payroll/guide-to-payroll-in-india.html
+                - listitem [ref=e401]:
+                  - link "Payroll Software" [ref=e402] [cursor=pointer]:
+                    - /url: /payroll/payroll-software/
+                - listitem [ref=e403]:
+                  - link "HR Payroll Software" [ref=e404] [cursor=pointer]:
+                    - /url: /in/payroll/hr-payroll-software/
+                - listitem [ref=e405]:
+                  - link "Payslip Templates" [ref=e406] [cursor=pointer]:
+                    - /url: /in/payroll/payslip-templates/
+                - listitem [ref=e407]:
+                  - link "Payroll Software vs Spreadsheets" [ref=e408] [cursor=pointer]:
+                    - /url: /in/payroll/payroll-software-vs-spreadsheets/
+                - listitem [ref=e409]:
+                  - link "Payroll Software For Small Business" [ref=e410] [cursor=pointer]:
+                    - /url: /in/payroll/payroll-software-for-small-business/
+                - listitem [ref=e411]:
+                  - link "Free Payroll Software" [ref=e412] [cursor=pointer]:
+                    - /url: /in/payroll/free-payroll-software/
+                - listitem [ref=e413]:
+                  - link "Best Payroll Software" [ref=e414] [cursor=pointer]:
+                    - /url: /in/payroll/best-payroll-software/
+                - listitem [ref=e415]:
+                  - link "Payroll Training Program" [ref=e416] [cursor=pointer]:
+                    - /url: /in/payroll/payroll-training/
+                - listitem [ref=e417]:
+                  - link "Data Security and Privacy" [ref=e418] [cursor=pointer]:
+                    - /url: /in/payroll/data-security-and-privacy/
+                - listitem [ref=e419]:
+                  - link "Payroll Service Provider" [ref=e420] [cursor=pointer]:
+                    - /url: /in/payroll/best-software-for-payroll-service-providers/
+                - listitem [ref=e421]:
+                  - link "Employee Mobile Apps" [ref=e422] [cursor=pointer]:
+                    - /url: /in/payroll/mobile-apps/
+                - listitem [ref=e423]:
+                  - link "Payroll software for enterprises" [ref=e424] [cursor=pointer]:
+                    - /url: /in/payroll/payroll-software-for-enterprises/
+          - generic [ref=e425]:
+            - heading "Free tools" [level=4] [ref=e426]
+            - list [ref=e427]:
+              - listitem [ref=e428]:
+                - link "Income Tax Calculator" [ref=e429] [cursor=pointer]:
+                  - /url: /in/payroll/income-tax-calculator/
+              - listitem [ref=e430]:
+                - link "Statutory Bonus Calculator" [ref=e431] [cursor=pointer]:
+                  - /url: /in/payroll/statutory-bonus-calculator/
+              - listitem [ref=e432]:
+                - link "Gratuity Calculator" [ref=e433] [cursor=pointer]:
+                  - /url: /in/payroll/gratuity-calculator/
+              - listitem [ref=e434]:
+                - link "NPS Calculator" [ref=e435] [cursor=pointer]:
+                  - /url: /in/payroll/nps-calculator/
+              - listitem [ref=e436]:
+                - link "HRA Exemption Calculator" [ref=e437] [cursor=pointer]:
+                  - /url: /in/payroll/hra-exemption-calculator/
+              - listitem [ref=e438]:
+                - link "Payslip Generator" [ref=e439] [cursor=pointer]:
+                  - /url: /in/payroll/free-payslip-generator/?utm_source=free+payroll+tools+&utm_medium=web&utm_campaign=payslip+generator
+              - listitem [ref=e440]:
+                - link "EPS Pension Calculator" [ref=e441] [cursor=pointer]:
+                  - /url: /in/payroll/free-eps-pension-calculator/
+        - generic [ref=e442]:
+          - generic [ref=e443]:
+            - heading "Available on platforms" [level=4] [ref=e444]
+            - list [ref=e445]:
+              - listitem [ref=e446]:
+                - link "Download Zoho Payroll on the App store" [ref=e447] [cursor=pointer]:
+                  - /url: https://apps.apple.com/in/app/zoho-payroll-employee-portal/id1450810850
+                  - img "Download Zoho Payroll on the App store" [ref=e448]
+              - listitem [ref=e449]:
+                - link "Download Zoho Payroll on the Play store" [ref=e450] [cursor=pointer]:
+                  - /url: https://play.google.com/store/apps/details?id=com.zoho.payroll&gl=in
+                  - img "Download Zoho Payroll on the Play store" [ref=e451]
+          - generic [ref=e452]:
+            - heading "Contact us on" [level=4] [ref=e453]
+            - list [ref=e454]:
+              - listitem [ref=e455]:
+                - img [ref=e457]
+                - generic [ref=e459]:
+                  - generic [ref=e460]: Monday to Friday (9:00 AM to 7:00 PM)
+                  - link "Toll-Free 1800 572 6672" [ref=e461] [cursor=pointer]:
+                    - /url: tel:+18005726672
+              - listitem [ref=e462]:
+                - img [ref=e464]
+                - generic [ref=e466]:
+                  - generic [ref=e467]: Email Us
+                  - link "support@zohopayroll.com" [ref=e468] [cursor=pointer]:
+                    - /url: mailto:support@zohopayroll.com
+              - listitem [ref=e469]:
+                - img [ref=e471]
+                - generic [ref=e473]:
+                  - generic [ref=e474]: Partner Support
+                  - link "partner-support@zohopayroll.com" [ref=e475] [cursor=pointer]:
+                    - /url: mailto:support@zohopayroll.com
+          - list [ref=e477]:
+            - listitem [ref=e478]:
+              - img "iso-pii" [ref=e479]
+            - listitem [ref=e480]:
+              - img "iso-ism" [ref=e481]
+            - listitem [ref=e482]:
+              - img "iso-qms" [ref=e483]
+            - listitem [ref=e484]:
+              - img "gdpr" [ref=e485]
+            - listitem [ref=e486]:
+              - img "soc" [ref=e487]
+      - generic [ref=e488]:
+        - generic [ref=e489]:
+          - generic [ref=e490]: "Select Edition :"
+          - generic [ref=e494] [cursor=pointer]: India
+        - generic [ref=e495]:
+          - heading "Find us on our socials :" [level=4] [ref=e496]
+          - generic [ref=e497]:
+            - link "Zoho Payroll X account" [ref=e498] [cursor=pointer]:
+              - /url: https://x.com/ZohoPayroll
+              - img [ref=e499]
+            - link "Zoho Payroll Instagram account" [ref=e501] [cursor=pointer]:
+              - /url: https://www.instagram.com/zohopayroll/
+              - img [ref=e502]
+            - link "Zoho Payroll Youtube account" [ref=e506] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCK3cgoSjRmTPblfjiwMi49A
+              - img [ref=e507]
+            - link "Zoho Payroll LinkedIn account" [ref=e511] [cursor=pointer]:
+              - /url: https://www.linkedin.com/showcase/zoho-payroll
+              - img [ref=e512]
+      - generic [ref=e516]:
+        - heading "Other Zoho Finance & Operations Apps" [level=4] [ref=e517]
+        - list [ref=e518]:
+          - listitem [ref=e519]:
+            - link "Zoho Books" [ref=e520] [cursor=pointer]:
+              - /url: /books/?src=payroll-footer
+              - img "Zoho Books" [ref=e521]
+          - listitem [ref=e522]:
+            - link "Zoho Billing" [ref=e523] [cursor=pointer]:
+              - /url: /billing/?src=payroll-footer
+              - img "Zoho Billing" [ref=e524]
+          - listitem [ref=e525]:
+            - link "Zoho Expense" [ref=e526] [cursor=pointer]:
+              - /url: /expense/?src=payroll-footer
+              - img "Zoho Expense" [ref=e527]
+          - listitem [ref=e528]:
+            - link "Zoho Inventory" [ref=e529] [cursor=pointer]:
+              - /url: /inventory/?src=payroll-footer
+              - img "Zoho Inventory" [ref=e530]
+          - listitem [ref=e531]:
+            - link "Zoho Payments" [ref=e532] [cursor=pointer]:
+              - /url: /payments/?src=payroll-footer
+              - img "Zoho Payments" [ref=e533]
+          - listitem [ref=e534]:
+            - link "Zoho Commerce" [ref=e535] [cursor=pointer]:
+              - /url: /commerce/?src=payroll-footer
+              - img "Zoho Commerce" [ref=e536]
+          - listitem [ref=e537]:
+            - link "Zoho Practice" [ref=e538] [cursor=pointer]:
+              - /url: /practice/?src=payroll-footer
+              - img "Zoho Practice" [ref=e539]
+      - generic:
+        - list
+    - generic [ref=e541]:
+      - list [ref=e542]:
+        - listitem [ref=e543]:
+          - link "Contact" [ref=e544] [cursor=pointer]:
+            - /url: /contactus.html
+        - listitem [ref=e545]:
+          - link "Security" [ref=e546] [cursor=pointer]:
+            - /url: /security.html
+        - listitem [ref=e547]:
+          - link "Compliance" [ref=e548] [cursor=pointer]:
+            - /url: /compliance.html
+        - listitem [ref=e549]:
+          - link "IPR Complaints" [ref=e550] [cursor=pointer]:
+            - /url: /ipr-complaints.html
+        - listitem [ref=e551]:
+          - link "Anti-spam Policy" [ref=e552] [cursor=pointer]:
+            - /url: /policy.html
+        - listitem [ref=e553]:
+          - link "Terms of Service" [ref=e554] [cursor=pointer]:
+            - /url: /terms.html
+        - listitem [ref=e555]:
+          - link "Privacy Policy" [ref=e556] [cursor=pointer]:
+            - /url: /privacy.html
+        - listitem [ref=e557]:
+          - link "Trademark Policy" [ref=e558] [cursor=pointer]:
+            - /url: /trademark-usage-guideliines.html
+        - listitem [ref=e559]:
+          - link "Cookie Policy" [ref=e560] [cursor=pointer]:
+            - /url: https://www.zoho.com/privacy/cookie-policy.html
+        - listitem [ref=e561]:
+          - link "GDPR Compliance" [ref=e562] [cursor=pointer]:
+            - /url: /gdpr.html
+        - listitem [ref=e563]:
+          - link "Abuse Policy" [ref=e564] [cursor=pointer]:
+            - /url: https://www.zoho.com/abuse-policy/
+      - paragraph [ref=e565]: © 2026, Zoho Corporation Pvt. Ltd. All Rights Reserved.
+    - button "Request a demo" [ref=e567] [cursor=pointer]:
+      - generic [ref=e568]: Request a demo
+  - text:  
+  - generic:
+    - generic "Cookie consent banner"

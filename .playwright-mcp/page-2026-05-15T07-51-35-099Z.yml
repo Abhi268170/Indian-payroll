@@ -1,0 +1,511 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e528]:
+      - generic [ref=e530]:
+        - generic [ref=e531]:
+          - button "All Settings" [ref=e532] [cursor=pointer]:
+            - img [ref=e533]
+          - button [ref=e538] [cursor=pointer]:
+            - img [ref=e539]
+          - generic [ref=e541]:
+            - generic [ref=e542]: All Settings
+            - generic [ref=e543]: lerno
+        - generic [ref=e545]:
+          - combobox "Search" [ref=e549]
+          - img [ref=e550]
+        - button "Close Settings" [ref=e554] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e555]
+      - generic [ref=e557]:
+        - navigation [ref=e558]:
+          - generic [ref=e560]:
+            - group [ref=e561]:
+              - heading "Organisation Settings" [level=2] [ref=e562]
+              - generic [ref=e563]:
+                - region "Organisation" [ref=e565]:
+                  - generic [ref=e566]:
+                    - heading "Organisation" [level=3] [ref=e567] [cursor=pointer]:
+                      - button "Organisation" [ref=e568]:
+                        - img [ref=e2084]
+                        - generic [ref=e571]: Organisation
+                    - text:      
+                - generic [ref=e585]:
+                  - region "Users and Roles" [ref=e586]:
+                    - generic [ref=e587]:
+                      - heading "Users and Roles" [level=3] [ref=e588] [cursor=pointer]:
+                        - button "Users and Roles" [expanded] [ref=e589]:
+                          - img [ref=e2086]
+                          - generic [ref=e592]: Users and Roles
+                      - region "Users and Roles" [ref=e2114]:
+                        - generic [ref=e593]:
+                          - link "Users" [ref=e594] [cursor=pointer]:
+                            - /url: "#/settings/users-roles/users"
+                            - generic [ref=e595]: Users
+                            - text: 
+                          - link "Roles" [ref=e596] [cursor=pointer]:
+                            - /url: "#/settings/users-roles/roles"
+                            - generic [ref=e597]: Roles
+                            - text: 
+                  - region "Taxes" [ref=e598]:
+                    - generic [ref=e599]:
+                      - heading "Taxes" [level=3] [ref=e600] [cursor=pointer]:
+                        - button "Taxes" [ref=e601]:
+                          - img [ref=e602]
+                          - generic [ref=e604]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e609]:
+                  - generic [ref=e610]:
+                    - heading "Setup & Configurations" [level=3] [ref=e611] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e612]:
+                        - img [ref=e613]
+                        - generic [ref=e615]: Setup & Configurations
+                    - text:     
+                - region "Customisations" [ref=e628]:
+                  - generic [ref=e629]:
+                    - heading "Customisations" [level=3] [ref=e630] [cursor=pointer]:
+                      - button "Customisations" [ref=e631]:
+                        - img [ref=e632]
+                        - generic [ref=e634]: Customisations
+                    - text:     
+                - region "Automations" [ref=e647]:
+                  - generic [ref=e648]:
+                    - heading "Automations" [level=3] [ref=e649] [cursor=pointer]:
+                      - button "Automations" [ref=e650]:
+                        - img [ref=e651]
+                        - generic [ref=e653]: Automations
+                    - text:    
+            - group [ref=e663]:
+              - heading "Module Settings" [level=2] [ref=e664]
+              - generic [ref=e665]:
+                - region "General" [ref=e667]:
+                  - generic [ref=e668]:
+                    - heading "General" [level=3] [ref=e669] [cursor=pointer]:
+                      - button "General" [ref=e670]:
+                        - img [ref=e671]
+                        - generic [ref=e673]: General
+                    - text:     
+                - region "Payments" [ref=e686]:
+                  - generic [ref=e687]:
+                    - heading "Payments" [level=3] [ref=e688] [cursor=pointer]:
+                      - button "Payments" [ref=e689]:
+                        - img [ref=e690]
+                        - generic [ref=e692]: Payments
+                    - text: 
+            - group [ref=e696]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e697]
+              - generic [ref=e698]:
+                - region "Integrations" [ref=e700]:
+                  - generic [ref=e701]:
+                    - heading "Integrations" [level=3] [ref=e702] [cursor=pointer]:
+                      - button "Integrations" [ref=e703]:
+                        - img [ref=e704]
+                        - generic [ref=e706]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e711]:
+                  - generic [ref=e712]:
+                    - heading "Developer Data" [level=3] [ref=e713] [cursor=pointer]:
+                      - button "Developer Data" [ref=e714]:
+                        - img [ref=e715]
+                        - generic [ref=e717]: Developer Data
+                    - text:   
+        - main [ref=e2936]:
+          - generic [ref=e2938]:
+            - heading "View Roles" [level=3] [ref=e2939]
+            - link "Close" [ref=e2941] [cursor=pointer]:
+              - /url: "#/settings/users-roles/roles"
+              - img [ref=e2942]
+          - generic [ref=e2946]:
+            - generic [ref=e2947]:
+              - generic [ref=e2948]: Role Name*
+              - textbox "Role Name*" [disabled] [ref=e2950]: Manager
+            - generic [ref=e2951]:
+              - generic [ref=e2952]: Description
+              - textbox "Description" [disabled] [ref=e2954]:
+                - /placeholder: Max 500 Characters
+                - text: Access to all modules except organisation settings.
+            - generic [ref=e2955]:
+              - generic [ref=e2957]:
+                - generic [ref=e2958]:
+                  - generic [ref=e2959]: Employee
+                  - generic [ref=e2960]:
+                    - button
+                - table [ref=e2962]:
+                  - rowgroup [ref=e2966]:
+                    - row "Full Access View Create Edit Delete" [ref=e2967]:
+                      - cell [ref=e2968]
+                      - cell "Full Access" [ref=e2969]
+                      - cell "View" [ref=e2970]
+                      - cell "Create" [ref=e2971]
+                      - cell "Edit" [ref=e2972]
+                      - cell "Delete" [ref=e2973]
+                  - rowgroup [ref=e2974]:
+                    - row "Basic And Personal Details" [ref=e2975]:
+                      - cell "Basic And Personal Details" [ref=e2976]
+                      - cell [ref=e2977]:
+                        - checkbox [checked] [disabled] [ref=e2978]
+                      - cell [ref=e2979]:
+                        - checkbox [checked] [disabled] [ref=e2980]
+                      - cell [ref=e2981]:
+                        - checkbox [checked] [disabled] [ref=e2982]
+                      - cell [ref=e2983]:
+                        - checkbox [checked] [disabled] [ref=e2984]
+                      - cell [ref=e2985]
+                    - row "Salary Details" [ref=e2986]:
+                      - cell "Salary Details" [ref=e2987]
+                      - cell [ref=e2988]:
+                        - checkbox [checked] [disabled] [ref=e2989]
+                      - cell [ref=e2990]:
+                        - checkbox [checked] [disabled] [ref=e2991]
+                      - cell [ref=e2992]
+                      - cell [ref=e2993]:
+                        - checkbox [checked] [disabled] [ref=e2994]
+                      - cell [ref=e2995]
+                    - row "Payment Information" [ref=e2996]:
+                      - cell "Payment Information" [ref=e2997]
+                      - cell [ref=e2998]:
+                        - checkbox [checked] [disabled] [ref=e2999]
+                      - cell [ref=e3000]:
+                        - checkbox [checked] [disabled] [ref=e3001]
+                      - cell [ref=e3002]
+                      - cell [ref=e3003]:
+                        - checkbox [checked] [disabled] [ref=e3004]
+                      - cell [ref=e3005]
+                    - row "Salary Revision" [ref=e3006]:
+                      - cell "Salary Revision" [ref=e3007]
+                      - cell [ref=e3008]:
+                        - checkbox [checked] [disabled] [ref=e3009]
+                      - cell [ref=e3010]:
+                        - checkbox [checked] [disabled] [ref=e3011]
+                      - cell [ref=e3012]
+                      - cell [ref=e3013]:
+                        - checkbox [checked] [disabled] [ref=e3014]
+                      - cell [ref=e3015]
+                    - row "Leave" [ref=e3016]:
+                      - cell "Leave" [ref=e3017]
+                      - cell [ref=e3018]:
+                        - checkbox [disabled] [ref=e3019]
+                      - cell [ref=e3020]:
+                        - checkbox [disabled] [ref=e3021]
+                      - cell [ref=e3022]:
+                        - checkbox [disabled] [ref=e3023]
+                      - cell [ref=e3024]:
+                        - checkbox [disabled] [ref=e3025]
+                      - cell [ref=e3026]:
+                        - checkbox [disabled] [ref=e3027]
+                    - row "Attendance" [ref=e3028]:
+                      - cell "Attendance" [ref=e3029]
+                      - cell [ref=e3030]:
+                        - checkbox [disabled] [ref=e3031]
+                      - cell [ref=e3032]:
+                        - checkbox [disabled] [ref=e3033]
+                      - cell [ref=e3034]:
+                        - checkbox [disabled] [ref=e3035]
+                      - cell [ref=e3036]
+                      - cell [ref=e3037]:
+                        - checkbox [disabled] [ref=e3038]
+                    - row "Perquisites" [ref=e3039]:
+                      - cell "Perquisites" [ref=e3040]
+                      - cell [ref=e3041]:
+                        - checkbox [checked] [disabled] [ref=e3042]
+                      - cell [ref=e3043]:
+                        - checkbox [checked] [disabled] [ref=e3044]
+                      - cell [ref=e3045]
+                      - cell [ref=e3046]:
+                        - checkbox [checked] [disabled] [ref=e3047]
+                      - cell [ref=e3048]
+                    - row "Loan Summary" [ref=e3049]:
+                      - cell "Loan Summary" [ref=e3050]
+                      - cell [ref=e3051]:
+                        - checkbox [checked] [disabled] [ref=e3052]
+                      - cell [ref=e3053]:
+                        - checkbox [checked] [disabled] [ref=e3054]
+                      - cell [ref=e3055]
+                      - cell [ref=e3056]
+                      - cell [ref=e3057]
+                    - row "Reimbursement Summary" [ref=e3058]:
+                      - cell "Reimbursement Summary" [ref=e3059]
+                      - cell [ref=e3060]:
+                        - checkbox [checked] [disabled] [ref=e3061]
+                      - cell [ref=e3062]:
+                        - checkbox [checked] [disabled] [ref=e3063]
+                      - cell [ref=e3064]
+                      - cell [ref=e3065]
+                      - cell [ref=e3066]
+                    - row "Declarations" [ref=e3067]:
+                      - cell "Declarations" [ref=e3068]
+                      - cell [ref=e3069]:
+                        - checkbox [checked=mixed] [disabled] [ref=e3070]
+                      - cell [ref=e3071]:
+                        - checkbox [checked] [disabled] [ref=e3072]
+                      - cell [ref=e3073]
+                      - cell [ref=e3074]:
+                        - checkbox [checked] [disabled] [ref=e3075]
+                      - cell [ref=e3076]:
+                        - checkbox [disabled] [ref=e3077]
+                    - row [ref=e3078]:
+                      - cell [ref=e3079]
+                    - row "Provide access to view and download employee Payslips, TDS worksheets and Forms." [ref=e3081]:
+                      - cell "Provide access to view and download employee Payslips, TDS worksheets and Forms." [ref=e3082]:
+                        - generic [ref=e3084] [cursor=pointer]:
+                          - checkbox "Provide access to view and download employee Payslips, TDS worksheets and Forms." [checked] [disabled] [ref=e3085]
+                          - text: Provide access to view and download employee Payslips, TDS worksheets and Forms.
+                    - row "Provide access to terminate an employee from the organisation." [ref=e3086]:
+                      - cell "Provide access to terminate an employee from the organisation." [ref=e3087]:
+                        - generic [ref=e3089] [cursor=pointer]:
+                          - checkbox "Provide access to terminate an employee from the organisation." [checked] [disabled] [ref=e3090]
+                          - text: Provide access to terminate an employee from the organisation.
+                    - row "Provide access to delete an employee who isn't associated to any Payrun." [ref=e3091]:
+                      - cell "Provide access to delete an employee who isn't associated to any Payrun." [ref=e3092]:
+                        - generic [ref=e3094] [cursor=pointer]:
+                          - checkbox "Provide access to delete an employee who isn't associated to any Payrun." [checked] [disabled] [ref=e3095]
+                          - text: Provide access to delete an employee who isn't associated to any Payrun.
+              - generic [ref=e3097]:
+                - generic [ref=e3098]:
+                  - generic [ref=e3099]: Payroll Run
+                  - generic [ref=e3100]:
+                    - button
+                - table [ref=e3102]:
+                  - rowgroup [ref=e3106]:
+                    - row "Full Access View Create Edit Approve Pay" [ref=e3107]:
+                      - cell [ref=e3108]
+                      - cell "Full Access" [ref=e3109]
+                      - cell "View" [ref=e3110]
+                      - cell "Create" [ref=e3111]
+                      - cell "Edit" [ref=e3112]
+                      - cell "Approve" [ref=e3113]
+                      - cell "Pay" [ref=e3114]
+                  - rowgroup [ref=e3115]:
+                    - row "Payroll Run" [ref=e3116]:
+                      - cell "Payroll Run" [ref=e3117]
+                      - cell [ref=e3118]:
+                        - checkbox [checked] [disabled] [ref=e3119]
+                      - cell [ref=e3120]:
+                        - checkbox [checked] [disabled] [ref=e3121]
+                      - cell [ref=e3122]:
+                        - checkbox [checked] [disabled] [ref=e3123]
+                      - cell [ref=e3124]:
+                        - checkbox [checked] [disabled] [ref=e3125]
+                      - cell [ref=e3126]:
+                        - checkbox [checked] [disabled] [ref=e3127]
+                      - cell [ref=e3128]:
+                        - checkbox [checked] [disabled] [ref=e3129]
+              - generic [ref=e3131]:
+                - generic [ref=e3132]:
+                  - generic [ref=e3133]: Loan
+                  - generic [ref=e3134]:
+                    - button
+                - table [ref=e3136]:
+                  - rowgroup [ref=e3140]:
+                    - row "Full Access View Create Edit Approve Record Disbursement" [ref=e3141]:
+                      - cell [ref=e3142]
+                      - cell "Full Access" [ref=e3143]
+                      - cell "View" [ref=e3144]
+                      - cell "Create" [ref=e3145]
+                      - cell "Edit" [ref=e3146]
+                      - cell "Approve" [ref=e3147]
+                      - cell "Record Disbursement" [ref=e3148]
+                  - rowgroup [ref=e3149]:
+                    - row "Loan" [ref=e3150]:
+                      - cell "Loan" [ref=e3151]
+                      - cell [ref=e3152]:
+                        - checkbox [checked] [disabled] [ref=e3153]
+                      - cell [ref=e3154]:
+                        - checkbox [checked] [disabled] [ref=e3155]
+                      - cell [ref=e3156]:
+                        - checkbox [checked] [disabled] [ref=e3157]
+                      - cell [ref=e3158]:
+                        - checkbox [checked] [disabled] [ref=e3159]
+                      - cell [ref=e3160]:
+                        - checkbox [checked] [disabled] [ref=e3161]
+                      - cell [ref=e3162]:
+                        - checkbox [checked] [disabled] [ref=e3163]
+              - generic [ref=e3165]:
+                - generic [ref=e3167]: Approvals
+                - table [ref=e3169]:
+                  - rowgroup [ref=e3173]:
+                    - row "Full Access View Create Edit Delete Approve" [ref=e3174]:
+                      - cell [ref=e3175]
+                      - cell "Full Access" [ref=e3176]
+                      - cell "View" [ref=e3177]
+                      - cell "Create" [ref=e3178]
+                      - cell "Edit" [ref=e3179]
+                      - cell "Delete" [ref=e3180]
+                      - cell "Approve" [ref=e3181]
+                  - rowgroup [ref=e3182]:
+                    - row "Reimbursements" [ref=e3183]:
+                      - cell "Reimbursements" [ref=e3184]
+                      - cell [ref=e3185]:
+                        - checkbox [checked=mixed] [disabled] [ref=e3186]
+                      - cell [ref=e3187]:
+                        - checkbox [checked] [disabled] [ref=e3188]
+                      - cell [ref=e3189]:
+                        - checkbox [checked] [disabled] [ref=e3190]
+                      - cell [ref=e3191]:
+                        - checkbox [checked] [disabled] [ref=e3192]
+                      - cell [ref=e3193]:
+                        - checkbox [disabled] [ref=e3194]
+                      - cell [ref=e3195]:
+                        - checkbox [checked] [disabled] [ref=e3196]
+                    - row [ref=e3197]:
+                      - cell [ref=e3198]
+                    - row "Provide access to approve Proof Of Investments." [ref=e3200]:
+                      - cell "Provide access to approve Proof Of Investments." [ref=e3201]:
+                        - generic [ref=e3203] [cursor=pointer]:
+                          - checkbox "Provide access to approve Proof Of Investments." [checked] [disabled] [ref=e3204]
+                          - text: Provide access to approve Proof Of Investments.
+                    - row "Provide access to approve Salary Revisions." [ref=e3205]:
+                      - cell "Provide access to approve Salary Revisions." [ref=e3206]:
+                        - generic [ref=e3208] [cursor=pointer]:
+                          - checkbox "Provide access to approve Salary Revisions." [checked] [disabled] [ref=e3209]
+                          - text: Provide access to approve Salary Revisions.
+                    - row "Provide access to approve Leave Requests." [ref=e3210]:
+                      - cell "Provide access to approve Leave Requests." [ref=e3211]:
+                        - generic [ref=e3213] [cursor=pointer]:
+                          - checkbox "Provide access to approve Leave Requests." [disabled] [ref=e3214]
+                          - text: Provide access to approve Leave Requests.
+                    - row "Provide access to approve Attendance Regularization requests." [ref=e3215]:
+                      - cell "Provide access to approve Attendance Regularization requests." [ref=e3216]:
+                        - generic [ref=e3218] [cursor=pointer]:
+                          - checkbox "Provide access to approve Attendance Regularization requests." [disabled] [ref=e3219]
+                          - text: Provide access to approve Attendance Regularization requests.
+              - generic [ref=e3221]:
+                - generic [ref=e3225] [cursor=pointer]:
+                  - checkbox "Settings" [disabled] [ref=e3226]
+                  - text: Settings
+                - generic [ref=e3228]:
+                  - generic [ref=e3230] [cursor=pointer]:
+                    - checkbox "Update organization profile" [disabled] [ref=e3231]
+                    - text: Update organization profile
+                  - generic [ref=e3233] [cursor=pointer]:
+                    - checkbox "Work Location" [disabled] [ref=e3234]
+                    - text: Work Location
+                  - generic [ref=e3236] [cursor=pointer]:
+                    - checkbox "Department" [disabled] [ref=e3237]
+                    - text: Department
+                  - generic [ref=e3239] [cursor=pointer]:
+                    - checkbox "Designation" [disabled] [ref=e3240]
+                    - text: Designation
+                  - generic [ref=e3242] [cursor=pointer]:
+                    - checkbox "Manage Users" [disabled] [ref=e3243]
+                    - text: Manage Users
+                  - generic [ref=e3245] [cursor=pointer]:
+                    - checkbox "Taxes" [disabled] [ref=e3246]
+                    - text: Taxes
+                  - generic [ref=e3248] [cursor=pointer]:
+                    - checkbox "Pay Schedule" [disabled] [ref=e3249]
+                    - text: Pay Schedule
+                  - generic [ref=e3251] [cursor=pointer]:
+                    - checkbox "Salary and Statutory Components" [disabled] [ref=e3252]
+                    - text: Salary and Statutory Components
+                  - generic [ref=e3254] [cursor=pointer]:
+                    - checkbox "Email Templates" [disabled] [ref=e3255]
+                    - text: Email Templates
+                  - generic [ref=e3257] [cursor=pointer]:
+                    - checkbox "Salary Templates" [disabled] [ref=e3258]
+                    - text: Salary Templates
+                  - generic [ref=e3260] [cursor=pointer]:
+                    - checkbox "Reporting Tags" [disabled] [ref=e3261]
+                    - text: Reporting Tags
+                  - generic [ref=e3263] [cursor=pointer]:
+                    - checkbox "Automation" [disabled] [ref=e3264]
+                    - text: Automation
+                    - img [ref=e3267]
+                  - generic [ref=e3270] [cursor=pointer]:
+                    - checkbox "Custom Fields" [disabled] [ref=e3271]
+                    - text: Custom Fields
+                  - generic [ref=e3273] [cursor=pointer]:
+                    - checkbox "Holidays" [disabled] [ref=e3274]
+                    - text: Holidays
+                  - generic [ref=e3276] [cursor=pointer]:
+                    - checkbox "Leave" [disabled] [ref=e3277]
+                    - text: Leave
+                  - generic [ref=e3279] [cursor=pointer]:
+                    - checkbox "Attendance" [disabled] [ref=e3280]
+                    - text: Attendance
+                  - generic [ref=e3282] [cursor=pointer]:
+                    - checkbox "Provide access to protected data" [disabled] [ref=e3283]
+                    - text: Provide access to protected data
+                    - img [ref=e3286]
+                  - generic [ref=e3289] [cursor=pointer]:
+                    - checkbox "Integration" [disabled] [ref=e3290]
+                    - text: Integration
+                  - generic [ref=e3292] [cursor=pointer]:
+                    - checkbox "Incoming Webhook" [disabled] [ref=e3293]
+                    - text: Incoming Webhook
+                    - img [ref=e3296]
+              - generic [ref=e3299]:
+                - generic [ref=e3303] [cursor=pointer]:
+                  - checkbox "Preferences" [disabled] [ref=e3304]
+                  - text: Preferences
+                - generic [ref=e3306]:
+                  - generic [ref=e3308] [cursor=pointer]:
+                    - checkbox "Reimbursement and FBP Settings" [disabled] [ref=e3309]
+                    - text: Reimbursement and FBP Settings
+                  - generic [ref=e3311] [cursor=pointer]:
+                    - checkbox "IT Declaration Settings" [disabled] [ref=e3312]
+                    - text: IT Declaration Settings
+                  - generic [ref=e3314] [cursor=pointer]:
+                    - checkbox "Approval Preferences" [disabled] [ref=e3315]
+                    - text: Approval Preferences
+              - generic [ref=e3317]:
+                - generic [ref=e3321] [cursor=pointer]:
+                  - checkbox "Report" [checked=mixed] [disabled] [ref=e3322]
+                  - text: Report
+                - generic [ref=e3324]:
+                  - generic [ref=e3326] [cursor=pointer]:
+                    - checkbox "Payroll Reports" [checked] [disabled] [ref=e3327]
+                    - text: Payroll Reports
+                  - generic [ref=e3329] [cursor=pointer]:
+                    - checkbox "Statutory Reports" [checked] [disabled] [ref=e3330]
+                    - text: Statutory Reports
+                  - generic [ref=e3332] [cursor=pointer]:
+                    - checkbox "Declaration Reports" [checked] [disabled] [ref=e3333]
+                    - text: Declaration Reports
+                  - generic [ref=e3335] [cursor=pointer]:
+                    - checkbox "Deduction Reports" [checked] [disabled] [ref=e3336]
+                    - text: Deduction Reports
+                  - generic [ref=e3338] [cursor=pointer]:
+                    - checkbox "Tax Reports" [checked] [disabled] [ref=e3339]
+                    - text: Tax Reports
+                  - generic [ref=e3341] [cursor=pointer]:
+                    - checkbox "Loan Reports" [checked] [disabled] [ref=e3342]
+                    - text: Loan Reports
+                  - generic [ref=e3344] [cursor=pointer]:
+                    - checkbox "Leave Reports" [disabled] [ref=e3345]
+                    - text: Leave Reports
+                  - generic [ref=e3347] [cursor=pointer]:
+                    - checkbox "Attendance Reports" [disabled] [ref=e3348]
+                    - text: Attendance Reports
+                  - generic [ref=e3350] [cursor=pointer]:
+                    - checkbox "Activity Logs" [checked] [disabled] [ref=e3351]
+                    - text: Activity Logs
+              - generic [ref=e3353]:
+                - generic [ref=e3357] [cursor=pointer]:
+                  - checkbox "Documents" [checked] [disabled] [ref=e3358]
+                  - text: Documents
+                - generic [ref=e3360]:
+                  - generic [ref=e3362] [cursor=pointer]:
+                    - checkbox "View Documents" [checked] [disabled] [ref=e3363]
+                    - text: View Documents
+                  - generic [ref=e3365] [cursor=pointer]:
+                    - checkbox "Upload Documents" [checked] [disabled] [ref=e3366]
+                    - text: Upload Documents
+                  - generic [ref=e3368] [cursor=pointer]:
+                    - checkbox "Delete Documents" [checked] [disabled] [ref=e3369]
+                    - text: Delete Documents
+                  - generic [ref=e3371] [cursor=pointer]:
+                    - checkbox "Manage Folder" [checked] [disabled] [ref=e3372]
+                    - text: Manage Folder
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Settings Edit Role page loaded.
+  - text:       Chats  Contacts   

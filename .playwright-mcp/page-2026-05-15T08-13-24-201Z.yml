@@ -1,0 +1,157 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e7569]:
+      - generic [ref=e7571]:
+        - generic [ref=e7572]:
+          - button "All Settings" [ref=e7573] [cursor=pointer]:
+            - img [ref=e7574]
+          - button [ref=e7579] [cursor=pointer]:
+            - img [ref=e7580]
+          - generic [ref=e7582]:
+            - generic [ref=e7583]: All Settings
+            - generic [ref=e7584]: lerno
+        - generic [ref=e7586]:
+          - combobox "Search" [active] [ref=e7590]
+          - img [ref=e7591]
+        - button "Close Settings" [ref=e7595] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e7596]
+      - generic [ref=e7598]:
+        - navigation [ref=e7599]:
+          - generic [ref=e7601]:
+            - group [ref=e7602]:
+              - heading "Organisation Settings" [level=2] [ref=e7603]
+              - generic [ref=e7604]:
+                - region "Organisation" [ref=e7606]:
+                  - generic [ref=e7607]:
+                    - heading "Organisation" [level=3] [ref=e7608] [cursor=pointer]:
+                      - button "Organisation" [ref=e7609]:
+                        - img [ref=e7610]
+                        - generic [ref=e7612]: Organisation
+                    - text:      
+                - generic [ref=e7626]:
+                  - region "Users and Roles" [ref=e7627]:
+                    - generic [ref=e7628]:
+                      - heading "Users and Roles" [level=3] [ref=e7629] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e7630]:
+                          - img [ref=e7631]
+                          - generic [ref=e7633]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e7639]:
+                    - generic [ref=e7640]:
+                      - heading "Taxes" [level=3] [ref=e7641] [cursor=pointer]:
+                        - button "Taxes" [ref=e7642]:
+                          - img [ref=e7643]
+                          - generic [ref=e7645]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e7650]:
+                  - generic [ref=e7651]:
+                    - heading "Setup & Configurations" [level=3] [ref=e7652] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e7653]:
+                        - img [ref=e7654]
+                        - generic [ref=e7656]: Setup & Configurations
+                    - text:     
+                - region "Customisations" [ref=e7669]:
+                  - generic [ref=e7670]:
+                    - heading "Customisations" [level=3] [ref=e7671] [cursor=pointer]:
+                      - button "Customisations" [expanded] [ref=e7672]:
+                        - img [ref=e7673]
+                        - generic [ref=e7675]: Customisations
+                    - region "Customisations" [ref=e7809]:
+                      - generic [ref=e7676]:
+                        - link "Email Templates" [ref=e7677] [cursor=pointer]:
+                          - /url: "#/settings/email-templates"
+                          - generic [ref=e7678]: Email Templates
+                          - text: 
+                        - link "Sender Email Preferences" [ref=e7679] [cursor=pointer]:
+                          - /url: "#/settings/email-preference"
+                          - generic [ref=e7680]: Sender Email Preferences
+                          - text: 
+                        - link "Salary Templates" [ref=e7681] [cursor=pointer]:
+                          - /url: "#/settings/salary-templates"
+                          - generic [ref=e7682]: Salary Templates
+                          - text: 
+                        - link "PDF Templates" [ref=e7683] [cursor=pointer]:
+                          - /url: "#/settings/templates/regular-payslip"
+                          - generic [ref=e7684]: PDF Templates
+                          - text: 
+                        - link "Reporting Tags" [ref=e7685] [cursor=pointer]:
+                          - /url: "#/settings/advanced-reportingtags"
+                          - generic [ref=e7686]: Reporting Tags
+                          - text: 
+                - region "Automations" [ref=e7688]:
+                  - generic [ref=e7689]:
+                    - heading "Automations" [level=3] [ref=e7690] [cursor=pointer]:
+                      - button "Automations" [ref=e7691]:
+                        - img [ref=e7692]
+                        - generic [ref=e7694]: Automations
+                    - text:    
+            - group [ref=e7704]:
+              - heading "Module Settings" [level=2] [ref=e7705]
+              - generic [ref=e7706]:
+                - region "General" [ref=e7708]:
+                  - generic [ref=e7709]:
+                    - heading "General" [level=3] [ref=e7710] [cursor=pointer]:
+                      - button "General" [ref=e7711]:
+                        - img [ref=e7712]
+                        - generic [ref=e7714]: General
+                    - text:     
+                - region "Payments" [ref=e7727]:
+                  - generic [ref=e7728]:
+                    - heading "Payments" [level=3] [ref=e7729] [cursor=pointer]:
+                      - button "Payments" [ref=e7730]:
+                        - img [ref=e7731]
+                        - generic [ref=e7733]: Payments
+                    - text: 
+            - group [ref=e7737]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e7738]
+              - generic [ref=e7739]:
+                - region "Integrations" [ref=e7741]:
+                  - generic [ref=e7742]:
+                    - heading "Integrations" [level=3] [ref=e7743] [cursor=pointer]:
+                      - button "Integrations" [ref=e7744]:
+                        - img [ref=e7745]
+                        - generic [ref=e7747]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e7752]:
+                  - generic [ref=e7753]:
+                    - heading "Developer Data" [level=3] [ref=e7754] [cursor=pointer]:
+                      - button "Developer Data" [ref=e7755]:
+                        - img [ref=e7756]
+                        - generic [ref=e7758]: Developer Data
+                    - text:   
+        - generic [ref=e7766]:
+          - heading "PDF Templates" [level=3] [ref=e7768]
+          - list [ref=e7770]:
+            - listitem [ref=e7771]: payslip
+            - listitem [ref=e7772]:
+              - link "Regular Payslips" [ref=e7773] [cursor=pointer]:
+                - /url: "#/settings/templates/regular-payslip"
+            - listitem [ref=e7774]:
+              - link "Final Settlement Payslip" [ref=e7775] [cursor=pointer]:
+                - /url: "#/settings/templates/final-settlement-payslip"
+            - listitem
+            - listitem [ref=e7776]: Letter Templates
+            - listitem [ref=e7777]:
+              - link "Salary Certificate" [ref=e7778] [cursor=pointer]:
+                - /url: "#/settings/templates/letter-templates/salary-certificate"
+            - listitem [ref=e7779]:
+              - link "Salary Revision Letter" [ref=e7780] [cursor=pointer]:
+                - /url: "#/settings/templates/letter-templates/salary-revision"
+            - listitem [ref=e7781]:
+              - link "Bonus Letter" [ref=e7782] [cursor=pointer]:
+                - /url: "#/settings/templates/letter-templates/bonus-letter"
+        - main [ref=e7831]
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Settings PDF Templates Final Settlement Payslip page loaded.
+  - text:       Chats  Contacts   

@@ -1,0 +1,179 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e5]:
+      - navigation:
+        - generic [ref=e7]:
+          - img "Zoho Payroll" [ref=e8]
+          - generic [ref=e9]: Payroll
+        - generic [ref=e13]:
+          - button "Advanced Search" [ref=e14] [cursor=pointer]:
+            - img [ref=e15]
+          - textbox "Search in Employee" [ref=e19]
+        - generic [ref=e21]:
+          - generic [ref=e24] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e26] [cursor=pointer]
+          - button "lerno" [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]: lerno
+            - img [ref=e32]
+          - button "Refer and Earn" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+          - button "Notifications" [ref=e41] [cursor=pointer]:
+            - generic [ref=e42]:
+              - generic [ref=e43]: "4"
+              - img [ref=e44]
+          - button "Settings" [ref=e47] [cursor=pointer]:
+            - img [ref=e48]
+          - button "A" [ref=e53] [cursor=pointer]:
+            - generic [ref=e54]: A
+          - img [ref=e71] [cursor=pointer]
+    - generic [ref=e74]:
+      - complementary [ref=e75]:
+        - navigation [ref=e76]:
+          - list [ref=e78]:
+            - link "Getting Started" [ref=e79] [cursor=pointer]:
+              - /url: "#/home/dashboard"
+              - generic [ref=e80]:
+                - img [ref=e1410]
+                - generic [ref=e1412]: Getting Started
+            - listitem [ref=e90]:
+              - link "Dashboard" [ref=e91] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - img [ref=e1413]
+                - generic [ref=e95]: Dashboard
+            - listitem [ref=e96]:
+              - link "Employees" [ref=e97] [cursor=pointer]:
+                - /url: "#/people/employees"
+                - img [ref=e1416]
+                - generic [ref=e100]: Employees
+            - listitem [ref=e101]:
+              - link "Pay Runs" [ref=e102] [cursor=pointer]:
+                - /url: "#/payruns"
+                - img [ref=e1418]
+                - generic [ref=e106]: Pay Runs
+            - listitem [ref=e107]:
+              - list [ref=e108]:
+                - listitem [ref=e109]:
+                  - button "Approvals" [ref=e111] [cursor=pointer]:
+                    - heading "Approvals" [level=3] [ref=e112]:
+                      - button "Approvals" [ref=e113]:
+                        - img [ref=e1421]
+                        - generic [ref=e119]: Approvals
+                        - img [ref=e120]
+            - listitem [ref=e122]:
+              - list [ref=e123]:
+                - listitem [ref=e124]:
+                  - button "Taxes & Forms" [ref=e126] [cursor=pointer]:
+                    - heading "Taxes & Forms" [level=3] [ref=e127]:
+                      - button "Taxes & Forms" [ref=e128]:
+                        - img [ref=e1424]
+                        - generic [ref=e136]: Taxes & Forms
+                        - img [ref=e137]
+            - listitem [ref=e139]:
+              - link "Loans" [ref=e140] [cursor=pointer]:
+                - /url: "#/loans?sort_column=&sort_order="
+                - img [ref=e1429]
+                - generic [ref=e144]: Loans
+            - listitem [ref=e145]:
+              - link "Giving" [ref=e146] [cursor=pointer]:
+                - /url: "#/donations"
+                - img [ref=e1432]
+                - generic [ref=e149]: Giving
+            - listitem [ref=e150]:
+              - link "Documents" [ref=e151] [cursor=pointer]:
+                - /url: "#/documents/folder"
+                - img [ref=e1434]
+                - generic [ref=e154]: Documents
+            - listitem [ref=e155]:
+              - link "Reports" [ref=e156] [cursor=pointer]:
+                - /url: "#/reports"
+                - img [ref=e1436]
+                - generic [ref=e160]: Reports
+            - listitem [ref=e161]:
+              - link "Settings" [ref=e162] [cursor=pointer]:
+                - /url: "#/settings"
+                - img [ref=e1439]
+                - generic [ref=e166]: Settings
+          - button "Collapse/Expand" [ref=e173] [cursor=pointer]:
+            - img [ref=e1442]
+      - main [ref=e177]:
+        - generic [ref=e1446]:
+          - complementary [ref=e1448]:
+            - heading "Documents" [level=3] [ref=e1450]
+            - navigation [ref=e1451]:
+              - list [ref=e1452]:
+                - listitem [ref=e1453]:
+                  - link "All Documents" [ref=e1454] [cursor=pointer]:
+                    - /url: "#/documents/folder"
+                    - generic [ref=e1455]:
+                      - img [ref=e1456]
+                      - text: All Documents
+                - listitem
+                - generic [ref=e1460]: Org Folder
+                - button "New Org Folder" [ref=e1461] [cursor=pointer]:
+                  - img [ref=e1462]
+                - generic [ref=e1466]:
+                  - img [ref=e1467]
+                  - paragraph [ref=e1471]: There are no folders.
+                  - button "New folder" [ref=e1472] [cursor=pointer]:
+                    - img [ref=e1473]
+                    - text: New folder
+                - generic [ref=e1476]: Employee Folder
+                - button "New Employee Folder" [ref=e1477] [cursor=pointer]:
+                  - img [ref=e1478]
+                - generic [ref=e1482]:
+                  - img [ref=e1483]
+                  - paragraph [ref=e1487]: There are no folders.
+                  - button "New folder" [ref=e1488] [cursor=pointer]:
+                    - img [ref=e1489]
+                    - text: New folder
+                - listitem
+                - listitem [ref=e1491]:
+                  - generic [ref=e1492]:
+                    - img [ref=e1494]
+                    - generic [ref=e1499]:
+                      - generic [ref=e1500]: Storage Limit
+                      - generic [ref=e1501]: 1GB / 100 employees
+                - listitem [ref=e1502] [cursor=pointer]:
+                  - link "Trash" [ref=e1503]:
+                    - /url: "#/documents/trash"
+                    - generic [ref=e1504]:
+                      - img [ref=e1505]
+                      - text: Trash
+          - region "Entity Details" [ref=e1508]:
+            - generic [ref=e1510]:
+              - heading "All Documents" [level=3] [ref=e1511]
+              - button "Filter" [ref=e1513] [cursor=pointer]:
+                - img [ref=e1514]
+            - generic [ref=e1516]:
+              - generic [ref=e1518]:
+                - generic [ref=e1519]: "Filter By :"
+                - generic [ref=e1521]:
+                  - combobox "Select Employee Status" [ref=e1523]:
+                    - generic [ref=e1527] [cursor=pointer]:
+                      - img [ref=e1528]
+                      - generic [ref=e1531]: Select Employee Status
+                  - status [ref=e1532]
+                - generic [ref=e1535]:
+                  - combobox "Select an Employee" [ref=e1537]:
+                    - generic [ref=e1541] [cursor=pointer]:
+                      - img [ref=e1542]
+                      - generic [ref=e1544]: Select an Employee
+                  - status [ref=e1545]
+              - button "Close Filter" [ref=e1547] [cursor=pointer]:
+                - img [ref=e1548]
+            - generic [ref=e1553]:
+              - img [ref=e1554]
+              - generic [ref=e1555]: You have not created any folders yet to upload documents
+  - generic [ref=e201] [cursor=pointer]:
+    - generic [ref=e202]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e203]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e205]: Don't show again
+  - status [ref=e206]: Documents All Documents page loaded.
+  - text:       Chats  Contacts   

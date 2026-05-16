@@ -1,0 +1,190 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e5]:
+      - navigation:
+        - generic [ref=e7]:
+          - img "Zoho Payroll" [ref=e8]
+          - generic [ref=e9]: Payroll
+        - generic [ref=e13]:
+          - button "Advanced Search" [ref=e14] [cursor=pointer]:
+            - img [ref=e15]
+          - textbox "Search in Employee" [ref=e19]
+        - generic [ref=e21]:
+          - generic [ref=e24] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e26] [cursor=pointer]
+          - button "lerno" [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]: lerno
+            - img [ref=e32]
+          - button "Refer and Earn" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+          - button "Notifications" [ref=e41] [cursor=pointer]:
+            - generic [ref=e42]:
+              - generic [ref=e43]: "4"
+              - img [ref=e44]
+          - button "Settings" [ref=e47] [cursor=pointer]:
+            - img [ref=e48]
+          - button "A" [ref=e53] [cursor=pointer]:
+            - generic [ref=e54]: A
+          - img [ref=e71] [cursor=pointer]
+    - generic [ref=e74]:
+      - complementary [ref=e75]:
+        - navigation [ref=e76]:
+          - list [ref=e78]:
+            - link "Getting Started" [ref=e79] [cursor=pointer]:
+              - /url: "#/home/dashboard"
+              - generic [ref=e80]:
+                - img [ref=e3035]
+                - generic [ref=e3037]: Getting Started
+            - listitem [ref=e90]:
+              - link "Dashboard" [ref=e91] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - img [ref=e3038]
+                - generic [ref=e95]: Dashboard
+            - listitem [ref=e96]:
+              - link "Employees" [ref=e97] [cursor=pointer]:
+                - /url: "#/people/employees"
+                - img [ref=e3041]
+                - generic [ref=e100]: Employees
+            - listitem [ref=e101]:
+              - link "Pay Runs" [ref=e102] [cursor=pointer]:
+                - /url: "#/payruns"
+                - img [ref=e3043]
+                - generic [ref=e106]: Pay Runs
+            - listitem [ref=e107]:
+              - list [ref=e108]:
+                - listitem [ref=e109]:
+                  - button "Approvals" [ref=e111] [cursor=pointer]:
+                    - heading "Approvals" [level=3] [ref=e112]:
+                      - button "Approvals" [ref=e113]:
+                        - img [ref=e3046]
+                        - generic [ref=e119]: Approvals
+                        - img [ref=e120]
+            - listitem [ref=e122]:
+              - list [ref=e123]:
+                - listitem [ref=e124]:
+                  - button "Taxes & Forms" [ref=e126] [cursor=pointer]:
+                    - heading "Taxes & Forms" [level=3] [ref=e127]:
+                      - button "Taxes & Forms" [ref=e128]:
+                        - img [ref=e3049]
+                        - generic [ref=e136]: Taxes & Forms
+                        - img [ref=e137]
+            - listitem [ref=e139]:
+              - link "Loans" [ref=e140] [cursor=pointer]:
+                - /url: "#/loans?sort_column=&sort_order="
+                - img [ref=e3054]
+                - generic [ref=e144]: Loans
+            - listitem [ref=e145]:
+              - link "Giving" [ref=e146] [cursor=pointer]:
+                - /url: "#/donations"
+                - img [ref=e3057]
+                - generic [ref=e149]: Giving
+            - listitem [ref=e150]:
+              - link "Documents" [ref=e151] [cursor=pointer]:
+                - /url: "#/documents/folder?folder_id=3848927000000034270&folder_name=Offer%20Letters"
+                - img [ref=e3059]
+                - generic [ref=e154]: Documents
+            - listitem [ref=e155]:
+              - link "Reports" [ref=e156] [cursor=pointer]:
+                - /url: "#/reports"
+                - img [ref=e3061]
+                - generic [ref=e160]: Reports
+            - listitem [ref=e161]:
+              - link "Settings" [ref=e162] [cursor=pointer]:
+                - /url: "#/settings"
+                - img [ref=e3064]
+                - generic [ref=e166]: Settings
+          - button "Collapse/Expand" [ref=e173] [cursor=pointer]:
+            - img [ref=e3067]
+      - main [ref=e177]:
+        - generic [ref=e3071]:
+          - complementary [ref=e3073]:
+            - heading "Documents" [level=3] [ref=e3075]
+            - navigation [ref=e3076]:
+              - list [ref=e3077]:
+                - listitem [ref=e3078]:
+                  - link "All Documents" [ref=e3079] [cursor=pointer]:
+                    - /url: "#/documents/folder"
+                    - generic [ref=e3080]:
+                      - img [ref=e3081]
+                      - text: All Documents
+                - listitem
+                - generic [ref=e3211]: Org Folder
+                - button "New Org Folder" [ref=e3212] [cursor=pointer]:
+                  - img [ref=e3213]
+                - listitem [ref=e3216]:
+                  - link "Offer Letters" [ref=e3217] [cursor=pointer]:
+                    - /url: "#/documents/folder?folder_id=3848927000000034270&folder_name=Offer%20Letters"
+                    - generic [ref=e3219]:
+                      - img [ref=e3220]
+                      - text: Offer Letters
+                  - generic [ref=e3222]:
+                    - button "Show dropdown menu" [expanded] [ref=e3223] [cursor=pointer]:
+                      - img [ref=e3224]
+                    - listbox [ref=e3296]:
+                      - button "Edit" [active] [ref=e3297] [cursor=pointer]:
+                        - img [ref=e3298]
+                        - text: Edit
+                      - button "Delete" [ref=e3300] [cursor=pointer]:
+                        - img [ref=e3301]
+                        - text: Delete
+                - generic [ref=e3228]: Employee Folder
+                - button "New Employee Folder" [ref=e3229] [cursor=pointer]:
+                  - img [ref=e3230]
+                - generic [ref=e3234]:
+                  - img [ref=e3235]
+                  - paragraph [ref=e3239]: There are no folders.
+                  - button "New folder" [ref=e3240] [cursor=pointer]:
+                    - img [ref=e3241]
+                    - text: New folder
+                - listitem
+                - listitem [ref=e3116]:
+                  - generic [ref=e3117]:
+                    - img [ref=e3119]
+                    - generic [ref=e3124]:
+                      - generic [ref=e3125]: Storage Limit
+                      - generic [ref=e3126]: 1GB / 100 employees
+                - listitem [ref=e3127] [cursor=pointer]:
+                  - link "Trash" [ref=e3128]:
+                    - /url: "#/documents/trash"
+                    - generic [ref=e3129]:
+                      - img [ref=e3130]
+                      - text: Trash
+          - region "Entity Details" [ref=e3133]:
+            - heading "Offer Letters" [level=3] [ref=e3267]:
+              - text: Offer Letters
+              - img [ref=e3269]
+            - generic [ref=e3274]:
+              - generic [ref=e3275]:
+                - button "Choose File" [ref=e3276] [cursor=pointer]
+                - generic [ref=e3277]:
+                  - paragraph [ref=e3278]: Drag & Drop File Here
+                  - generic [ref=e3279]:
+                    - img [ref=e3280]
+                    - button "Choose File" [ref=e3283] [cursor=pointer]
+                  - paragraph [ref=e3284]: "- or -"
+                  - generic [ref=e3285] [cursor=pointer]:
+                    - text: Choose file to upload
+                    - button "Choose File" [ref=e3286]
+              - generic [ref=e3287]:
+                - img [ref=e3289]
+                - generic [ref=e3292]:
+                  - text: While uploading
+                  - strong [ref=e3293]: .zip
+                  - text: ensure that files are of type
+                  - strong [ref=e3294]: .pdf
+                  - text: and the names of the files correspond to the
+                  - strong [ref=e3295]: ID
+                  - text: that person (file size should not exceed 50MB)
+  - generic [ref=e201] [cursor=pointer]:
+    - generic [ref=e202]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e203]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e205]: Don't show again
+  - status [ref=e206]: Documents All Documents page loaded.
+  - text:       Chats  Contacts   

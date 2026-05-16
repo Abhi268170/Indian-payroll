@@ -1,0 +1,260 @@
+- generic:
+  - iframe
+  - generic [ref=e5]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e6] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e7]
+    - banner "Top Band" [ref=e9]:
+      - navigation:
+        - generic [ref=e11]:
+          - img "Zoho Payroll" [ref=e12]
+          - generic [ref=e13]: Payroll
+        - generic [ref=e17]:
+          - button "Advanced Search" [ref=e18] [cursor=pointer]:
+            - img [ref=e19]
+          - textbox "Search in Employee" [ref=e23]
+        - generic [ref=e25]:
+          - generic [ref=e28] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e30] [cursor=pointer]
+          - button "lerno" [ref=e34] [cursor=pointer]:
+            - generic [ref=e35]: lerno
+            - img [ref=e36]
+          - button "Refer and Earn" [ref=e40] [cursor=pointer]:
+            - img [ref=e41]
+          - button "Notifications" [ref=e45] [cursor=pointer]:
+            - generic [ref=e46]:
+              - generic [ref=e47]: "4"
+              - img [ref=e48]
+          - button "Settings" [ref=e51] [cursor=pointer]:
+            - img [ref=e52]
+          - button "A" [ref=e57] [cursor=pointer]:
+            - generic [ref=e58]: A
+          - img [ref=e75] [cursor=pointer]
+    - generic [ref=e78]:
+      - complementary [ref=e79]:
+        - navigation [ref=e80]:
+          - generic [ref=e81]:
+            - list [ref=e82]:
+              - listitem [ref=e83]:
+                - link "Dashboard" [ref=e84] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e7251]
+                  - generic [ref=e88]: Dashboard
+              - listitem [ref=e89]:
+                - link "Employees" [ref=e90] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e7254]
+                  - generic [ref=e93]: Employees
+              - listitem [ref=e94]:
+                - link "Pay Runs" [ref=e95] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e7256]
+                  - generic [ref=e99]: Pay Runs
+              - listitem [ref=e100]:
+                - list [ref=e101]:
+                  - listitem [ref=e102]:
+                    - button "Approvals" [ref=e104] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e105]:
+                        - button "Approvals" [ref=e106]:
+                          - img [ref=e7259]
+                          - img [ref=e7261]
+                          - generic [ref=e112]: Approvals
+                          - img [ref=e113]
+              - listitem [ref=e115]:
+                - list [ref=e116]:
+                  - listitem [ref=e117]:
+                    - button "Taxes & Forms" [ref=e119] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e120]:
+                        - button "Taxes & Forms" [ref=e121]:
+                          - img [ref=e7264]
+                          - img [ref=e7266]
+                          - generic [ref=e129]: Taxes & Forms
+                          - img [ref=e130]
+              - listitem [ref=e132]:
+                - link "Loans" [ref=e133] [cursor=pointer]:
+                  - /url: "#/loans?sort_column=&sort_order="
+                  - img [ref=e7271]
+                  - generic [ref=e137]: Loans
+              - listitem [ref=e138]:
+                - link "Giving" [ref=e139] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e7274]
+                  - generic [ref=e142]: Giving
+              - listitem
+              - listitem [ref=e143]:
+                - link "Documents" [ref=e144] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e7276]
+                  - generic [ref=e147]: Documents
+              - listitem [ref=e148]:
+                - link "Reports" [ref=e149] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e7278]
+                  - generic [ref=e153]: Reports
+              - listitem [ref=e154]:
+                - link "Settings" [ref=e155] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e7281]
+                  - generic [ref=e159]: Settings
+            - link "Contact Support" [ref=e7287] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e7288]
+          - button "Collapse/Expand" [ref=e166] [cursor=pointer]:
+            - img [ref=e7290]
+      - main [ref=e170]:
+        - generic [ref=e7303]:
+          - generic [ref=e7304]:
+            - generic [ref=e7305]:
+              - generic [ref=e7306]:
+                - generic [ref=e7307]: A
+                - generic [ref=e7308]:
+                  - generic [ref=e7309]:
+                    - generic [ref=e7310]: EMP001 -
+                    - generic [ref=e7311]: Arjun Mehta
+                    - generic [ref=e7312]: Active
+                  - generic [ref=e7313]: Senior Software Engineer
+              - generic [ref=e7314]:
+                - button "Add" [ref=e7316] [cursor=pointer]
+                - button "Show dropdown menu" [ref=e7318] [cursor=pointer]:
+                  - img [ref=e7319]
+                - button "Close" [ref=e7321] [cursor=pointer]:
+                  - img [ref=e7322]
+            - navigation [ref=e7325]:
+              - list [ref=e7326]:
+                - listitem [ref=e7327]:
+                  - link "Overview" [ref=e7328] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948"
+                - listitem [ref=e7329]:
+                  - link "Salary Details" [ref=e7330] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948/salary-details"
+                - listitem [ref=e7331]:
+                  - link "Investments" [ref=e7332] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948/investments-and-proofs"
+                - listitem [ref=e7333]:
+                  - link "Payslips & Forms" [ref=e7334] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948/payslips-and-forms"
+                - listitem [ref=e7335]:
+                  - link "Loans" [ref=e7336] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948/loans"
+          - generic [ref=e7337]:
+            - generic [ref=e7338]:
+              - heading "Basic Information Edit" [level=4] [ref=e7339]:
+                - text: Basic Information
+                - button "Edit" [ref=e7340] [cursor=pointer]:
+                  - img [ref=e7341]
+              - generic [ref=e7343]:
+                - generic [ref=e7344]:
+                  - generic [ref=e7346]:
+                    - generic [ref=e7347]: Name
+                    - generic [ref=e7348]: Arjun Mehta
+                  - generic [ref=e7350]:
+                    - generic [ref=e7351]: Email Address
+                    - generic [ref=e7352]: arjun.mehta@lerno.com
+                  - generic [ref=e7354]:
+                    - generic [ref=e7355]: Mobile Number
+                    - generic [ref=e7356]: "9876543210"
+                  - generic [ref=e7358]:
+                    - generic [ref=e7359]: Date of Joining
+                    - generic [ref=e7360]: 01/04/2025
+                  - generic [ref=e7362]:
+                    - generic [ref=e7363]: Gender
+                    - generic [ref=e7364]: Male
+                - generic [ref=e7365]:
+                  - generic [ref=e7367]:
+                    - generic [ref=e7368]: Work Location
+                    - generic [ref=e7369]: Head Office
+                  - generic [ref=e7371]:
+                    - generic [ref=e7372]: Designation
+                    - generic [ref=e7373]: Senior Software Engineer
+                  - generic [ref=e7375]:
+                    - generic [ref=e7376]: Departments
+                    - generic [ref=e7377]: Engineering
+                  - generic [ref=e7378]:
+                    - generic [ref=e7379]: Portal Access
+                    - generic [ref=e7381]:
+                      - generic [ref=e7382]:
+                        - img [ref=e7383]
+                        - text: Disabled
+                      - button "(Enable)" [ref=e7385] [cursor=pointer]
+            - generic [ref=e7386]:
+              - heading "Statutory Information Edit" [level=4] [ref=e7387]:
+                - text: Statutory Information
+                - link "Edit" [ref=e7388] [cursor=pointer]:
+                  - /url: "#/people/employees/3848927000000032948/edit-statutory-details"
+                  - button "Edit" [ref=e7389]:
+                    - img [ref=e7390]
+              - generic [ref=e7394]:
+                - generic [ref=e7395]: Professional Tax
+                - generic [ref=e7396]:
+                  - generic [ref=e7397]:
+                    - img [ref=e7398]
+                    - text: Enabled
+                  - button "(Disable)" [ref=e7401] [cursor=pointer]
+            - generic [ref=e7403]:
+              - heading "Personal Information Edit" [level=4] [ref=e7404]:
+                - text: Personal Information
+                - link "Edit" [ref=e7406] [cursor=pointer]:
+                  - /url: "#/people/employees/3848927000000032948/edit-personal-details"
+                  - button "Edit" [ref=e7407]:
+                    - img [ref=e7408]
+              - generic [ref=e7410]:
+                - generic [ref=e7411]:
+                  - generic [ref=e7413]:
+                    - generic [ref=e7414]: Date of Birth
+                    - generic [ref=e7415]: 15/03/1990
+                  - generic [ref=e7417]:
+                    - generic [ref=e7418]: Father's Name
+                    - generic [ref=e7419]: Rajesh Mehta
+                  - generic [ref=e7421]:
+                    - generic [ref=e7422]: PAN
+                    - generic [ref=e7423]: ABCPM1234A
+                - generic [ref=e7424]:
+                  - generic [ref=e7426]:
+                    - generic [ref=e7427]: Email Address
+                    - generic [ref=e7428]: "-"
+                  - generic [ref=e7429]:
+                    - generic [ref=e7430]: Residential Address
+                    - generic [ref=e7431]: "-"
+                  - generic [ref=e7433]:
+                    - generic [ref=e7434]: Differently Abled Type
+                    - generic [ref=e7435]: None
+            - generic [ref=e7436]:
+              - heading "Payment Information Edit" [level=4] [ref=e7437]:
+                - text: Payment Information
+                - button "Edit" [ref=e7438] [cursor=pointer]:
+                  - button "Edit" [ref=e7439]:
+                    - img [ref=e7440]
+              - generic [ref=e7442]:
+                - generic [ref=e7443]:
+                  - generic [ref=e7445]:
+                    - generic [ref=e7446]: Payment Mode
+                    - generic [ref=e7447]: Manual Bank Transfer
+                  - generic [ref=e7448]:
+                    - generic [ref=e7449]: Account Number
+                    - generic [ref=e7450]:
+                      - generic [ref=e7451]: XXXX6789
+                      - button "Show A/C No" [ref=e7453] [cursor=pointer]
+                  - generic [ref=e7455]:
+                    - generic [ref=e7456]: Account Holder Name
+                    - generic [ref=e7457]: Arjun Mehta
+                - generic [ref=e7458]:
+                  - generic [ref=e7460]:
+                    - generic [ref=e7461]: Bank Name
+                    - generic [ref=e7462]: HDFC Bank
+                  - generic [ref=e7464]:
+                    - generic [ref=e7465]: IFSC
+                    - generic [ref=e7466]: HDFC0001234
+                  - generic [ref=e7468]:
+                    - generic [ref=e7469]: Account Type
+                    - generic [ref=e7470]: Savings
+    - dialog [ref=e7471]
+  - generic [ref=e264] [cursor=pointer]:
+    - generic [ref=e265]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e266]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e268]: Don't show again
+  - status [ref=e269]: Employees Overview page loaded.
+  - text:       Chats  Contacts   

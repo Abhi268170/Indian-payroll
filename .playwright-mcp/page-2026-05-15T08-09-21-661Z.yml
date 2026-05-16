@@ -1,0 +1,209 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e6121]:
+      - generic [ref=e6123]:
+        - generic [ref=e6124]:
+          - button "All Settings" [ref=e6125] [cursor=pointer]:
+            - img [ref=e6126]
+          - button [ref=e6131] [cursor=pointer]:
+            - img [ref=e6132]
+          - generic [ref=e6134]:
+            - generic [ref=e6135]: All Settings
+            - generic [ref=e6136]: lerno
+        - generic [ref=e6138]:
+          - combobox "Search" [ref=e6142]
+          - img [ref=e6143]
+        - button "Close Settings" [ref=e6147] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e6148]
+      - generic [ref=e6150]:
+        - navigation [ref=e6151]:
+          - generic [ref=e6153]:
+            - group [ref=e6154]:
+              - heading "Organisation Settings" [level=2] [ref=e6155]
+              - generic [ref=e6156]:
+                - region "Organisation" [ref=e6158]:
+                  - generic [ref=e6159]:
+                    - heading "Organisation" [level=3] [ref=e6160] [cursor=pointer]:
+                      - button "Organisation" [ref=e6161]:
+                        - img [ref=e6162]
+                        - generic [ref=e6164]: Organisation
+                    - text:      
+                - generic [ref=e6178]:
+                  - region "Users and Roles" [ref=e6179]:
+                    - generic [ref=e6180]:
+                      - heading "Users and Roles" [level=3] [ref=e6181] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e6182]:
+                          - img [ref=e6183]
+                          - generic [ref=e6185]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e6191]:
+                    - generic [ref=e6192]:
+                      - heading "Taxes" [level=3] [ref=e6193] [cursor=pointer]:
+                        - button "Taxes" [ref=e6194]:
+                          - img [ref=e6195]
+                          - generic [ref=e6197]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e6202]:
+                  - generic [ref=e6203]:
+                    - heading "Setup & Configurations" [level=3] [ref=e6204] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e6205]:
+                        - img [ref=e6536]
+                        - generic [ref=e6208]: Setup & Configurations
+                    - text:     
+                - region "Customisations" [ref=e6221]:
+                  - generic [ref=e6222]:
+                    - heading "Customisations" [level=3] [ref=e6223] [cursor=pointer]:
+                      - button "Customisations" [expanded] [ref=e6224]:
+                        - img [ref=e6538]
+                        - generic [ref=e6227]: Customisations
+                    - region "Customisations" [ref=e6566]:
+                      - generic [ref=e6228]:
+                        - link "Email Templates" [ref=e6229] [cursor=pointer]:
+                          - /url: "#/settings/email-templates"
+                          - generic [ref=e6230]: Email Templates
+                          - text: 
+                        - link "Sender Email Preferences" [ref=e6231] [cursor=pointer]:
+                          - /url: "#/settings/email-preference"
+                          - generic [ref=e6232]: Sender Email Preferences
+                          - text: 
+                        - link "Salary Templates" [ref=e6233] [cursor=pointer]:
+                          - /url: "#/settings/salary-templates"
+                          - generic [ref=e6234]: Salary Templates
+                          - text: 
+                        - link "PDF Templates" [ref=e6235] [cursor=pointer]:
+                          - /url: "#/settings/templates/regular-payslip"
+                          - generic [ref=e6236]: PDF Templates
+                          - text: 
+                        - link "Reporting Tags" [ref=e6237] [cursor=pointer]:
+                          - /url: "#/settings/advanced-reportingtags"
+                          - generic [ref=e6238]: Reporting Tags
+                          - text: 
+                - region "Automations" [ref=e6240]:
+                  - generic [ref=e6241]:
+                    - heading "Automations" [level=3] [ref=e6242] [cursor=pointer]:
+                      - button "Automations" [ref=e6243]:
+                        - img [ref=e6244]
+                        - generic [ref=e6246]: Automations
+                    - text:    
+            - group [ref=e6256]:
+              - heading "Module Settings" [level=2] [ref=e6257]
+              - generic [ref=e6258]:
+                - region "General" [ref=e6260]:
+                  - generic [ref=e6261]:
+                    - heading "General" [level=3] [ref=e6262] [cursor=pointer]:
+                      - button "General" [ref=e6263]:
+                        - img [ref=e6264]
+                        - generic [ref=e6266]: General
+                    - text:     
+                - region "Payments" [ref=e6279]:
+                  - generic [ref=e6280]:
+                    - heading "Payments" [level=3] [ref=e6281] [cursor=pointer]:
+                      - button "Payments" [ref=e6282]:
+                        - img [ref=e6283]
+                        - generic [ref=e6285]: Payments
+                    - text: 
+            - group [ref=e6289]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e6290]
+              - generic [ref=e6291]:
+                - region "Integrations" [ref=e6293]:
+                  - generic [ref=e6294]:
+                    - heading "Integrations" [level=3] [ref=e6295] [cursor=pointer]:
+                      - button "Integrations" [ref=e6296]:
+                        - img [ref=e6297]
+                        - generic [ref=e6299]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e6304]:
+                  - generic [ref=e6305]:
+                    - heading "Developer Data" [level=3] [ref=e6306] [cursor=pointer]:
+                      - button "Developer Data" [ref=e6307]:
+                        - img [ref=e6308]
+                        - generic [ref=e6310]: Developer Data
+                    - text:   
+        - main [ref=e6615]:
+          - heading "Back Edit template for Payslip Notification" [level=3] [ref=e6617]:
+            - link "Back" [ref=e6618] [cursor=pointer]:
+              - /url: "#/settings/email-templates"
+              - img [ref=e6619]
+            - text: Edit template for Payslip Notification
+          - form [ref=e6623]:
+            - generic [ref=e6625]:
+              - img [ref=e6626]
+              - generic [ref=e6628]:
+                - text: Emails will be sent from primary contact by default. You can change the Sender address by changing the primary contact in
+                - strong [ref=e6629]: Settings > Preferences > Sender Email Preferences.
+            - generic [ref=e6630]:
+              - generic [ref=e6631]: Subject
+              - textbox "Subject" [ref=e6633]: Payslip for the month of %PayPeriodMonth%
+            - generic [ref=e6637]:
+              - generic [ref=e6639]:
+                - button "Headings" [ref=e6642] [cursor=pointer]
+                - generic [ref=e6644]:
+                  - button "Bold" [ref=e6645] [cursor=pointer]:
+                    - img [ref=e6646]
+                  - button "Italic" [ref=e6648] [cursor=pointer]:
+                    - img [ref=e6649]
+                  - button "Underline" [ref=e6651] [cursor=pointer]:
+                    - img [ref=e6652]
+                  - button "Strikethrough" [ref=e6654] [cursor=pointer]:
+                    - img [ref=e6655]
+                - button "Font Family" [ref=e6660] [cursor=pointer]: Arial
+                - button "Show dropdown menu" [ref=e6664] [cursor=pointer]:
+                  - img [ref=e6665]
+                - generic [ref=e6672]:
+                  - button "Indent" [ref=e6673] [cursor=pointer]:
+                    - img [ref=e6674]
+                  - button "Outdent" [ref=e6676] [cursor=pointer]:
+                    - img [ref=e6677]
+                - generic [ref=e6680]:
+                  - button "Create Link" [ref=e6681] [cursor=pointer]:
+                    - img [ref=e6682]
+                  - button "Insert Image" [ref=e6685] [cursor=pointer]:
+                    - img [ref=e6686]
+                - button "zp.common.insertHTML" [ref=e6690] [cursor=pointer]:
+                  - img [ref=e6691]
+                - button "Insert Placeholders" [ref=e6697] [cursor=pointer]
+              - iframe [active] [ref=e6698]: "<body><div style=\"max-width: 700px;background-color: #EDF8F7; padding: 25px 20px 10px; margin: 0px auto; line-height: 1.8; font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol'\"><div class=\"content\" style=\"background-color: #FFF; font-size: 15px; border-top: 4px solid #96E9CF; border-radius: 10px;\"><table style=\"font-size: 18px; margin: 0px; padding: 20px 30px; background-color: #fff; color: #333; border-bottom: 1px dashed #E8EAF1; width: 100%; border: 1px solid #D3EFE7; border-bottom: 1px dashed #E8EAF1; border-top: 0;border-radius: 5px 5px 0 0;\"><tr><td style=\"text-align: left;\"><div style=\"font-size: 15px; font-weight: bold;\">%CompanyName%</div></td></tr></table><table style=\"font-size: 14px; line-height: 1.8; color: #333; padding: 30px; width: 100%; border: 1px solid #D3EFE7;border-top: 0;border-radius: 0px 0px 5px 5px;\"><tr><td style=\"font-weight: bold;\">Hi %EmployeeName%,</td></tr><tr><td style=\"padding: 15px 0px;\">Your payslip for <span style=\"font-weight: bold;\">%PayPeriodMonth%</span> has been issued. You can view your payslip from the employee portal.</td></tr><tr><td style=\"padding: 0px 0px 25px;\"><div><a href=\"%PaySlipURL%\" style=\"text-decoration: none;\"><span style=\"display: inline-block !important; color: #fff; padding: 6px 12px; border-radius: 6px; background-color: #408DFB; cursor: pointer\";>View Payslip</span></a></div></td></tr><tr><td style=\"border-bottom: 1px dashed #CFD6E3;\"></td></tr><tr><td style=\"padding: 25px 0px 0px;\"><div style=\"font-size: 12px; color: #696F8A;\">Cheers,</div><div style=\"font-weight: 500;\">%PrimaryContactName%</div><div style=\"font-weight: 500;\">%CompanyName%</div></td></tr></table></div><div style=\"padding: 10px 5px 0; text-align: center; color: #363A5F; font-size: 12px;\">Note: This is a system generated mail. Please do not reply.</div></div></body>":
+                - generic [ref=f49e2]:
+                  - generic [ref=f49e3]:
+                    - table [ref=f49e4]:
+                      - rowgroup [ref=f49e5]:
+                        - row "%CompanyName%" [ref=f49e6]:
+                          - cell "%CompanyName%" [ref=f49e7]:
+                            - generic [ref=f49e8]: "%CompanyName%"
+                    - table [ref=f49e9]:
+                      - rowgroup [ref=f49e10]:
+                        - row "Hi %EmployeeName%," [ref=f49e11]:
+                          - cell "Hi %EmployeeName%," [ref=f49e12]
+                        - row "Your payslip for %PayPeriodMonth% has been issued. You can view your payslip from the employee portal." [ref=f49e13]:
+                          - cell "Your payslip for %PayPeriodMonth% has been issued. You can view your payslip from the employee portal." [ref=f49e14]
+                        - row "View Payslip" [ref=f49e15]:
+                          - cell "View Payslip" [ref=f49e16]:
+                            - link "View Payslip" [ref=f49e18]:
+                              - /url: "%PaySlipURL%"
+                              - generic [ref=f49e19] [cursor=pointer]: View Payslip
+                        - row [ref=f49e20]:
+                          - cell [ref=f49e21]
+                        - row "Cheers, %PrimaryContactName% %CompanyName%" [ref=f49e22]:
+                          - cell "Cheers, %PrimaryContactName% %CompanyName%" [ref=f49e23]:
+                            - generic [ref=f49e24]: Cheers,
+                            - generic [ref=f49e25]: "%PrimaryContactName%"
+                            - generic [ref=f49e26]: "%CompanyName%"
+                  - generic [ref=f49e27]: "Note: This is a system generated mail. Please do not reply."
+            - generic [ref=e6699]:
+              - button "Save" [ref=e6700] [cursor=pointer]
+              - link "Cancel" [ref=e6701] [cursor=pointer]:
+                - /url: "#/settings/email-templates"
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Settings Email Templates page loaded.
+  - text:       Chats  Contacts   

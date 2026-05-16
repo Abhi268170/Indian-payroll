@@ -1,0 +1,122 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e3860]:
+      - generic [ref=e3862]:
+        - generic [ref=e3863]:
+          - button "All Settings" [ref=e3864] [cursor=pointer]:
+            - img [ref=e3865]
+          - button [ref=e4075] [cursor=pointer]:
+            - img [ref=e4076]
+          - generic [ref=e3870]:
+            - generic [ref=e3871]: All Settings
+            - generic [ref=e3872]: lerno
+        - generic [ref=e3874]:
+          - combobox "Search" [ref=e3878]
+          - img [ref=e3879]
+        - button "Close Settings" [ref=e3883] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e3884]
+      - generic [ref=e3886]:
+        - navigation [ref=e3887]:
+          - generic [ref=e3889]:
+            - group [ref=e3890]:
+              - heading "Organisation Settings" [level=2] [ref=e3891]
+              - generic [ref=e3892]:
+                - region "Organisation" [ref=e3894]:
+                  - generic [ref=e3895]:
+                    - heading "Organisation" [level=3] [ref=e3896] [cursor=pointer]:
+                      - button "Organisation" [ref=e3897]:
+                        - img [ref=e4078]
+                        - generic [ref=e3901]: Organisation
+                    - text:      
+                - generic [ref=e3916]:
+                  - region "Users and Roles" [ref=e3917]:
+                    - generic [ref=e3918]:
+                      - heading "Users and Roles" [level=3] [ref=e3919] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e3920]:
+                          - img [ref=e4296]
+                          - generic [ref=e3924]: Users and Roles
+                      - region "Users and Roles" [ref=e3925]:
+                        - generic [ref=e3926]:
+                          - link "Users" [ref=e3927] [cursor=pointer]:
+                            - /url: "#/settings/users-roles/users"
+                            - generic [ref=e4088]: Users
+                            - text: 
+                          - link "Roles" [ref=e3929] [cursor=pointer]:
+                            - /url: "#/settings/users-roles/roles"
+                            - generic [ref=e4089]: Roles
+                            - text: 
+                  - region "Taxes" [ref=e3931]:
+                    - generic [ref=e3932]:
+                      - heading "Taxes" [level=3] [ref=e3933] [cursor=pointer]:
+                        - button "Taxes" [ref=e3934]:
+                          - img [ref=e4090]
+                          - generic [ref=e3938]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e3944]:
+                  - generic [ref=e3945]:
+                    - heading "Setup & Configurations" [level=3] [ref=e3946] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e3947]:
+                        - img [ref=e4093]
+                        - generic [ref=e3951]: Setup & Configurations
+                    - text:     
+                - region "Customisations" [ref=e3965]:
+                  - generic [ref=e3966]:
+                    - heading "Customisations" [level=3] [ref=e3967] [cursor=pointer]:
+                      - button "Customisations" [ref=e3968]:
+                        - img [ref=e4100]
+                        - generic [ref=e3972]: Customisations
+                    - text:     
+                - region "Automations" [ref=e3986]:
+                  - generic [ref=e3987]:
+                    - heading "Automations" [level=3] [ref=e3988] [cursor=pointer]:
+                      - button "Automations" [ref=e3989]:
+                        - img [ref=e4107]
+                        - generic [ref=e3994]: Automations
+                    - text:    
+            - group [ref=e4005]:
+              - heading "Module Settings" [level=2] [ref=e4006]
+              - generic [ref=e4007]:
+                - region "General" [ref=e4009]:
+                  - generic [ref=e4010]:
+                    - heading "General" [level=3] [ref=e4011] [cursor=pointer]:
+                      - button "General" [ref=e4012]:
+                        - img [ref=e4113]
+                        - generic [ref=e4016]: General
+                    - text:     
+                - region "Payments" [ref=e4030]:
+                  - generic [ref=e4031]:
+                    - heading "Payments" [level=3] [ref=e4032] [cursor=pointer]:
+                      - button "Payments" [expanded] [ref=e4033]:
+                        - img [ref=e4298]
+                        - generic [ref=e4037]: Payments
+                    - region "Payments":
+                      - link "Direct Deposits" [ref=e4040] [cursor=pointer]:
+                        - /url: "#/settings/direct-deposit"
+                        - generic [ref=e4122]: Direct Deposits
+                        - text: 
+            - group [ref=e4042]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e4043]
+              - generic [ref=e4044]:
+                - region "Integrations" [ref=e4046]:
+                  - generic [ref=e4047]:
+                    - heading "Integrations" [level=3] [ref=e4048] [cursor=pointer]:
+                      - button "Integrations" [ref=e4049]:
+                        - img [ref=e4123]
+                        - generic [ref=e4053]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e4059]:
+                  - generic [ref=e4060]:
+                    - heading "Developer Data" [level=3] [ref=e4061] [cursor=pointer]:
+                      - button "Developer Data" [ref=e4062]:
+                        - img [ref=e4126]
+                        - generic [ref=e4066]: Developer Data
+                    - text:   
+        - main [ref=e4300]
+  - status [ref=e225]: Settings Roles page loaded.
+  - text:       Chats  Contacts   

@@ -1,0 +1,23 @@
+- generic [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e7]: IP
+    - heading "Indian Payroll" [level=1] [ref=e8]
+    - paragraph [ref=e9]: Indian Payroll — Built for compliance.
+  - generic [ref=e11]:
+    - heading "Sign in" [level=2] [ref=e12]
+    - paragraph [ref=e13]: Enter your credentials to continue
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e16]: Email
+        - textbox "Email" [ref=e18]:
+          - /placeholder: you@company.com
+          - text: admin@lurio.in
+      - generic [ref=e19]:
+        - generic [ref=e20]: Password
+        - textbox "Password" [ref=e22]: Admin@123456
+      - generic [ref=e26]:
+        - img [ref=e27]
+        - paragraph [ref=e29]: Invalid credentials or server error.
+      - button "Sign in" [ref=e23]
+      - link "Forgot password?" [ref=e25] [cursor=pointer]:
+        - /url: /forgot-password

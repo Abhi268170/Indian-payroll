@@ -1,0 +1,175 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e3968]:
+      - generic [ref=e3970]:
+        - generic [ref=e3971]:
+          - button "All Settings" [ref=e3972] [cursor=pointer]:
+            - img [ref=e3973]
+          - button [ref=e3978] [cursor=pointer]:
+            - img [ref=e3979]
+          - generic [ref=e3981]:
+            - generic [ref=e3982]: All Settings
+            - generic [ref=e3983]: lerno
+        - generic [ref=e3985]:
+          - combobox "Search" [ref=e3989]
+          - img [ref=e3990]
+        - button "Close Settings" [ref=e3994] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e3995]
+      - generic [ref=e3997]:
+        - navigation [ref=e3998]:
+          - generic [ref=e4000]:
+            - group [ref=e4001]:
+              - heading "Organisation Settings" [level=2] [ref=e4002]
+              - generic [ref=e4003]:
+                - region "Organisation" [ref=e4005]:
+                  - generic [ref=e4006]:
+                    - heading "Organisation" [level=3] [ref=e4007] [cursor=pointer]:
+                      - button "Organisation" [ref=e4008]:
+                        - img [ref=e4009]
+                        - generic [ref=e4011]: Organisation
+                    - text:      
+                - generic [ref=e4012]:
+                  - region "Users and Roles" [ref=e4013]:
+                    - generic [ref=e4014]:
+                      - heading "Users and Roles" [level=3] [ref=e4015] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e4016]:
+                          - img [ref=e4017]
+                          - generic [ref=e4019]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e4020]:
+                    - generic [ref=e4021]:
+                      - heading "Taxes" [level=3] [ref=e4022] [cursor=pointer]:
+                        - button "Taxes" [ref=e4023]:
+                          - img [ref=e4024]
+                          - generic [ref=e4026]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e4028]:
+                  - generic [ref=e4029]:
+                    - heading "Setup & Configurations" [level=3] [ref=e4030] [cursor=pointer]:
+                      - button "Setup & Configurations" [expanded] [ref=e4031]:
+                        - img [ref=e4032]
+                        - generic [ref=e4034]: Setup & Configurations
+                    - region "Setup & Configurations" [ref=e4035]:
+                      - generic [ref=e4036]:
+                        - link "Pay Schedule" [ref=e4037] [cursor=pointer]:
+                          - /url: "#/settings/pay-schedules"
+                          - generic [ref=e4038]: Pay Schedule
+                          - text: 
+                        - link "Statutory Components" [ref=e4039] [cursor=pointer]:
+                          - /url: "#/settings/statutory-details/list"
+                          - generic [ref=e4040]: Statutory Components
+                          - text: 
+                        - link "Salary Components" [ref=e4041] [cursor=pointer]:
+                          - /url: "#/settings/salary-components/earnings"
+                          - generic [ref=e4042]: Salary Components
+                          - text: 
+                        - link "Employee Portal" [ref=e4043] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences"
+                          - generic [ref=e4044]: Employee Portal
+                          - text: 
+                        - link "Claims and Declarations" [ref=e4045] [cursor=pointer]:
+                          - /url: "#/settings/preferences/fbp"
+                          - generic [ref=e4046]: Claims and Declarations
+                          - text: 
+                - region "Customisations" [ref=e4048]:
+                  - generic [ref=e4049]:
+                    - heading "Customisations" [level=3] [ref=e4050] [cursor=pointer]:
+                      - button "Customisations" [ref=e4051]:
+                        - img [ref=e4052]
+                        - generic [ref=e4054]: Customisations
+                    - text:     
+                - region "Automations" [ref=e4056]:
+                  - generic [ref=e4057]:
+                    - heading "Automations" [level=3] [ref=e4058] [cursor=pointer]:
+                      - button "Automations" [ref=e4059]:
+                        - img [ref=e4060]
+                        - generic [ref=e4062]: Automations
+                    - text:    
+            - group [ref=e4063]:
+              - heading "Module Settings" [level=2] [ref=e4064]
+              - generic [ref=e4065]:
+                - region "General" [ref=e4067]:
+                  - generic [ref=e4068]:
+                    - heading "General" [level=3] [ref=e4069] [cursor=pointer]:
+                      - button "General" [ref=e4070]:
+                        - img [ref=e4071]
+                        - generic [ref=e4073]: General
+                    - text:     
+                - region "Payments" [ref=e4075]:
+                  - generic [ref=e4076]:
+                    - heading "Payments" [level=3] [ref=e4077] [cursor=pointer]:
+                      - button "Payments" [ref=e4078]:
+                        - img [ref=e4079]
+                        - generic [ref=e4081]: Payments
+                    - text: 
+            - group [ref=e4082]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e4083]
+              - generic [ref=e4084]:
+                - region "Integrations" [ref=e4086]:
+                  - generic [ref=e4087]:
+                    - heading "Integrations" [level=3] [ref=e4088] [cursor=pointer]:
+                      - button "Integrations" [ref=e4089]:
+                        - img [ref=e4090]
+                        - generic [ref=e4092]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e4094]:
+                  - generic [ref=e4095]:
+                    - heading "Developer Data" [level=3] [ref=e4096] [cursor=pointer]:
+                      - button "Developer Data" [ref=e4097]:
+                        - img [ref=e4098]
+                        - generic [ref=e4100]: Developer Data
+                    - text:   
+        - main [ref=e4101]:
+          - generic [ref=e4102]:
+            - heading "Claims and Declarations" [level=3] [ref=e4104]
+            - list [ref=e4105]:
+              - listitem [ref=e4106]:
+                - link "Flexible Benefit Plan" [ref=e4107] [cursor=pointer]:
+                  - /url: "#/settings/preferences/fbp"
+              - listitem [ref=e4108]:
+                - link "Reimbursement Claims" [ref=e4109] [cursor=pointer]:
+                  - /url: "#/settings/preferences/reimbursement"
+              - listitem [ref=e4110]:
+                - link "Income Tax Declaration" [ref=e4111] [cursor=pointer]:
+                  - /url: "#/settings/preferences/it-declaration"
+              - listitem [ref=e4112]:
+                - link "Proof Of Investments" [ref=e4113] [cursor=pointer]:
+                  - /url: "#/settings/preferences/proof-of-investment"
+          - form [ref=e4115]:
+            - generic [ref=e4116]:
+              - generic [ref=e4119]: Employees can declare their tax saving investments and expense details through the employee portal once you enable this option.
+              - generic [ref=e4120]:
+                - img [ref=e4121]
+                - text: Learn how to manage investment declarations.
+                - link "IT Declaration Help Document" [ref=e4124] [cursor=pointer]:
+                  - /url: https://www.zoho.com/in/payroll/help/employer/it-declaration.html
+              - generic [ref=e4127]:
+                - text: Help your employees submit IT Declaration on time.
+                - link "Download and share" [ref=e4128] [cursor=pointer]:
+                  - /url: https://www.zoho.com/in/payroll/help/pdf/investment-declaration/employee_investment_declarations_guide.pdf
+                - text: this IT Declaration ebook.
+              - generic [ref=e4129]:
+                - img [ref=e4130]
+                - generic [ref=e4131]: IT Declaration is Locked
+                - generic [ref=e4132]: You are yet to enable the submission of IT Declaration for your employees through their respective portals. Release IT Declaration or submit it on their behalf under Employees > Employee profile > Investments > IT Declaration.
+                - button "Release IT Declaration" [ref=e4134] [cursor=pointer]
+                - generic [ref=e4135]:
+                  - separator [ref=e4136]
+                  - generic [ref=e4137]: Other Configurations
+                  - generic [ref=e4139] [cursor=pointer]:
+                    - checkbox "Allow employees to switch tax regimes" [checked] [ref=e4140]
+                    - text: Allow employees to switch tax regimes
+                  - generic [ref=e4142] [cursor=pointer]:
+                    - checkbox "Allow TDS modification to exceed the current fiscal year's calculated tax amount " [ref=e4143]
+                    - text: Allow TDS modification to exceed the current fiscal year's calculated tax amount
+                    - generic [ref=e4145]: 
+                  - separator [ref=e4146]
+                  - button "Save" [ref=e4149] [cursor=pointer]
+  - status [ref=e531]: Settings Preferences IT Declaration Preference page loaded.
+  - text:       Chats  Contacts   

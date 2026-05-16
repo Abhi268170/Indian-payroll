@@ -1,0 +1,366 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e5]:
+      - navigation:
+        - generic [ref=e7]:
+          - img "Zoho Payroll" [ref=e8]
+          - generic [ref=e9]: Payroll
+        - generic [ref=e13]:
+          - button "Advanced Search" [ref=e14] [cursor=pointer]:
+            - img [ref=e15]
+          - textbox "Search in Employee" [ref=e19]
+        - generic [ref=e21]:
+          - generic [ref=e24] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e26] [cursor=pointer]
+          - button "lerno" [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]: lerno
+            - img [ref=e32]
+          - button "Refer and Earn" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+          - button "Notifications" [ref=e41] [cursor=pointer]:
+            - img [ref=e43]
+          - button "Settings" [ref=e46] [cursor=pointer]:
+            - img [ref=e47]
+          - button "A" [ref=e52] [cursor=pointer]:
+            - generic [ref=e53]: A
+          - img [ref=e70] [cursor=pointer]
+    - generic [ref=e73]:
+      - complementary [ref=e74]:
+        - navigation [ref=e75]:
+          - generic [ref=e76]:
+            - list [ref=e77]:
+              - link "Getting Started" [ref=e78] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e80]:
+                  - generic [ref=e81]:
+                    - img [ref=e83]
+                    - text: Getting Started
+                  - img [ref=e87]
+              - listitem [ref=e89]:
+                - link "Dashboard" [ref=e90] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e91]
+                  - generic [ref=e94]: Dashboard
+              - listitem [ref=e95]:
+                - link "Employees" [ref=e96] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e97]
+                  - generic [ref=e99]: Employees
+              - listitem [ref=e100]:
+                - link "Pay Runs" [ref=e101] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e102]
+                  - generic [ref=e105]: Pay Runs
+              - listitem [ref=e106]:
+                - list [ref=e107]:
+                  - listitem [ref=e108]:
+                    - button "Approvals" [ref=e110] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e111]:
+                        - button "Approvals" [ref=e112]:
+                          - img [ref=e113]
+                          - img [ref=e115]
+                          - generic [ref=e118]: Approvals
+                          - img [ref=e119]
+              - listitem [ref=e121]:
+                - link "Form 16" [ref=e122] [cursor=pointer]:
+                  - /url: "#/taxes-and-forms/form16"
+                  - img [ref=e123]
+                  - generic [ref=e127]: Form 16
+              - listitem [ref=e128]:
+                - link "Loans" [ref=e129] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e130]
+                  - generic [ref=e133]: Loans
+              - listitem [ref=e134]:
+                - link "Giving" [ref=e135] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e136]
+                  - generic [ref=e138]: Giving
+              - listitem
+              - listitem [ref=e139]:
+                - link "Documents" [ref=e140] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e141]
+                  - generic [ref=e143]: Documents
+              - listitem [ref=e144]:
+                - link "Reports" [ref=e145] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e146]
+                  - generic [ref=e149]: Reports
+              - listitem [ref=e150]:
+                - link "Settings" [ref=e151] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e152]
+                  - generic [ref=e155]: Settings
+            - link "Contact Support" [ref=e159] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e160]
+          - button "Collapse/Expand" [ref=e162] [cursor=pointer]:
+            - img [ref=e163]
+      - main [ref=e166]:
+        - generic [ref=e169]:
+          - generic [ref=e170]:
+            - generic [ref=e171]:
+              - generic [ref=e172]:
+                - heading "Welcome abhijithss2255!" [level=3] [ref=e173]
+                - paragraph [ref=e174]: Set up your organisation before you run your first payroll.
+              - separator [ref=e175]
+              - paragraph [ref=e177]:
+                - img [ref=e178]
+                - text: Need help? Call us Mon–Fri, 9 AM–7 PM at 18005726671 (toll-free).
+            - button "Instant Helper" [ref=e181] [cursor=pointer]:
+              - img [ref=e182]
+          - generic [ref=e185]:
+            - generic [ref=e186]:
+              - img [ref=e187]
+              - strong [ref=e189]: Live webinar
+              - text: ": An overview of Zoho Payroll"
+            - generic [ref=e190]:
+              - img [ref=e191]
+              - strong [ref=e195]: Tuesday or Thursday
+              - text: "@3:30PM IST"
+            - link "Register Now" [ref=e196] [cursor=pointer]:
+              - /url: https://meet.zoho.in/umux-wdb-zgw
+          - generic [ref=e198]:
+            - generic [ref=e199]:
+              - generic [ref=e200]:
+                - generic [ref=e201]:
+                  - heading "Get started with Zoho Payroll" [level=2] [ref=e202]
+                  - heading "Complete the following steps to have a hassle-free payroll experience" [level=3] [ref=e203]
+                - generic [ref=e207]: 3/7 Completed
+              - generic [ref=e208]:
+                - generic [ref=e209]:
+                  - generic [ref=e210]:
+                    - img [ref=e212]
+                    - button "1. Add Organisation Details" [ref=e217] [cursor=pointer]:
+                      - generic [ref=e218]:
+                        - text: 1. Add Organisation Details
+                        - img [ref=e219]
+                    - link "Completed" [ref=e222] [cursor=pointer]:
+                      - /url: "#/settings/orgprofile"
+                      - generic [ref=e223]: Completed
+                  - separator [ref=e224]
+                - generic [ref=e225]:
+                  - generic [ref=e226]:
+                    - img [ref=e228]
+                    - button "2. Provide your Tax Details" [ref=e233] [cursor=pointer]:
+                      - generic [ref=e234]:
+                        - text: 2. Provide your Tax Details
+                        - img [ref=e235]
+                    - link "Completed" [ref=e238] [cursor=pointer]:
+                      - /url: "#/settings/taxes"
+                      - generic [ref=e239]: Completed
+                  - separator [ref=e240]
+                - generic [ref=e241]:
+                  - generic [ref=e242]:
+                    - img [ref=e244]
+                    - button "3. Configure your Pay Schedule" [ref=e249] [cursor=pointer]:
+                      - generic [ref=e250]:
+                        - text: 3. Configure your Pay Schedule
+                        - img [ref=e251]
+                    - button "Complete Now" [ref=e254] [cursor=pointer]:
+                      - generic [ref=e255]: Complete Now
+                  - separator [ref=e256]
+                - generic [ref=e257]:
+                  - generic [ref=e258]:
+                    - img [ref=e260]
+                    - button "4. Set up Statutory Components" [ref=e265] [cursor=pointer]:
+                      - generic [ref=e266]:
+                        - text: 4. Set up Statutory Components
+                        - img [ref=e267]
+                  - generic [ref=e272]:
+                    - link "Employees' Provident Fund" [ref=e274] [cursor=pointer]:
+                      - /url: "#/settings/statutory-details/list"
+                      - generic [ref=e275]:
+                        - img [ref=e276]
+                        - heading "Employees' Provident Fund" [level=4] [ref=e279]
+                    - link "Employees' State Insurance" [ref=e282] [cursor=pointer]:
+                      - /url: "#/settings/statutory-details/list/esi"
+                      - generic [ref=e283]:
+                        - img [ref=e284]
+                        - heading "Employees' State Insurance" [level=4] [ref=e287]
+                    - link "Labour Welfare Fund" [ref=e290] [cursor=pointer]:
+                      - /url: "#/settings/statutory-details/list/lwf"
+                      - generic [ref=e291]:
+                        - img [ref=e292]
+                        - heading "Labour Welfare Fund" [level=4] [ref=e295]
+                    - link "Professional Tax (Configured based on Work Location)" [ref=e298] [cursor=pointer]:
+                      - /url: "#/settings/statutory-details/list/pt"
+                      - img [ref=e299]
+                      - heading "Professional Tax (Configured based on Work Location)" [level=4] [ref=e302]:
+                        - text: Professional Tax
+                        - generic [ref=e303]: (Configured based on Work Location)
+                  - separator [ref=e304]
+                - generic [ref=e305]:
+                  - generic [ref=e306]:
+                    - img [ref=e308]
+                    - button "5. Set up Salary Components" [ref=e313] [cursor=pointer]:
+                      - generic [ref=e314]:
+                        - text: 5. Set up Salary Components
+                        - img [ref=e315]
+                    - button "Complete Now" [ref=e318] [cursor=pointer]:
+                      - generic [ref=e319]: Complete Now
+                  - separator [ref=e320]
+                - generic [ref=e321]:
+                  - generic [ref=e322]:
+                    - img [ref=e324]
+                    - button "6. Add Employees" [ref=e329] [cursor=pointer]:
+                      - generic [ref=e330]:
+                        - text: 6. Add Employees
+                        - img [ref=e331]
+                    - button "Complete Now" [ref=e334] [cursor=pointer]:
+                      - generic [ref=e335]: Complete Now
+                  - separator [ref=e336]
+                - generic [ref=e338]:
+                  - img [ref=e340]
+                  - button "7. Configure Prior Payroll" [ref=e345] [cursor=pointer]:
+                    - generic [ref=e346]:
+                      - text: 7. Configure Prior Payroll
+                      - img [ref=e347]
+                  - link "Completed" [ref=e350] [cursor=pointer]:
+                    - /url: "#/prior-payroll"
+                    - generic [ref=e351]: Completed
+                - generic [ref=e352]:
+                  - separator [ref=e353]
+                  - heading "Additional notable features" [level=4] [ref=e354]
+                  - generic [ref=e355]:
+                    - link "Direct Deposit" [ref=e357] [cursor=pointer]:
+                      - /url: "#/settings/direct-deposit"
+                      - img [ref=e359]
+                      - heading "Direct Deposit" [level=4] [ref=e366]
+                    - link "Salary Templates" [ref=e368] [cursor=pointer]:
+                      - /url: "#/settings/salary-templates"
+                      - img [ref=e370]
+                      - heading "Salary Templates" [level=4] [ref=e377]
+                    - link "Auto Reminder for IT & POI Declaration" [ref=e379] [cursor=pointer]:
+                      - /url: "#/settings/preferences/it-declaration"
+                      - img [ref=e381]
+                      - heading "Auto Reminder for IT & POI Declaration" [level=4] [ref=e386]
+                    - link "Employee Custom Field" [ref=e388] [cursor=pointer]:
+                      - /url: "#/settings/employee/custom-field/list"
+                      - img [ref=e390]
+                      - heading "Employee Custom Field" [level=4] [ref=e397]
+            - heading "Find help & resources" [level=3] [ref=e398]
+            - generic [ref=e399]:
+              - region "Learn how to use Zoho Payroll" [ref=e400]:
+                - generic [ref=e401]:
+                  - heading "Learn how to use Zoho Payroll" [level=4] [ref=e402]
+                  - button "Watch Complete Walkthrough Video" [ref=e403] [cursor=pointer]:
+                    - img [ref=e404]
+                    - img [ref=e405]
+                    - generic [ref=e408]: Watch Complete Walkthrough Video
+              - region "Help & Support" [ref=e409]:
+                - heading "Help & Support" [level=4] [ref=e410]
+                - list [ref=e411]:
+                  - listitem [ref=e412]:
+                    - link "Help" [ref=e413] [cursor=pointer]:
+                      - /url: https://zoho.in/in/payroll/help/
+                      - generic [ref=e414]:
+                        - img [ref=e416]
+                        - heading "Help" [level=4] [ref=e421]
+                  - listitem [ref=e422]:
+                    - link "FAQ" [ref=e423] [cursor=pointer]:
+                      - /url: https://zoho.in/in/payroll/kb/
+                      - generic [ref=e424]:
+                        - img [ref=e426]
+                        - heading "FAQ" [level=4] [ref=e432]
+                  - listitem [ref=e433]:
+                    - link "Forum" [ref=e434] [cursor=pointer]:
+                      - /url: https://help.zoho.com/portal/en/community/zoho-payroll
+                      - generic [ref=e435]:
+                        - img [ref=e437]
+                        - heading "Forum" [level=4] [ref=e442]
+          - generic [ref=e443]:
+            - generic [ref=e445]:
+              - generic [ref=e447]:
+                - img [ref=e450]
+                - heading "Need Clarification? Drop us an email and we’ll get back to you" [level=4] [ref=e454]:
+                  - text: Need Clarification?
+                  - link "Drop us an email" [ref=e455] [cursor=pointer]:
+                    - /url: "#/support"
+                  - text: and we’ll get back to you
+              - generic [ref=e457]:
+                - img [ref=e460]
+                - generic [ref=e464]:
+                  - heading "You can directly talk to us every Monday to Friday" [level=4] [ref=e465]
+                  - paragraph [ref=e466]: "Toll Free : 18005726671 (9:00 AM to 7:00 PM)"
+            - generic [ref=e468]:
+              - generic [ref=e470]:
+                - img [ref=e472]
+                - generic [ref=e473]:
+                  - heading "Payroll portal app for your employees; accessible anywhere anytime" [level=4] [ref=e474]
+                  - generic [ref=e475]:
+                    - link [ref=e476] [cursor=pointer]:
+                      - /url: https://itunes.apple.com/in/app/employee-portal-zoho-payroll/id1450810850
+                      - img [ref=e477]
+                    - link [ref=e478] [cursor=pointer]:
+                      - /url: https://play.google.com/store/apps/details?id=com.zoho.payroll&referrer=utm_source%3Dweb_app_admin%26utm_medium%3Dfooter&gl=IN
+                      - img [ref=e479]
+              - generic [ref=e480]:
+                - generic [ref=e481]:
+                  - generic [ref=e482]:
+                    - heading "Other Zoho Apps" [level=5] [ref=e483]
+                    - list [ref=e484]:
+                      - listitem [ref=e485]:
+                        - link "Accounting Software" [ref=e486] [cursor=pointer]:
+                          - /url: https://zoho.com/books/?utm_source=payroll&utm_medium=footer&utm_campaign=referral
+                      - listitem [ref=e487]:
+                        - link "HR Software" [ref=e488] [cursor=pointer]:
+                          - /url: https://zoho.com/people/?utm_source=payroll&utm_medium=footer&utm_campaign=referral
+                      - listitem [ref=e489]:
+                        - link "Invoice Software" [ref=e490] [cursor=pointer]:
+                          - /url: https://zoho.com/invoice/?utm_source=payroll&utm_medium=footer&utm_campaign=referral
+                      - listitem [ref=e491]:
+                        - link "Inventory Management" [ref=e492] [cursor=pointer]:
+                          - /url: https://zoho.com/inventory/?utm_source=payroll&utm_medium=footer&utm_campaign=referral
+                      - listitem [ref=e493]:
+                        - link "Billing Software" [ref=e494] [cursor=pointer]:
+                          - /url: https://zoho.com/billing/?utm_source=payroll&utm_medium=footer&utm_campaign=referral
+                      - listitem [ref=e495]:
+                        - link "Expense Reporting" [ref=e496] [cursor=pointer]:
+                          - /url: https://zoho.com/expense/?utm_source=payroll&utm_medium=footer&utm_campaign=referral
+                      - listitem [ref=e497]:
+                        - link "CRM & Other Apps" [ref=e498] [cursor=pointer]:
+                          - /url: https://zoho.com/?utm_source=payroll&utm_medium=footer&utm_campaign=referral
+                  - generic [ref=e499]:
+                    - heading "Help & Support" [level=5] [ref=e500]
+                    - list [ref=e501]:
+                      - listitem [ref=e502]:
+                        - link "Contact Support" [ref=e503] [cursor=pointer]:
+                          - /url: "#/support"
+                      - listitem [ref=e504]:
+                        - link "Help Documentation" [ref=e505] [cursor=pointer]:
+                          - /url: https://zoho.in/in/payroll/help/
+                      - listitem [ref=e506]:
+                        - link "FAQ" [ref=e507] [cursor=pointer]:
+                          - /url: https://zoho.in/in/payroll/kb/
+                      - listitem [ref=e508]:
+                        - link "Training Program" [ref=e509] [cursor=pointer]:
+                          - /url: https://zoho.in/in/payroll/payroll-training/
+                  - generic [ref=e510]:
+                    - heading "Quick links" [level=5] [ref=e511]
+                    - list [ref=e512]:
+                      - listitem [ref=e513]:
+                        - link "Features" [ref=e514] [cursor=pointer]:
+                          - /url: https://zoho.in/in/payroll/employees-onboarding/
+                      - listitem [ref=e515]:
+                        - link "Integrations" [ref=e516] [cursor=pointer]:
+                          - /url: https://zoho.in/in/payroll/integrations/
+                      - listitem [ref=e517]:
+                        - link "What's New?" [ref=e518] [cursor=pointer]:
+                          - /url: https://zoho.in/in/payroll/whats-new/
+                - generic [ref=e519]: © 2026, Zoho Corporation Pvt. Ltd. All Rights Reserved.
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Dashboard page loaded.
+  - text:       Chats  Channels  Contacts   

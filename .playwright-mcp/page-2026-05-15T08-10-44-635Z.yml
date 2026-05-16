@@ -1,0 +1,197 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e6121]:
+      - generic [ref=e6123]:
+        - generic [ref=e6124]:
+          - button "All Settings" [ref=e6125] [cursor=pointer]:
+            - img [ref=e6126]
+          - button [ref=e6131] [cursor=pointer]:
+            - img [ref=e6132]
+          - generic [ref=e6134]:
+            - generic [ref=e6135]: All Settings
+            - generic [ref=e6136]: lerno
+        - generic [ref=e6138]:
+          - combobox "Search" [ref=e6142]
+          - img [ref=e6143]
+        - button "Close Settings" [ref=e6147] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e6148]
+      - generic [ref=e6150]:
+        - navigation [ref=e6151]:
+          - generic [ref=e6153]:
+            - group [ref=e6154]:
+              - heading "Organisation Settings" [level=2] [ref=e6155]
+              - generic [ref=e6156]:
+                - region "Organisation" [ref=e6158]:
+                  - generic [ref=e6159]:
+                    - heading "Organisation" [level=3] [ref=e6160] [cursor=pointer]:
+                      - button "Organisation" [ref=e6161]:
+                        - img [ref=e6162]
+                        - generic [ref=e6164]: Organisation
+                    - text:      
+                - generic [ref=e6178]:
+                  - region "Users and Roles" [ref=e6179]:
+                    - generic [ref=e6180]:
+                      - heading "Users and Roles" [level=3] [ref=e6181] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e6182]:
+                          - img [ref=e6183]
+                          - generic [ref=e6185]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e6191]:
+                    - generic [ref=e6192]:
+                      - heading "Taxes" [level=3] [ref=e6193] [cursor=pointer]:
+                        - button "Taxes" [ref=e6194]:
+                          - img [ref=e6195]
+                          - generic [ref=e6197]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e6202]:
+                  - generic [ref=e6203]:
+                    - heading "Setup & Configurations" [level=3] [ref=e6204] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e6205]:
+                        - img [ref=e6536]
+                        - generic [ref=e6208]: Setup & Configurations
+                    - text:     
+                - region "Customisations" [ref=e6221]:
+                  - generic [ref=e6222]:
+                    - heading "Customisations" [level=3] [ref=e6223] [cursor=pointer]:
+                      - button "Customisations" [expanded] [ref=e6224]:
+                        - img [ref=e6538]
+                        - generic [ref=e6227]: Customisations
+                    - region "Customisations" [ref=e6566]:
+                      - generic [ref=e6228]:
+                        - link "Email Templates" [ref=e6229] [cursor=pointer]:
+                          - /url: "#/settings/email-templates"
+                          - generic [ref=e6230]: Email Templates
+                          - text: 
+                        - link "Sender Email Preferences" [ref=e6231] [cursor=pointer]:
+                          - /url: "#/settings/email-preference"
+                          - generic [ref=e6232]: Sender Email Preferences
+                          - text: 
+                        - link "Salary Templates" [ref=e6233] [cursor=pointer]:
+                          - /url: "#/settings/salary-templates"
+                          - generic [ref=e6234]: Salary Templates
+                          - text: 
+                        - link "PDF Templates" [ref=e6235] [cursor=pointer]:
+                          - /url: "#/settings/templates/regular-payslip"
+                          - generic [ref=e6236]: PDF Templates
+                          - text: 
+                        - link "Reporting Tags" [ref=e6237] [cursor=pointer]:
+                          - /url: "#/settings/advanced-reportingtags"
+                          - generic [ref=e6238]: Reporting Tags
+                          - text: 
+                - region "Automations" [ref=e6240]:
+                  - generic [ref=e6241]:
+                    - heading "Automations" [level=3] [ref=e6242] [cursor=pointer]:
+                      - button "Automations" [ref=e6243]:
+                        - img [ref=e6244]
+                        - generic [ref=e6246]: Automations
+                    - text:    
+            - group [ref=e6256]:
+              - heading "Module Settings" [level=2] [ref=e6257]
+              - generic [ref=e6258]:
+                - region "General" [ref=e6260]:
+                  - generic [ref=e6261]:
+                    - heading "General" [level=3] [ref=e6262] [cursor=pointer]:
+                      - button "General" [ref=e6263]:
+                        - img [ref=e6264]
+                        - generic [ref=e6266]: General
+                    - text:     
+                - region "Payments" [ref=e6279]:
+                  - generic [ref=e6280]:
+                    - heading "Payments" [level=3] [ref=e6281] [cursor=pointer]:
+                      - button "Payments" [ref=e6282]:
+                        - img [ref=e6283]
+                        - generic [ref=e6285]: Payments
+                    - text: 
+            - group [ref=e6289]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e6290]
+              - generic [ref=e6291]:
+                - region "Integrations" [ref=e6293]:
+                  - generic [ref=e6294]:
+                    - heading "Integrations" [level=3] [ref=e6295] [cursor=pointer]:
+                      - button "Integrations" [ref=e6296]:
+                        - img [ref=e6297]
+                        - generic [ref=e6299]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e6304]:
+                  - generic [ref=e6305]:
+                    - heading "Developer Data" [level=3] [ref=e6306] [cursor=pointer]:
+                      - button "Developer Data" [ref=e6307]:
+                        - img [ref=e6308]
+                        - generic [ref=e6310]: Developer Data
+                    - text:   
+        - main [ref=e6745]:
+          - generic [ref=e6746]:
+            - heading "Sender Email Preferences" [level=3] [ref=e6747]
+            - button "Add Sender" [ref=e6748] [cursor=pointer]
+          - generic [ref=e6750]:
+            - generic [ref=e6751]:
+              - text: Public Domains
+              - img [ref=e6754]
+            - generic [ref=e6757]:
+              - generic [ref=e6758]:
+                - paragraph [ref=e6759]: Emails Are Sent Through
+                - paragraph [ref=e6760]:
+                  - generic [ref=e6761]:
+                    - text: Email address of Zoho Payroll
+                    - paragraph [ref=e6762]: (message-service@mail.zohopayroll.in)
+              - generic [ref=e6764]:
+                - img [ref=e6766]
+                - generic [ref=e6768]:
+                  - text: If you send emails from public domain, they are likely to land in the Spam folder. So, if emails are sent with any of the following email addresses in the From field, emails will be sent from message-service@mail.zohopayroll.in. If you still want to send emails using the public domain,
+                  - link "Change Setting" [ref=e6770] [cursor=pointer]:
+                    - /url: "#"
+            - table [ref=e6772]:
+              - rowgroup [ref=e6773]:
+                - columnheader "Name" [ref=e6774]
+                - columnheader "Email Address" [ref=e6775]
+              - rowgroup [ref=e6776]:
+                - row "abhijithss2255 Primary abhijithss2255@gmail.com Unverified (Resend Email)" [ref=e6777]:
+                  - cell "abhijithss2255 Primary" [ref=e6778]:
+                    - text: abhijithss2255
+                    - generic [ref=e6779]: Primary
+                  - cell "abhijithss2255@gmail.com" [ref=e6780]
+                  - cell "Unverified (Resend Email)" [ref=e6781]:
+                    - generic [ref=e6782]:
+                      - generic [ref=e6783]:
+                        - img [ref=e6784]
+                        - text: Unverified
+                      - button "(Resend Email)" [ref=e6786] [cursor=pointer]
+                  - cell [ref=e6787]:
+                    - button [ref=e6788] [cursor=pointer]:
+                      - img [ref=e6789]
+                  - cell [ref=e6791]:
+                    - button [ref=e6792] [cursor=pointer]:
+                      - img [ref=e6793]
+    - generic [ref=e6797]:
+      - dialog:
+        - generic [ref=e6798]:
+          - generic [ref=e6799]:
+            - generic [ref=e6800]: Add Sender
+            - button [ref=e6801] [cursor=pointer]:
+              - img [ref=e6802]
+          - generic [ref=e6806]:
+            - generic [ref=e6807]:
+              - generic [ref=e6808]: Name*
+              - textbox "Name*" [active] [ref=e6810]
+            - generic [ref=e6811]:
+              - generic [ref=e6812]: Email Address*
+              - combobox "Email Address*" [ref=e6817]
+          - generic [ref=e6819]:
+            - generic [ref=e6820]:
+              - button "Save" [ref=e6821] [cursor=pointer]
+              - button "Cancel" [ref=e6822] [cursor=pointer]
+            - paragraph [ref=e6824]: "* indicates mandatory fields"
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Settings Sender Email Preferences page loaded.
+  - text:       Chats  Contacts   

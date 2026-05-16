@@ -1,0 +1,56 @@
+- generic [ref=e26]:
+  - complementary [ref=e27]:
+    - generic [ref=e28]:
+      - generic [ref=e29]: Platform Admin
+      - generic [ref=e30]: Indian Payroll
+    - navigation [ref=e31]:
+      - link "Organisations" [ref=e32] [cursor=pointer]:
+        - /url: /platform/orgs
+        - img [ref=e33]
+        - text: Organisations
+    - generic [ref=e37]:
+      - paragraph [ref=e38]: admin@payroll.local
+      - button "Sign out" [ref=e39]:
+        - img [ref=e40]
+        - text: Sign out
+  - generic [ref=e43]:
+    - banner [ref=e44]:
+      - generic [ref=e46]: Platform Admin
+      - generic [ref=e47]:
+        - button [ref=e48]:
+          - img [ref=e49]
+        - generic [ref=e52]: AD
+    - main [ref=e53]:
+      - generic [ref=e54]:
+        - generic [ref=e55]:
+          - generic [ref=e56]:
+            - heading "Organisations" [level=1] [ref=e57]
+            - paragraph [ref=e58]: Tenants that have purchased Indian Payroll
+          - button "New Organisation" [ref=e59]:
+            - img [ref=e60]
+            - text: New Organisation
+        - generic [ref=e62]:
+          - img [ref=e63]
+          - searchbox "Search organisations…" [ref=e66]
+        - table [ref=e68]:
+          - rowgroup [ref=e69]:
+            - row "Name Slug Status Created" [ref=e70]:
+              - columnheader "Name" [ref=e71]
+              - columnheader "Slug" [ref=e72]
+              - columnheader "Status" [ref=e73]
+              - columnheader "Created" [ref=e74]
+          - rowgroup [ref=e75]:
+            - row "Demo Corp demo Active 14/05/2026" [ref=e76] [cursor=pointer]:
+              - cell "Demo Corp" [ref=e77]
+              - cell "demo" [ref=e78]:
+                - code [ref=e79]: demo
+              - cell "Active" [ref=e80]:
+                - generic [ref=e81]: Active
+              - cell "14/05/2026" [ref=e82]
+            - row "lurio lurio Active 14/05/2026" [ref=e83] [cursor=pointer]:
+              - cell "lurio" [ref=e84]
+              - cell "lurio" [ref=e85]:
+                - code [ref=e86]: lurio
+              - cell "Active" [ref=e87]:
+                - generic [ref=e88]: Active
+              - cell "14/05/2026" [ref=e89]

@@ -68,6 +68,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDesignationRepository, DesignationRepository>();
         services.AddScoped<ICostCentreRepository, CostCentreRepository>();
         services.AddScoped<IBusinessUnitRepository, BusinessUnitRepository>();
+        services.AddScoped<IPayScheduleRepository, PayScheduleRepository>();
         services.AddScoped<IPlatformUnitOfWork, PlatformUnitOfWork>();
         services.AddScoped<ITenantSchemaProvisioner, TenantSchemaProvisioner>();
         services.AddScoped<ITokenRevocationService, TokenRevocationService>();

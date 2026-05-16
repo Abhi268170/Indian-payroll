@@ -1,0 +1,176 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e7569]:
+      - generic [ref=e7571]:
+        - generic [ref=e7572]:
+          - button "All Settings" [ref=e7573] [cursor=pointer]:
+            - img [ref=e7574]
+          - button [ref=e7579] [cursor=pointer]:
+            - img [ref=e7580]
+          - generic [ref=e7582]:
+            - generic [ref=e7583]: All Settings
+            - generic [ref=e7584]: lerno
+        - generic [ref=e7586]:
+          - combobox "Search" [ref=e7590]
+          - img [ref=e7591]
+        - button "Close Settings" [ref=e7595] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e7596]
+      - generic [ref=e7598]:
+        - navigation [ref=e7599]:
+          - generic [ref=e7601]:
+            - group [ref=e7602]:
+              - heading "Organisation Settings" [level=2] [ref=e7603]
+              - generic [ref=e7604]:
+                - region "Organisation" [ref=e7606]:
+                  - generic [ref=e7607]:
+                    - heading "Organisation" [level=3] [ref=e7608] [cursor=pointer]:
+                      - button "Organisation" [ref=e7609]:
+                        - img [ref=e7610]
+                        - generic [ref=e7612]: Organisation
+                    - text:      
+                - generic [ref=e7626]:
+                  - region "Users and Roles" [ref=e7627]:
+                    - generic [ref=e7628]:
+                      - heading "Users and Roles" [level=3] [ref=e7629] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e7630]:
+                          - img [ref=e7631]
+                          - generic [ref=e7633]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e7639]:
+                    - generic [ref=e7640]:
+                      - heading "Taxes" [level=3] [ref=e7641] [cursor=pointer]:
+                        - button "Taxes" [ref=e7642]:
+                          - img [ref=e7643]
+                          - generic [ref=e7645]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e7650]:
+                  - generic [ref=e7651]:
+                    - heading "Setup & Configurations" [level=3] [ref=e7652] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e7653]:
+                        - img [ref=e7654]
+                        - generic [ref=e7656]: Setup & Configurations
+                    - text:     
+                - region "Customisations" [ref=e7669]:
+                  - generic [ref=e7670]:
+                    - heading "Customisations" [level=3] [ref=e7671] [cursor=pointer]:
+                      - button "Customisations" [expanded] [ref=e7672]:
+                        - img [ref=e7673]
+                        - generic [ref=e7675]: Customisations
+                    - region "Customisations" [ref=e7809]:
+                      - generic [ref=e7676]:
+                        - link "Email Templates" [ref=e7677] [cursor=pointer]:
+                          - /url: "#/settings/email-templates"
+                          - generic [ref=e7678]: Email Templates
+                          - text: 
+                        - link "Sender Email Preferences" [ref=e7679] [cursor=pointer]:
+                          - /url: "#/settings/email-preference"
+                          - generic [ref=e7680]: Sender Email Preferences
+                          - text: 
+                        - link "Salary Templates" [ref=e7681] [cursor=pointer]:
+                          - /url: "#/settings/salary-templates"
+                          - generic [ref=e7682]: Salary Templates
+                          - text: 
+                        - link "PDF Templates" [ref=e7683] [cursor=pointer]:
+                          - /url: "#/settings/templates/regular-payslip"
+                          - generic [ref=e7684]: PDF Templates
+                          - text: 
+                        - link "Reporting Tags" [ref=e7685] [cursor=pointer]:
+                          - /url: "#/settings/advanced-reportingtags"
+                          - generic [ref=e7686]: Reporting Tags
+                          - text: 
+                - region "Automations" [ref=e7688]:
+                  - generic [ref=e7689]:
+                    - heading "Automations" [level=3] [ref=e7690] [cursor=pointer]:
+                      - button "Automations" [ref=e7691]:
+                        - img [ref=e7692]
+                        - generic [ref=e7694]: Automations
+                    - text:    
+            - group [ref=e7704]:
+              - heading "Module Settings" [level=2] [ref=e7705]
+              - generic [ref=e7706]:
+                - region "General" [ref=e7708]:
+                  - generic [ref=e7709]:
+                    - heading "General" [level=3] [ref=e7710] [cursor=pointer]:
+                      - button "General" [ref=e7711]:
+                        - img [ref=e7712]
+                        - generic [ref=e7714]: General
+                    - text:     
+                - region "Payments" [ref=e7727]:
+                  - generic [ref=e7728]:
+                    - heading "Payments" [level=3] [ref=e7729] [cursor=pointer]:
+                      - button "Payments" [ref=e7730]:
+                        - img [ref=e7731]
+                        - generic [ref=e7733]: Payments
+                    - text: 
+            - group [ref=e7737]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e7738]
+              - generic [ref=e7739]:
+                - region "Integrations" [ref=e7741]:
+                  - generic [ref=e7742]:
+                    - heading "Integrations" [level=3] [ref=e7743] [cursor=pointer]:
+                      - button "Integrations" [ref=e7744]:
+                        - img [ref=e7745]
+                        - generic [ref=e7747]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e7752]:
+                  - generic [ref=e7753]:
+                    - heading "Developer Data" [level=3] [ref=e7754] [cursor=pointer]:
+                      - button "Developer Data" [ref=e7755]:
+                        - img [ref=e7756]
+                        - generic [ref=e7758]: Developer Data
+                    - text:   
+        - main [ref=e8051]:
+          - generic [ref=e8053]:
+            - heading "Adding New Reporting Tag" [level=3] [ref=e8054]
+            - navigation [ref=e8055]:
+              - list [ref=e8056]:
+                - button "1 Create Reporting Tag" [ref=e8057] [cursor=pointer]:
+                  - generic [ref=e8058]: "1"
+                  - generic [ref=e8059]: Create Reporting Tag
+                - img [ref=e8060]
+                - button "2 Configure Options" [ref=e8062] [cursor=pointer]:
+                  - generic [ref=e8063]: "2"
+                  - generic [ref=e8064]: Configure Options
+                - img [ref=e8065]
+                - button "3 Configure Visibility Conditions" [ref=e8067] [cursor=pointer]:
+                  - generic [ref=e8068]: "3"
+                  - generic [ref=e8069]: Configure Visibility Conditions
+          - generic [ref=e8070]:
+            - generic [ref=e8072]:
+              - generic [ref=e8073]:
+                - generic [ref=e8074]: Name *
+                - textbox "Name *" [ref=e8076]
+              - generic [ref=e8077]:
+                - generic [ref=e8078]: Description
+                - textbox "Description" [ref=e8080]
+              - generic [ref=e8082]:
+                - generic [ref=e8083]: Associate This Reporting Tag To
+                - generic [ref=e8084]:
+                  - checkbox "Employees" [checked] [disabled] [ref=e8085]
+                  - generic [ref=e8086]: Employees
+                - generic [ref=e8087]: If the same organization exists across multiple Zoho Finance apps, this preference will be applied universally. However, you can manually update it later within any specific app if needed.
+              - generic [ref=e8088]:
+                - generic [ref=e8089]: Configurations
+                - generic [ref=e8090]:
+                  - checkbox "Make this Reporting Tag mandatory" [ref=e8091] [cursor=pointer]
+                  - generic [ref=e8092] [cursor=pointer]: Make this Reporting Tag mandatory
+                  - paragraph [ref=e8093]: Requires users to provide input for the reporting tag field. However, it will be skipped for auto-created transactions and in certain apps where this field is not exposed to users.
+            - generic [ref=e8094]:
+              - button "Save & Proceed" [ref=e8095] [cursor=pointer]
+              - link "Cancel" [ref=e8096] [cursor=pointer]:
+                - /url: "#/settings/advanced-reportingtags"
+              - generic [ref=e8097]: "* indicates mandatory fields"
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Settings page loaded.
+  - text:       Chats  Contacts   

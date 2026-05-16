@@ -403,6 +403,75 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.ToTable("org_profiles", (string)null);
                 });
 
+            modelBuilder.Entity("Payroll.Domain.Entities.PaySchedule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<int?>("FixedWorkingDaysPerMonth")
+                        .HasColumnType("integer")
+                        .HasColumnName("fixed_working_days_per_month");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsLockedAfterPayrun")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_locked_after_payrun");
+
+                    b.Property<int?>("PayDateDay")
+                        .HasColumnType("integer")
+                        .HasColumnName("pay_date_day");
+
+                    b.Property<string>("PayDateType")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("pay_date_type");
+
+                    b.Property<string>("SalaryCalculationMethod")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("salary_calculation_method");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.Property<int>("WorkWeekDays")
+                        .HasColumnType("integer")
+                        .HasColumnName("work_week_days");
+
+                    b.HasKey("Id")
+                        .HasName("pk_pay_schedules");
+
+                    b.ToTable("pay_schedules", (string)null);
+                });
+
             modelBuilder.Entity("Payroll.Domain.Entities.WorkLocation", b =>
                 {
                     b.Property<Guid>("Id")

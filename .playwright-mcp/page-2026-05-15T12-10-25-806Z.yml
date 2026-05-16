@@ -1,0 +1,116 @@
+- generic:
+  - iframe
+  - generic [ref=e13742]:
+    - generic [ref=e13743]: Please make sure pre-payment is not a date in the future.
+    - button [ref=e14841] [cursor=pointer]:
+      - img [ref=e14842]
+  - generic [ref=e5]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e6] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e7]
+    - banner "Top Band" [ref=e17871]:
+      - navigation:
+        - generic [ref=e17873]:
+          - img "Zoho Payroll" [ref=e17874]
+          - generic [ref=e17875]: Payroll
+        - generic [ref=e17879]:
+          - button "Advanced Search" [ref=e17880] [cursor=pointer]:
+            - img [ref=e17881]
+          - textbox "Search in Employee" [ref=e17885]: HDFC Bank
+          - button "Clear Searched Text" [ref=e17887] [cursor=pointer]:
+            - img [ref=e17888]
+        - generic [ref=e17890]:
+          - generic [ref=e17893] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e17895] [cursor=pointer]
+          - button "lerno" [ref=e17899] [cursor=pointer]:
+            - generic [ref=e17900]: lerno
+            - img [ref=e17901]
+          - button "Refer and Earn" [ref=e17905] [cursor=pointer]:
+            - img [ref=e17906]
+          - button "Notifications" [ref=e17910] [cursor=pointer]:
+            - generic [ref=e17911]:
+              - generic [ref=e18058]: "4"
+              - img [ref=e17912]
+          - button "Settings" [ref=e17915] [cursor=pointer]:
+            - img [ref=e17916]
+          - button "A" [ref=e18059] [cursor=pointer]:
+            - generic [ref=e17922]: A
+          - img [ref=e17940] [cursor=pointer]
+    - generic [ref=e78]:
+      - complementary [ref=e17943]:
+        - navigation [ref=e17944]:
+          - generic [ref=e17945]:
+            - list [ref=e17946]:
+              - listitem [ref=e17947]:
+                - link "Dashboard" [ref=e17948] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e18781]
+                  - generic [ref=e17952]: Dashboard
+              - listitem [ref=e17953]:
+                - link "Employees" [ref=e17954] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e18784]
+                  - generic [ref=e17957]: Employees
+              - listitem [ref=e17958]:
+                - link "Pay Runs" [ref=e17959] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e18786]
+                  - generic [ref=e17963]: Pay Runs
+              - listitem [ref=e17964]:
+                - list [ref=e17965]:
+                  - listitem [ref=e17966]:
+                    - button "Approvals" [ref=e17968] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e17969]:
+                        - button "Approvals" [ref=e17970]:
+                          - img [ref=e18789]
+                          - img [ref=e18791]
+                          - generic [ref=e17976]: Approvals
+                          - img [ref=e17977]
+              - listitem [ref=e17985]:
+                - list [ref=e17986]:
+                  - listitem [ref=e17987]:
+                    - button "Taxes & Forms" [ref=e17989] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e17990]:
+                        - button "Taxes & Forms" [ref=e17991]:
+                          - img [ref=e18794]
+                          - img [ref=e18796]
+                          - generic [ref=e17999]: Taxes & Forms
+                          - img [ref=e18000]
+              - listitem [ref=e18010]:
+                - link "Loans" [ref=e18011] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e18801]
+                  - generic [ref=e18015]: Loans
+              - listitem [ref=e18016]:
+                - link "Giving" [ref=e18017] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e18804]
+                  - generic [ref=e18020]: Giving
+              - listitem
+              - listitem [ref=e18021]:
+                - link "Documents" [ref=e18022] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e18806]
+                  - generic [ref=e18025]: Documents
+              - listitem [ref=e18026]:
+                - link "Reports" [ref=e18027] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e18808]
+                  - generic [ref=e18031]: Reports
+              - listitem [ref=e18032]:
+                - link "Settings" [ref=e18033] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e18811]
+                  - generic [ref=e18037]: Settings
+            - link "Contact Support" [ref=e18817] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e18818]
+          - button "Collapse/Expand" [ref=e18044] [cursor=pointer]:
+            - img [ref=e18820]
+      - main [ref=e18048]:
+        - alert [ref=e18828]:
+          - generic [ref=e18829]: Loading...
+  - status [ref=e269]: page loaded.
+  - text:       Chats  Contacts   

@@ -1,0 +1,20 @@
+- generic [ref=e23]:
+  - generic [ref=e25]:
+    - generic [ref=e27]: IP
+    - heading "Indian Payroll" [level=1] [ref=e28]
+    - paragraph [ref=e29]: Indian Payroll — Built for compliance.
+  - generic [ref=e31]:
+    - heading "Sign in" [level=2] [ref=e32]
+    - paragraph [ref=e33]: Enter your credentials to continue
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - generic [ref=e36]: Email
+        - textbox "Email" [ref=e38]:
+          - /placeholder: you@company.com
+          - text: demoAdmin@yopmail.com
+      - generic [ref=e39]:
+        - generic [ref=e40]: Password
+        - textbox "Password" [ref=e42]: Demo@Corp2024!
+      - button "Sign in" [ref=e43]
+      - link "Forgot password?" [ref=e45] [cursor=pointer]:
+        - /url: /forgot-password

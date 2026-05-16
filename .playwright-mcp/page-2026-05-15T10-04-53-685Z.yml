@@ -1,0 +1,192 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e5]:
+      - navigation:
+        - generic [ref=e7]:
+          - img "Zoho Payroll" [ref=e8]
+          - generic [ref=e9]: Payroll
+        - generic [ref=e13]:
+          - button "Advanced Search" [ref=e14] [cursor=pointer]:
+            - img [ref=e15]
+          - textbox "Search in Employee" [ref=e19]
+        - generic [ref=e21]:
+          - generic [ref=e24] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e26] [cursor=pointer]
+          - button "lerno" [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]: lerno
+            - img [ref=e32]
+          - button "Refer and Earn" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+          - button "Notifications" [ref=e41] [cursor=pointer]:
+            - generic [ref=e42]:
+              - generic [ref=e2038]: "2"
+              - img [ref=e43]
+          - button "Settings" [ref=e46] [cursor=pointer]:
+            - img [ref=e47]
+          - button "A" [ref=e52] [cursor=pointer]:
+            - generic [ref=e53]: A
+          - img [ref=e70] [cursor=pointer]
+    - generic [ref=e73]:
+      - complementary [ref=e74]:
+        - navigation [ref=e75]:
+          - generic [ref=e76]:
+            - list [ref=e77]:
+              - link "Getting Started" [ref=e78] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e80]:
+                  - generic [ref=e81]:
+                    - img [ref=e83]
+                    - text: Getting Started
+                  - img [ref=e87]
+              - listitem [ref=e89]:
+                - link "Dashboard" [ref=e90] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e91]
+                  - generic [ref=e94]: Dashboard
+              - listitem [ref=e95]:
+                - link "Employees" [ref=e96] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e97]
+                  - generic [ref=e99]: Employees
+              - listitem [ref=e100]:
+                - link "Pay Runs" [ref=e101] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e102]
+                  - generic [ref=e105]: Pay Runs
+              - listitem [ref=e106]:
+                - list [ref=e107]:
+                  - listitem [ref=e108]:
+                    - button "Approvals" [ref=e110] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e111]:
+                        - button "Approvals" [ref=e112]:
+                          - img [ref=e113]
+                          - img [ref=e115]
+                          - generic [ref=e118]: Approvals
+                          - img [ref=e119]
+              - listitem [ref=e121]:
+                - link "Form 16" [ref=e122] [cursor=pointer]:
+                  - /url: "#/taxes-and-forms/form16"
+                  - img [ref=e123]
+                  - generic [ref=e127]: Form 16
+              - listitem [ref=e128]:
+                - link "Loans" [ref=e129] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e130]
+                  - generic [ref=e133]: Loans
+              - listitem [ref=e134]:
+                - link "Giving" [ref=e135] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e136]
+                  - generic [ref=e138]: Giving
+              - listitem
+              - listitem [ref=e139]:
+                - link "Documents" [ref=e140] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e141]
+                  - generic [ref=e143]: Documents
+              - listitem [ref=e144]:
+                - link "Reports" [ref=e145] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e146]
+                  - generic [ref=e149]: Reports
+              - listitem [ref=e150]:
+                - link "Settings" [ref=e151] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e152]
+                  - generic [ref=e155]: Settings
+            - link "Contact Support" [ref=e159] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e160]
+            - generic [ref=e162]:
+              - paragraph [ref=e163]: Track TDS Liabilities and Generate Form 24Q
+              - button "View Details" [ref=e164] [cursor=pointer]
+          - button "Collapse/Expand" [ref=e165] [cursor=pointer]:
+            - img [ref=e166]
+      - main [ref=e169]:
+        - generic [ref=e534]:
+          - generic [ref=e2912]:
+            - heading "Back Regular Payroll (01/05/2026 to 31/05/2026)" [level=4] [ref=e2913]:
+              - link "Back" [ref=e2914] [cursor=pointer]:
+                - /url: "#/payruns"
+                - img [ref=e2915]
+              - text: Regular Payroll (01/05/2026 to 31/05/2026)
+            - generic [ref=e2919]:
+              - button "Continue to Payroll" [ref=e2920] [cursor=pointer]:
+                - img [ref=e2921]
+                - text: Continue to Payroll
+              - button "Show dropdown menu" [ref=e2924] [cursor=pointer]:
+                - img [ref=e2925]
+          - generic [ref=e2927]:
+            - generic [ref=e2928]:
+              - img [ref=e2930]
+              - generic [ref=e2934]: The following employees are yet to be added in this payrun. Complete/Add employees to process payroll for this period.
+            - table [ref=e2936]:
+              - rowgroup [ref=e2937]:
+                - row "Employee Name Onboarding Status Work Email Designation" [ref=e2938]:
+                  - columnheader [ref=e2939]:
+                    - checkbox [ref=e2940] [cursor=pointer]
+                  - columnheader "Employee Name" [ref=e2941]
+                  - columnheader "Onboarding Status" [ref=e2942]
+                  - columnheader "Work Email" [ref=e2943]
+                  - columnheader "Designation" [ref=e2944]
+                  - columnheader [ref=e2945]
+              - rowgroup [ref=e2946]:
+                - row "Aisha Khan (EMP004) Pending aisha.khan@lerno.com UX Consultant Complete Now | Skip" [ref=e2947] [cursor=pointer]:
+                  - cell [ref=e2948]:
+                    - checkbox [ref=e2949]
+                  - cell "Aisha Khan (EMP004)" [ref=e2950]:
+                    - link "Aisha Khan (EMP004)" [ref=e2951]:
+                      - /url: "#/people/employees/3848927000000034040"
+                  - cell "Pending" [ref=e2952]
+                  - cell "aisha.khan@lerno.com" [ref=e2953]
+                  - cell "UX Consultant" [ref=e2954]
+                  - cell "Complete Now | Skip" [ref=e2955]:
+                    - generic [ref=e2956]:
+                      - link "Complete Now" [ref=e2957]:
+                        - /url: "#/people/employees/3848927000000034040?from=payrun&from_route_id=3848927000000034159"
+                      - text: "|"
+                      - button "Skip" [ref=e2958]
+                - row "Rahul Desai (EMP005) Pending rahul.desai@lerno.com QA Engineer Complete Now | Skip" [ref=e2959] [cursor=pointer]:
+                  - cell [ref=e2960]:
+                    - checkbox [ref=e2961]
+                  - cell "Rahul Desai (EMP005)" [ref=e2962]:
+                    - link "Rahul Desai (EMP005)" [ref=e2963]:
+                      - /url: "#/people/employees/3848927000000034063"
+                  - cell "Pending" [ref=e2964]
+                  - cell "rahul.desai@lerno.com" [ref=e2965]
+                  - cell "QA Engineer" [ref=e2966]
+                  - cell "Complete Now | Skip" [ref=e2967]:
+                    - generic [ref=e2968]:
+                      - link "Complete Now" [ref=e2969]:
+                        - /url: "#/people/employees/3848927000000034063?from=payrun&from_route_id=3848927000000034159"
+                      - text: "|"
+                      - button "Skip" [ref=e2970]
+                - row "Vikram Nair (EMP003) Pending vikram.nair@lerno.com Engineering Manager Complete Now | Skip" [ref=e2971] [cursor=pointer]:
+                  - cell [ref=e2972]:
+                    - checkbox [ref=e2973]
+                  - cell "Vikram Nair (EMP003)" [ref=e2974]:
+                    - link "Vikram Nair (EMP003)" [ref=e2975]:
+                      - /url: "#/people/employees/3848927000000034014"
+                  - cell "Pending" [ref=e2976]
+                  - cell "vikram.nair@lerno.com" [ref=e2977]
+                  - cell "Engineering Manager" [ref=e2978]
+                  - cell "Complete Now | Skip" [ref=e2979]:
+                    - generic [ref=e2980]:
+                      - link "Complete Now" [ref=e2981]:
+                        - /url: "#/people/employees/3848927000000034014?from=payrun&from_route_id=3848927000000034159"
+                      - text: "|"
+                      - button "Skip" [ref=e2982]
+  - generic [ref=e524] [cursor=pointer]:
+    - generic [ref=e525]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e526]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e528]: Don't show again
+  - status [ref=e529]: Pay Runs | Employees page loaded.
+  - text:       Chats  Contacts   

@@ -1,0 +1,407 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: You can visit the India site to view content specific to your location.
+      - generic [ref=e6]:
+        - link "Visit India site" [ref=e7] [cursor=pointer]:
+          - /url: https://www.zoho.com/in/payroll/
+        - button "Stay here" [ref=e8] [cursor=pointer]
+    - generic [ref=e12]:
+      - link "Zoho" [ref=e14] [cursor=pointer]:
+        - /url: /
+      - list [ref=e16]:
+        - listitem [ref=e17] [cursor=pointer]:
+          - link "People Organize, automate, and simplify your HR processes." [ref=e18]:
+            - /url: /people/?src=zGlobalRelatedProducts
+            - text: People
+        - listitem [ref=e19] [cursor=pointer]:
+          - link "Recruit Intuitive recruiting platform built to provide hiring solutions." [ref=e20]:
+            - /url: /recruit/?src=zGlobalRelatedProducts
+            - text: Recruit
+        - listitem [ref=e21] [cursor=pointer]:
+          - link "Books Powerful accounting platform for growing businesses." [ref=e22]:
+            - /url: /books/?src=zGlobalRelatedProducts
+            - text: Books
+        - listitem [ref=e23] [cursor=pointer]:
+          - link "Mail Secure email service for teams of all sizes." [ref=e24]:
+            - /url: /mail/?src=zGlobalRelatedProducts
+            - text: Mail
+        - listitem [ref=e25] [cursor=pointer]:
+          - link "Expense Effortless expense reporting platform." [ref=e26]:
+            - /url: /expense/?src=zGlobalRelatedProducts
+            - text: Expense
+        - listitem [ref=e27] [cursor=pointer]:
+          - link "ERP ERP software built for businesses to run faster and smarter operations." [ref=e28]:
+            - /url: /en-in/erp/?src=zGlobalRelatedProducts
+            - text: ERP
+        - listitem [ref=e29] [cursor=pointer]: All Products
+      - link "Sign In" [ref=e32] [cursor=pointer]:
+        - /url: https://accounts.zoho.com/signin?servicename=ZohoPayroll&signupurl=https://www.zoho.com/us/payroll/signup/index.html
+    - generic [ref=e34]:
+      - link "Zoho Payroll Homepage" [ref=e35] [cursor=pointer]:
+        - /url: /us/payroll/
+      - list [ref=e38]:
+        - link "Call Toll Free Number" [ref=e39] [cursor=pointer]:
+          - /url: tel:+18445571787
+          - text: "Toll Free: +1 844 557 1787 Mon - Fri 9:00 AM - 7:00 PM ET"
+        - listitem [ref=e40]:
+          - link "Features" [ref=e41] [cursor=pointer]:
+            - /url: /us/payroll/features/
+        - listitem [ref=e42]:
+          - link "Pricing" [ref=e43] [cursor=pointer]:
+            - /url: /us/payroll/pricing/
+        - listitem [ref=e44]:
+          - link "Integrations" [ref=e45] [cursor=pointer]:
+            - /url: /us/payroll/integrations/
+        - listitem [ref=e46]:
+          - generic [ref=e47] [cursor=pointer]:
+            - text: Resources
+            - img [ref=e48]
+        - listitem [ref=e50]:
+          - link "Support" [ref=e51] [cursor=pointer]:
+            - /url: /us/payroll/contact-support.html
+  - main [ref=e52]:
+    - generic [ref=e54]:
+      - generic [ref=e55]:
+        - heading [level=1]
+        - heading "Payroll software built for the USA Stay compliant across all 50 states Automate tax payments and filing" [level=1] [ref=e56]:
+          - text: Payroll software built for the USA
+          - generic [ref=e57]:
+            - generic [ref=e58]: Stay compliant across all 50 states
+            - generic [ref=e59]: Automate tax payments and filing
+        - paragraph [ref=e60]: Zoho Payroll, the all-in-one payroll software for USA, helps businesses run multi-state payroll, file taxes automatically, and stay compliant with federal, state, and local tax laws.
+      - generic [ref=e61]:
+        - link "Start My Free Trial" [ref=e62] [cursor=pointer]:
+          - /url: /us/payroll/signup/
+        - button "Request a demo" [ref=e63] [cursor=pointer]
+      - generic [ref=e64]:
+        - generic [ref=e67]:
+          - img "Payroll software USA-employee screen" [ref=e68]
+          - img "Payroll software for USA-payroll process" [ref=e69]
+        - img "Payroll software dashboard with payroll overview" [ref=e71]
+        - generic [ref=e72]:
+          - img "Payroll software USA-employee portal" [ref=e73]
+          - img "Online payroll software USA edition employee app" [ref=e74]
+    - generic [ref=e76]:
+      - heading "Zoho for businesses" [level=2] [ref=e77]
+      - list [ref=e78]:
+        - listitem [ref=e79]:
+          - img [ref=e80]
+          - paragraph [ref=e82]: 100 million+ Zoho users worldwide
+        - listitem [ref=e83]:
+          - img [ref=e84]
+          - paragraph [ref=e87]: Trusted by thousands of businesses in the US
+        - listitem [ref=e88]:
+          - img [ref=e89]
+          - paragraph [ref=e91]: 25+ years in crafting business software
+    - generic [ref=e93]:
+      - heading "Effortless payroll" [level=2] [ref=e94]
+      - heading "Get to know Zoho Payroll. Software that makes hard things easy." [level=3] [ref=e95]
+      - generic [ref=e96]:
+        - generic [ref=e97]:
+          - generic [ref=e98]:
+            - heading "Experience a UI you'll easily know" [level=4] [ref=e99]
+            - paragraph [ref=e100]: Get the hang of Zoho Payroll quickly with an intuitive design and readily available help resources.
+          - img "Experience a UI you'll easily know - Payroll software USA-UI" [ref=e101]
+        - generic [ref=e102]:
+          - generic [ref=e103]:
+            - heading "Run payroll across multiple states in the USA" [level=4] [ref=e104]
+            - paragraph [ref=e105]: Process payroll for employees working across different states—hourly, salaried, or overtime—while ensuring compliance with each state’s specific tax laws and regulations.
+          - img "Map of USA showing multi-state payroll feature in Zoho Payroll USA" [ref=e106]
+        - generic [ref=e107]:
+          - generic [ref=e108]:
+            - heading "Customize to fit your needs" [level=4] [ref=e109]
+            - paragraph [ref=e110]: Make Zoho Payroll work the way your organization works with custom salary structure, unique benefits,and more.
+          - img "Customize to fit your needs - Payroll software USA-Components" [ref=e111]
+        - generic [ref=e112]:
+          - generic [ref=e113]:
+            - heading "Distribute pay stubs automatically" [level=4] [ref=e114]
+            - paragraph [ref=e115]: Send salaries online and generate gross to net pay stubs along with a thorough breakdown of taxes, deductions, and withholdings.
+          - img "Distribute pay stubs - Payroll software USA-Paystubs" [ref=e116]
+        - generic [ref=e117]:
+          - generic [ref=e118]:
+            - heading "Scale easily as you grow" [level=4] [ref=e119]
+            - paragraph [ref=e120]: Zoho Payroll is built to keep things simple even when your business scales up with more employees.
+          - img "Scale easily as you grow - Payroll software for USA small businesses" [ref=e121]
+        - generic [ref=e122]:
+          - generic [ref=e123]:
+            - heading "Automate payroll tax filing" [level=4] [ref=e124]
+            - paragraph [ref=e125]: Keep your business in legal footing across the USA in compliance with federal, state, and local taxes.
+          - img "Automate payroll tax - Payroll tax software USA" [ref=e126]
+        - generic [ref=e127]:
+          - generic [ref=e128]:
+            - heading "Run payroll beyond the regular pay cycle" [level=4] [ref=e129]
+            - paragraph [ref=e130]: Process payments for missed payrolls, new joiners, or special adjustments without waiting for the next cycle.
+          - img "Screenshot showing the off-cycle payroll feature in Zoho Payroll USA" [ref=e131]
+        - generic [ref=e132]:
+          - generic [ref=e133]:
+            - heading "Assign work-based hourly wages" [level=4] [ref=e134]
+            - paragraph [ref=e135]: Flexibly manage hourly wages across your workforce by structuring pay rates that match the nature of the work.
+          - img "Image depicting the multiple pay rates feature for hourly workers in Zoho Payroll USA" [ref=e136]
+    - generic [ref=e138]:
+      - img "Leave types in Zoho payroll" [ref=e139]
+      - generic [ref=e140]:
+        - heading "Reports" [level=2] [ref=e141]
+        - heading "See the big picture, along with small details" [level=3] [ref=e142]
+        - paragraph [ref=e143]: Get complete visibility on your payroll expenses, and tax witholdings with auto-generated reports, and export them in multiple formats for a closer look.
+      - img "Employee check-in from the ESS portal" [ref=e144]
+    - generic [ref=e147]:
+      - generic [ref=e148]:
+        - heading "Simplified compliance" [level=2] [ref=e149]
+        - heading "Stay compliant, without thinking about compliance" [level=3] [ref=e150]
+        - paragraph [ref=e151]: We handle regionally intricate and distinct compliance across the United States, so you don't have to.
+        - img "Security shield with tick – robust payroll security" [ref=e152]
+      - list [ref=e153]:
+        - listitem [ref=e154]:
+          - generic [ref=e155]:
+            - img [ref=e156]
+            - heading "Automatic compliance updates" [level=4] [ref=e160]
+          - paragraph [ref=e161]: We keep up with the changing tax rates or payroll regulations in line with the IRS, so you don't have to.
+        - listitem [ref=e162]:
+          - generic [ref=e163]:
+            - img [ref=e164]
+            - heading "Automatic tax payments" [level=4] [ref=e168]
+          - paragraph [ref=e169]: Complete federal, state, and local tax payment through Zoho Payroll for all 50 states, online.
+        - listitem [ref=e170]:
+          - generic [ref=e171]:
+            - img [ref=e172]
+            - heading "Track tax filing with status" [level=4] [ref=e176]
+          - paragraph [ref=e177]: File all your taxes through Zoho Payroll and stay updated on the status of your payments.
+        - listitem [ref=e178]:
+          - generic [ref=e179]:
+            - img [ref=e180]
+            - heading "Payroll forms" [level=4] [ref=e184]
+          - paragraph [ref=e185]: Keep track of all your federal and state tax forms - W-4, W-2, 940, 941, 944 in one place.
+    - generic [ref=e187]:
+      - heading "Benefits" [level=2] [ref=e188]
+      - heading "Manage employee benefits, built-in." [level=3] [ref=e189]
+      - paragraph [ref=e190]: Create or associate employee benefits like retirement plans, health insurances, or taxable benefits while ensuring accurate deductions during every pay run.
+      - img "Zoho Payroll Benefits" [ref=e192]
+    - generic [ref=e193]:
+      - generic [ref=e194]:
+        - heading "Employee self-service portal" [level=2] [ref=e195]
+        - heading "Give your team a modern payroll experience" [level=3] [ref=e196]
+        - generic [ref=e197]:
+          - button "Web and mobile app" [ref=e198] [cursor=pointer]
+          - button "Quick pay stubs delivery" [ref=e199] [cursor=pointer]
+          - button "Digitization" [ref=e200] [cursor=pointer]
+          - button "Communication" [ref=e201] [cursor=pointer]
+      - generic [ref=e202]:
+        - generic [ref=e203] [cursor=pointer]:
+          - generic [ref=e204]:
+            - heading "Grant secure access to pay info" [level=4] [ref=e205]
+            - paragraph [ref=e206]: Let your employees securely access payroll information anywhere, through a modern mobile and web app.
+          - img "Payroll software USA-employee app" [ref=e208]
+        - generic [ref=e209] [cursor=pointer]:
+          - generic [ref=e210]:
+            - heading "Make paydays complete with instant pay stubs" [level=4] [ref=e211]
+            - paragraph [ref=e212]: Automatically generate and send pay stubs to your employee's portal as soon as you pay them.
+          - img "Payroll software USA-pay stub" [ref=e214]
+        - generic [ref=e215] [cursor=pointer]:
+          - generic [ref=e216]:
+            - heading "Digitize routine tasks" [level=4] [ref=e217]
+            - paragraph [ref=e218]: From collecting W-4 during onboarding to distributing year-end W-2s, fulfill all your legal obligations across the USA completely online.
+          - img "Best payroll software USA-w4 form" [ref=e220]
+        - generic [ref=e221] [cursor=pointer]:
+          - generic [ref=e222]:
+            - heading "Keep your team well-informed" [level=4] [ref=e223]
+            - paragraph [ref=e224]: Answer all payroll questions instantly and send broadcast communications on important announcements—all through the portal.
+          - img "Payroll software for USA-contact screen" [ref=e226]
+    - generic [ref=e227]:
+      - heading "Integration" [level=2] [ref=e228]
+      - heading "Connect payroll with core functions of your business" [level=3] [ref=e229]
+      - paragraph [ref=e230]: Leverage the power of the ever-evolving Zoho ecosystem to automate payroll accounting and employee expense reimbursements.
+      - generic [ref=e231]:
+        - generic [ref=e232]:
+          - img [ref=e233]
+          - heading "Automated payroll accounting" [level=4] [ref=e237]
+          - paragraph [ref=e238]: Integrate with Zoho Books and automate payroll journal entries to your book of accounts.
+        - generic [ref=e239]:
+          - img [ref=e240]
+          - heading "Quick expense reimbursements" [level=4] [ref=e245]
+          - paragraph [ref=e246]: Pay business expense reimbursements along with salaries and unify all employee-centric payments.
+    - generic [ref=e247]:
+      - heading "Payroll software that's loved by businesses in the USA" [level=2] [ref=e248]
+      - link "Start A Free Trial" [ref=e249] [cursor=pointer]:
+        - /url: /us/payroll/signup
+  - contentinfo [ref=e250]:
+    - generic [ref=e251]:
+      - generic [ref=e252]:
+        - generic [ref=e253]:
+          - generic [ref=e254]:
+            - heading "Help & Resources" [level=4] [ref=e255]
+            - generic [ref=e256]:
+              - list [ref=e258]:
+                - listitem [ref=e259]:
+                  - heading "About Zoho Payroll" [level=5] [ref=e260]
+                - listitem [ref=e261]:
+                  - link "Pricing" [ref=e262] [cursor=pointer]:
+                    - /url: /us/payroll/pricing/
+                - listitem [ref=e263]:
+                  - link "Features" [ref=e264] [cursor=pointer]:
+                    - /url: /us/payroll/features/
+                - listitem [ref=e265]:
+                  - link "Integrations" [ref=e266] [cursor=pointer]:
+                    - /url: /us/payroll/integrations/
+              - list [ref=e269]:
+                - listitem [ref=e270]:
+                  - heading "Resources" [level=5] [ref=e271]
+                - listitem [ref=e272]:
+                  - link "Help" [ref=e273] [cursor=pointer]:
+                    - /url: /us/payroll/help/
+                - listitem [ref=e274]:
+                  - link "Frequently Asked Questions" [ref=e275] [cursor=pointer]:
+                    - /url: /us/payroll/kb/
+                - listitem [ref=e276]:
+                  - link "Webinars" [ref=e277] [cursor=pointer]:
+                    - /url: /us/payroll/webinars/
+                - listitem [ref=e278]:
+                  - link "Academy" [ref=e279] [cursor=pointer]:
+                    - /url: /us/payroll/academy/?src=website-footer-link
+                - listitem [ref=e280]:
+                  - link "What's New" [ref=e281] [cursor=pointer]:
+                    - /url: /us/payroll/whats-new/
+              - list [ref=e283]:
+                - listitem [ref=e284]:
+                  - heading "Quick Links" [level=5] [ref=e285]
+                - listitem [ref=e286]:
+                  - link "Paycheck Calculator" [ref=e287] [cursor=pointer]:
+                    - /url: /us/payroll/paycheck-calculator/
+                - listitem [ref=e288]:
+                  - link "Year-end Payroll" [ref=e289] [cursor=pointer]:
+                    - /url: /us/payroll/fiscal-year/
+                - listitem [ref=e290]:
+                  - link "Affordable Payroll Software" [ref=e291] [cursor=pointer]:
+                    - /url: /us/payroll/affordable-payroll/
+                - listitem [ref=e292]:
+                  - link "Cloud Payroll Software" [ref=e293] [cursor=pointer]:
+                    - /url: /us/payroll/cloud-payroll/
+                - listitem [ref=e294]:
+                  - link "Small Business Payroll Software" [ref=e295] [cursor=pointer]:
+                    - /url: /us/payroll/small-business-payroll-software/
+          - generic [ref=e296]:
+            - heading "Security and Compliance" [level=4] [ref=e297]
+            - list [ref=e298]:
+              - listitem [ref=e299]:
+                - img "iso-pii" [ref=e300]
+              - listitem [ref=e301]:
+                - img "iso-ism" [ref=e302]
+              - listitem [ref=e303]:
+                - img "iso-qms" [ref=e304]
+              - listitem [ref=e305]:
+                - img "gdpr" [ref=e306]
+              - listitem [ref=e307]:
+                - img "soc" [ref=e308]
+        - generic [ref=e309]:
+          - generic [ref=e310]:
+            - heading "Available on platforms" [level=4] [ref=e311]
+            - list [ref=e312]:
+              - listitem [ref=e313]:
+                - link "Download Zoho Payroll on the App store" [ref=e314] [cursor=pointer]:
+                  - /url: https://apps.apple.com/us/app/zoho-payroll-employee-portal/id1450810850
+                  - img "Download Zoho Payroll on the App store" [ref=e315]
+              - listitem [ref=e316]:
+                - link "Download Zoho Payroll on the Play store" [ref=e317] [cursor=pointer]:
+                  - /url: https://play.google.com/store/apps/details?id=com.zoho.payroll&gl=us
+                  - img "Download Zoho Payroll on the Play store" [ref=e318]
+          - generic [ref=e319]:
+            - heading "Contact us on" [level=4] [ref=e320]
+            - list [ref=e321]:
+              - listitem [ref=e322]:
+                - img [ref=e324]
+                - generic [ref=e326]:
+                  - generic [ref=e327]: Monday to Friday (9:00 AM to 7:00 PM) ET
+                  - link "Toll-Free +1 844 557 1787" [ref=e328] [cursor=pointer]:
+                    - /url: tel:+18445571787
+              - listitem [ref=e329]:
+                - img [ref=e331]
+                - generic [ref=e333]:
+                  - generic [ref=e334]: Email Us
+                  - link "support.usa@zohopayroll.com" [ref=e335] [cursor=pointer]:
+                    - /url: mailto:support.usa@zohopayroll.com
+      - generic [ref=e336]:
+        - generic [ref=e337]:
+          - generic [ref=e338]: "Select Edition :"
+          - generic [ref=e342] [cursor=pointer]: United States
+        - generic [ref=e343]:
+          - heading "Find us on our socials :" [level=4] [ref=e344]
+          - generic [ref=e345]:
+            - link "Zoho Payroll X account" [ref=e346] [cursor=pointer]:
+              - /url: https://x.com/ZohoPayroll
+              - img [ref=e347]
+            - link "Zoho Payroll Instagram account" [ref=e349] [cursor=pointer]:
+              - /url: https://www.instagram.com/zohopayroll/
+              - img [ref=e350]
+            - link "Zoho Payroll Youtube account" [ref=e354] [cursor=pointer]:
+              - /url: https://www.youtube.com/channel/UCK3cgoSjRmTPblfjiwMi49A
+              - img [ref=e355]
+            - link "Zoho Payroll LinkedIn account" [ref=e359] [cursor=pointer]:
+              - /url: https://www.linkedin.com/showcase/zoho-payroll
+              - img [ref=e360]
+      - generic [ref=e364]:
+        - heading "Other Zoho Finance & Operations Apps" [level=4] [ref=e365]
+        - list [ref=e366]:
+          - listitem [ref=e367]:
+            - link "Zoho Books" [ref=e368] [cursor=pointer]:
+              - /url: /books/?src=payroll-footer
+              - img "Zoho Books" [ref=e369]
+          - listitem [ref=e370]:
+            - link "Zoho Billing" [ref=e371] [cursor=pointer]:
+              - /url: /billing/?src=payroll-footer
+              - img "Zoho Billing" [ref=e372]
+          - listitem [ref=e373]:
+            - link "Zoho Expense" [ref=e374] [cursor=pointer]:
+              - /url: /expense/?src=payroll-footer
+              - img "Zoho Expense" [ref=e375]
+          - listitem [ref=e376]:
+            - link "Zoho Inventory" [ref=e377] [cursor=pointer]:
+              - /url: /inventory/?src=payroll-footer
+              - img "Zoho Inventory" [ref=e378]
+          - listitem [ref=e379]:
+            - link "Zoho Commerce" [ref=e380] [cursor=pointer]:
+              - /url: /commerce/?src=payroll-footer
+              - img "Zoho Commerce" [ref=e381]
+          - listitem [ref=e382]:
+            - link "Zoho Practice" [ref=e383] [cursor=pointer]:
+              - /url: /practice/?src=payroll-footer
+              - img "Zoho Practice" [ref=e384]
+      - generic:
+        - list
+    - generic [ref=e386]:
+      - list [ref=e387]:
+        - listitem [ref=e388]:
+          - link "Contact" [ref=e389] [cursor=pointer]:
+            - /url: /contactus.html
+        - listitem [ref=e390]:
+          - link "Security" [ref=e391] [cursor=pointer]:
+            - /url: /security.html
+        - listitem [ref=e392]:
+          - link "Compliance" [ref=e393] [cursor=pointer]:
+            - /url: /compliance.html
+        - listitem [ref=e394]:
+          - link "IPR Complaints" [ref=e395] [cursor=pointer]:
+            - /url: /ipr-complaints.html
+        - listitem [ref=e396]:
+          - link "Anti-spam Policy" [ref=e397] [cursor=pointer]:
+            - /url: /policy.html
+        - listitem [ref=e398]:
+          - link "Terms of Service" [ref=e399] [cursor=pointer]:
+            - /url: /terms.html
+        - listitem [ref=e400]:
+          - link "Privacy Policy" [ref=e401] [cursor=pointer]:
+            - /url: /privacy.html
+        - listitem [ref=e402]:
+          - link "Trademark Policy" [ref=e403] [cursor=pointer]:
+            - /url: /trademark-usage-guideliines.html
+        - listitem [ref=e404]:
+          - link "GDPR Compliance" [ref=e405] [cursor=pointer]:
+            - /url: /gdpr.html
+        - listitem [ref=e406]:
+          - link "Abuse Policy" [ref=e407] [cursor=pointer]:
+            - /url: https://www.zoho.com/abuse-policy/
+      - paragraph [ref=e408]: © 2026, Zoho Corporation Pvt. Ltd. All Rights Reserved.
+    - button "Request a demo" [ref=e410] [cursor=pointer]:
+      - generic [ref=e411]: Request a demo
+  - generic:
+    - generic "Cookie consent banner"
+  - text:  

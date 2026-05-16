@@ -1,0 +1,96 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "Settings" [ref=e10] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e11]
+        - text: Settings
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e17]: DE
+        - paragraph [ref=e18]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e19]:
+        - img [ref=e20]
+        - text: Sign out
+  - generic [ref=e23]:
+    - banner [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: demo
+        - generic [ref=e27]: DE
+    - main [ref=e28]:
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e33]: IP
+            - generic [ref=e34]: Settings
+          - button "Close Settings" [ref=e35]:
+            - img [ref=e36]
+            - text: Close Settings
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - generic [ref=e42]:
+              - heading "Work Locations" [level=1] [ref=e43]
+              - paragraph [ref=e44]: Offices and branches where employees work
+            - button "Add Location" [ref=e45]:
+              - img [ref=e46]
+              - text: Add Location
+          - table [ref=e99]:
+            - rowgroup [ref=e100]:
+              - row "Name State City Employees Status" [ref=e101]:
+                - columnheader "Name" [ref=e102]
+                - columnheader "State" [ref=e103]
+                - columnheader "City" [ref=e104]
+                - columnheader "Employees" [ref=e105]
+                - columnheader "Status" [ref=e106]
+                - columnheader [ref=e107]
+            - rowgroup [ref=e108]:
+              - row "Mumbai Head Office 123 Nariman Point Maharashtra Mumbai 0 Active" [ref=e109]:
+                - cell "Mumbai Head Office 123 Nariman Point" [ref=e110]:
+                  - generic [ref=e111]: Mumbai Head Office
+                  - generic [ref=e112]: 123 Nariman Point
+                - cell "Maharashtra" [ref=e113]
+                - cell "Mumbai" [ref=e114]
+                - cell "0" [ref=e115]
+                - cell "Active" [ref=e116]:
+                  - generic [ref=e117]: Active
+                - cell [ref=e118]:
+                  - generic [ref=e119]:
+                    - button "Edit" [active] [ref=e120]:
+                      - img [ref=e121]
+                    - button "Deactivate" [ref=e124]:
+                      - img [ref=e125]
+                    - button "Delete" [ref=e129]:
+                      - img [ref=e130]
+          - complementary [ref=e145]:
+            - generic [ref=e146]:
+              - generic [ref=e147]:
+                - heading "Edit Work Location" [level=2] [ref=e148]
+                - paragraph [ref=e149]: Mumbai Head Office
+              - button "Close" [ref=e150]:
+                - img [ref=e151]
+            - generic [ref=e155]:
+              - generic [ref=e156]:
+                - generic [ref=e157]: Name*
+                - textbox "Name*" [ref=e159]: Mumbai Head Office
+              - generic [ref=e160]:
+                - generic [ref=e161]: State
+                - generic [ref=e162]: Maharashtra
+                - paragraph [ref=e163]: State cannot be changed after creation
+              - generic [ref=e164]:
+                - generic [ref=e165]: Address Line 1
+                - textbox "Address Line 1" [ref=e167]: 123 Nariman Point
+              - generic [ref=e168]:
+                - generic [ref=e169]: Address Line 2
+                - textbox "Address Line 2" [ref=e171]
+              - generic [ref=e172]:
+                - generic [ref=e173]: City
+                - textbox "City" [ref=e175]: Mumbai
+              - generic [ref=e176]:
+                - generic [ref=e177]: Pin Code
+                - textbox "Pin Code" [ref=e179]: "400021"
+            - generic [ref=e180]:
+              - button "Save Changes" [ref=e181]
+              - button "Cancel" [ref=e182]

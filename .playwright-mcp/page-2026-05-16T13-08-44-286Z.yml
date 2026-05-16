@@ -1,0 +1,323 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e5]:
+      - navigation:
+        - generic [ref=e7]:
+          - img "Zoho Payroll" [ref=e8]
+          - generic [ref=e9]: Payroll
+        - generic [ref=e13]:
+          - button "Advanced Search" [ref=e14] [cursor=pointer]:
+            - img [ref=e15]
+          - textbox "Search in Employee" [ref=e19]
+        - generic [ref=e21]:
+          - generic [ref=e24] [cursor=pointer]: Your trial expires in 13 day(s).
+          - button "Upgrade" [ref=e26] [cursor=pointer]
+          - button "lerno" [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]: lerno
+            - img [ref=e32]
+          - button "Refer and Earn" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+          - button "Notifications" [ref=e41] [cursor=pointer]:
+            - generic [ref=e42]:
+              - generic [ref=e43]: "4"
+              - img [ref=e44]
+          - button "Settings" [ref=e47] [cursor=pointer]:
+            - img [ref=e48]
+          - button "A" [ref=e53] [cursor=pointer]:
+            - generic [ref=e54]: A
+          - img [ref=e71] [cursor=pointer]
+    - generic [ref=e74]:
+      - complementary [ref=e75]:
+        - navigation [ref=e76]:
+          - generic [ref=e77]:
+            - list [ref=e78]:
+              - listitem [ref=e79]:
+                - link "Dashboard" [ref=e80] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e81]
+                  - generic [ref=e84]: Dashboard
+              - listitem [ref=e85]:
+                - link "Employees" [ref=e86] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e87]
+                  - generic [ref=e89]: Employees
+              - listitem [ref=e90]:
+                - link "Pay Runs" [ref=e91] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e92]
+                  - generic [ref=e95]: Pay Runs
+              - listitem [ref=e96]:
+                - list [ref=e97]:
+                  - listitem [ref=e98]:
+                    - button "Approvals" [ref=e100] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e101]:
+                        - button "Approvals" [ref=e102]:
+                          - img [ref=e103]
+                          - img [ref=e105]
+                          - generic [ref=e108]: Approvals
+                          - img [ref=e109]
+              - listitem [ref=e111]:
+                - list [ref=e112]:
+                  - listitem [ref=e113]:
+                    - button "Taxes & Forms" [ref=e115] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e116]:
+                        - button "Taxes & Forms" [ref=e117]:
+                          - img [ref=e118]
+                          - img [ref=e120]
+                          - generic [ref=e125]: Taxes & Forms
+                          - img [ref=e126]
+              - listitem [ref=e128]:
+                - link "Loans" [ref=e129] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e130]
+                  - generic [ref=e133]: Loans
+              - listitem [ref=e134]:
+                - link "Giving" [ref=e135] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e136]
+                  - generic [ref=e138]: Giving
+              - listitem
+              - listitem [ref=e139]:
+                - link "Documents" [ref=e140] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e141]
+                  - generic [ref=e143]: Documents
+              - listitem [ref=e144]:
+                - link "Reports" [ref=e145] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e146]
+                  - generic [ref=e149]: Reports
+              - listitem [ref=e150]:
+                - link "Settings" [ref=e151] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e152]
+                  - generic [ref=e155]: Settings
+            - link "Contact Support" [ref=e159] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e160]
+          - button "Collapse/Expand" [ref=e162] [cursor=pointer]:
+            - img [ref=e163]
+      - main [ref=e166]:
+        - generic [ref=e167]:
+          - generic [ref=e249]:
+            - generic [ref=e250]:
+              - heading "Back Regular Payroll Paid" [level=3] [ref=e251]:
+                - link "Back" [ref=e252] [cursor=pointer]:
+                  - /url: "#/payruns/payroll-history"
+                  - img [ref=e253]
+                - text: Regular Payroll
+                - generic [ref=e256]: Paid
+              - generic [ref=e257]:
+                - button [ref=e258] [cursor=pointer]:
+                  - img [ref=e259]
+                - button "Send Payslip" [ref=e263] [cursor=pointer]
+                - button "Show dropdown menu" [ref=e265] [cursor=pointer]:
+                  - img [ref=e266]
+            - button "Instant Helper" [ref=e268] [cursor=pointer]:
+              - img [ref=e269]
+          - generic [ref=e272]:
+            - generic [ref=e274]:
+              - generic [ref=e275]:
+                - generic [ref=e276]:
+                  - generic [ref=e277]: "Period:"
+                  - generic [ref=e278]: 01/05/2026 - 31/05/2026
+                  - generic [ref=e280]: 31 Base Days
+                  - generic [ref=e281]:
+                    - generic [ref=e282]: "Month:"
+                    - text: May 2026
+                - generic [ref=e283]:
+                  - generic [ref=e284]:
+                    - heading "₹87,484.00" [level=4] [ref=e285]
+                    - generic [ref=e286]: Payroll Cost
+                  - generic [ref=e287]:
+                    - heading "₹87,484.00" [level=4] [ref=e288]
+                    - generic [ref=e289]: Total Net Pay
+                - button "Download Bank Advice" [ref=e291] [cursor=pointer]:
+                  - img [ref=e292]
+                  - text: Download Bank Advice
+              - generic [ref=e294]:
+                - generic [ref=e295]:
+                  - generic [ref=e296]: Pay Day
+                  - generic [ref=e297]: "29"
+                  - generic [ref=e298]: May, 2026
+                - generic [ref=e301]:
+                  - generic [ref=e302]: 5 Employees
+                  - button "( 3 Skipped )" [ref=e304] [cursor=pointer]
+              - generic [ref=e305]:
+                - heading "Taxes & Deductions" [level=4] [ref=e306]
+                - table [ref=e307]:
+                  - rowgroup [ref=e308]:
+                    - row "Taxes ₹0.00" [ref=e309]:
+                      - cell "Taxes" [ref=e310]
+                      - cell "₹0.00" [ref=e311]
+                    - row "Benefits ₹0.00" [ref=e312]:
+                      - cell "Benefits" [ref=e313]
+                      - cell "₹0.00" [ref=e314]
+                    - row "Donations ₹0.00" [ref=e315]:
+                      - cell "Donations" [ref=e316]
+                      - cell "₹0.00" [ref=e317]
+                    - row "Total Deductions ₹0.00" [ref=e318]:
+                      - cell "Total Deductions" [ref=e319]
+                      - cell "₹0.00" [ref=e320]
+            - navigation [ref=e321]:
+              - list [ref=e322]:
+                - listitem [ref=e323]:
+                  - button "Employee Summary" [ref=e324] [cursor=pointer]
+                - listitem [ref=e325]:
+                  - button "Taxes & Deductions" [ref=e326] [cursor=pointer]
+                - listitem [ref=e327]:
+                  - button "Overall Insights" [ref=e328] [cursor=pointer]
+            - generic [ref=e331]:
+              - generic [ref=e332]:
+                - button "All Employees" [ref=e336] [cursor=pointer]
+                - generic [ref=e339]:
+                  - combobox [ref=e341]:
+                    - generic [ref=e342] [cursor=pointer]:
+                      - generic [ref=e343]: Search Employee
+                      - img [ref=e346]
+                  - status [ref=e348]
+                - generic [ref=e349]:
+                  - button "Filter" [ref=e353] [cursor=pointer]:
+                    - img [ref=e354]
+                  - button "Export Data" [ref=e357] [cursor=pointer]:
+                    - img [ref=e358]
+                    - text: Export Data
+              - table [ref=e362]:
+                - rowgroup [ref=e363]:
+                  - row "Select all rows Employee Name Paid Days Net Pay Payslip TDS Sheet Payment Mode Payment Status" [ref=e364]:
+                    - columnheader "Select all rows" [ref=e365] [cursor=pointer]:
+                      - checkbox "Select all rows" [ref=e366]
+                    - columnheader "Employee Name" [ref=e367]
+                    - columnheader "Paid Days" [ref=e368]
+                    - columnheader "Net Pay" [ref=e369]
+                    - columnheader "Payslip" [ref=e370]
+                    - columnheader "TDS Sheet" [ref=e371]
+                    - columnheader "Payment Mode" [ref=e372]
+                    - columnheader "Payment Status" [ref=e373]
+                    - columnheader [ref=e374]
+                - rowgroup [ref=e375]:
+                  - row "Select this row Arjun Mehta (EMP001) 29 ₹65,484.00 View View Manual Bank Transfer Paid on 29/05/2026 Show dropdown menu" [ref=e376] [cursor=pointer]:
+                    - cell "Select this row" [ref=e377]:
+                      - checkbox "Select this row" [ref=e378]
+                    - cell "Arjun Mehta (EMP001)" [ref=e379]:
+                      - button "Arjun Mehta (EMP001)" [ref=e380]:
+                        - text: Arjun Mehta
+                        - generic [ref=e381]: (EMP001)
+                    - cell "29" [ref=e382]
+                    - cell "₹65,484.00" [ref=e383]
+                    - cell "View" [ref=e384]:
+                      - button "View" [ref=e385]
+                    - cell "View" [ref=e386]:
+                      - button "View" [ref=e387]
+                    - cell "Manual Bank Transfer" [ref=e388]
+                    - cell "Paid on 29/05/2026" [ref=e389]:
+                      - generic [ref=e390]: Paid on 29/05/2026
+                    - cell "Show dropdown menu" [ref=e391]:
+                      - button "Show dropdown menu" [ref=e393]:
+                        - img [ref=e394]
+                  - row "Select this row Priya Sharma (EMP002) 31 ₹22,000.00 View View Manual Bank Transfer Paid on 29/05/2026 Show dropdown menu" [ref=e397] [cursor=pointer]:
+                    - cell "Select this row" [ref=e398]:
+                      - checkbox "Select this row" [ref=e399]
+                    - cell "Priya Sharma (EMP002)" [ref=e400]:
+                      - button "Priya Sharma (EMP002)" [ref=e401]:
+                        - text: Priya Sharma
+                        - generic [ref=e402]: (EMP002)
+                    - cell "31" [ref=e403]
+                    - cell "₹22,000.00" [ref=e404]
+                    - cell "View" [ref=e405]:
+                      - button "View" [ref=e406]
+                    - cell "View" [ref=e407]:
+                      - button "View" [ref=e408]
+                    - cell "Manual Bank Transfer" [ref=e409]
+                    - cell "Paid on 29/05/2026" [ref=e410]:
+                      - generic [ref=e411]: Paid on 29/05/2026
+                    - cell "Show dropdown menu" [ref=e412]:
+                      - button "Show dropdown menu" [ref=e414]:
+                        - img [ref=e415]
+                  - 'row "Vikram Nair (EMP003) Skipped Reason: Onboarding incomplete" [ref=e418] [cursor=pointer]':
+                    - cell [ref=e419]
+                    - cell "Vikram Nair (EMP003) Skipped" [ref=e420]:
+                      - button "Vikram Nair (EMP003)" [ref=e421]:
+                        - text: Vikram Nair
+                        - generic [ref=e422]: (EMP003)
+                      - text: Skipped
+                    - 'cell "Reason: Onboarding incomplete" [ref=e423]'
+                  - 'row "Aisha Khan (EMP004) Skipped Reason: Onboarding incomplete" [ref=e424] [cursor=pointer]':
+                    - cell [ref=e425]
+                    - cell "Aisha Khan (EMP004) Skipped" [ref=e426]:
+                      - button "Aisha Khan (EMP004)" [ref=e427]:
+                        - text: Aisha Khan
+                        - generic [ref=e428]: (EMP004)
+                      - text: Skipped
+                    - 'cell "Reason: Onboarding incomplete" [ref=e429]'
+                  - 'row "Rahul Desai (EMP005) Skipped Reason: Onboarding incomplete" [ref=e430] [cursor=pointer]':
+                    - cell [ref=e431]
+                    - cell "Rahul Desai (EMP005) Skipped" [ref=e432]:
+                      - button "Rahul Desai (EMP005)" [ref=e433]:
+                        - text: Rahul Desai
+                        - generic [ref=e434]: (EMP005)
+                      - text: Skipped
+                    - 'cell "Reason: Onboarding incomplete" [ref=e435]'
+    - generic [ref=e703]:
+      - dialog:
+        - generic [ref=e704]:
+          - generic [ref=e705]:
+            - heading "Download Bank Advice" [level=4] [ref=e706]
+            - button [ref=e707] [cursor=pointer]:
+              - img [ref=e708]
+          - generic [ref=e710]:
+            - img [ref=e712]
+            - generic [ref=e714]:
+              - text: Skip the bank advice next time. Use Payouts by Zoho Payments to disburse salaries directly from Zoho Payroll.
+              - button "Setup Payout" [ref=e715] [cursor=pointer]
+          - generic [ref=e717]:
+            - generic [ref=e718]: Generate Bank Advice for
+            - generic [ref=e721]:
+              - combobox "Generate Bank Advice for" [disabled] [active] [ref=e723]:
+                - generic:
+                  - generic "Bank Transfer Employees (Paid & Unpaid)"
+                  - generic:
+                    - generic:
+                      - img
+              - status [ref=e724]
+            - button "Filters" [ref=e726] [cursor=pointer]:
+              - img [ref=e727]
+              - text: Filters
+              - img [ref=e729]
+          - generic [ref=e732]:
+            - generic [ref=e733]:
+              - generic [ref=e734]: Bank Statement Format
+              - generic [ref=e737]:
+                - combobox "Bank Statement Format" [ref=e739]:
+                  - generic [ref=e740] [cursor=pointer]:
+                    - generic "Standard Format" [ref=e741]
+                    - img [ref=e744]
+                - status [ref=e746]
+            - generic [ref=e747]:
+              - generic [ref=e748]: Download as
+              - generic [ref=e751]:
+                - combobox "Download as" [ref=e753]:
+                  - generic [ref=e754] [cursor=pointer]:
+                    - generic "XLS (Microsoft Excel 1997-2004 Compatible)" [ref=e755]
+                    - img [ref=e758]
+                - status [ref=e760]
+            - paragraph [ref=e761]:
+              - generic [ref=e763] [cursor=pointer]:
+                - checkbox "Protect this file with a password" [ref=e764]
+                - text: Protect this file with a password
+          - generic [ref=e766]:
+            - button "Download" [ref=e767] [cursor=pointer]
+            - button "Cancel" [ref=e768] [cursor=pointer]
+    - generic:
+      - dialog [ref=e436]
+      - dialog [ref=e437]
+      - dialog [ref=e438]
+      - dialog [ref=e439]
+  - status [ref=e191]: Pay Runs | Summary page loaded.
+  - text:       Chats  Contacts   
