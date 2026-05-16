@@ -5,6 +5,10 @@ import PlatformLayout from '@/components/layout/PlatformLayout'
 import SettingsLayout from '@/components/layout/SettingsLayout'
 import SettingsHomePage from '@/pages/settings/SettingsHomePage'
 import WorkLocationsPage from '@/pages/settings/WorkLocationsPage'
+import DepartmentsPage from '@/pages/settings/DepartmentsPage'
+import DesignationsPage from '@/pages/settings/DesignationsPage'
+import CostCentresPage from '@/pages/settings/CostCentresPage'
+import BusinessUnitsPage from '@/pages/settings/BusinessUnitsPage'
 import LoginPage from '@/pages/LoginPage'
 import DashboardPage from '@/pages/DashboardPage'
 import TenantsPage from '@/pages/platform/TenantsPage'
@@ -67,6 +71,10 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <SettingsHomePage /> },
           { path: 'work-locations', element: <WorkLocationsPage /> },
+          { path: 'departments', element: <DepartmentsPage /> },
+          { path: 'designations', element: <DesignationsPage /> },
+          { path: 'cost-centres', element: <CostCentresPage /> },
+          { path: 'business-units', element: <BusinessUnitsPage /> },
         ],
       },
     ],

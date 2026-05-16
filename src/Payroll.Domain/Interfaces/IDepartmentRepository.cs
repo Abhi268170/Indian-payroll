@@ -4,7 +4,9 @@ namespace Payroll.Domain.Interfaces;
 
 public interface IDepartmentRepository
 {
-    Task<Department?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<Department>> GetAllAsync(CancellationToken cancellationToken = default);
-    Task AddAsync(Department department, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Department>> ListAsync(CancellationToken ct = default);
+    Task<Department?> GetByIdAsync(Guid id, CancellationToken ct = default);
+    Task AddAsync(Department department, CancellationToken ct = default);
+    void Update(Department department);
+    void Remove(Department department);
 }

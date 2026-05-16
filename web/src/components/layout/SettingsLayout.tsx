@@ -15,7 +15,7 @@ interface NavSection {
 
 const NAV: NavSection[] = [
   {
-    heading: 'Organisation Settings',
+    heading: 'Org Structure',
     items: [
       { label: 'Work Locations', to: '/settings/work-locations' },
       { label: 'Departments', to: '/settings/departments' },

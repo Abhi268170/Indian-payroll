@@ -9,13 +9,12 @@ internal sealed class DepartmentConfiguration : IEntityTypeConfiguration<Departm
     public void Configure(EntityTypeBuilder<Department> builder)
     {
         builder.HasKey(d => d.Id);
-        builder.Property(d => d.Name).IsRequired().HasMaxLength(200);
-        builder.Property(d => d.Code).HasMaxLength(50);
-        builder.Property(d => d.TenantId).IsRequired();
+        builder.Property(d => d.Name).IsRequired().HasMaxLength(150);
+        builder.Property(d => d.Code).HasMaxLength(20);
+        builder.Property(d => d.Description).HasMaxLength(500);
         builder.Property(d => d.CreatedAt).HasColumnType("timestamptz").IsRequired();
         builder.Property(d => d.UpdatedAt).HasColumnType("timestamptz");
         builder.Property(d => d.DeletedAt).HasColumnType("timestamptz");
-        builder.HasIndex(d => d.TenantId);
         builder.HasQueryFilter(d => !d.IsDeleted);
     }
 }

@@ -59,6 +59,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IWorkLocationRepository, WorkLocationRepository>();
+        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+        services.AddScoped<IDesignationRepository, DesignationRepository>();
+        services.AddScoped<ICostCentreRepository, CostCentreRepository>();
+        services.AddScoped<IBusinessUnitRepository, BusinessUnitRepository>();
         services.AddScoped<IPlatformUnitOfWork, PlatformUnitOfWork>();
         services.AddScoped<ITenantSchemaProvisioner, TenantSchemaProvisioner>();
         services.AddScoped<ITokenRevocationService, TokenRevocationService>();

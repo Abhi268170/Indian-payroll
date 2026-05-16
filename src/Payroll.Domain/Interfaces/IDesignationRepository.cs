@@ -4,7 +4,9 @@ namespace Payroll.Domain.Interfaces;
 
 public interface IDesignationRepository
 {
-    Task<Designation?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task<IReadOnlyList<Designation>> GetAllAsync(CancellationToken cancellationToken = default);
-    Task AddAsync(Designation designation, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Designation>> ListAsync(CancellationToken ct = default);
+    Task<Designation?> GetByIdAsync(Guid id, CancellationToken ct = default);
+    Task AddAsync(Designation designation, CancellationToken ct = default);
+    void Update(Designation designation);
+    void Remove(Designation designation);
 }

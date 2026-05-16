@@ -1,3 +1,7 @@
 namespace Payroll.Application.DTOs;
 
-public sealed record DepartmentDto(Guid Id, string Name, string? Code);
+public record DepartmentDto(
+    Guid Id,
+    string Name,
+    string? Code,
+    string? Description);
