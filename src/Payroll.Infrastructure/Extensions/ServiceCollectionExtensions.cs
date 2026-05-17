@@ -77,6 +77,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPayrollRunRepository, PayrollRunRepository>();
         services.AddScoped<IPayrunEmployeeRepository, PayrunEmployeeRepository>();
         services.AddScoped<IPayrunComponentBreakdownRepository, PayrunComponentBreakdownRepository>();
+        services.AddScoped<ITdsWorksheetRepository, TdsWorksheetRepository>();
+        services.AddScoped<IPayrollRunAuditLogRepository, PayrollRunAuditLogRepository>();
         services.AddScoped<IPlatformUnitOfWork, PlatformUnitOfWork>();
         services.AddScoped<ITenantSchemaProvisioner, TenantSchemaProvisioner>();
         services.AddScoped<ITokenRevocationService, TokenRevocationService>();
