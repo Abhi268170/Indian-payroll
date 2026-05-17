@@ -74,6 +74,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IStatutoryConfigRepository, StatutoryConfigRepository>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IEmployeeSalaryStructureRepository, EmployeeSalaryStructureRepository>();
+        services.AddScoped<IPayrollRunRepository, PayrollRunRepository>();
+        services.AddScoped<IPayrunEmployeeRepository, PayrunEmployeeRepository>();
+        services.AddScoped<IPayrunComponentBreakdownRepository, PayrunComponentBreakdownRepository>();
         services.AddScoped<IPlatformUnitOfWork, PlatformUnitOfWork>();
         services.AddScoped<ITenantSchemaProvisioner, TenantSchemaProvisioner>();
         services.AddScoped<ITokenRevocationService, TokenRevocationService>();
