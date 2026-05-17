@@ -1,5 +1,27 @@
 namespace Payroll.Application.DTOs;
 
+public sealed record ComponentBreakdownDto(
+    Guid Id,
+    Guid SalaryComponentId,
+    string ComponentCode,
+    string ComponentName,
+    decimal FullAmount,
+    decimal ProratedAmount,
+    bool IsOneTimeEarning);
+
+public sealed record EmployeeVariableInputsDto(
+    Guid PayrollRunId,
+    Guid EmployeeId,
+    int LopDays,
+    int BaseDays,
+    int ActualPayableDays,
+    decimal GrossPay,
+    decimal NetPay,
+    decimal TdsAmount,
+    decimal? TdsOverrideAmount,
+    string? TdsOverrideReason,
+    IReadOnlyList<ComponentBreakdownDto> Components);
+
 public sealed record CurrentPayPeriodDto(
     int Year,
     int Month,
