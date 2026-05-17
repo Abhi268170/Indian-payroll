@@ -27,6 +27,8 @@ public class UpsertPayScheduleHandlerTests
             null,
             "LastDay",
             null,
+            null,
+            null,
             Guid.NewGuid()
         );
 
@@ -57,6 +59,8 @@ public class UpsertPayScheduleHandlerTests
             null,
             PayDateType.LastDay,
             null,
+            null,
+            null,
             Guid.NewGuid());
 
         _repo.GetAsync(Arg.Any<CancellationToken>()).Returns(existing);
@@ -67,6 +71,8 @@ public class UpsertPayScheduleHandlerTests
             26,
             "SpecificDay",
             25,
+            null,
+            null,
             Guid.NewGuid());
 
         await _handler.Handle(command, CancellationToken.None);
@@ -90,6 +96,8 @@ public class UpsertPayScheduleHandlerTests
             null,
             PayDateType.LastDay,
             null,
+            null,
+            null,
             Guid.NewGuid());
 
         existing.LockAfterPayrun();
@@ -102,6 +110,8 @@ public class UpsertPayScheduleHandlerTests
             null,
             "SpecificDay",
             28,
+            null,
+            null,
             Guid.NewGuid());
 
         await _handler.Handle(command, CancellationToken.None);
@@ -120,6 +130,8 @@ public class UpsertPayScheduleHandlerTests
             null,
             PayDateType.LastDay,
             null,
+            null,
+            null,
             Guid.NewGuid());
 
         existing.LockAfterPayrun();
@@ -131,6 +143,8 @@ public class UpsertPayScheduleHandlerTests
             "ActualDays",
             null,
             "LastDay",
+            null,
+            null,
             null,
             Guid.NewGuid());
 
@@ -150,6 +164,8 @@ public class UpsertPayScheduleHandlerTests
             null,
             PayDateType.LastDay,
             null,
+            null,
+            null,
             Guid.NewGuid());
 
         existing.LockAfterPayrun();
@@ -161,6 +177,8 @@ public class UpsertPayScheduleHandlerTests
             "FixedDays",
             26,
             "LastDay",
+            null,
+            null,
             null,
             Guid.NewGuid());
 

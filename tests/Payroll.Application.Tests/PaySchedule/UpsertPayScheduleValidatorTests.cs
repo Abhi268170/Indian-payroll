@@ -21,6 +21,8 @@ public class UpsertPayScheduleValidatorTests
             fixedWorkingDays,
             payDateType,
             payDateDay,
+            null,
+            null,
             Guid.NewGuid()
         );
 

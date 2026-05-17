@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Payroll.Domain.Entities;
-using Payroll.Domain.ValueObjects;
 
 namespace Payroll.Infrastructure.Persistence.EntityConfigurations;
 
@@ -12,10 +11,33 @@ internal sealed class PayrollRunConfiguration : IEntityTypeConfiguration<Payroll
         builder.HasKey(p => p.Id);
         builder.Property(p => p.TenantId).IsRequired();
         builder.Property(p => p.Status).IsRequired().HasConversion<string>();
-        builder.Property(p => p.StartedAt).HasColumnType("timestamptz");
-        builder.Property(p => p.CompletedAt).HasColumnType("timestamptz");
+        builder.Property(p => p.Type).IsRequired().HasConversion<string>();
         builder.Property(p => p.FailureReason).HasMaxLength(2000);
-        builder.Property(p => p.UnlockReason).HasMaxLength(2000);
+
+        // Financial summary
+        builder.Property(p => p.PayrollCost).HasColumnType("numeric(18,2)");
+        builder.Property(p => p.TotalNetPay).HasColumnType("numeric(18,2)");
+        builder.Property(p => p.TotalEmployerPf).HasColumnType("numeric(18,2)");
+        builder.Property(p => p.TotalEmployerEsi).HasColumnType("numeric(18,2)");
+        builder.Property(p => p.TotalEdli).HasColumnType("numeric(18,2)");
+        builder.Property(p => p.TotalTds).HasColumnType("numeric(18,2)");
+        builder.Property(p => p.TotalPt).HasColumnType("numeric(18,2)");
+
+        // Approval
+        builder.Property(p => p.ApprovedAt).HasColumnType("timestamptz");
+        builder.Property(p => p.ApprovalRejectionReason).HasMaxLength(2000);
+
+        // Payment
+        builder.Property(p => p.PaidAt).HasColumnType("timestamptz");
+        builder.Property(p => p.PaymentMode).HasMaxLength(50);
+        builder.Property(p => p.PaymentReference).HasMaxLength(500);
+        builder.Property(p => p.BankAdviceFileKey).HasMaxLength(1000);
+
+        // Statutory config snapshot
+        builder.Property(p => p.StatutoryConfigSnapshot).HasColumnType("text");
+        builder.Property(p => p.VariableInputsFileKey).HasMaxLength(1000);
+
+        // Audit timestamps
         builder.Property(p => p.CreatedAt).HasColumnType("timestamptz").IsRequired();
         builder.Property(p => p.UpdatedAt).HasColumnType("timestamptz");
         builder.Property(p => p.DeletedAt).HasColumnType("timestamptz");
