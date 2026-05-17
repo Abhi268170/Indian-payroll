@@ -35,6 +35,12 @@ public sealed class PayrollDbContext(
     public DbSet<SalaryRevision> SalaryRevisions => Set<SalaryRevision>();
     public DbSet<EmployeeVehicleDetail> EmployeeVehicleDetails => Set<EmployeeVehicleDetail>();
     public DbSet<PriorEmployerYtd> PriorEmployerYtds => Set<PriorEmployerYtd>();
+    public DbSet<PayrollRun> PayrollRuns => Set<PayrollRun>();
+    public DbSet<PayrunEmployee> PayrunEmployees => Set<PayrunEmployee>();
+    public DbSet<PayrunComponentBreakdown> PayrunComponentBreakdowns => Set<PayrunComponentBreakdown>();
+    public DbSet<Payslip> Payslips => Set<Payslip>();
+    public DbSet<TdsWorksheet> TdsWorksheets => Set<TdsWorksheet>();
+    public DbSet<PayrollRunAuditLog> PayrollRunAuditLogs => Set<PayrollRunAuditLog>();
 
     // Exposed for TenantModelCacheKeyFactory which lives in EF Core's internal SP
     // and cannot use constructor injection of ITenantContext.
@@ -74,5 +80,11 @@ public sealed class PayrollDbContext(
         modelBuilder.ApplyConfiguration(new SalaryRevisionConfiguration());
         modelBuilder.ApplyConfiguration(new EmployeeVehicleDetailConfiguration());
         modelBuilder.ApplyConfiguration(new PriorEmployerYtdConfiguration());
+        modelBuilder.ApplyConfiguration(new PayrollRunConfiguration());
+        modelBuilder.ApplyConfiguration(new PayrunEmployeeConfiguration());
+        modelBuilder.ApplyConfiguration(new PayrunComponentBreakdownConfiguration());
+        modelBuilder.ApplyConfiguration(new PayslipConfiguration());
+        modelBuilder.ApplyConfiguration(new TdsWorksheetConfiguration());
+        modelBuilder.ApplyConfiguration(new PayrollRunAuditLogConfiguration());
     }
 }
