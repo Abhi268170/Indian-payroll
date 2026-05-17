@@ -2,7 +2,7 @@ namespace Payroll.Domain.Enums;
 
 public enum PaymentMode
 {
-    ManualBankTransfer,
+    BankTransfer,
     DirectDeposit,
     Cheque,
     Cash

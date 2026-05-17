@@ -19,7 +19,7 @@ public record UpdatePaymentInfoCommand(
 internal sealed class UpdatePaymentInfoValidator : AbstractValidator<UpdatePaymentInfoCommand>
 {
     private static readonly HashSet<string> BankModes = new()
-        { "ManualBankTransfer", "DirectDeposit" };
+        { "BankTransfer", "DirectDeposit" };
 
     public UpdatePaymentInfoValidator()
     {

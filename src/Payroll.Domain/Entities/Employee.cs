@@ -108,7 +108,7 @@ public sealed class Employee : AuditableEntity
             CostCentreId = costCentreId,
             DateOfBirth = dateOfBirth,
             DifferentlyAbledType = DifferentlyAbledType.None,
-            PaymentMode = PaymentMode.ManualBankTransfer,
+            PaymentMode = PaymentMode.BankTransfer,
             CreatedBy = createdBy
         };
 
