@@ -5,4 +5,5 @@ public sealed record GrossResult(
     decimal PFWage,
     decimal AnnualProjectedGross,
     decimal LOPDeduction,
-    decimal ArrearAmount);
+    decimal ArrearAmount,
+    IReadOnlyList<ComponentAmountResult> ComponentBreakdown);
