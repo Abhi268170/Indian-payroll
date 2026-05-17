@@ -9,6 +9,15 @@ public sealed record ComponentBreakdownDto(
     decimal ProratedAmount,
     bool IsOneTimeEarning);
 
+public sealed record PendingTaskItemDto(Guid EmployeeId, string EmployeeCode, string Reason);
+
+public sealed record PendingTasksDto(
+    IReadOnlyList<PendingTaskItemDto> HardBlocks,
+    IReadOnlyList<PendingTaskItemDto> SoftWarnings)
+{
+    public bool HasAnyHardBlocks => HardBlocks.Count > 0;
+}
+
 public sealed record EmployeeVariableInputsDto(
     Guid PayrollRunId,
     Guid EmployeeId,
