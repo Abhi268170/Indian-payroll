@@ -19,7 +19,9 @@ public sealed class ListActiveEarningsHandler(
 
         return earnings.Select(c => new SalaryComponentSummaryDto(
             c.Id, c.Name, c.NameInPayslip, c.Code, c.Category,
-            c.IsActive, c.IsSystemComponent, c.IsAssociatedWithEmployee))
+            c.IsActive, c.IsSystemComponent, c.IsAssociatedWithEmployee,
+            c.FormulaType, c.FixedAmount, c.Percentage,
+            c.DeductionFrequency, c.ReimbursementAmount, c.BenefitPercentage))
             .ToList();
     }
 }

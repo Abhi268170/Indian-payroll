@@ -10,7 +10,14 @@ public sealed record SalaryComponentSummaryDto(
     ComponentCategory Category,
     bool IsActive,
     bool IsSystemComponent,
-    bool IsAssociatedWithEmployee);
+    bool IsAssociatedWithEmployee,
+    // Calculation display fields
+    ComponentFormulaType? FormulaType,
+    decimal? FixedAmount,
+    decimal? Percentage,
+    DeductionFrequency? DeductionFrequency,
+    decimal? ReimbursementAmount,
+    decimal? BenefitPercentage);
 
 public sealed record SalaryComponentDetailDto(
     Guid Id,

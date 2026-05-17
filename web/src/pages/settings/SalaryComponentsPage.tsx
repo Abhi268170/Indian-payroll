@@ -2,6 +2,7 @@ import { useState, type ReactElement } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, ChevronDown } from 'lucide-react'
 import { api } from '@/lib/api'
+import { formatINR } from '@/lib/format'
 import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/Spinner'
 import { EmptyState } from '@/components/ui/EmptyState'
@@ -23,6 +24,12 @@ export interface SalaryComponentSummary {
   isActive: boolean
   isSystemComponent: boolean
   isAssociatedWithEmployee: boolean
+  formulaType: string | null
+  fixedAmount: number | null
+  percentage: number | null
+  deductionFrequency: string | null
+  reimbursementAmount: number | null
+  benefitPercentage: number | null
 }
 
 type ModalType = ComponentCategory | null
@@ -51,6 +58,43 @@ const ADD_OPTIONS: { label: string; type: ComponentCategory }[] = [
   { label: 'Benefit', type: 'Benefit' },
   { label: 'Correction', type: 'Correction' },
 ]
+
+const DEDUCTION_FREQ_LABELS: Record<string, string> = {
+  EveryMonth: 'Every Month',
+  OnceAYear: 'Once a Year',
+  Quarterly: 'Quarterly',
+  HalfYearly: 'Half-Yearly',
+}
+
+const FORMULA_BASE: Record<string, string> = {
+  PercentOfBasic: 'of Basic',
+  PercentOfGross: 'of Gross',
+  PercentOfCTC: 'of CTC',
+}
+
+function formatCalculation(comp: SalaryComponentSummary): string {
+  if (comp.category === 'Earning' || comp.category === 'Correction') {
+    if (!comp.formulaType) return '—'
+    if (comp.formulaType === 'ResidualCTC') return 'Residual CTC'
+    if (comp.formulaType === 'Fixed') {
+      return comp.fixedAmount != null && comp.fixedAmount > 0 ? formatINR(comp.fixedAmount) : 'Variable'
+    }
+    const base = FORMULA_BASE[comp.formulaType]
+    return base != null && comp.percentage != null ? `${comp.percentage}% ${base}` : '—'
+  }
+  if (comp.category === 'Deduction') {
+    return comp.deductionFrequency ? (DEDUCTION_FREQ_LABELS[comp.deductionFrequency] ?? comp.deductionFrequency) : '—'
+  }
+  if (comp.category === 'Reimbursement') {
+    return comp.reimbursementAmount != null && comp.reimbursementAmount > 0
+      ? `${formatINR(comp.reimbursementAmount)}/mo`
+      : 'Variable'
+  }
+  if (comp.category === 'Benefit') {
+    return comp.benefitPercentage != null ? `${comp.benefitPercentage}%` : 'Variable'
+  }
+  return '—'
+}
 
 export default function SalaryComponentsPage(): ReactElement {
   const [activeTab, setActiveTab] = useState<ComponentCategory | null>(null)
@@ -160,6 +204,7 @@ export default function SalaryComponentsPage(): ReactElement {
                 <th className="text-left px-5 py-3 font-medium text-[var(--color-text-secondary)]">Name</th>
                 <th className="text-left px-5 py-3 font-medium text-[var(--color-text-secondary)]">Code</th>
                 <th className="text-left px-5 py-3 font-medium text-[var(--color-text-secondary)]">Type</th>
+                <th className="text-left px-5 py-3 font-medium text-[var(--color-text-secondary)]">Calculation</th>
                 <th className="text-left px-5 py-3 font-medium text-[var(--color-text-secondary)]">Status</th>
                 <th className="px-5 py-3" />
               </tr>
@@ -188,6 +233,9 @@ export default function SalaryComponentsPage(): ReactElement {
                   </td>
                   <td className="px-5 py-3 text-[var(--color-text-secondary)]">
                     {CATEGORY_LABELS[comp.category]}
+                  </td>
+                  <td className="px-5 py-3 text-[var(--color-text-secondary)]">
+                    {formatCalculation(comp)}
                   </td>
                   <td className="px-5 py-3">
                     <span className={[
