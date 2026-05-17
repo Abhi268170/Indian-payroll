@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using Payroll.Domain.Interfaces;
@@ -38,7 +39,11 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
                 // CREATE TABLE statements that already landed → 42P07. Migrations run once; the
                 // compensating DropAsync in CreateTenantHandler handles cleanup on failure.
             })
-            .UseSnakeCaseNamingConvention();
+            .UseSnakeCaseNamingConvention()
+            // Without this, EF Core's model cache uses (contextType, designTime) as the key,
+            // so all provisioner contexts share the model compiled for the FIRST tenant schema,
+            // causing queries to run against the wrong schema for subsequent tenants.
+            .ReplaceService<IModelCacheKeyFactory, TenantModelCacheKeyFactory>();
 
         await using PayrollDbContext db = new(builder.Options, new ProvisioningTenantContext(schemaName));
         await db.Database.MigrateAsync(cancellationToken);
@@ -51,15 +56,180 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
         Guid tenantId,
         CancellationToken cancellationToken)
     {
-        bool hasFixedAllowance = await db.SalaryComponents
-            .AnyAsync(c => c.IsSystemComponent && c.TenantId == tenantId, cancellationToken);
+        HashSet<string> existing = (await db.SalaryComponents
+            .Where(c => c.TenantId == tenantId)
+            .Select(c => c.Code)
+            .ToListAsync(cancellationToken))
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        if (!hasFixedAllowance)
+        void AddEarning(string code, string name, string payslip,
+            Domain.Enums.EarningType earningType, Domain.Enums.PayType payType,
+            Domain.Enums.ComponentFormulaType formulaType,
+            decimal? fixedAmt, decimal? pct,
+            bool taxable, bool epf, Domain.Enums.EpfInclusionRule epfRule, bool esi,
+            bool proRata, bool showInPayslip, bool active = true)
         {
-            db.SalaryComponents.Add(
-                Payroll.Domain.Entities.SalaryComponent.CreateSystemFixedAllowance(tenantId, Guid.Empty));
-            await db.SaveChangesAsync(cancellationToken);
+            if (existing.Contains(code)) return;
+            var c = Domain.Entities.SalaryComponent.CreateEarning(
+                name, payslip, code, earningType, payType, formulaType,
+                fixedAmt, pct, taxable, epf, epfRule, esi, proRata, showInPayslip,
+                tenantId, Guid.Empty);
+            if (!active) c.SetActive(false);
+            db.SalaryComponents.Add(c);
         }
+
+        void AddDeduction(string code, string name, Domain.Enums.DeductionFrequency freq)
+        {
+            if (existing.Contains(code)) return;
+            db.SalaryComponents.Add(Domain.Entities.SalaryComponent.CreateDeduction(
+                name, name, code, freq, tenantId, Guid.Empty));
+        }
+
+        void AddReimbursement(string code, string name, Domain.Enums.ReimbursementType rt,
+            decimal amount, bool active = true)
+        {
+            if (existing.Contains(code)) return;
+            var c = Domain.Entities.SalaryComponent.CreateReimbursement(
+                name, name, code, rt, amount,
+                Domain.Enums.UnclaimedReimbursementHandling.DoNotPay, tenantId, Guid.Empty);
+            if (!active) c.SetActive(false);
+            db.SalaryComponents.Add(c);
+        }
+
+        // ── System component ─────────────────────────────────────────────
+        if (!existing.Contains("FIXED_ALLOWANCE"))
+            db.SalaryComponents.Add(Domain.Entities.SalaryComponent.CreateSystemFixedAllowance(tenantId, Guid.Empty));
+
+        // ── Earnings (Zoho defaults) ──────────────────────────────────────
+        // 1. Basic — 50% of CTC, fixed, EPF always, ESI yes
+        AddEarning("BASICSALARY", "Basic", "Basic",
+            Domain.Enums.EarningType.Basic, Domain.Enums.PayType.Monthly,
+            Domain.Enums.ComponentFormulaType.PercentOfCTC, null, 50m,
+            taxable: true, epf: true, Domain.Enums.EpfInclusionRule.Always, esi: true,
+            proRata: true, showInPayslip: true);
+
+        // 2. House Rent Allowance — 50% of Basic, fixed, EPF no, ESI yes
+        AddEarning("HOUSERENTALLOWANCE", "House Rent Allowance", "House Rent Allowance",
+            Domain.Enums.EarningType.HouseRentAllowance, Domain.Enums.PayType.Monthly,
+            Domain.Enums.ComponentFormulaType.PercentOfBasic, null, 50m,
+            taxable: true, epf: false, Domain.Enums.EpfInclusionRule.Always, esi: true,
+            proRata: true, showInPayslip: true);
+
+        // 3. Conveyance Allowance — flat, fixed, EPF if<15k, ESI no
+        AddEarning("CONVEYANCEALLOWANCE", "Conveyance Allowance", "Conveyance Allowance",
+            Domain.Enums.EarningType.ConveyanceAllowance, Domain.Enums.PayType.Monthly,
+            Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
+            taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: false,
+            proRata: true, showInPayslip: true);
+
+        // 4. Children Education Allowance — flat, fixed, EPF if<15k, ESI yes, inactive
+        AddEarning("CHILDRENEDALLOWANCE", "Children Education Allowance", "Children Education Allowance",
+            Domain.Enums.EarningType.ChildrenEducationAllowance, Domain.Enums.PayType.Monthly,
+            Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
+            taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
+            proRata: true, showInPayslip: true, active: false);
+
+        // 5. Transport Allowance — flat 1600, fixed, EPF if<15k, ESI yes, inactive
+        AddEarning("TRANSPORTALLOWANCE", "Transport Allowance", "Transport Allowance",
+            Domain.Enums.EarningType.TransportAllowance, Domain.Enums.PayType.Monthly,
+            Domain.Enums.ComponentFormulaType.Fixed, 1600m, null,
+            taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
+            proRata: true, showInPayslip: true, active: false);
+
+        // 6. Travelling Allowance — flat, fixed, EPF if<15k, ESI no, inactive
+        AddEarning("TRAVELLINGALLOWANCE", "Travelling Allowance", "Travelling Allowance",
+            Domain.Enums.EarningType.TravellingAllowance, Domain.Enums.PayType.Monthly,
+            Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
+            taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: false,
+            proRata: true, showInPayslip: true, active: false);
+
+        // 7. Overtime Allowance — variable flat, EPF no, ESI yes, inactive
+        AddEarning("OVERTIMEALLOWANCE", "Overtime Allowance", "Overtime Allowance",
+            Domain.Enums.EarningType.OvertimeFlat, Domain.Enums.PayType.FlatAmount,
+            Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
+            taxable: true, epf: false, Domain.Enums.EpfInclusionRule.Always, esi: true,
+            proRata: false, showInPayslip: true, active: false);
+
+        // 8. Gratuity — variable flat, EPF no, ESI no, non-taxable, active
+        AddEarning("GRATUITY", "Gratuity", "Gratuity",
+            Domain.Enums.EarningType.Gratuity, Domain.Enums.PayType.FlatAmount,
+            Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
+            taxable: false, epf: false, Domain.Enums.EpfInclusionRule.Always, esi: false,
+            proRata: false, showInPayslip: true);
+
+        // 9. Bonus — variable flat, EPF no, ESI no, taxable, active
+        AddEarning("BONUS", "Bonus", "Bonus",
+            Domain.Enums.EarningType.Bonus, Domain.Enums.PayType.FlatAmount,
+            Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
+            taxable: true, epf: false, Domain.Enums.EpfInclusionRule.Always, esi: false,
+            proRata: false, showInPayslip: true);
+
+        // 10. Commission — variable flat, EPF no, ESI yes, taxable, active
+        AddEarning("COMMISSION", "Commission", "Commission",
+            Domain.Enums.EarningType.CommissionOnSales, Domain.Enums.PayType.FlatAmount,
+            Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
+            taxable: true, epf: false, Domain.Enums.EpfInclusionRule.Always, esi: true,
+            proRata: false, showInPayslip: true);
+
+        // 11. Leave Encashment — variable flat, EPF no, ESI no, taxable, active
+        AddEarning("LEAVEENCASHMENT", "Leave Encashment", "Leave Encashment",
+            Domain.Enums.EarningType.LeaveEncashment, Domain.Enums.PayType.FlatAmount,
+            Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
+            taxable: true, epf: false, Domain.Enums.EpfInclusionRule.Always, esi: false,
+            proRata: false, showInPayslip: true);
+
+        // 12. Notice Pay — variable flat, EPF no, ESI no, taxable, active
+        AddEarning("NOTICEPAY", "Notice Pay", "Notice Pay",
+            Domain.Enums.EarningType.NoticePay, Domain.Enums.PayType.FlatAmount,
+            Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
+            taxable: true, epf: false, Domain.Enums.EpfInclusionRule.Always, esi: false,
+            proRata: false, showInPayslip: true);
+
+        // 13. Hold Salary — variable flat, EPF no, ESI no, non-taxable, active
+        AddEarning("HOLDSALARY", "Hold Salary", "Hold Salary",
+            Domain.Enums.EarningType.HoldSalary, Domain.Enums.PayType.FlatAmount,
+            Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
+            taxable: false, epf: false, Domain.Enums.EpfInclusionRule.Always, esi: false,
+            proRata: false, showInPayslip: true);
+
+        // ── Deductions ────────────────────────────────────────────────────
+        AddDeduction("WITHHELDSALARY", "Withheld Salary", Domain.Enums.DeductionFrequency.OnceAYear);
+        AddDeduction("NOTICEPAYDEDUC", "Notice Pay Deduction", Domain.Enums.DeductionFrequency.OnceAYear);
+        AddDeduction("LOANRECOVERY", "Loan Recovery", Domain.Enums.DeductionFrequency.EveryMonth);
+
+        // ── Benefits ──────────────────────────────────────────────────────
+        if (!existing.Contains("VOLUNTARYPROVIDENTFUND"))
+        {
+            var vpf = Domain.Entities.SalaryComponent.CreateBenefit(
+                "Voluntary Provident Fund", "Voluntary Provident Fund", "VOLUNTARYPROVIDENTFUND",
+                Domain.Enums.BenefitType.VPF, null, false, null, tenantId, Guid.Empty);
+            vpf.SetActive(false);
+            db.SalaryComponents.Add(vpf);
+        }
+
+        // ── Reimbursements ────────────────────────────────────────────────
+        AddReimbursement("FUELREIMBURSEMENT", "Fuel Reimbursement",
+            Domain.Enums.ReimbursementType.FuelAndMaintenance, 0m, active: false);
+        AddReimbursement("DRIVERREIMBURSEMENT", "Driver Reimbursement",
+            Domain.Enums.ReimbursementType.DriverSalary, 0m, active: false);
+        AddReimbursement("VEHICLEMAINTREIMBURSEMENT", "Vehicle Maintenance Reimbursement",
+            Domain.Enums.ReimbursementType.FuelAndMaintenance, 0m, active: false);
+        AddReimbursement("TELEPHONEREIMBURSEMENT", "Telephone Reimbursement",
+            Domain.Enums.ReimbursementType.MobileAndInternet, 0m, active: false);
+        AddReimbursement("LTAREIMBURSEMENT", "Leave Travel Allowance",
+            Domain.Enums.ReimbursementType.LeaveTravelAssistance, 0m, active: false);
+        AddReimbursement("FOODCOUPONS", "Food Coupons",
+            Domain.Enums.ReimbursementType.FoodCoupons, 0m);
+
+        // Correction for Basic (corrects salary arrears against Basic component).
+        // FK requires Basic to exist, so look it up after adding above.
+        if (!existing.Contains("BASICSALARYCORRECTION"))
+        {
+            // Can't use CreateCorrection (needs parent Id) until SaveChanges — skip for now;
+            // tenants create corrections manually via the UI.
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
     }
 
     private static async Task SeedStatutorySlabsAsync(PayrollDbContext db, CancellationToken ct)
