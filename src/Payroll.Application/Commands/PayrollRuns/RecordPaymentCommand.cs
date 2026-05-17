@@ -1,0 +1,62 @@
+using FluentValidation;
+using MediatR;
+using Payroll.Application.Interfaces;
+using Payroll.Domain.Common;
+using Payroll.Domain.Entities;
+using Payroll.Domain.Enums;
+using Payroll.Domain.Interfaces;
+
+namespace Payroll.Application.Commands.PayrollRuns;
+
+public record RecordPaymentCommand(
+    Guid RunId,
+    DateOnly PaymentDate,
+    string PaymentMode,
+    string? Reference,
+    bool NotifyEmployees,
+    Guid ActorId) : IRequest;
+
+public sealed class RecordPaymentCommandValidator : AbstractValidator<RecordPaymentCommand>
+{
+    public RecordPaymentCommandValidator()
+    {
+        RuleFor(x => x.RunId).NotEmpty();
+        RuleFor(x => x.PaymentDate).NotEmpty();
+        RuleFor(x => x.PaymentMode).NotEmpty();
+        RuleFor(x => x.ActorId).NotEmpty();
+    }
+}
+
+public sealed class RecordPaymentHandler(
+    IPayrollRunRepository runRepo,
+    IPayrollRunAuditLogRepository auditLogRepo,
+    IPayrollJobDispatcher jobDispatcher,
+    IUnitOfWork uow)
+    : IRequestHandler<RecordPaymentCommand>
+{
+    public async Task Handle(RecordPaymentCommand req, CancellationToken ct)
+    {
+        var run = await runRepo.GetByIdAsync(req.RunId, ct)
+            ?? throw new NotFoundException($"Payroll run {req.RunId} not found.");
+
+        if (run.Status != PayrollRunStatus.Approved)
+            throw new InvalidOperationException("Only an Approved payroll run can record payment.");
+
+        if (!Enum.TryParse<PaymentMode>(req.PaymentMode, ignoreCase: true, out PaymentMode mode))
+            throw new DomainException($"Invalid payment mode: {req.PaymentMode}.");
+
+        run.RecordPayment(req.PaymentDate, mode.ToString(), req.Reference, req.ActorId);
+        runRepo.Update(run);
+
+        var auditEntry = PayrollRunAuditLog.Create(
+            req.RunId, run.TenantId, PayrollRunStatus.Approved, PayrollRunStatus.Paid, req.ActorId, null);
+        await auditLogRepo.AddAsync(auditEntry, ct);
+
+        await uow.SaveChangesAsync(ct);
+
+        if (req.NotifyEmployees)
+            jobDispatcher.EnqueueGeneratePayslipsThenNotify(req.RunId);
+        else
+            jobDispatcher.EnqueueGeneratePayslips(req.RunId);
+    }
+}

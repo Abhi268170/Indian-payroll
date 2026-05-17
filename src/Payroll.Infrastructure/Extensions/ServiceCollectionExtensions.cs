@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using Payroll.Application.Interfaces;
 using Payroll.Domain.Interfaces;
 using Payroll.Infrastructure.Email;
+using Payroll.Infrastructure.Jobs;
 using Payroll.Infrastructure.Middleware;
 using Payroll.Infrastructure.Persistence;
 using Payroll.Infrastructure.Persistence.Repositories;
@@ -79,6 +80,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPayrunComponentBreakdownRepository, PayrunComponentBreakdownRepository>();
         services.AddScoped<ITdsWorksheetRepository, TdsWorksheetRepository>();
         services.AddScoped<IPayrollRunAuditLogRepository, PayrollRunAuditLogRepository>();
+        services.AddScoped<IPayslipRepository, PayslipRepository>();
+        services.AddTransient<IPayrollJobDispatcher, HangfirePayrollJobDispatcher>();
         services.AddScoped<IPlatformUnitOfWork, PlatformUnitOfWork>();
         services.AddScoped<ITenantSchemaProvisioner, TenantSchemaProvisioner>();
         services.AddScoped<ITokenRevocationService, TokenRevocationService>();

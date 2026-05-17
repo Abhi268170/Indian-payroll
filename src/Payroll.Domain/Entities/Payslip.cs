@@ -46,4 +46,10 @@ public sealed class Payslip : AuditableEntity
         IsPublished = true;
         SetUpdated(actorId);
     }
+
+    public void Unpublish(Guid actorId)
+    {
+        IsPublished = false;
+        SetUpdated(actorId);
+    }
 }
