@@ -22,6 +22,8 @@ public sealed class GetPayScheduleHandler(IPayScheduleRepository repo)
             FixedWorkingDaysPerMonth: schedule.FixedWorkingDaysPerMonth,
             PayDateType: schedule.PayDateType.ToString(),
             PayDateDay: schedule.PayDateDay,
+            FirstPayPeriodMonth: schedule.FirstPayPeriodMonth,
+            FirstPayPeriodYear: schedule.FirstPayPeriodYear,
             IsLocked: schedule.IsLockedAfterPayrun);
     }
 

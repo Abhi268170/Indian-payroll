@@ -8,5 +8,7 @@ public record UpsertPayScheduleCommand(
     int? FixedWorkingDaysPerMonth,
     string PayDateType,
     int? PayDateDay,
+    int? FirstPayPeriodMonth,
+    int? FirstPayPeriodYear,
     Guid ActorId
 ) : IRequest;

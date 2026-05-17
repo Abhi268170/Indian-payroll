@@ -20,6 +20,7 @@ public sealed class UpdateWorkLocationHandler(IWorkLocationRepository repo, IUni
             request.AddressLine2,
             request.City,
             request.PinCode,
+            request.PtRegistrationNumber,
             request.ActorId);
 
         repo.Update(location);

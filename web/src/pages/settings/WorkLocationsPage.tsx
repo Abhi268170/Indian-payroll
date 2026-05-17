@@ -16,6 +16,7 @@ export interface WorkLocation {
   state: string
   city: string | null
   pinCode: string | null
+  ptRegistrationNumber: string | null
   isActive: boolean
   employeeCount: number
 }

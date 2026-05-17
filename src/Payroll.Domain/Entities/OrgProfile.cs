@@ -9,6 +9,17 @@ public sealed class OrgProfile : AuditableEntity
     public string? LegalName { get; private set; }
     public string? Pan { get; private set; }
     public string? Gstin { get; private set; }
+
+    // TDS filing details
+    public string? Tan { get; private set; }
+    public string? AoAreaCode { get; private set; }
+    public string? AoType { get; private set; }     // A/B/C/H/W/S/E/F/G/L
+    public string? AoRangeCode { get; private set; }
+    public string? AoNumber { get; private set; }
+    public string? DeductorType { get; private set; }  // Company/Individual/etc.
+    public string? DeductorName { get; private set; }
+    public string? DeductorFathersName { get; private set; }
+    public string? DeductorDesignation { get; private set; }
     public string? Website { get; private set; }
     public string? Industry { get; private set; }
     public DateOnly? IncorporationDate { get; private set; }
@@ -66,6 +77,30 @@ public sealed class OrgProfile : AuditableEntity
         State = state;
         PinCode = pinCode;
         FilingAddressWorkLocationId = filingAddressWorkLocationId;
+        SetUpdated(updatedBy);
+    }
+
+    public void UpdateTaxDetails(
+        string? tan,
+        string? aoAreaCode,
+        string? aoType,
+        string? aoRangeCode,
+        string? aoNumber,
+        string? deductorType,
+        string? deductorName,
+        string? deductorFathersName,
+        string? deductorDesignation,
+        Guid updatedBy)
+    {
+        Tan = tan;
+        AoAreaCode = aoAreaCode;
+        AoType = aoType;
+        AoRangeCode = aoRangeCode;
+        AoNumber = aoNumber;
+        DeductorType = deductorType;
+        DeductorName = deductorName;
+        DeductorFathersName = deductorFathersName;
+        DeductorDesignation = deductorDesignation;
         SetUpdated(updatedBy);
     }
 

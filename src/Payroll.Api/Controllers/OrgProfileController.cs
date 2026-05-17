@@ -101,12 +101,58 @@ public sealed class OrgProfileController(ISender sender) : ControllerBase
         return NoContent();
     }
 
+    [HttpGet("tax-details")]
+    public async Task<IActionResult> GetTaxDetails(CancellationToken cancellationToken)
+    {
+        TaxDetailsDto dto = await sender.Send(new GetTaxDetailsQuery(), cancellationToken);
+        return Ok(dto);
+    }
+
+    [HttpPut("tax-details")]
+    [Authorize(Policy = "OrgAdmin")]
+    public async Task<IActionResult> UpdateTaxDetails(
+        [FromBody] UpdateTaxDetailsRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await sender.Send(new UpdateTaxDetailsCommand(
+                request.Tan,
+                request.AoAreaCode,
+                request.AoType,
+                request.AoRangeCode,
+                request.AoNumber,
+                request.DeductorType,
+                request.DeductorName,
+                request.DeductorFathersName,
+                request.DeductorDesignation,
+                GetActorId()),
+                cancellationToken);
+            return NoContent();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+    }
+
     private Guid GetActorId()
     {
         string? sub = User.FindFirst("sub")?.Value;
         return Guid.TryParse(sub, out Guid id) ? id : Guid.Empty;
     }
 }
+
+public record UpdateTaxDetailsRequest(
+    string? Tan,
+    string? AoAreaCode,
+    string? AoType,
+    string? AoRangeCode,
+    string? AoNumber,
+    string? DeductorType,
+    string? DeductorName,
+    string? DeductorFathersName,
+    string? DeductorDesignation);
 
 public record UpdateOrgProfileRequest(
     string CompanyName,

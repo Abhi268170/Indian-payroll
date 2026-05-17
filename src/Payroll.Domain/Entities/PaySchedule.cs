@@ -13,6 +13,10 @@ public sealed class PaySchedule : AuditableEntity
     public PayDateType PayDateType { get; private set; }
     public int? PayDateDay { get; private set; }
 
+    // First pay period — month (1-12) and year for the first payroll run
+    public int? FirstPayPeriodMonth { get; private set; }
+    public int? FirstPayPeriodYear { get; private set; }
+
     /// <summary>
     /// Set to true after the first pay run is finalised.
     /// Once locked, WorkWeekDays and SalaryCalculationMethod cannot be changed
@@ -27,6 +31,8 @@ public sealed class PaySchedule : AuditableEntity
         int? fixedWorkingDaysPerMonth,
         PayDateType payDateType,
         int? payDateDay,
+        int? firstPayPeriodMonth,
+        int? firstPayPeriodYear,
         Guid createdBy) =>
         new()
         {
@@ -35,6 +41,8 @@ public sealed class PaySchedule : AuditableEntity
             FixedWorkingDaysPerMonth = fixedWorkingDaysPerMonth,
             PayDateType = payDateType,
             PayDateDay = payDateDay,
+            FirstPayPeriodMonth = firstPayPeriodMonth,
+            FirstPayPeriodYear = firstPayPeriodYear,
             CreatedBy = createdBy,
         };
 
@@ -44,6 +52,8 @@ public sealed class PaySchedule : AuditableEntity
         int? fixedWorkingDaysPerMonth,
         PayDateType payDateType,
         int? payDateDay,
+        int? firstPayPeriodMonth,
+        int? firstPayPeriodYear,
         Guid updatedBy)
     {
         if (IsLockedAfterPayrun)
@@ -62,6 +72,8 @@ public sealed class PaySchedule : AuditableEntity
         FixedWorkingDaysPerMonth = fixedWorkingDaysPerMonth;
         PayDateType = payDateType;
         PayDateDay = payDateDay;
+        FirstPayPeriodMonth = firstPayPeriodMonth;
+        FirstPayPeriodYear = firstPayPeriodYear;
         SetUpdated(updatedBy);
     }
 

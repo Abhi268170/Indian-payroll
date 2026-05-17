@@ -29,6 +29,9 @@ internal sealed class PayScheduleConfiguration : IEntityTypeConfiguration<PaySch
 
         builder.Property(p => p.PayDateDay);
 
+        builder.Property(p => p.FirstPayPeriodMonth);
+        builder.Property(p => p.FirstPayPeriodYear);
+
         builder.Property(p => p.IsLockedAfterPayrun).IsRequired();
 
         builder.Property(p => p.CreatedAt).HasColumnType("timestamptz").IsRequired();

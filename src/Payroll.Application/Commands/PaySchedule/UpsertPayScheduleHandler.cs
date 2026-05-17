@@ -25,6 +25,8 @@ public sealed class UpsertPayScheduleHandler(IPayScheduleRepository repo, IUnitO
                 request.FixedWorkingDaysPerMonth,
                 payDateType,
                 request.PayDateDay,
+                request.FirstPayPeriodMonth,
+                request.FirstPayPeriodYear,
                 request.ActorId);
 
             await repo.AddAsync(schedule, cancellationToken);
@@ -37,6 +39,8 @@ public sealed class UpsertPayScheduleHandler(IPayScheduleRepository repo, IUnitO
                 request.FixedWorkingDaysPerMonth,
                 payDateType,
                 request.PayDateDay,
+                request.FirstPayPeriodMonth,
+                request.FirstPayPeriodYear,
                 request.ActorId);
 
             repo.Update(existing);

@@ -18,12 +18,44 @@ const DAYS: { key: string; label: string }[] = [
 
 const DEFAULT_WORK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
 
+const MONTH_NAMES = [
+  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+]
+
+function getUpcomingPayDates(
+  startMonth: number,
+  startYear: number,
+  payDateType: string,
+  payDateDay: number | null,
+  count: number,
+): string[] {
+  const dates: string[] = []
+  let month = startMonth
+  let year = startYear
+  for (let i = 0; i < count; i++) {
+    let day: number
+    if (payDateType === 'LastDay') {
+      day = new Date(year, month, 0).getDate()
+    } else {
+      const daysInMonth = new Date(year, month, 0).getDate()
+      day = Math.min(payDateDay ?? 1, daysInMonth)
+    }
+    dates.push(`${day} ${MONTH_NAMES[month - 1]} ${year}`)
+    month++
+    if (month > 12) { month = 1; year++ }
+  }
+  return dates
+}
+
 interface PayScheduleDto {
   workWeekDays: string[]
   salaryCalculationMethod: 'ActualDays' | 'FixedDays'
   fixedWorkingDaysPerMonth: number | null
   payDateType: 'LastDay' | 'SpecificDay'
   payDateDay: number | null
+  firstPayPeriodMonth: number | null
+  firstPayPeriodYear: number | null
   isLocked: boolean
 }
 
@@ -89,6 +121,12 @@ function PayScheduleForm({
   const [payDateDay, setPayDateDay] = useState<string>(
     initialSchedule?.payDateDay?.toString() ?? '1'
   )
+  const [firstPayPeriodMonth, setFirstPayPeriodMonth] = useState<string>(
+    initialSchedule?.firstPayPeriodMonth?.toString() ?? ''
+  )
+  const [firstPayPeriodYear, setFirstPayPeriodYear] = useState<string>(
+    initialSchedule?.firstPayPeriodYear?.toString() ?? ''
+  )
 
   const saveMutation = useMutation({
     mutationFn: () =>
@@ -98,10 +136,12 @@ function PayScheduleForm({
         fixedWorkingDaysPerMonth: calcMethod === 'FixedDays' ? parseInt(fixedDays, 10) : null,
         payDateType,
         payDateDay: payDateType === 'SpecificDay' ? parseInt(payDateDay, 10) : null,
+        firstPayPeriodMonth: firstPayPeriodMonth ? parseInt(firstPayPeriodMonth, 10) : null,
+        firstPayPeriodYear: firstPayPeriodYear ? parseInt(firstPayPeriodYear, 10) : null,
       }),
-    onSuccess: () => {
+    onSuccess: async () => {
       toastSuccess('Pay schedule saved')
-      void qc.invalidateQueries({ queryKey: ['pay-schedule'] })
+      await qc.invalidateQueries({ queryKey: ['pay-schedule'] })
       onSaved()
     },
     onError: (err: unknown) => {
@@ -244,6 +284,57 @@ function PayScheduleForm({
             If the selected pay date falls on a non-working day or holiday, payment will be processed on the previous working day.
           </p>
         </Section>
+
+        {/* First Payroll Setup */}
+        {!isLocked && (
+          <Section title="First Payroll Setup" helpText="Set the month and year for your first payroll run. This helps preview upcoming pay dates.">
+            <div className="flex items-center gap-4">
+              <div>
+                <label className="block text-[12px] text-[var(--color-text-secondary)] mb-1">Month</label>
+                <select
+                  value={firstPayPeriodMonth}
+                  onChange={e => { setFirstPayPeriodMonth(e.target.value) }}
+                  className="h-9 px-3 border border-[var(--color-border)] rounded-lg text-[13px] text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-primary)] bg-white"
+                >
+                  <option value="">Select month</option>
+                  {['January','February','March','April','May','June','July','August','September','October','November','December']
+                    .map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-[12px] text-[var(--color-text-secondary)] mb-1">Year</label>
+                <select
+                  value={firstPayPeriodYear}
+                  onChange={e => { setFirstPayPeriodYear(e.target.value) }}
+                  className="h-9 px-3 border border-[var(--color-border)] rounded-lg text-[13px] text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-primary)] bg-white"
+                >
+                  <option value="">Select year</option>
+                  {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 1 + i).map(y => (
+                    <option key={y} value={y}>{y}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            {firstPayPeriodMonth && firstPayPeriodYear && payDateType && (
+              <div className="mt-4">
+                <p className="text-[12px] text-[var(--color-text-muted)] mb-2">Upcoming pay dates:</p>
+                <div className="flex gap-3">
+                  {getUpcomingPayDates(
+                    parseInt(firstPayPeriodMonth, 10),
+                    parseInt(firstPayPeriodYear, 10),
+                    payDateType,
+                    payDateType === 'SpecificDay' ? parseInt(payDateDay, 10) : null,
+                    3
+                  ).map((d, i) => (
+                    <div key={i} className="px-3 py-1.5 bg-[var(--color-primary-light)] rounded-lg text-[12px] text-[var(--color-primary)] font-medium">
+                      {d}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </Section>
+        )}
 
         <div>
           <Button

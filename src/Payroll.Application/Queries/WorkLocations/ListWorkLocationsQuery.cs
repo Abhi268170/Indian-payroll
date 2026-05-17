@@ -28,6 +28,7 @@ public sealed class ListWorkLocationsHandler(IWorkLocationRepository repo)
                 location.State.ToString(),
                 location.City,
                 location.PinCode,
+                location.PtRegistrationNumber,
                 location.IsActive,
                 employeeCount));
         }

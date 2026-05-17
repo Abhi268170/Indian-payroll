@@ -11,6 +11,8 @@ public sealed class WorkLocation : AuditableEntity
     public IndianState State { get; private set; }
     public string? City { get; private set; }
     public string? PinCode { get; private set; }
+    public string? PtRegistrationNumber { get; private set; }
+    public bool IsFilingAddress { get; private set; }
     public bool IsActive { get; private set; } = true;
 
     private WorkLocation() { }  // EF constructor
@@ -43,6 +45,7 @@ public sealed class WorkLocation : AuditableEntity
         string? addressLine2,
         string? city,
         string? pinCode,
+        string? ptRegistrationNumber,
         Guid updatedBy)
     {
         // State is NOT updated — immutable after creation
@@ -51,6 +54,13 @@ public sealed class WorkLocation : AuditableEntity
         AddressLine2 = addressLine2;
         City = city;
         PinCode = pinCode;
+        PtRegistrationNumber = ptRegistrationNumber;
+        SetUpdated(updatedBy);
+    }
+
+    public void SetFilingAddress(bool isFilingAddress, Guid updatedBy)
+    {
+        IsFilingAddress = isFilingAddress;
         SetUpdated(updatedBy);
     }
 

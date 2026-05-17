@@ -9,4 +9,5 @@ public record UpdateWorkLocationCommand(
     string? AddressLine2,
     string? City,
     string? PinCode,
+    string? PtRegistrationNumber,
     Guid ActorId) : IRequest<Unit>;

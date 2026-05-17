@@ -24,6 +24,7 @@ internal sealed class WorkLocationConfiguration : IEntityTypeConfiguration<WorkL
         builder.Property(w => w.AddressLine2).HasMaxLength(250);
         builder.Property(w => w.City).HasMaxLength(250);
         builder.Property(w => w.PinCode).HasMaxLength(6);
+        builder.Property(w => w.PtRegistrationNumber).HasMaxLength(50);
 
         builder.Property(w => w.CreatedAt).HasColumnType("timestamptz").IsRequired();
         builder.Property(w => w.UpdatedAt).HasColumnType("timestamptz");

@@ -8,6 +8,7 @@ public record WorkLocationDto(
     string State,
     string? City,
     string? PinCode,
+    string? PtRegistrationNumber,
     bool IsActive,
     int EmployeeCount
 );

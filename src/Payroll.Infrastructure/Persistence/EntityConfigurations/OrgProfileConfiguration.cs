@@ -24,6 +24,17 @@ internal sealed class OrgProfileConfiguration : IEntityTypeConfiguration<OrgProf
         builder.Property(o => o.PinCode).HasMaxLength(6);
         builder.Property(o => o.LogoObjectKey).HasMaxLength(500);
 
+        // TDS filing details
+        builder.Property(o => o.Tan).HasMaxLength(10);
+        builder.Property(o => o.AoAreaCode).HasMaxLength(3);
+        builder.Property(o => o.AoType).HasMaxLength(1);
+        builder.Property(o => o.AoRangeCode).HasMaxLength(3);
+        builder.Property(o => o.AoNumber).HasMaxLength(5);
+        builder.Property(o => o.DeductorType).HasMaxLength(50);
+        builder.Property(o => o.DeductorName).HasMaxLength(200);
+        builder.Property(o => o.DeductorFathersName).HasMaxLength(200);
+        builder.Property(o => o.DeductorDesignation).HasMaxLength(200);
+
         builder.Property(o => o.CreatedAt).HasColumnType("timestamptz").IsRequired();
         builder.Property(o => o.UpdatedAt).HasColumnType("timestamptz");
         builder.Property(o => o.DeletedAt).HasColumnType("timestamptz");

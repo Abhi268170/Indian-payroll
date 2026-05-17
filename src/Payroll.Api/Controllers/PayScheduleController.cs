@@ -34,6 +34,8 @@ public sealed class PayScheduleController(ISender sender) : ControllerBase
                 request.FixedWorkingDaysPerMonth,
                 request.PayDateType,
                 request.PayDateDay,
+                request.FirstPayPeriodMonth,
+                request.FirstPayPeriodYear,
                 GetActorId()),
                 cancellationToken);
 
@@ -61,4 +63,6 @@ public record UpsertPayScheduleRequest(
     string SalaryCalculationMethod,
     int? FixedWorkingDaysPerMonth,
     string PayDateType,
-    int? PayDateDay);
+    int? PayDateDay,
+    int? FirstPayPeriodMonth,
+    int? FirstPayPeriodYear);

@@ -79,6 +79,7 @@ public sealed class WorkLocationsController(ISender sender) : ControllerBase
                     request.AddressLine2,
                     request.City,
                     request.PinCode,
+                    request.PtRegistrationNumber,
                     actorId),
                 cancellationToken);
             return NoContent();
@@ -162,4 +163,5 @@ public record UpdateWorkLocationRequest(
     string? AddressLine1,
     string? AddressLine2,
     string? City,
-    string? PinCode);
+    string? PinCode,
+    string? PtRegistrationNumber);

@@ -11,6 +11,11 @@ import CostCentresPage from '@/pages/settings/CostCentresPage'
 import BusinessUnitsPage from '@/pages/settings/BusinessUnitsPage'
 import OrgProfilePage from '@/pages/settings/OrgProfilePage'
 import PaySchedulesPage from '@/pages/settings/PaySchedulesPage'
+import SalaryComponentsPage from '@/pages/settings/SalaryComponentsPage'
+import SalaryStructuresPage from '@/pages/settings/SalaryStructuresPage'
+import SalaryStructureBuilderPage from '@/pages/settings/SalaryStructureBuilderPage'
+import StatutoryComponentsPage from '@/pages/settings/StatutoryComponentsPage'
+import TaxDetailsPage from '@/pages/settings/TaxDetailsPage'
 import LoginPage from '@/pages/LoginPage'
 import DashboardPage from '@/pages/DashboardPage'
 import TenantsPage from '@/pages/platform/TenantsPage'
@@ -79,6 +84,12 @@ export const router = createBrowserRouter([
           { path: 'business-units', element: <BusinessUnitsPage /> },
           { path: 'org-profile', element: <OrgProfilePage /> },
           { path: 'pay-schedule', element: <PaySchedulesPage /> },
+          { path: 'salary-components', element: <SalaryComponentsPage /> },
+          { path: 'salary-structures', element: <SalaryStructuresPage /> },
+          { path: 'salary-structures/new', element: <SalaryStructureBuilderPage /> },
+          { path: 'salary-structures/:id/edit', element: <SalaryStructureBuilderPage /> },
+          { path: 'statutory', element: <StatutoryComponentsPage /> },
+          { path: 'tax-details', element: <TaxDetailsPage /> },
         ],
       },
     ],

@@ -19,7 +19,9 @@ const createSchema = z.object({
   pinCode: z.string().regex(/^\d{6}$/, 'Must be 6 digits').optional().or(z.literal('')),
 })
 
-const updateSchema = createSchema.omit({ state: true })
+const updateSchema = createSchema.omit({ state: true }).extend({
+  ptRegistrationNumber: z.string().max(50).optional().or(z.literal('')),
+})
 
 type CreateFormData = z.infer<typeof createSchema>
 type UpdateFormData = z.infer<typeof updateSchema>
@@ -47,6 +49,7 @@ export default function WorkLocationFormPage({ location, onSaved, onCancel }: Pr
       addressLine2: location?.addressLine2 ?? '',
       city: location?.city ?? '',
       pinCode: location?.pinCode ?? '',
+      ptRegistrationNumber: location?.ptRegistrationNumber ?? '',
     },
   })
 
@@ -77,6 +80,7 @@ export default function WorkLocationFormPage({ location, onSaved, onCancel }: Pr
         addressLine2: data.addressLine2 || null,
         city: data.city || null,
         pinCode: data.pinCode || null,
+        ptRegistrationNumber: data.ptRegistrationNumber || null,
       }),
     onSuccess: () => {
       toastSuccess('Work location updated')
@@ -138,6 +142,21 @@ export default function WorkLocationFormPage({ location, onSaved, onCancel }: Pr
               </div>
             </div>
           </fieldset>
+
+          <div>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-1">
+              PT Registration Number
+            </label>
+            <Input
+              placeholder="e.g. 27999999999P"
+              maxLength={50}
+              error={errors.ptRegistrationNumber?.message}
+              {...register('ptRegistrationNumber')}
+            />
+            <p className="text-[11px] text-[var(--color-text-muted)] mt-1">
+              Professional Tax registration number for this work location's state (if applicable).
+            </p>
+          </div>
 
           <div className="flex items-center gap-3 pt-2">
             <Button type="submit" variant="primary" loading={isPending}>Save</Button>
