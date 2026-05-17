@@ -1,251 +1,198 @@
 import { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
+import { UserPlus, AlertCircle } from 'lucide-react'
 import { api } from '@/lib/api'
-import type { EmployeeDto, DepartmentDto, DesignationDto, BranchDto, CostCentreDto } from '@/types/api'
+import type { EmployeeListItemDto } from '@/types/api'
 
-const PAN_REGEX = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/
+type StatusFilter = 'All' | 'Active' | 'Inactive' | 'Exited'
 
-const schema = z.object({
-  firstName: z.string().min(1, 'Required').max(100),
-  lastName: z.string().min(1, 'Required').max(100),
-  employeeCode: z.string().min(1, 'Required').max(20),
-  pan: z.string().regex(PAN_REGEX, 'Invalid PAN (e.g. ABCDE1234F)'),
-  dateOfBirth: z.string().min(1, 'Required'),
-  gender: z.enum(['Male', 'Female', 'Other']),
-  dateOfJoining: z.string().min(1, 'Required'),
-  workState: z.string().min(1, 'Select a state'),
-  employmentType: z.enum(['FullTime', 'PartTime', 'Contract', 'Intern']),
-  departmentId: z.string().min(1, 'Select a department'),
-  designationId: z.string().min(1, 'Select a designation'),
-  branchId: z.string().optional(),
-  costCentreId: z.string().optional(),
-})
-type FormValues = z.infer<typeof schema>
+const STATUS_TABS: StatusFilter[] = ['All', 'Active', 'Inactive', 'Exited']
 
-const INDIAN_STATES = [
-  'AN','AP','AR','AS','BR','CG','CH','DD','DL','DN',
-  'GA','GJ','HP','HR','JH','JK','KA','KL','LA','LD',
-  'MH','ML','MN','MP','MZ','NL','OR','PB','PY','RJ',
-  'SK','TG','TN','TR','UP','UT','WB',
-]
+function statusBadge(status: string): React.ReactElement {
+  const map: Record<string, string> = {
+    Active: 'bg-emerald-50 text-emerald-700',
+    Inactive: 'bg-gray-100 text-gray-600',
+    Exited: 'bg-red-50 text-red-600',
+  }
+  return (
+    <span className={`inline-flex items-center h-5 px-2 rounded-full text-[11px] font-medium ${map[status] ?? 'bg-gray-100 text-gray-600'}`}>
+      {status}
+    </span>
+  )
+}
+
+function employmentTypeBadge(type: string): React.ReactElement {
+  const map: Record<string, string> = {
+    FullTime: 'bg-blue-50 text-blue-700',
+    PartTime: 'bg-purple-50 text-purple-700',
+    Contract: 'bg-amber-50 text-amber-700',
+    Intern: 'bg-cyan-50 text-cyan-700',
+  }
+  const label: Record<string, string> = {
+    FullTime: 'Full Time',
+    PartTime: 'Part Time',
+    Contract: 'Contract',
+    Intern: 'Intern',
+  }
+  return (
+    <span className={`inline-flex items-center h-5 px-2 rounded-full text-[11px] font-medium ${map[type] ?? 'bg-gray-100 text-gray-600'}`}>
+      {label[type] ?? type}
+    </span>
+  )
+}
+
+function initials(name: string): string {
+  return name.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase()
+}
 
 export default function EmployeesPage(): React.ReactElement {
-  const qc = useQueryClient()
-  const [showForm, setShowForm] = useState(false)
-  const [apiError, setApiError] = useState<string | null>(null)
+  const navigate = useNavigate()
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('All')
+  const [search, setSearch] = useState('')
 
-  const { data: employees, isLoading } = useQuery<EmployeeDto[]>({
+  const { data: employees = [], isLoading } = useQuery<EmployeeListItemDto[]>({
     queryKey: ['employees'],
-    queryFn: () => api.get<EmployeeDto[]>('/api/employees').then(r => r.data),
-  })
-  const { data: departments } = useQuery<DepartmentDto[]>({
-    queryKey: ['departments'],
-    queryFn: () => api.get<DepartmentDto[]>('/api/org/departments').then(r => r.data),
-  })
-  const { data: designations } = useQuery<DesignationDto[]>({
-    queryKey: ['designations'],
-    queryFn: () => api.get<DesignationDto[]>('/api/org/designations').then(r => r.data),
-  })
-  const { data: branches } = useQuery<BranchDto[]>({
-    queryKey: ['branches'],
-    queryFn: () => api.get<BranchDto[]>('/api/org/branches').then(r => r.data),
-  })
-  const { data: costCentres } = useQuery<CostCentreDto[]>({
-    queryKey: ['cost-centres'],
-    queryFn: () => api.get<CostCentreDto[]>('/api/org/cost-centres').then(r => r.data),
+    queryFn: () => api.get<EmployeeListItemDto[]>('/api/v1/employees').then(r => r.data),
   })
 
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormValues>({
-    resolver: zodResolver(schema),
-  })
+  const incomplete = employees.filter(e => !e.profileComplete && e.status === 'Active')
 
-  const create = useMutation({
-    mutationFn: (v: FormValues) => api.post('/api/employees', {
-      firstName: v.firstName,
-      lastName: v.lastName,
-      employeeCode: v.employeeCode,
-      pan: v.pan,
-      dateOfBirth: v.dateOfBirth,
-      gender: v.gender,
-      dateOfJoining: v.dateOfJoining,
-      workState: v.workState,
-      employmentType: v.employmentType,
-      departmentId: v.departmentId,
-      designationId: v.designationId,
-      branchId: v.branchId ?? null,
-      costCentreId: v.costCentreId ?? null,
-    }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['employees'] })
-      reset()
-      setShowForm(false)
-      setApiError(null)
-    },
-    onError: () => setApiError('Failed to create employee.'),
+  const filtered = employees.filter(e => {
+    const matchStatus = statusFilter === 'All' || e.status === statusFilter
+    const q = search.toLowerCase()
+    const matchSearch =
+      !q ||
+      e.fullName.toLowerCase().includes(q) ||
+      e.workEmail.toLowerCase().includes(q) ||
+      e.employeeCode.toLowerCase().includes(q) ||
+      (e.departmentName ?? '').toLowerCase().includes(q)
+    return matchStatus && matchSearch
   })
-
-  const inputCls = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500'
-  const errorCls = 'mt-1 text-xs text-red-500'
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-semibold text-gray-900">Employees</h1>
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-[18px] font-semibold text-[var(--color-text-primary)]">Employees</h1>
+          <p className="text-[13px] text-[var(--color-text-secondary)] mt-0.5">
+            {employees.length} employee{employees.length !== 1 ? 's' : ''}
+          </p>
+        </div>
         <button
-          onClick={() => setShowForm(f => !f)}
-          className="bg-violet-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-violet-700 transition-colors"
+          onClick={() => navigate('/employees/new')}
+          className="inline-flex items-center gap-1.5 h-9 px-4 bg-[var(--color-primary)] text-white text-[13px] font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors"
         >
-          {showForm ? 'Cancel' : '+ New Employee'}
+          <UserPlus className="w-3.5 h-3.5" />
+          Add Employee
         </button>
       </div>
 
-      {showForm && (
-        <form
-          onSubmit={handleSubmit(v => create.mutate(v))}
-          className="bg-white border border-gray-200 rounded-xl p-5 mb-6 space-y-4 max-w-2xl"
-        >
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-              <input {...register('firstName')} className={inputCls} />
-              {errors.firstName && <p className={errorCls}>{errors.firstName.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-              <input {...register('lastName')} className={inputCls} />
-              {errors.lastName && <p className={errorCls}>{errors.lastName.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Employee Code</label>
-              <input {...register('employeeCode')} className={inputCls} placeholder="e.g. EMP001" />
-              {errors.employeeCode && <p className={errorCls}>{errors.employeeCode.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">PAN</label>
-              <input {...register('pan')} className={inputCls} placeholder="ABCDE1234F" />
-              {errors.pan && <p className={errorCls}>{errors.pan.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
-              <input type="date" {...register('dateOfBirth')} className={inputCls} />
-              {errors.dateOfBirth && <p className={errorCls}>{errors.dateOfBirth.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-              <select {...register('gender')} className={inputCls}>
-                <option value="">Select</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
-              {errors.gender && <p className={errorCls}>{errors.gender.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Date of Joining</label>
-              <input type="date" {...register('dateOfJoining')} className={inputCls} />
-              {errors.dateOfJoining && <p className={errorCls}>{errors.dateOfJoining.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Employment Type</label>
-              <select {...register('employmentType')} className={inputCls}>
-                <option value="">Select</option>
-                <option value="FullTime">Full Time</option>
-                <option value="PartTime">Part Time</option>
-                <option value="Contract">Contract</option>
-                <option value="Intern">Intern</option>
-              </select>
-              {errors.employmentType && <p className={errorCls}>{errors.employmentType.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Work State</label>
-              <select {...register('workState')} className={inputCls}>
-                <option value="">Select state</option>
-                {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-              {errors.workState && <p className={errorCls}>{errors.workState.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
-              <select {...register('departmentId')} className={inputCls}>
-                <option value="">Select department</option>
-                {departments?.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-              </select>
-              {errors.departmentId && <p className={errorCls}>{errors.departmentId.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
-              <select {...register('designationId')} className={inputCls}>
-                <option value="">Select designation</option>
-                {designations?.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-              </select>
-              {errors.designationId && <p className={errorCls}>{errors.designationId.message}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Branch (optional)</label>
-              <select {...register('branchId')} className={inputCls}>
-                <option value="">None</option>
-                {branches?.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Cost Centre (optional)</label>
-              <select {...register('costCentreId')} className={inputCls}>
-                <option value="">None</option>
-                {costCentres?.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-              </select>
-            </div>
-          </div>
-          {apiError && <p className="text-xs text-red-600">{apiError}</p>}
-          <button
-            type="submit"
-            disabled={isSubmitting || create.isPending}
-            className="bg-violet-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-violet-700 disabled:opacity-50 transition-colors"
-          >
-            Create Employee
-          </button>
-        </form>
+      {/* Incomplete profiles banner */}
+      {incomplete.length > 0 && (
+        <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3">
+          <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+          <p className="text-[13px] text-amber-800">
+            <span className="font-medium">{incomplete.length} employee{incomplete.length > 1 ? 's have' : ' has'} incomplete profiles.</span>
+            {' '}Fill in personal details, payment info, and statutory details to enable payroll.
+          </p>
+        </div>
       )}
 
-      {isLoading ? (
-        <p className="text-sm text-gray-500">Loading…</p>
-      ) : (
-        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+      {/* Filters row */}
+      <div className="flex items-center gap-3">
+        {/* Status tabs */}
+        <div className="flex items-center h-9 bg-white border border-[var(--color-border)] rounded-lg p-1 gap-0.5">
+          {STATUS_TABS.map(tab => (
+            <button
+              key={tab}
+              onClick={() => setStatusFilter(tab)}
+              className={`h-7 px-3 rounded-md text-[12px] font-medium transition-colors ${
+                statusFilter === tab
+                  ? 'bg-[var(--color-primary)] text-white'
+                  : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+
+        {/* Search */}
+        <input
+          type="text"
+          placeholder="Search by name, email, code, department…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="flex-1 h-9 px-3 text-[13px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
+        />
+      </div>
+
+      {/* Table */}
+      <div className="bg-white border border-[var(--color-border)] rounded-xl overflow-hidden">
+        {isLoading ? (
+          <div className="py-12 text-center text-[13px] text-[var(--color-text-secondary)]">Loading…</div>
+        ) : filtered.length === 0 ? (
+          <div className="py-12 text-center">
+            <p className="text-[13px] text-[var(--color-text-secondary)]">
+              {employees.length === 0 ? 'No employees yet. Add your first employee.' : 'No employees match this filter.'}
+            </p>
+          </div>
+        ) : (
+          <table className="w-full text-[13px]">
+            <thead className="border-b border-[var(--color-border)] bg-[var(--color-page-bg)]">
               <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Code</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Name</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Gender</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Joined</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Type</th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">Status</th>
+                <th className="text-left px-4 py-2.5 font-medium text-[var(--color-text-secondary)]">Employee</th>
+                <th className="text-left px-4 py-2.5 font-medium text-[var(--color-text-secondary)]">Code</th>
+                <th className="text-left px-4 py-2.5 font-medium text-[var(--color-text-secondary)]">Department</th>
+                <th className="text-left px-4 py-2.5 font-medium text-[var(--color-text-secondary)]">Location</th>
+                <th className="text-left px-4 py-2.5 font-medium text-[var(--color-text-secondary)]">Type</th>
+                <th className="text-left px-4 py-2.5 font-medium text-[var(--color-text-secondary)]">Joined</th>
+                <th className="text-left px-4 py-2.5 font-medium text-[var(--color-text-secondary)]">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
-              {employees?.length === 0 && (
-                <tr><td colSpan={6} className="px-4 py-6 text-center text-gray-400">No employees yet.</td></tr>
-              )}
-              {employees?.map(e => (
-                <tr key={e.id}>
-                  <td className="px-4 py-3 text-gray-500 font-mono">{e.employeeCode}</td>
-                  <td className="px-4 py-3 text-gray-900">{e.fullName}</td>
-                  <td className="px-4 py-3 text-gray-500">{e.gender}</td>
-                  <td className="px-4 py-3 text-gray-500">{e.dateOfJoining}</td>
-                  <td className="px-4 py-3 text-gray-500">{e.employmentType}</td>
+            <tbody className="divide-y divide-[var(--color-border)]">
+              {filtered.map(e => (
+                <tr
+                  key={e.id}
+                  onClick={() => navigate(`/employees/${e.id}`)}
+                  className="hover:bg-[var(--color-page-bg)] cursor-pointer transition-colors"
+                >
                   <td className="px-4 py-3">
-                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
-                      e.status === 'Active' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-600'
-                    }`}>{e.status}</span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-[var(--color-primary)]/10 flex items-center justify-center flex-shrink-0">
+                        <span className="text-[11px] font-semibold text-[var(--color-primary)]">
+                          {initials(e.fullName)}
+                        </span>
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-medium text-[var(--color-text-primary)]">{e.fullName}</span>
+                          {!e.profileComplete && (
+                            <span className="inline-flex items-center h-4 px-1.5 rounded-sm bg-amber-50 border border-amber-200 text-[10px] font-medium text-amber-700">
+                              Incomplete
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-[12px] text-[var(--color-text-secondary)]">{e.workEmail}</span>
+                      </div>
+                    </div>
                   </td>
+                  <td className="px-4 py-3 font-mono text-[12px] text-[var(--color-text-secondary)]">{e.employeeCode}</td>
+                  <td className="px-4 py-3 text-[var(--color-text-secondary)]">{e.departmentName ?? '—'}</td>
+                  <td className="px-4 py-3 text-[var(--color-text-secondary)]">{e.workLocationName ?? '—'}</td>
+                  <td className="px-4 py-3">{employmentTypeBadge(e.employmentType)}</td>
+                  <td className="px-4 py-3 text-[var(--color-text-secondary)]">
+                    {e.dateOfJoining.split('-').reverse().join('/')}
+                  </td>
+                  <td className="px-4 py-3">{statusBadge(e.status)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   )
 }

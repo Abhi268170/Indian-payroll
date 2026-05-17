@@ -1,0 +1,92 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "MailHog MailHog" [ref=e6] [cursor=pointer]:
+        - /url: "#"
+        - img "MailHog" [ref=e7]
+        - text: MailHog
+      - generic [ref=e8]:
+        - search [ref=e9]:
+          - generic [ref=e10]:
+            - generic: 
+            - textbox "Search" [ref=e11]
+        - list [ref=e12]:
+          - listitem [ref=e13]:
+            - link "GitHub GitHub" [ref=e14] [cursor=pointer]:
+              - /url: https://github.com/mailhog/MailHog
+              - img "GitHub" [ref=e15]
+              - text: GitHub
+  - generic [ref=e17]:
+    - generic [ref=e18]:
+      - list [ref=e19]:
+        - listitem [ref=e20]:
+          - link " Connected" [ref=e62] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e22]: 
+            - text: Connected
+        - listitem [ref=e23]:
+          - link "Inbox (2)" [ref=e24] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=e25]:
+          - link " Delete all messages" [ref=e26] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e27]: 
+            - text: Delete all messages
+      - generic [ref=e28]:
+        - heading "Jim" [level=3] [ref=e29]
+        - paragraph [ref=e30]:
+          - text: Jim is a chaos monkey.
+          - link "Find out more at GitHub" [ref=e31] [cursor=pointer]:
+            - /url: https://github.com/mailhog/MailHog/blob/master/docs/JIM.md
+          - text: .
+        - link "Enable Jim" [ref=e33] [cursor=pointer]:
+          - /url: "#"
+    - generic [ref=e34]:
+      - generic [ref=e63]:
+        - button "" [ref=e64] [cursor=pointer]:
+          - generic [ref=e65]: 
+        - button "" [ref=e66] [cursor=pointer]:
+          - generic [ref=e67]: 
+        - link "" [ref=e68] [cursor=pointer]:
+          - /url: api/v1/messages/dakaQ9epA8rrQBIQnsC_nf8ceNX5AjiO_o9LScq6VBk=@mailhog.example/download
+          - generic [ref=e69]: 
+        - button "" [ref=e70] [cursor=pointer]:
+          - generic [ref=e71]: 
+      - generic [ref=e72]:
+        - generic [ref=e73]:
+          - table [ref=e75]:
+            - rowgroup [ref=e76]:
+              - row "From noreply@payroll.local" [ref=e77]:
+                - rowheader "From" [ref=e78]
+                - cell "noreply@payroll.local" [ref=e79]
+              - row "Subject Reset Your Password — Indian Payroll" [ref=e80]:
+                - rowheader "Subject" [ref=e81]
+                - cell "Reset Your Password — Indian Payroll" [ref=e82]:
+                  - strong [ref=e83]: Reset Your Password — Indian Payroll
+              - row "To demoAdmin@yopmail.com" [ref=e84]:
+                - rowheader "To" [ref=e85]
+                - cell "demoAdmin@yopmail.com" [ref=e86]
+          - button "Show headers " [ref=e88] [cursor=pointer]:
+            - text: Show headers
+            - generic [ref=e89]: 
+        - generic [ref=e90]:
+          - list [ref=e91]:
+            - listitem [ref=e92]:
+              - link "HTML" [ref=e93]:
+                - /url: "#preview-html"
+            - listitem [ref=e94]:
+              - link "Plain text" [ref=e95] [cursor=pointer]:
+                - /url: "#preview-plain"
+            - listitem [ref=e96]:
+              - link "Source" [ref=e97] [cursor=pointer]:
+                - /url: "#preview-source"
+          - iframe [ref=e99]:
+            - generic [active] [ref=f2e1]:
+              - paragraph [ref=f2e2]:
+                - text: You requested a password reset for your
+                - strong [ref=f2e3]: Indian Payroll
+                - text: account.
+              - paragraph [ref=f2e4]:
+                - link "Reset your password" [ref=f2e5] [cursor=pointer]:
+                  - /url: http://localhost:5173/set-password?token=Q2ZESjhPbHZnV2M3S3pOS2x5clZTUEtIVndndngzMjY2aUQvUjR5bUlXNGJKc3JPSnRPQ0pzV1N3UHpvUkQ3V0VQN3NmMGxsR0h1WVBHelp6QlZMeFFlWkJENFArMnhwT3JXL2tOSEEwNWk3Qk02N2Zmbm5OcnkySytPNXZIWUdwc1lCRXNreCtQQnZCY3ZBcjJkYmhXZVR2eVFwcE5ycFpPR1ZPZndRNFVwUjdSaStYZDl3UUt4c0Q1QTlpM1dsWGF4UXFHWTdIcmpOWHFITGNpelRvdVlkTTJVdFVnWDZvZDFLbmxQV3g2dUhNVmFJ&email=demoAdmin%40yopmail.com
+              - paragraph [ref=f2e6]: This link expires in 1 hour. If you did not request this, ignore this email.

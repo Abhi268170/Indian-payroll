@@ -7,65 +7,220 @@ public sealed class Employee : AuditableEntity
 {
     private Employee() { }
 
+    // Basic
     public string FirstName { get; private set; } = string.Empty;
+    public string? MiddleName { get; private set; }
     public string LastName { get; private set; } = string.Empty;
     public string EmployeeCode { get; private set; } = string.Empty;
-    // Stored as AES-256 ciphertext — encryption handled by IEncryptionService in Infrastructure
-    public string EncryptedPAN { get; private set; } = string.Empty;
-    public string? EncryptedAadhaar { get; private set; }
-    public string? EncryptedBankAccount { get; private set; }
-    public string? EncryptedIFSC { get; private set; }
-    public string? UAN { get; private set; }
-    public string? ESICIPNumber { get; private set; }
-    public DateOnly DateOfBirth { get; private set; }
+    public string WorkEmail { get; private set; } = string.Empty;
+    public string? MobileNumber { get; private set; }
     public Gender Gender { get; private set; }
     public DateOnly DateOfJoining { get; private set; }
     public DateOnly? DateOfLeaving { get; private set; }
     public EmploymentType EmploymentType { get; private set; }
     public EmployeeStatus Status { get; private set; }
-    public IndianState WorkState { get; private set; }
-    public bool PFOptOut { get; private set; }
-    public bool IsPWD { get; private set; }
+    public bool IsDirector { get; private set; }
+    public bool EnablePortalAccess { get; private set; }
+    public bool ProfileComplete { get; private set; }
     public Guid TenantId { get; private set; }
+
+    // Org structure
     public Guid DepartmentId { get; private set; }
     public Guid DesignationId { get; private set; }
-    public Guid? BranchId { get; private set; }
+    public Guid WorkLocationId { get; private set; }
+    public Guid? BusinessUnitId { get; private set; }
     public Guid? CostCentreId { get; private set; }
 
-    public static Employee Create(
+    // Personal details
+    public DateOnly DateOfBirth { get; private set; }
+    public string? FathersName { get; private set; }
+    public string? PersonalEmail { get; private set; }
+    public DifferentlyAbledType DifferentlyAbledType { get; private set; }
+    public string? AddressLine1 { get; private set; }
+    public string? AddressLine2 { get; private set; }
+    public string? City { get; private set; }
+    public IndianState? ResidentialState { get; private set; }
+    public string? PinCode { get; private set; }
+
+    // Payment
+    public PaymentMode PaymentMode { get; private set; }
+    public string? AccountHolderName { get; private set; }
+    public string? BankName { get; private set; }
+    public AccountType? AccountType { get; private set; }
+    // Stored as AES-256 ciphertext — encryption handled by IEncryptionService in Infrastructure
+    public string? EncryptedPAN { get; private set; }
+    public string? EncryptedAadhaar { get; private set; }
+    public string? EncryptedBankAccount { get; private set; }
+    public string? EncryptedIFSC { get; private set; }
+
+    // Statutory
+    public string? UAN { get; private set; }
+    public string? ESICIPNumber { get; private set; }
+    public bool EpfEnabled { get; private set; } = true;
+    public bool EsiEnabled { get; private set; } = true;
+    public bool PtEnabled { get; private set; } = true;
+    public bool LwfEnabled { get; private set; } = true;
+    public bool IsPWD { get; private set; }
+
+    public string FullName => MiddleName is null
+        ? $"{FirstName} {LastName}"
+        : $"{FirstName} {MiddleName} {LastName}";
+
+    public static Employee CreateStep1(
         string firstName,
+        string? middleName,
         string lastName,
         string employeeCode,
-        string encryptedPAN,
-        DateOnly dateOfBirth,
+        string workEmail,
+        string? mobileNumber,
         Gender gender,
+        DateOnly dateOfJoining,
+        EmploymentType employmentType,
+        bool isDirector,
+        bool enablePortalAccess,
         Guid tenantId,
         Guid departmentId,
         Guid designationId,
-        DateOnly dateOfJoining,
-        IndianState workState,
-        EmploymentType employmentType,
-        Guid createdBy,
-        Guid? branchId = null,
-        Guid? costCentreId = null) => new()
+        Guid workLocationId,
+        Guid? businessUnitId,
+        Guid? costCentreId,
+        DateOnly dateOfBirth,
+        Guid createdBy) => new()
         {
             FirstName = firstName,
+            MiddleName = middleName,
             LastName = lastName,
             EmployeeCode = employeeCode,
-            EncryptedPAN = encryptedPAN,
-            DateOfBirth = dateOfBirth,
+            WorkEmail = workEmail,
+            MobileNumber = mobileNumber,
             Gender = gender,
+            DateOfJoining = dateOfJoining,
+            EmploymentType = employmentType,
+            IsDirector = isDirector,
+            EnablePortalAccess = enablePortalAccess,
+            Status = EmployeeStatus.Active,
+            ProfileComplete = false,
             TenantId = tenantId,
             DepartmentId = departmentId,
             DesignationId = designationId,
-            BranchId = branchId,
+            WorkLocationId = workLocationId,
+            BusinessUnitId = businessUnitId,
             CostCentreId = costCentreId,
-            DateOfJoining = dateOfJoining,
-            WorkState = workState,
-            EmploymentType = employmentType,
-            Status = EmployeeStatus.Active,
+            DateOfBirth = dateOfBirth,
+            DifferentlyAbledType = DifferentlyAbledType.None,
+            PaymentMode = PaymentMode.ManualBankTransfer,
             CreatedBy = createdBy
         };
 
-    public string FullName => $"{FirstName} {LastName}";
+    public void UpdateBasicDetails(
+        string firstName,
+        string? middleName,
+        string lastName,
+        string? mobileNumber,
+        Gender gender,
+        bool isDirector,
+        bool enablePortalAccess,
+        Guid departmentId,
+        Guid designationId,
+        Guid workLocationId,
+        Guid? businessUnitId,
+        Guid? costCentreId,
+        Guid updatedBy)
+    {
+        FirstName = firstName;
+        MiddleName = middleName;
+        LastName = lastName;
+        MobileNumber = mobileNumber;
+        Gender = gender;
+        IsDirector = isDirector;
+        EnablePortalAccess = enablePortalAccess;
+        DepartmentId = departmentId;
+        DesignationId = designationId;
+        WorkLocationId = workLocationId;
+        BusinessUnitId = businessUnitId;
+        CostCentreId = costCentreId;
+        SetUpdated(updatedBy);
+    }
+
+    public void UpdatePersonalDetails(
+        DateOnly dateOfBirth,
+        string? fathersName,
+        string? encryptedPAN,
+        string? personalEmail,
+        DifferentlyAbledType differentlyAbledType,
+        string? addressLine1,
+        string? addressLine2,
+        string? city,
+        IndianState? residentialState,
+        string? pinCode,
+        Guid updatedBy)
+    {
+        DateOfBirth = dateOfBirth;
+        FathersName = fathersName;
+        EncryptedPAN = encryptedPAN;
+        PersonalEmail = personalEmail;
+        DifferentlyAbledType = differentlyAbledType;
+        AddressLine1 = addressLine1;
+        AddressLine2 = addressLine2;
+        City = city;
+        ResidentialState = residentialState;
+        PinCode = pinCode;
+        SetUpdated(updatedBy);
+    }
+
+    public void UpdatePaymentInfo(
+        PaymentMode paymentMode,
+        string? accountHolderName,
+        string? bankName,
+        AccountType? accountType,
+        string? encryptedBankAccount,
+        string? encryptedIFSC,
+        Guid updatedBy)
+    {
+        PaymentMode = paymentMode;
+        AccountHolderName = accountHolderName;
+        BankName = bankName;
+        AccountType = accountType;
+        EncryptedBankAccount = encryptedBankAccount;
+        EncryptedIFSC = encryptedIFSC;
+        SetUpdated(updatedBy);
+    }
+
+    public void UpdateStatutoryDetails(
+        bool epfEnabled,
+        bool esiEnabled,
+        bool ptEnabled,
+        bool lwfEnabled,
+        string? uan,
+        string? esicipNumber,
+        Guid updatedBy)
+    {
+        EpfEnabled = epfEnabled;
+        EsiEnabled = esiEnabled;
+        PtEnabled = ptEnabled;
+        LwfEnabled = lwfEnabled;
+        UAN = uan;
+        ESICIPNumber = esicipNumber;
+        SetUpdated(updatedBy);
+    }
+
+    public void MarkProfileComplete(Guid updatedBy)
+    {
+        ProfileComplete = true;
+        SetUpdated(updatedBy);
+    }
+
+    public void MarkExited(DateOnly lastWorkingDay, Guid updatedBy)
+    {
+        Status = EmployeeStatus.Exited;
+        DateOfLeaving = lastWorkingDay;
+        SetUpdated(updatedBy);
+    }
+
+    public void RevertExit(Guid updatedBy)
+    {
+        Status = EmployeeStatus.Active;
+        DateOfLeaving = null;
+        SetUpdated(updatedBy);
+    }
 }

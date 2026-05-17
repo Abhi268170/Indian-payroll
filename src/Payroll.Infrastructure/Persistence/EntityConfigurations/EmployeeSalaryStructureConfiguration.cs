@@ -15,6 +15,12 @@ internal sealed class EmployeeSalaryStructureConfiguration : IEntityTypeConfigur
         builder.Property(e => e.CreatedAt).HasColumnType("timestamptz").IsRequired();
         builder.Property(e => e.UpdatedAt).HasColumnType("timestamptz");
         builder.Property(e => e.DeletedAt).HasColumnType("timestamptz");
+
+        builder.HasMany(e => e.ComponentOverrides)
+            .WithOne()
+            .HasForeignKey(o => o.EmployeeSalaryStructureId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         builder.HasIndex(e => new { e.EmployeeId, e.EffectiveFrom });
         builder.HasQueryFilter(e => !e.IsDeleted);
     }

@@ -4,7 +4,7 @@ public sealed record EmployeeInput(
     Guid EmployeeId,
     string EmployeeCode,
     string WorkStateCode,
-    bool PFOptOut,
+    bool EpfEnabled,
     bool IsESIExempt,
     bool IsPWD,
     decimal MonthlyCTC,

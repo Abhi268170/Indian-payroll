@@ -1,0 +1,127 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e7]: IP
+        - generic [ref=e8]: Indian Payroll
+      - navigation [ref=e9]:
+        - link "Settings" [ref=e10] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e11]
+          - text: Settings
+      - generic [ref=e14]:
+        - generic [ref=e15]:
+          - generic [ref=e17]: DE
+          - paragraph [ref=e18]: demoAdmin@yopmail.com
+        - button "Sign out" [ref=e19]:
+          - img [ref=e20]
+          - text: Sign out
+    - generic [ref=e23]:
+      - banner [ref=e24]:
+        - generic [ref=e25]:
+          - generic [ref=e26]: demo
+          - generic [ref=e27]: DE
+      - main [ref=e28]:
+        - generic [ref=e29]:
+          - generic [ref=e30]:
+            - generic [ref=e31]:
+              - generic [ref=e33]: IP
+              - generic [ref=e34]: Settings
+            - button "Close Settings" [ref=e35]:
+              - img [ref=e36]
+              - text: Close Settings
+          - generic [ref=e39]:
+            - navigation [ref=e40]:
+              - generic [ref=e41]:
+                - button "Org Structure" [ref=e42]:
+                  - generic [ref=e43]: Org Structure
+                  - img [ref=e44]
+                - list [ref=e46]:
+                  - listitem [ref=e47]:
+                    - link "Work Locations" [ref=e48] [cursor=pointer]:
+                      - /url: /settings/work-locations
+                  - listitem [ref=e49]:
+                    - link "Departments" [ref=e50] [cursor=pointer]:
+                      - /url: /settings/departments
+                  - listitem [ref=e51]:
+                    - link "Designations" [ref=e52] [cursor=pointer]:
+                      - /url: /settings/designations
+                  - listitem [ref=e53]:
+                    - link "Cost Centres" [ref=e54] [cursor=pointer]:
+                      - /url: /settings/cost-centres
+                  - listitem [ref=e55]:
+                    - link "Business Units" [ref=e56] [cursor=pointer]:
+                      - /url: /settings/business-units
+              - generic [ref=e57]:
+                - button "Setup & Configuration" [ref=e58]:
+                  - generic [ref=e59]: Setup & Configuration
+                  - img [ref=e60]
+                - list [ref=e62]:
+                  - listitem [ref=e63]:
+                    - link "Pay Schedule" [ref=e64] [cursor=pointer]:
+                      - /url: /settings/pay-schedule
+                  - listitem [ref=e65]:
+                    - link "Salary Components" [ref=e66] [cursor=pointer]:
+                      - /url: /settings/salary-components
+                  - listitem [ref=e67]:
+                    - link "Salary Structures" [ref=e68] [cursor=pointer]:
+                      - /url: /settings/salary-structures
+                  - listitem [ref=e69]:
+                    - link "Statutory Components" [ref=e70] [cursor=pointer]:
+                      - /url: /settings/statutory
+              - generic [ref=e71]:
+                - button "Taxes" [ref=e72]:
+                  - generic [ref=e73]: Taxes
+                  - img [ref=e74]
+                - list [ref=e76]:
+                  - listitem [ref=e77]:
+                    - link "Tax Details" [ref=e78] [cursor=pointer]:
+                      - /url: /settings/tax-details
+            - generic [ref=e171]:
+              - generic [ref=e172]:
+                - generic [ref=e173]:
+                  - heading "Tax Details" [level=1] [ref=e174]
+                  - paragraph [ref=e175]: TDS filing details for Form 24Q / Form 16 generation
+                - button "Edit" [ref=e176]:
+                  - img [ref=e177]
+                  - text: Edit
+              - generic [ref=e180]:
+                - generic [ref=e181]:
+                  - heading "Registration Numbers" [level=2] [ref=e182]
+                  - generic [ref=e183]:
+                    - generic [ref=e184]:
+                      - term [ref=e185]: PAN
+                      - definition [ref=e186]: AABCA1234Z
+                    - generic [ref=e187]:
+                      - term [ref=e188]: TAN (Tax Deduction Account Number)
+                      - definition [ref=e189]: MUMB12345A
+                - generic [ref=e190]:
+                  - heading "AO Code" [level=2] [ref=e191]
+                  - paragraph [ref=e192]: Assessing Officer code required for TDS returns. Available on your TAN allotment letter.
+                  - generic [ref=e193]:
+                    - generic [ref=e194]:
+                      - term [ref=e195]: Area Code
+                      - definition [ref=e196]: MUM
+                    - generic [ref=e197]:
+                      - term [ref=e198]: AO Type
+                      - definition [ref=e199]: C
+                    - generic [ref=e200]:
+                      - term [ref=e201]: Range Code
+                      - definition [ref=e202]: "3"
+                    - generic [ref=e203]:
+                      - term [ref=e204]: AO Number
+                      - definition [ref=e205]: "1"
+                - generic [ref=e206]:
+                  - heading "Deductor Details" [level=2] [ref=e207]
+                  - generic [ref=e208]:
+                    - generic [ref=e209]:
+                      - term [ref=e210]: Deductor Type
+                      - definition [ref=e211]: Company
+                    - generic [ref=e212]:
+                      - term [ref=e213]: Name of Deductor
+                      - definition [ref=e214]: Demo Corp Pvt Ltd
+  - generic [ref=e215]:
+    - img [ref=e217]
+    - paragraph [ref=e221]: Tax details saved
+    - button "Dismiss" [ref=e222]:
+      - img [ref=e223]

@@ -1,0 +1,133 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e1049]:
+      - navigation:
+        - generic [ref=e1051]:
+          - img "Zoho Payroll" [ref=e1052]
+          - generic [ref=e1053]: Payroll
+        - generic [ref=e1057]:
+          - button "Advanced Search" [ref=e1058] [cursor=pointer]:
+            - img [ref=e1059]
+          - textbox "Search in Employee" [ref=e1063]
+        - generic [ref=e1065]:
+          - generic [ref=e1068] [cursor=pointer]: Your trial expires in 12 day(s).
+          - button "Upgrade" [ref=e1070] [cursor=pointer]
+          - button "lerno" [ref=e1074] [cursor=pointer]:
+            - generic [ref=e1075]: lerno
+            - img [ref=e1076]
+          - button "Refer and Earn" [ref=e1080] [cursor=pointer]:
+            - img [ref=e1081]
+          - button "Notifications" [ref=e1085] [cursor=pointer]:
+            - img [ref=e1087]
+          - button "Settings" [ref=e1090] [cursor=pointer]:
+            - img [ref=e1091]
+          - button "abhijithss2255" [ref=e1096] [cursor=pointer]:
+            - img "abhijithss2255" [ref=e1098]
+          - img [ref=e1115] [cursor=pointer]
+    - generic [ref=e5]:
+      - complementary [ref=e1118]:
+        - navigation [ref=e1119]:
+          - generic [ref=e1120]:
+            - list [ref=e1121]:
+              - listitem [ref=e1122]:
+                - link "Dashboard" [ref=e1123] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e1124]
+                  - generic [ref=e1127]: Dashboard
+              - listitem [ref=e1128]:
+                - link "Employees" [ref=e1129] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e1130]
+                  - generic [ref=e1132]: Employees
+              - listitem [ref=e1133]:
+                - link "Pay Runs" [ref=e1134] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e1135]
+                  - generic [ref=e1138]: Pay Runs
+              - listitem [ref=e1139]:
+                - list [ref=e1140]:
+                  - listitem [ref=e1141]:
+                    - button "Approvals" [ref=e1143] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e1144]:
+                        - button "Approvals" [ref=e1145]:
+                          - img [ref=e1146]
+                          - img [ref=e1148]
+                          - generic [ref=e1151]: Approvals
+                          - img [ref=e1152]
+                    - list "Approvals":
+                      - listitem [ref=e1154]:
+                        - link "Reimbursements" [ref=e1155] [cursor=pointer]:
+                          - /url: "#/approvals/reimbursements"
+                      - listitem [ref=e1156]:
+                        - link "Proof Of Investments" [ref=e1157] [cursor=pointer]:
+                          - /url: "#/approvals/proof-of-investment"
+                      - listitem [ref=e1158]:
+                        - link "Salary Revision" [ref=e1159] [cursor=pointer]:
+                          - /url: "#/approvals/salary-revision"
+              - listitem [ref=e1160]:
+                - list [ref=e1161]:
+                  - listitem [ref=e1162]:
+                    - button "Taxes & Forms" [ref=e1164] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e1165]:
+                        - button "Taxes & Forms" [ref=e1166]:
+                          - img [ref=e1167]
+                          - img [ref=e1169]
+                          - generic [ref=e1174]: Taxes & Forms
+                          - img [ref=e1175]
+                    - list "Taxes & Forms":
+                      - listitem [ref=e1177]:
+                        - link "TDS Liabilities" [ref=e1178] [cursor=pointer]:
+                          - /url: "#/taxes-and-forms/tax-liabilities/pending"
+                      - listitem [ref=e1179]:
+                        - link "Challans" [ref=e1180] [cursor=pointer]:
+                          - /url: "#/taxes-and-forms/tax-payments/unassociated"
+                      - listitem [ref=e1181]:
+                        - link "Form 24Q" [ref=e1182] [cursor=pointer]:
+                          - /url: "#/taxes-and-forms/form24q"
+                      - listitem [ref=e1183]:
+                        - link "Form 16" [ref=e1184] [cursor=pointer]:
+                          - /url: "#/taxes-and-forms/form16"
+              - listitem [ref=e1185]:
+                - link "Loans" [ref=e1186] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e1187]
+                  - generic [ref=e1190]: Loans
+              - listitem [ref=e1191]:
+                - link "Giving" [ref=e1192] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e1193]
+                  - generic [ref=e1195]: Giving
+              - listitem
+              - listitem [ref=e1196]:
+                - link "Documents" [ref=e1197] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e1198]
+                  - generic [ref=e1200]: Documents
+              - listitem [ref=e1201]:
+                - link "Reports" [ref=e1202] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e1203]
+                  - generic [ref=e1206]: Reports
+              - listitem [ref=e1207]:
+                - link "Settings" [ref=e1208] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e1209]
+                  - generic [ref=e1212]: Settings
+            - link "Contact Support" [ref=e1216] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e1217]
+          - button "Collapse/Expand" [ref=e1219] [cursor=pointer]:
+            - img [ref=e1220]
+      - main [ref=e1223]:
+        - generic [ref=e1224]:
+          - heading " Page not found" [level=2] [ref=e1225]:
+            - generic [ref=e1226]: 
+            - text: Page not found
+          - paragraph [ref=e1227]: Sorry we could not find the page you are requesting
+  - status [ref=e259]: page loaded.

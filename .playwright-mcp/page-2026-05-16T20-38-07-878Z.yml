@@ -1,0 +1,219 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e7]:
+      - generic [ref=e9]:
+        - generic [ref=e10]:
+          - button "All Settings" [ref=e11] [cursor=pointer]:
+            - img [ref=e12]
+          - button [ref=e17] [cursor=pointer]:
+            - img [ref=e18]
+          - generic [ref=e20]:
+            - generic [ref=e21]: All Settings
+            - generic [ref=e22]: lerno
+        - generic [ref=e24]:
+          - combobox "Search" [ref=e28]
+          - img [ref=e29]
+        - button "Close Settings" [ref=e33] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e34]
+      - generic [ref=e36]:
+        - navigation [ref=e37]:
+          - generic [ref=e39]:
+            - group [ref=e40]:
+              - heading "Organisation Settings" [level=2] [ref=e41]
+              - generic [ref=e42]:
+                - region "Organisation" [ref=e44]:
+                  - generic [ref=e45]:
+                    - heading "Organisation" [level=3] [ref=e46] [cursor=pointer]:
+                      - button "Organisation" [ref=e47]:
+                        - img [ref=e48]
+                        - generic [ref=e50]: Organisation
+                    - text:      
+                - generic [ref=e64]:
+                  - region "Users and Roles" [ref=e65]:
+                    - generic [ref=e66]:
+                      - heading "Users and Roles" [level=3] [ref=e67] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e68]:
+                          - img [ref=e69]
+                          - generic [ref=e71]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e77]:
+                    - generic [ref=e78]:
+                      - heading "Taxes" [level=3] [ref=e79] [cursor=pointer]:
+                        - button "Taxes" [ref=e80]:
+                          - img [ref=e81]
+                          - generic [ref=e83]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e88]:
+                  - generic [ref=e89]:
+                    - heading "Setup & Configurations" [level=3] [ref=e90] [cursor=pointer]:
+                      - button "Setup & Configurations" [expanded] [ref=e91]:
+                        - img [ref=e289]
+                        - generic [ref=e94]: Setup & Configurations
+                    - region "Setup & Configurations" [ref=e95]:
+                      - generic [ref=e96]:
+                        - link "Pay Schedule" [ref=e97] [cursor=pointer]:
+                          - /url: "#/settings/pay-schedules"
+                          - generic [ref=e98]: Pay Schedule
+                          - text: 
+                        - link "Statutory Components" [ref=e99] [cursor=pointer]:
+                          - /url: "#/settings/statutory-details/list"
+                          - generic [ref=e100]: Statutory Components
+                          - text: 
+                        - link "Salary Components" [ref=e101] [cursor=pointer]:
+                          - /url: "#/settings/salary-components/earnings"
+                          - generic [ref=e102]: Salary Components
+                          - text: 
+                        - link "Employee Portal" [ref=e103] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences"
+                          - generic [ref=e104]: Employee Portal
+                          - text: 
+                        - link "Claims and Declarations" [ref=e105] [cursor=pointer]:
+                          - /url: "#/settings/preferences/fbp"
+                          - generic [ref=e106]: Claims and Declarations
+                          - text: 
+                - region "Customisations" [ref=e108]:
+                  - generic [ref=e109]:
+                    - heading "Customisations" [level=3] [ref=e110] [cursor=pointer]:
+                      - button "Customisations" [ref=e111]:
+                        - img [ref=e112]
+                        - generic [ref=e114]: Customisations
+                    - text:     
+                - region "Automations" [ref=e127]:
+                  - generic [ref=e128]:
+                    - heading "Automations" [level=3] [ref=e129] [cursor=pointer]:
+                      - button "Automations" [ref=e130]:
+                        - img [ref=e131]
+                        - generic [ref=e133]: Automations
+                    - text:    
+            - group [ref=e143]:
+              - heading "Module Settings" [level=2] [ref=e144]
+              - generic [ref=e145]:
+                - region "General" [ref=e147]:
+                  - generic [ref=e148]:
+                    - heading "General" [level=3] [ref=e149] [cursor=pointer]:
+                      - button "General" [ref=e150]:
+                        - img [ref=e151]
+                        - generic [ref=e153]: General
+                    - text:     
+                - region "Payments" [ref=e166]:
+                  - generic [ref=e167]:
+                    - heading "Payments" [level=3] [ref=e168] [cursor=pointer]:
+                      - button "Payments" [ref=e169]:
+                        - img [ref=e170]
+                        - generic [ref=e172]: Payments
+                    - text: 
+            - group [ref=e176]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e177]
+              - generic [ref=e178]:
+                - region "Integrations" [ref=e180]:
+                  - generic [ref=e181]:
+                    - heading "Integrations" [level=3] [ref=e182] [cursor=pointer]:
+                      - button "Integrations" [ref=e183]:
+                        - img [ref=e184]
+                        - generic [ref=e186]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e191]:
+                  - generic [ref=e192]:
+                    - heading "Developer Data" [level=3] [ref=e193] [cursor=pointer]:
+                      - button "Developer Data" [ref=e194]:
+                        - img [ref=e195]
+                        - generic [ref=e197]: Developer Data
+                    - text:   
+        - main [ref=e262]:
+          - generic [ref=e317]:
+            - heading "New Earning" [level=3] [ref=e318]
+            - generic [ref=e319]:
+              - button "Page Tips" [ref=e320] [cursor=pointer]:
+                - img [ref=e321]
+                - text: Page Tips
+              - link "Close" [ref=e323] [cursor=pointer]:
+                - /url: "#/settings/salary-components/earnings"
+                - img [ref=e324]
+          - generic [ref=e329]:
+            - generic [ref=e331]:
+              - generic [ref=e332]:
+                - generic [ref=e333]: Earning Type *
+                - generic [ref=e334]:
+                  - generic [ref=e337]:
+                    - combobox [ref=e339]:
+                      - generic [ref=e340] [cursor=pointer]:
+                        - generic "Basic" [ref=e501]
+                        - img [ref=e502]
+                    - status [ref=e346]
+                  - generic [ref=e505]:
+                    - img [ref=e506]
+                    - generic [ref=e509]: Fixed amount paid at the end of every month.
+              - separator [ref=e510]
+              - generic [ref=e511]:
+                - generic [ref=e512]:
+                  - generic [ref=e513]:
+                    - generic [ref=e516]: Earning Name*
+                    - textbox "Earning Name*" [active] [ref=e518]
+                  - generic [ref=e519]:
+                    - generic [ref=e522]: Name in Payslip*
+                    - textbox "Name in Payslip*" [ref=e524]
+                  - radiogroup "Calculation Type*" [ref=e526]:
+                    - heading "Calculation Type*" [level=5] [ref=e528]
+                    - generic [ref=e529]:
+                      - radio "Flat Amount" [checked] [ref=e530] [cursor=pointer]
+                      - generic [ref=e531] [cursor=pointer]: Flat Amount
+                    - generic [ref=e532]:
+                      - radio "Percentage of CTC" [ref=e533] [cursor=pointer]
+                      - generic [ref=e534] [cursor=pointer]: Percentage of CTC
+                  - generic [ref=e535]:
+                    - generic [ref=e536]: Enter Amount
+                    - generic [ref=e538]:
+                      - generic [ref=e540]: ₹
+                      - spinbutton [ref=e541]: "0"
+                  - generic [ref=e544] [cursor=pointer]:
+                    - checkbox "Mark this as Active" [ref=e545]
+                    - text: Mark this as Active
+                - generic [ref=e546]:
+                  - heading "Other Configurations" [level=4] [ref=e547]
+                  - generic [ref=e550] [cursor=pointer]:
+                    - checkbox "Make this earning a part of the employee’s salary structure" [checked] [disabled] [ref=e551]
+                    - text: Make this earning a part of the employee’s salary structure
+                  - generic [ref=e553]:
+                    - generic [ref=e554] [cursor=pointer]:
+                      - checkbox "This is a taxable earning" [checked] [disabled] [ref=e555]
+                      - text: This is a taxable earning
+                    - generic [ref=e556]: The income tax amount will be divided equally and deducted every month across the financial year.
+                  - generic [ref=e558]:
+                    - generic [ref=e559] [cursor=pointer]:
+                      - checkbox "Calculate on pro-rata basis" [checked] [disabled] [ref=e560]
+                      - text: Calculate on pro-rata basis
+                    - generic [ref=e561]: Pay will be adjusted based on employee working days.
+                  - generic [ref=e564] [cursor=pointer]:
+                    - checkbox "Consider for EPF Contribution" [checked] [disabled] [ref=e565]
+                    - text: Consider for EPF Contribution
+                  - radiogroup [ref=e566]:
+                    - generic [ref=e567]:
+                      - generic [ref=e568]:
+                        - radio "Always" [checked] [disabled] [ref=e569]
+                        - generic [ref=e570]: Always
+                      - generic [ref=e571]:
+                        - radio "Only when PF Wage is less than ₹ 15,000" [disabled] [ref=e572]
+                        - generic [ref=e573]:
+                          - text: Only when PF Wage is less than ₹ 15,000
+                          - img [ref=e576]
+                  - generic [ref=e580] [cursor=pointer]:
+                    - checkbox "Consider for ESI Contribution" [checked] [disabled] [ref=e581]
+                    - text: Consider for ESI Contribution
+                  - generic [ref=e584] [cursor=pointer]:
+                    - checkbox "Show this component in payslip" [checked] [disabled] [ref=e585]
+                    - text: Show this component in payslip
+              - generic [ref=e588]: "Note: Once you associate this component with an employee, you will only be able to edit the Name and Amount/Percentage. The changes you make to Amount/Percentage will apply only to new employees."
+            - separator [ref=e347]
+            - generic [ref=e348]:
+              - button "Save" [ref=e349] [cursor=pointer]
+              - link "Cancel" [ref=e350] [cursor=pointer]:
+                - /url: "#/settings/salary-components/earnings"
+              - paragraph [ref=e352]: "* indicates mandatory fields"
+    - dialog [ref=e353]
+  - status [ref=e259]: Settings Earnings page loaded.

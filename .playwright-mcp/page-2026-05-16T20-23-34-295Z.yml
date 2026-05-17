@@ -1,0 +1,5 @@
+- generic [ref=e4]:
+  - paragraph [ref=e14]: Password set successfully.
+  - paragraph [ref=e15]: You can now log in with your new password.
+  - link "Go to login" [ref=e16] [cursor=pointer]:
+    - /url: /login

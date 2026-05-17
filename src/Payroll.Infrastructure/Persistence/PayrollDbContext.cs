@@ -18,6 +18,23 @@ public sealed class PayrollDbContext(
     public DbSet<BusinessUnit> BusinessUnits => Set<BusinessUnit>();
     public DbSet<OrgProfile> OrgProfiles => Set<OrgProfile>();
     public DbSet<PaySchedule> PaySchedules => Set<PaySchedule>();
+    public DbSet<SalaryComponent> SalaryComponents => Set<SalaryComponent>();
+    public DbSet<SalaryStructureTemplate> SalaryStructureTemplates => Set<SalaryStructureTemplate>();
+    public DbSet<SalaryStructureComponent> SalaryStructureComponents => Set<SalaryStructureComponent>();
+    public DbSet<StatutoryToggle> StatutoryToggles => Set<StatutoryToggle>();
+    public DbSet<StatutoryOrgConfig> StatutoryOrgConfigs => Set<StatutoryOrgConfig>();
+    public DbSet<ProfessionalTaxSlab> ProfessionalTaxSlabs => Set<ProfessionalTaxSlab>();
+    public DbSet<LwfStateConfig> LwfStateConfigs => Set<LwfStateConfig>();
+    public DbSet<IncomeTaxSlab> IncomeTaxSlabs => Set<IncomeTaxSlab>();
+    public DbSet<IncomeTaxSurchargeSlab> IncomeTaxSurchargeSlabs => Set<IncomeTaxSurchargeSlab>();
+    public DbSet<IncomeTaxConfig> IncomeTaxConfigs => Set<IncomeTaxConfig>();
+    public DbSet<Employee> Employees => Set<Employee>();
+    public DbSet<EmployeeSalaryStructure> EmployeeSalaryStructures => Set<EmployeeSalaryStructure>();
+    public DbSet<EmployeeSalaryComponentOverride> EmployeeSalaryComponentOverrides => Set<EmployeeSalaryComponentOverride>();
+    public DbSet<EmployeeExit> EmployeeExits => Set<EmployeeExit>();
+    public DbSet<SalaryRevision> SalaryRevisions => Set<SalaryRevision>();
+    public DbSet<EmployeeVehicleDetail> EmployeeVehicleDetails => Set<EmployeeVehicleDetail>();
+    public DbSet<PriorEmployerYtd> PriorEmployerYtds => Set<PriorEmployerYtd>();
 
     // Exposed for TenantModelCacheKeyFactory which lives in EF Core's internal SP
     // and cannot use constructor injection of ITenantContext.
@@ -40,5 +57,22 @@ public sealed class PayrollDbContext(
         modelBuilder.ApplyConfiguration(new BusinessUnitConfiguration());
         modelBuilder.ApplyConfiguration(new OrgProfileConfiguration());
         modelBuilder.ApplyConfiguration(new PayScheduleConfiguration());
+        modelBuilder.ApplyConfiguration(new SalaryComponentConfiguration());
+        modelBuilder.ApplyConfiguration(new SalaryStructureTemplateConfiguration());
+        modelBuilder.ApplyConfiguration(new SalaryStructureComponentConfiguration());
+        modelBuilder.ApplyConfiguration(new StatutoryToggleConfiguration());
+        modelBuilder.ApplyConfiguration(new StatutoryOrgConfigConfiguration());
+        modelBuilder.ApplyConfiguration(new ProfessionalTaxSlabConfiguration());
+        modelBuilder.ApplyConfiguration(new LwfStateConfigConfiguration());
+        modelBuilder.ApplyConfiguration(new IncomeTaxSlabConfiguration());
+        modelBuilder.ApplyConfiguration(new IncomeTaxSurchargeSlabConfiguration());
+        modelBuilder.ApplyConfiguration(new IncomeTaxConfigConfiguration());
+        modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
+        modelBuilder.ApplyConfiguration(new EmployeeSalaryStructureConfiguration());
+        modelBuilder.ApplyConfiguration(new EmployeeSalaryComponentOverrideConfiguration());
+        modelBuilder.ApplyConfiguration(new EmployeeExitConfiguration());
+        modelBuilder.ApplyConfiguration(new SalaryRevisionConfiguration());
+        modelBuilder.ApplyConfiguration(new EmployeeVehicleDetailConfiguration());
+        modelBuilder.ApplyConfiguration(new PriorEmployerYtdConfiguration());
     }
 }

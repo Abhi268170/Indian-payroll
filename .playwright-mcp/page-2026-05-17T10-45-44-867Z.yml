@@ -1,0 +1,175 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "People" [ref=e10] [cursor=pointer]:
+        - /url: /employees
+        - img [ref=e11]
+        - text: People
+      - link "Settings" [ref=e16] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e17]
+        - text: Settings
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e23]: DE
+        - paragraph [ref=e24]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e25]:
+        - img [ref=e26]
+        - text: Sign out
+  - generic [ref=e29]:
+    - banner [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]: demo
+        - generic [ref=e33]: DE
+    - main [ref=e34]:
+      - generic [ref=e211]:
+        - button "Employees" [ref=e212]:
+          - img [ref=e213]
+          - text: Employees
+        - generic [ref=e216]:
+          - generic [ref=e218]: PS
+          - generic [ref=e219]:
+            - generic [ref=e220]:
+              - heading "EMP002 — Priya Sharma" [level=1] [ref=e221]
+              - generic [ref=e222]: Active
+              - generic [ref=e223]:
+                - img [ref=e224]
+                - text: Profile Incomplete
+            - paragraph [ref=e226]: Senior Software Engineer
+            - generic [ref=e227]:
+              - generic [ref=e228]: priya.sharma@acme.com
+              - generic [ref=e229]: "9876500001"
+              - generic [ref=e230]: Joined 01/05/2026
+              - generic [ref=e231]: Engineering
+        - generic [ref=e232]:
+          - button "Overview" [ref=e233]
+          - button "Salary Details" [ref=e234]
+          - button "Investments" [ref=e235]
+          - button "Payslips & Forms" [ref=e236]
+        - generic [ref=e238]:
+          - generic [ref=e239]:
+            - generic [ref=e240]:
+              - heading "Basic Information" [level=3] [ref=e241]
+              - button "Edit" [ref=e242]:
+                - img [ref=e243]
+                - text: Edit
+            - generic [ref=e246]:
+              - generic [ref=e247]:
+                - paragraph [ref=e248]: Full Name
+                - paragraph [ref=e249]: Priya Sharma
+              - generic [ref=e250]:
+                - paragraph [ref=e251]: Work Email
+                - paragraph [ref=e252]: priya.sharma@acme.com
+              - generic [ref=e253]:
+                - paragraph [ref=e254]: Mobile Number
+                - paragraph [ref=e255]: "9876500001"
+              - generic [ref=e256]:
+                - paragraph [ref=e257]: Gender
+                - paragraph [ref=e258]: Female
+              - generic [ref=e259]:
+                - paragraph [ref=e260]: Date of Joining
+                - paragraph [ref=e261]: 01/05/2026
+              - generic [ref=e262]:
+                - paragraph [ref=e263]: Employment Type
+                - paragraph [ref=e264]: Full Time
+              - generic [ref=e265]:
+                - paragraph [ref=e266]: Department
+                - paragraph [ref=e267]: Engineering
+              - generic [ref=e268]:
+                - paragraph [ref=e269]: Designation
+                - paragraph [ref=e270]: Senior Software Engineer
+              - generic [ref=e271]:
+                - paragraph [ref=e272]: Work Location
+                - paragraph [ref=e273]: Mumbai Head Office
+              - generic [ref=e274]:
+                - paragraph [ref=e275]: Director
+                - paragraph [ref=e276]: "No"
+              - generic [ref=e277]:
+                - paragraph [ref=e278]: Portal Access
+                - paragraph [ref=e279]: "Yes"
+          - generic [ref=e280]:
+            - generic [ref=e281]:
+              - heading "Personal Information" [level=3] [ref=e282]
+              - button "Edit" [ref=e283]:
+                - img [ref=e284]
+                - text: Edit
+            - generic [ref=e287]:
+              - generic [ref=e288]:
+                - paragraph [ref=e289]: Date of Birth
+                - paragraph [ref=e290]: 15/08/1995
+              - generic [ref=e291]:
+                - paragraph [ref=e292]: Father's Name
+                - paragraph [ref=e293]: Rajesh Sharma
+              - generic [ref=e294]:
+                - paragraph [ref=e295]: PAN
+                - paragraph [ref=e296]: XXXXX234F
+              - generic [ref=e297]:
+                - paragraph [ref=e298]: Personal Email
+                - paragraph [ref=e299]: priya.sharma.personal@gmail.com
+              - generic [ref=e300]:
+                - paragraph [ref=e301]: Differently Abled
+                - paragraph [ref=e302]: None
+              - generic [ref=e303]:
+                - paragraph [ref=e304]: Address
+                - paragraph [ref=e305]: 42, Lotus Apartment, MG Road, Koramangala
+              - generic [ref=e306]:
+                - paragraph [ref=e307]: City
+                - paragraph [ref=e308]: Bengaluru
+              - generic [ref=e309]:
+                - paragraph [ref=e310]: State
+                - paragraph [ref=e311]: Karnataka
+              - generic [ref=e312]:
+                - paragraph [ref=e313]: PIN Code
+                - paragraph [ref=e314]: "560034"
+          - generic [ref=e315]:
+            - generic [ref=e316]:
+              - heading "Statutory Information" [level=3] [ref=e317]
+              - button "Edit" [ref=e318]:
+                - img [ref=e319]
+                - text: Edit
+            - generic [ref=e322]:
+              - generic [ref=e323]:
+                - generic [ref=e324]:
+                  - generic [ref=e325]: Employee Provident Fund (EPF)
+                  - generic [ref=e326]: Enabled
+                - generic [ref=e327]:
+                  - generic [ref=e328]: Employee State Insurance (ESI)
+                  - generic [ref=e329]: Enabled
+                - generic [ref=e330]:
+                  - generic [ref=e331]: Professional Tax (PT)
+                  - generic [ref=e332]: Enabled
+                - generic [ref=e333]:
+                  - generic [ref=e334]: Labour Welfare Fund (LWF)
+                  - generic [ref=e335]: Enabled
+              - generic [ref=e336]:
+                - generic [ref=e337]:
+                  - paragraph [ref=e338]: UAN
+                  - paragraph [ref=e339]: —
+                - generic [ref=e340]:
+                  - paragraph [ref=e341]: ESIC IP Number
+                  - paragraph [ref=e342]: —
+          - generic [ref=e343]:
+            - generic [ref=e344]:
+              - heading "Payment Information" [level=3] [ref=e345]
+              - button "Edit" [ref=e346]:
+                - img [ref=e347]
+                - text: Edit
+            - generic [ref=e350]:
+              - generic [ref=e351]:
+                - paragraph [ref=e352]: Payment Mode
+                - paragraph [ref=e353]: Direct Deposit (NEFT/RTGS)
+              - generic [ref=e354]:
+                - paragraph [ref=e355]: Account Holder Name
+                - paragraph [ref=e356]: Priya Sharma
+              - generic [ref=e357]:
+                - paragraph [ref=e358]: Bank Name
+                - paragraph [ref=e359]: HDFC Bank
+              - generic [ref=e360]:
+                - paragraph [ref=e361]: Account Type
+                - paragraph [ref=e362]: Savings
+              - generic [ref=e363]:
+                - paragraph [ref=e364]: Account Number
+                - paragraph [ref=e365]: XXXX6789

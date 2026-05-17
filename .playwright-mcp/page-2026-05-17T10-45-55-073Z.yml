@@ -1,0 +1,91 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "People" [ref=e10] [cursor=pointer]:
+        - /url: /employees
+        - img [ref=e11]
+        - text: People
+      - link "Settings" [ref=e16] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e17]
+        - text: Settings
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e23]: DE
+        - paragraph [ref=e24]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e25]:
+        - img [ref=e26]
+        - text: Sign out
+  - generic [ref=e29]:
+    - banner [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]: demo
+        - generic [ref=e33]: DE
+    - main [ref=e34]:
+      - generic [ref=e211]:
+        - button "Employees" [ref=e212]:
+          - img [ref=e213]
+          - text: Employees
+        - generic [ref=e216]:
+          - generic [ref=e218]: PS
+          - generic [ref=e219]:
+            - generic [ref=e220]:
+              - heading "EMP002 — Priya Sharma" [level=1] [ref=e221]
+              - generic [ref=e222]: Active
+              - generic [ref=e223]:
+                - img [ref=e224]
+                - text: Profile Incomplete
+            - paragraph [ref=e226]: Senior Software Engineer
+            - generic [ref=e227]:
+              - generic [ref=e228]: priya.sharma@acme.com
+              - generic [ref=e229]: "9876500001"
+              - generic [ref=e230]: Joined 01/05/2026
+              - generic [ref=e231]: Engineering
+        - generic [ref=e232]:
+          - button "Overview" [ref=e233]
+          - button "Salary Details" [active] [ref=e234]
+          - button "Investments" [ref=e235]
+          - button "Payslips & Forms" [ref=e236]
+        - generic [ref=e366]:
+          - generic [ref=e368]:
+            - generic [ref=e369]:
+              - paragraph [ref=e370]: Annual CTC
+              - paragraph [ref=e371]: ₹8,40,000.00
+              - paragraph [ref=e372]: ₹70,000.00 per month
+            - generic [ref=e373]:
+              - paragraph [ref=e374]: "Template: Standard CTC Structure"
+              - paragraph [ref=e375]: Effective 17/05/2026
+              - button "Revise" [ref=e376]
+          - generic [ref=e377]:
+            - heading "Salary Structure" [level=3] [ref=e379]
+            - table [ref=e380]:
+              - rowgroup [ref=e381]:
+                - row "Component Calculation Monthly Annual" [ref=e382]:
+                  - columnheader "Component" [ref=e383]
+                  - columnheader "Calculation" [ref=e384]
+                  - columnheader "Monthly" [ref=e385]
+                  - columnheader "Annual" [ref=e386]
+              - rowgroup [ref=e387]:
+                - row "Basic Salary 40% of CTC ₹28,000.00 ₹3,36,000.00" [ref=e388]:
+                  - cell "Basic Salary" [ref=e389]
+                  - cell "40% of CTC" [ref=e390]
+                  - cell "₹28,000.00" [ref=e391]
+                  - cell "₹3,36,000.00" [ref=e392]
+                - row "House Rent Allowance 20% of CTC ₹14,000.00 ₹1,68,000.00" [ref=e393]:
+                  - cell "House Rent Allowance" [ref=e394]
+                  - cell "20% of CTC" [ref=e395]
+                  - cell "₹14,000.00" [ref=e396]
+                  - cell "₹1,68,000.00" [ref=e397]
+                - row "Fixed Allowance Residual (Fixed Allowance) ₹28,000.00 ₹3,36,000.00" [ref=e398]:
+                  - cell "Fixed Allowance" [ref=e399]
+                  - cell "Residual (Fixed Allowance)" [ref=e400]
+                  - cell "₹28,000.00" [ref=e401]
+                  - cell "₹3,36,000.00" [ref=e402]
+              - rowgroup [ref=e403]:
+                - row "Cost to Company ₹70,000.00 ₹8,40,000.00" [ref=e404]:
+                  - cell "Cost to Company" [ref=e405]
+                  - cell "₹70,000.00" [ref=e406]
+                  - cell "₹8,40,000.00" [ref=e407]

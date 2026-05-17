@@ -18,5 +18,17 @@ export default defineConfig({
       // polling required for Docker volume mounts on WSL2
       usePolling: true,
     },
+    proxy: {
+      '/connect': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        headers: { Host: 'demo.localhost' },
+      },
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        headers: { Host: 'demo.localhost' },
+      },
+    },
   },
 })

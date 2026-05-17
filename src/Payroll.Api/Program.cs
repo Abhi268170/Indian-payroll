@@ -166,9 +166,9 @@ using (IServiceScope scope = app.Services.CreateScope())
     // existing tenants need this on every startup after a new migration is added.
     Payroll.Domain.Interfaces.ITenantSchemaProvisioner provisioner =
         scope.ServiceProvider.GetRequiredService<Payroll.Domain.Interfaces.ITenantSchemaProvisioner>();
-    List<string> schemas = await db.Tenants.Select(t => t.Schema).ToListAsync();
-    foreach (string schema in schemas)
-        await provisioner.ProvisionAsync(schema);
+    List<(string Schema, Guid Id)> tenants = await db.Tenants.Select(t => new ValueTuple<string, Guid>(t.Schema, t.Id)).ToListAsync();
+    foreach ((string schema, Guid id) in tenants)
+        await provisioner.ProvisionAsync(schema, id);
 }
 
 app.UseSerilogRequestLogging();

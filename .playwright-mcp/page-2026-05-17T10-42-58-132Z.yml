@@ -1,0 +1,104 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "People" [ref=e10] [cursor=pointer]:
+        - /url: /employees
+        - img [ref=e11]
+        - text: People
+      - link "Settings" [ref=e16] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e17]
+        - text: Settings
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e23]: DE
+        - paragraph [ref=e24]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e25]:
+        - img [ref=e26]
+        - text: Sign out
+  - generic [ref=e29]:
+    - banner [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]: demo
+        - generic [ref=e33]: DE
+    - main [ref=e34]:
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - heading "Add Employee" [level=1] [ref=e37]
+          - paragraph [ref=e38]: Complete all steps or skip individual sections — you can fill details from the employee profile later.
+        - generic [ref=e39]:
+          - generic [ref=e41]:
+            - img [ref=e43]
+            - generic [ref=e45]: Basic Details
+          - generic [ref=e48]:
+            - generic [ref=e49]: "2"
+            - generic [ref=e50]: Salary Details
+          - generic [ref=e53]:
+            - generic [ref=e54]: "3"
+            - generic [ref=e55]: Personal Details
+          - generic [ref=e58]:
+            - generic [ref=e59]: "4"
+            - generic [ref=e60]: Payment Information
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - heading "Statutory Components" [level=3] [ref=e64]
+            - generic [ref=e65]:
+              - generic [ref=e66] [cursor=pointer]:
+                - checkbox "Employee Provident Fund (EPF)" [checked] [ref=e67]
+                - generic [ref=e68]: Employee Provident Fund (EPF)
+              - generic [ref=e69] [cursor=pointer]:
+                - checkbox "Employee State Insurance (ESI)" [checked] [ref=e70]
+                - generic [ref=e71]: Employee State Insurance (ESI)
+              - generic [ref=e72] [cursor=pointer]:
+                - checkbox "Professional Tax (PT)" [checked] [ref=e73]
+                - generic [ref=e74]: Professional Tax (PT)
+              - generic [ref=e75] [cursor=pointer]:
+                - checkbox "Labour Welfare Fund (LWF)" [checked] [ref=e76]
+                - generic [ref=e77]: Labour Welfare Fund (LWF)
+          - generic [ref=e78]:
+            - heading "Salary Structure" [level=3] [ref=e79]
+            - generic [ref=e80]:
+              - generic [ref=e81]:
+                - generic [ref=e82]: Annual CTC (₹) *
+                - spinbutton [ref=e83]: "840000"
+                - paragraph [ref=e90]: "Monthly: ₹70,000.00"
+              - generic [ref=e84]:
+                - generic [ref=e85]: Salary Template
+                - combobox [ref=e86]:
+                  - option "No template"
+                  - option "Standard CTC Structure" [selected]
+            - table [ref=e92]:
+              - rowgroup [ref=e93]:
+                - row "Component Calculation Monthly Annual" [ref=e94]:
+                  - columnheader "Component" [ref=e95]
+                  - columnheader "Calculation" [ref=e96]
+                  - columnheader "Monthly" [ref=e97]
+                  - columnheader "Annual" [ref=e98]
+              - rowgroup [ref=e99]:
+                - row "Basic Salary 40% of CTC ₹28,000.00 ₹3,36,000.00" [ref=e100]:
+                  - cell "Basic Salary" [ref=e101]
+                  - cell "40% of CTC" [ref=e102]
+                  - cell "₹28,000.00" [ref=e103]
+                  - cell "₹3,36,000.00" [ref=e104]
+                - row "House Rent Allowance 20% of CTC ₹14,000.00 ₹1,68,000.00" [ref=e105]:
+                  - cell "House Rent Allowance" [ref=e106]
+                  - cell "20% of CTC" [ref=e107]
+                  - cell "₹14,000.00" [ref=e108]
+                  - cell "₹1,68,000.00" [ref=e109]
+                - row "Fixed Allowance Fixed Allowance (residual) ₹28,000.00 ₹3,36,000.00" [ref=e110]:
+                  - cell "Fixed Allowance" [ref=e111]
+                  - cell "Fixed Allowance (residual)" [ref=e112]
+                  - cell "₹28,000.00" [ref=e113]
+                  - cell "₹3,36,000.00" [ref=e114]
+              - rowgroup [ref=e115]:
+                - row "Cost to Company ₹70,000.00 ₹8,40,000.00" [ref=e116]:
+                  - cell "Cost to Company" [ref=e117]
+                  - cell "₹70,000.00" [ref=e118]
+                  - cell "₹8,40,000.00" [ref=e119]
+          - paragraph [ref=e120]: Failed to save salary details. Please try again.
+          - generic [ref=e87]:
+            - button "Save and Continue" [ref=e88]
+            - button "Skip" [ref=e89]

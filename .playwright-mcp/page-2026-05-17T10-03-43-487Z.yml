@@ -1,0 +1,28 @@
+- generic [ref=e67]:
+  - complementary [ref=e68]:
+    - generic [ref=e69]:
+      - generic [ref=e71]: IP
+      - generic [ref=e72]: Indian Payroll
+    - navigation [ref=e73]:
+      - link "People" [ref=e74] [cursor=pointer]:
+        - /url: /employees
+        - img [ref=e75]
+        - text: People
+      - link "Settings" [ref=e80] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e81]
+        - text: Settings
+    - generic [ref=e84]:
+      - generic [ref=e85]:
+        - generic [ref=e87]: DE
+        - paragraph [ref=e88]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e89]:
+        - img [ref=e90]
+        - text: Sign out
+  - generic [ref=e93]:
+    - banner [ref=e94]:
+      - generic [ref=e95]:
+        - generic [ref=e96]: demo
+        - generic [ref=e97]: DE
+    - main [ref=e98]:
+      - generic [ref=e99]: Dashboard coming soon

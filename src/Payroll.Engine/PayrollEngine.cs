@@ -23,7 +23,7 @@ public static class PayrollEngine
         StatutoryConfig config)
     {
         GrossResult gross = GrossCalculator.Compute(emp, run);
-        PFResult pf = PFCalculator.Compute(gross.PFWage, config, emp.PFOptOut, emp.VPFAmount);
+        PFResult pf = PFCalculator.Compute(gross.PFWage, config, !emp.EpfEnabled, emp.VPFAmount);
         ESIResult esi = ESICalculator.Compute(gross.GrossWage, config, emp.IsESIExempt, emp.IsPWD);
         PTResult pt = PTCalculator.Compute(gross.GrossWage, emp.WorkStateCode, config, run);
         LWFResult lwf = LWFCalculator.Compute(emp.WorkStateCode, config, run);

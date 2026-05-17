@@ -1,0 +1,185 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e2045]:
+      - generic [ref=e2047]:
+        - generic [ref=e2048]:
+          - button "All Settings" [ref=e2049] [cursor=pointer]:
+            - img [ref=e2050]
+          - button [ref=e2055] [cursor=pointer]:
+            - img [ref=e2056]
+          - generic [ref=e2058]:
+            - generic [ref=e2059]: All Settings
+            - generic [ref=e2060]: lerno
+        - generic [ref=e2062]:
+          - combobox "Search" [ref=e2066]
+          - img [ref=e2067]
+        - button "Close Settings" [ref=e2071] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e2072]
+      - generic [ref=e2074]:
+        - navigation [ref=e2075]:
+          - generic [ref=e2077]:
+            - group [ref=e2078]:
+              - heading "Organisation Settings" [level=2] [ref=e2079]
+              - generic [ref=e2080]:
+                - region "Organisation" [ref=e2082]:
+                  - generic [ref=e2083]:
+                    - heading "Organisation" [level=3] [ref=e2084] [cursor=pointer]:
+                      - button "Organisation" [ref=e2085]:
+                        - img [ref=e2086]
+                        - generic [ref=e2088]: Organisation
+                    - text:      
+                - generic [ref=e2102]:
+                  - region "Users and Roles" [ref=e2103]:
+                    - generic [ref=e2104]:
+                      - heading "Users and Roles" [level=3] [ref=e2105] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e2106]:
+                          - img [ref=e2107]
+                          - generic [ref=e2109]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e2115]:
+                    - generic [ref=e2116]:
+                      - heading "Taxes" [level=3] [ref=e2117] [cursor=pointer]:
+                        - button "Taxes" [ref=e2118]:
+                          - img [ref=e2119]
+                          - generic [ref=e2121]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e2126]:
+                  - generic [ref=e2127]:
+                    - heading "Setup & Configurations" [level=3] [ref=e2128] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e2129]:
+                        - img [ref=e2130]
+                        - generic [ref=e2132]: Setup & Configurations
+                    - text:     
+                - region "Customisations" [ref=e2145]:
+                  - generic [ref=e2146]:
+                    - heading "Customisations" [level=3] [ref=e2147] [cursor=pointer]:
+                      - button "Customisations" [expanded] [ref=e2148]:
+                        - img [ref=e2149]
+                        - generic [ref=e2151]: Customisations
+                    - region "Customisations" [ref=e2268]:
+                      - generic [ref=e2152]:
+                        - link "Email Templates" [ref=e2153] [cursor=pointer]:
+                          - /url: "#/settings/email-templates"
+                          - generic [ref=e2154]: Email Templates
+                          - text: 
+                        - link "Sender Email Preferences" [ref=e2155] [cursor=pointer]:
+                          - /url: "#/settings/email-preference"
+                          - generic [ref=e2156]: Sender Email Preferences
+                          - text: 
+                        - link "Salary Templates" [ref=e2157] [cursor=pointer]:
+                          - /url: "#/settings/salary-templates"
+                          - generic [ref=e2158]: Salary Templates
+                          - text: 
+                        - link "PDF Templates" [ref=e2159] [cursor=pointer]:
+                          - /url: "#/settings/templates/regular-payslip"
+                          - generic [ref=e2160]: PDF Templates
+                          - text: 
+                        - link "Reporting Tags" [ref=e2161] [cursor=pointer]:
+                          - /url: "#/settings/advanced-reportingtags"
+                          - generic [ref=e2162]: Reporting Tags
+                          - text: 
+                - region "Automations" [ref=e2164]:
+                  - generic [ref=e2165]:
+                    - heading "Automations" [level=3] [ref=e2166] [cursor=pointer]:
+                      - button "Automations" [ref=e2167]:
+                        - img [ref=e2168]
+                        - generic [ref=e2170]: Automations
+                    - text:    
+            - group [ref=e2180]:
+              - heading "Module Settings" [level=2] [ref=e2181]
+              - generic [ref=e2182]:
+                - region "General" [ref=e2184]:
+                  - generic [ref=e2185]:
+                    - heading "General" [level=3] [ref=e2186] [cursor=pointer]:
+                      - button "General" [ref=e2187]:
+                        - img [ref=e2188]
+                        - generic [ref=e2190]: General
+                    - text:     
+                - region "Payments" [ref=e2203]:
+                  - generic [ref=e2204]:
+                    - heading "Payments" [level=3] [ref=e2205] [cursor=pointer]:
+                      - button "Payments" [ref=e2206]:
+                        - img [ref=e2207]
+                        - generic [ref=e2209]: Payments
+                    - text: 
+            - group [ref=e2213]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e2214]
+              - generic [ref=e2215]:
+                - region "Integrations" [ref=e2217]:
+                  - generic [ref=e2218]:
+                    - heading "Integrations" [level=3] [ref=e2219] [cursor=pointer]:
+                      - button "Integrations" [ref=e2220]:
+                        - img [ref=e2221]
+                        - generic [ref=e2223]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e2228]:
+                  - generic [ref=e2229]:
+                    - heading "Developer Data" [level=3] [ref=e2230] [cursor=pointer]:
+                      - button "Developer Data" [ref=e2231]:
+                        - img [ref=e2232]
+                        - generic [ref=e2234]: Developer Data
+                    - text:   
+        - main [ref=e2296]:
+          - generic [ref=e2297]:
+            - heading "Standard-Exec - Salary Template" [level=3] [ref=e2298]
+            - generic [ref=e2299]:
+              - button "Edit" [ref=e2300] [cursor=pointer]
+              - button "Show dropdown menu" [ref=e2302] [cursor=pointer]:
+                - img [ref=e2303]
+              - link "Close" [ref=e2305] [cursor=pointer]:
+                - /url: "#/settings/salary-templates"
+                - img [ref=e2306]
+          - generic [ref=e2312]:
+            - heading "Salary Structure" [level=4] [ref=e2314]
+            - generic [ref=e2315]:
+              - table [ref=e2316]:
+                - rowgroup [ref=e2317]:
+                  - row "Salary Components Monthly Amount Annual Amount" [ref=e2318]:
+                    - columnheader "Salary Components" [ref=e2319]
+                    - columnheader "Monthly Amount" [ref=e2320]
+                    - columnheader "Annual Amount" [ref=e2321]
+              - table [ref=e2322]:
+                - rowgroup [ref=e2323]:
+                  - row "Earnings" [ref=e2324]:
+                    - cell "Earnings" [ref=e2325]
+                  - row "Basic (50.00 % of CTC) ₹50,000.00 ₹6,00,000.00" [ref=e2326]:
+                    - cell "Basic (50.00 % of CTC)" [ref=e2327]:
+                      - text: Basic
+                      - generic [ref=e2328]: (50.00 % of CTC)
+                    - cell "₹50,000.00" [ref=e2329]
+                    - cell "₹6,00,000.00" [ref=e2330]:
+                      - generic [ref=e2331]: ₹6,00,000.00
+                  - row "House Rent Allowance (50.00 % of Basic Amount) ₹25,000.00 ₹3,00,000.00" [ref=e2332]:
+                    - cell "House Rent Allowance (50.00 % of Basic Amount)" [ref=e2333]:
+                      - text: House Rent Allowance
+                      - generic [ref=e2334]: (50.00 % of Basic Amount)
+                    - cell "₹25,000.00" [ref=e2335]
+                    - cell "₹3,00,000.00" [ref=e2336]:
+                      - generic [ref=e2337]: ₹3,00,000.00
+                  - row "Special Allowance ₹0.00 ₹0.00" [ref=e2338]:
+                    - cell "Special Allowance" [ref=e2339]
+                    - cell "₹0.00" [ref=e2340]
+                    - cell "₹0.00" [ref=e2341]:
+                      - generic [ref=e2342]: ₹0.00
+                  - row "Fixed Allowance ₹25,000.00 ₹3,00,000.00" [ref=e2343]:
+                    - cell "Fixed Allowance" [ref=e2344]
+                    - cell "₹25,000.00" [ref=e2345]
+                    - cell "₹3,00,000.00" [ref=e2346]:
+                      - generic [ref=e2347]: ₹3,00,000.00
+              - table [ref=e2348]:
+                - rowgroup [ref=e2349]:
+                  - row "Cost to Company ₹1,00,000.00 ₹12,00,000.00" [ref=e2350]:
+                    - cell "Cost to Company" [ref=e2351]:
+                      - strong [ref=e2352]: Cost to Company
+                    - cell "₹1,00,000.00" [ref=e2353]:
+                      - strong [ref=e2354]: ₹1,00,000.00
+                    - cell "₹12,00,000.00" [ref=e2355]:
+                      - strong [ref=e2356]: ₹12,00,000.00
+  - status [ref=e259]: Settings Salary Templates page loaded.
+  - text:       Chats  Contacts   

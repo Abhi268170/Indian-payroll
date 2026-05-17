@@ -290,6 +290,531 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.ToTable("designations", (string)null);
                 });
 
+            modelBuilder.Entity("Payroll.Domain.Entities.Employee", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("AccountHolderName")
+                        .HasColumnType("text")
+                        .HasColumnName("account_holder_name");
+
+                    b.Property<string>("AccountType")
+                        .HasColumnType("text")
+                        .HasColumnName("account_type");
+
+                    b.Property<string>("AddressLine1")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("address_line1");
+
+                    b.Property<string>("AddressLine2")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("address_line2");
+
+                    b.Property<string>("BankName")
+                        .HasColumnType("text")
+                        .HasColumnName("bank_name");
+
+                    b.Property<Guid?>("BusinessUnitId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("business_unit_id");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("city");
+
+                    b.Property<Guid?>("CostCentreId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("cost_centre_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date")
+                        .HasColumnName("date_of_birth");
+
+                    b.Property<DateOnly>("DateOfJoining")
+                        .HasColumnType("date")
+                        .HasColumnName("date_of_joining");
+
+                    b.Property<DateOnly?>("DateOfLeaving")
+                        .HasColumnType("date")
+                        .HasColumnName("date_of_leaving");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<Guid>("DepartmentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("department_id");
+
+                    b.Property<Guid>("DesignationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("designation_id");
+
+                    b.Property<string>("DifferentlyAbledType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("differently_abled_type");
+
+                    b.Property<string>("ESICIPNumber")
+                        .HasMaxLength(17)
+                        .HasColumnType("character varying(17)")
+                        .HasColumnName("esicip_number");
+
+                    b.Property<string>("EmployeeCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("employee_code");
+
+                    b.Property<string>("EmploymentType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("employment_type");
+
+                    b.Property<bool>("EnablePortalAccess")
+                        .HasColumnType("boolean")
+                        .HasColumnName("enable_portal_access");
+
+                    b.Property<string>("EncryptedAadhaar")
+                        .HasColumnType("text")
+                        .HasColumnName("encrypted_aadhaar");
+
+                    b.Property<string>("EncryptedBankAccount")
+                        .HasColumnType("text")
+                        .HasColumnName("encrypted_bank_account");
+
+                    b.Property<string>("EncryptedIFSC")
+                        .HasColumnType("text")
+                        .HasColumnName("encrypted_ifsc");
+
+                    b.Property<string>("EncryptedPAN")
+                        .HasColumnType("text")
+                        .HasColumnName("encrypted_pan");
+
+                    b.Property<bool>("EpfEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("epf_enabled");
+
+                    b.Property<bool>("EsiEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("esi_enabled");
+
+                    b.Property<string>("FathersName")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("fathers_name");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("first_name");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("gender");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsDirector")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_director");
+
+                    b.Property<bool>("IsPWD")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_pwd");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("last_name");
+
+                    b.Property<bool>("LwfEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("lwf_enabled");
+
+                    b.Property<string>("MiddleName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("middle_name");
+
+                    b.Property<string>("MobileNumber")
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)")
+                        .HasColumnName("mobile_number");
+
+                    b.Property<string>("PaymentMode")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("payment_mode");
+
+                    b.Property<string>("PersonalEmail")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("personal_email");
+
+                    b.Property<string>("PinCode")
+                        .HasMaxLength(6)
+                        .HasColumnType("character varying(6)")
+                        .HasColumnName("pin_code");
+
+                    b.Property<bool>("ProfileComplete")
+                        .HasColumnType("boolean")
+                        .HasColumnName("profile_complete");
+
+                    b.Property<bool>("PtEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("pt_enabled");
+
+                    b.Property<string>("ResidentialState")
+                        .HasColumnType("text")
+                        .HasColumnName("residential_state");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("status");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
+
+                    b.Property<string>("UAN")
+                        .HasMaxLength(12)
+                        .HasColumnType("character varying(12)")
+                        .HasColumnName("uan");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.Property<string>("WorkEmail")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("work_email");
+
+                    b.Property<Guid>("WorkLocationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("work_location_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_employees");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_employees_tenant_id");
+
+                    b.HasIndex("TenantId", "EmployeeCode")
+                        .IsUnique()
+                        .HasDatabaseName("ix_employees_tenant_id_employee_code");
+
+                    b.HasIndex("TenantId", "WorkEmail")
+                        .IsUnique()
+                        .HasDatabaseName("ix_employees_tenant_id_work_email");
+
+                    b.ToTable("employees", (string)null);
+                });
+
+            modelBuilder.Entity("Payroll.Domain.Entities.EmployeeExit", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("employee_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateOnly>("LastWorkingDay")
+                        .HasColumnType("date")
+                        .HasColumnName("last_working_day");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("notes");
+
+                    b.Property<string>("PersonalEmail")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("personal_email");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("reason");
+
+                    b.Property<DateOnly?>("SettlementDate")
+                        .HasColumnType("date")
+                        .HasColumnName("settlement_date");
+
+                    b.Property<string>("SettlementMode")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("settlement_mode");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_employee_exits");
+
+                    b.HasIndex("EmployeeId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_employee_exits_employee_id")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("employee_exits", (string)null);
+                });
+
+            modelBuilder.Entity("Payroll.Domain.Entities.EmployeeSalaryComponentOverride", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<Guid>("EmployeeSalaryStructureId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("employee_salary_structure_id");
+
+                    b.Property<decimal?>("FixedAmount")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("fixed_amount");
+
+                    b.Property<string>("FormulaType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("formula_type");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<decimal?>("Percentage")
+                        .HasColumnType("numeric(7,4)")
+                        .HasColumnName("percentage");
+
+                    b.Property<Guid>("SalaryComponentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("salary_component_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_employee_salary_component_overrides");
+
+                    b.HasIndex("EmployeeSalaryStructureId", "SalaryComponentId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_employee_salary_component_overrides_employee_salary_structu");
+
+                    b.ToTable("employee_salary_component_overrides", (string)null);
+                });
+
+            modelBuilder.Entity("Payroll.Domain.Entities.EmployeeSalaryStructure", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<decimal>("AnnualCTC")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("annual_ctc");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<DateOnly>("EffectiveFrom")
+                        .HasColumnType("date")
+                        .HasColumnName("effective_from");
+
+                    b.Property<DateOnly?>("EffectiveTo")
+                        .HasColumnType("date")
+                        .HasColumnName("effective_to");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("employee_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<Guid?>("SalaryStructureTemplateId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("salary_structure_template_id");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_employee_salary_structures");
+
+                    b.HasIndex("EmployeeId", "EffectiveFrom")
+                        .HasDatabaseName("ix_employee_salary_structures_employee_id_effective_from");
+
+                    b.ToTable("employee_salary_structures", (string)null);
+                });
+
+            modelBuilder.Entity("Payroll.Domain.Entities.EmployeeVehicleDetail", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<bool>("CubicCapacityAbove1600")
+                        .HasColumnType("boolean")
+                        .HasColumnName("cubic_capacity_above1600");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<bool>("DriverProvided")
+                        .HasColumnType("boolean")
+                        .HasColumnName("driver_provided");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("employee_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("MaintainedByEmployer")
+                        .HasColumnType("boolean")
+                        .HasColumnName("maintained_by_employer");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_employee_vehicle_details");
+
+                    b.HasIndex("EmployeeId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_employee_vehicle_details_employee_id")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("employee_vehicle_details", (string)null);
+                });
+
             modelBuilder.Entity("Payroll.Domain.Entities.IncomeTaxConfig", b =>
                 {
                     b.Property<Guid>("Id")
@@ -843,6 +1368,94 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.ToTable("pay_schedules", (string)null);
                 });
 
+            modelBuilder.Entity("Payroll.Domain.Entities.PriorEmployerYtd", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("employee_id");
+
+                    b.Property<string>("EmployerName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("employer_name");
+
+                    b.Property<int>("FinancialYear")
+                        .HasColumnType("integer")
+                        .HasColumnName("financial_year");
+
+                    b.Property<decimal>("GrossSalary")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("gross_salary");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<decimal>("OtherIncome")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("other_income");
+
+                    b.Property<DateOnly>("PeriodFrom")
+                        .HasColumnType("date")
+                        .HasColumnName("period_from");
+
+                    b.Property<DateOnly>("PeriodTo")
+                        .HasColumnType("date")
+                        .HasColumnName("period_to");
+
+                    b.Property<decimal>("ProfessionalTaxPaid")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("professional_tax_paid");
+
+                    b.Property<decimal>("StandardDeductionClaimed")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("standard_deduction_claimed");
+
+                    b.Property<decimal>("TdsDeducted")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("tds_deducted");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_prior_employer_ytds");
+
+                    b.HasIndex("EmployeeId", "FinancialYear")
+                        .IsUnique()
+                        .HasDatabaseName("ix_prior_employer_ytds_employee_id_financial_year")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("prior_employer_ytds", (string)null);
+                });
+
             modelBuilder.Entity("Payroll.Domain.Entities.ProfessionalTaxSlab", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1104,6 +1717,96 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.ToTable("salary_components", (string)null);
                 });
 
+            modelBuilder.Entity("Payroll.Domain.Entities.SalaryRevision", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<int>("EffectiveFromMonth")
+                        .HasColumnType("integer")
+                        .HasColumnName("effective_from_month");
+
+                    b.Property<int>("EffectiveFromYear")
+                        .HasColumnType("integer")
+                        .HasColumnName("effective_from_year");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("employee_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<decimal>("NewAnnualCTC")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("new_annual_ctc");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("notes");
+
+                    b.Property<int>("PayoutMonth")
+                        .HasColumnType("integer")
+                        .HasColumnName("payout_month");
+
+                    b.Property<int>("PayoutYear")
+                        .HasColumnType("integer")
+                        .HasColumnName("payout_year");
+
+                    b.Property<decimal>("PreviousAnnualCTC")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("previous_annual_ctc");
+
+                    b.Property<Guid?>("SalaryStructureTemplateId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("salary_structure_template_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("status");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_salary_revisions");
+
+                    b.HasIndex("EmployeeId", "Status")
+                        .HasDatabaseName("ix_salary_revisions_employee_id_status");
+
+                    b.ToTable("salary_revisions", (string)null);
+                });
+
             modelBuilder.Entity("Payroll.Domain.Entities.SalaryStructureComponent", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1250,8 +1953,10 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
 
                     b.Property<string>("BonusMode")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Yearly")
                         .HasColumnName("bonus_mode");
 
                     b.Property<int?>("BonusPayoutMonth")
@@ -1259,7 +1964,9 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnName("bonus_payout_month");
 
                     b.Property<decimal>("BonusRate")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(5,4)")
+                        .HasDefaultValue(0.0833m)
                         .HasColumnName("bonus_rate");
 
                     b.Property<DateTimeOffset>("CreatedAt")
@@ -1510,6 +2217,16 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.ToTable("work_locations", (string)null);
                 });
 
+            modelBuilder.Entity("Payroll.Domain.Entities.EmployeeSalaryComponentOverride", b =>
+                {
+                    b.HasOne("Payroll.Domain.Entities.EmployeeSalaryStructure", null)
+                        .WithMany("ComponentOverrides")
+                        .HasForeignKey("EmployeeSalaryStructureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_employee_salary_component_overrides_employee_salary_structu");
+                });
+
             modelBuilder.Entity("Payroll.Domain.Entities.OrgProfile", b =>
                 {
                     b.HasOne("Payroll.Domain.Entities.WorkLocation", null)
@@ -1547,6 +2264,11 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasConstraintName("fk_salary_structure_components_salary_structure_templates_temp");
 
                     b.Navigation("Component");
+                });
+
+            modelBuilder.Entity("Payroll.Domain.Entities.EmployeeSalaryStructure", b =>
+                {
+                    b.Navigation("ComponentOverrides");
                 });
 
             modelBuilder.Entity("Payroll.Domain.Entities.SalaryStructureTemplate", b =>

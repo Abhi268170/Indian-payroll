@@ -1,0 +1,129 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e7]:
+      - generic [ref=e9]:
+        - generic [ref=e10]:
+          - button "All Settings" [ref=e11] [cursor=pointer]:
+            - img [ref=e12]
+          - button [ref=e17] [cursor=pointer]:
+            - img [ref=e18]
+          - generic [ref=e20]:
+            - generic [ref=e21]: All Settings
+            - generic [ref=e22]: lerno
+        - generic [ref=e24]:
+          - combobox "Search" [ref=e28]
+          - img [ref=e29]
+        - button "Close Settings" [ref=e33] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e34]
+      - generic [ref=e36]:
+        - navigation [ref=e37]:
+          - generic [ref=e39]:
+            - group [ref=e40]:
+              - heading "Organisation Settings" [level=2] [ref=e41]
+              - generic [ref=e42]:
+                - region "Organisation" [ref=e44]:
+                  - generic [ref=e45]:
+                    - heading "Organisation" [level=3] [ref=e46] [cursor=pointer]:
+                      - button "Organisation" [ref=e47]:
+                        - img [ref=e48]
+                        - generic [ref=e50]: Organisation
+                    - text:      
+                - generic [ref=e64]:
+                  - region "Users and Roles" [ref=e65]:
+                    - generic [ref=e66]:
+                      - heading "Users and Roles" [level=3] [ref=e67] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e68]:
+                          - img [ref=e69]
+                          - generic [ref=e71]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e77]:
+                    - generic [ref=e78]:
+                      - heading "Taxes" [level=3] [ref=e79] [cursor=pointer]:
+                        - button "Taxes" [ref=e80]:
+                          - img [ref=e81]
+                          - generic [ref=e83]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e88]:
+                  - generic [ref=e89]:
+                    - heading "Setup & Configurations" [level=3] [ref=e90] [cursor=pointer]:
+                      - button "Setup & Configurations" [expanded] [ref=e91]:
+                        - img [ref=e289]
+                        - generic [ref=e94]: Setup & Configurations
+                    - region "Setup & Configurations" [ref=e95]:
+                      - generic [ref=e96]:
+                        - link "Pay Schedule" [ref=e97] [cursor=pointer]:
+                          - /url: "#/settings/pay-schedules"
+                          - generic [ref=e98]: Pay Schedule
+                          - text: 
+                        - link "Statutory Components" [ref=e99] [cursor=pointer]:
+                          - /url: "#/settings/statutory-details/list"
+                          - generic [ref=e100]: Statutory Components
+                          - text: 
+                        - link "Salary Components" [ref=e101] [cursor=pointer]:
+                          - /url: "#/settings/salary-components/earnings"
+                          - generic [ref=e102]: Salary Components
+                          - text: 
+                        - link "Employee Portal" [ref=e103] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences"
+                          - generic [ref=e104]: Employee Portal
+                          - text: 
+                        - link "Claims and Declarations" [ref=e105] [cursor=pointer]:
+                          - /url: "#/settings/preferences/fbp"
+                          - generic [ref=e106]: Claims and Declarations
+                          - text: 
+                - region "Customisations" [ref=e108]:
+                  - generic [ref=e109]:
+                    - heading "Customisations" [level=3] [ref=e110] [cursor=pointer]:
+                      - button "Customisations" [ref=e111]:
+                        - img [ref=e112]
+                        - generic [ref=e114]: Customisations
+                    - text:     
+                - region "Automations" [ref=e127]:
+                  - generic [ref=e128]:
+                    - heading "Automations" [level=3] [ref=e129] [cursor=pointer]:
+                      - button "Automations" [ref=e130]:
+                        - img [ref=e131]
+                        - generic [ref=e133]: Automations
+                    - text:    
+            - group [ref=e143]:
+              - heading "Module Settings" [level=2] [ref=e144]
+              - generic [ref=e145]:
+                - region "General" [ref=e147]:
+                  - generic [ref=e148]:
+                    - heading "General" [level=3] [ref=e149] [cursor=pointer]:
+                      - button "General" [ref=e150]:
+                        - img [ref=e151]
+                        - generic [ref=e153]: General
+                    - text:     
+                - region "Payments" [ref=e166]:
+                  - generic [ref=e167]:
+                    - heading "Payments" [level=3] [ref=e168] [cursor=pointer]:
+                      - button "Payments" [ref=e169]:
+                        - img [ref=e170]
+                        - generic [ref=e172]: Payments
+                    - text: 
+            - group [ref=e176]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e177]
+              - generic [ref=e178]:
+                - region "Integrations" [ref=e180]:
+                  - generic [ref=e181]:
+                    - heading "Integrations" [level=3] [ref=e182] [cursor=pointer]:
+                      - button "Integrations" [ref=e183]:
+                        - img [ref=e184]
+                        - generic [ref=e186]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e191]:
+                  - generic [ref=e192]:
+                    - heading "Developer Data" [level=3] [ref=e193] [cursor=pointer]:
+                      - button "Developer Data" [ref=e194]:
+                        - img [ref=e195]
+                        - generic [ref=e197]: Developer Data
+                    - text:   
+        - main [ref=e262]
+  - status [ref=e259]: Settings Deduction page loaded.

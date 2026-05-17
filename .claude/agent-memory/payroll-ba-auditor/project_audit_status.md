@@ -432,3 +432,16 @@ Critical build differentiators vs Zoho:
 4. Correct Section 87A citation in TDS worksheet (not "Section 156")
 5. SBI bank advice format supported from V1
 6. Compliance calendar built in (Zoho has none)
+
+### Comprehensive Build Guide Compiled (2026-05-17)
+
+- [x] `docs/ba-audit/payroll-run-module.md` — Full Payroll Run module BA audit + Build Guide
+  - 20 sections covering all Zoho screens, fields, buttons, states
+  - State machine (Ready → Draft → Approved → Paid)
+  - Domain model gaps vs current codebase documented
+  - API endpoint specification (40+ endpoints)
+  - Frontend component list (30+ components)
+  - Business logic rules with formulas
+  - Build order (Phases 1–4)
+  - 8 differentiating features over Zoho
+  - Source: 17 pay-run audit files + 22 userflow files

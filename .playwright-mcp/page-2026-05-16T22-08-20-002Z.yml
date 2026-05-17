@@ -1,0 +1,177 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e1651]:
+      - generic [ref=e1653]:
+        - generic [ref=e1654]:
+          - button "All Settings" [ref=e1655] [cursor=pointer]:
+            - img [ref=e1656]
+          - button [ref=e2039] [cursor=pointer]:
+            - img [ref=e2040]
+          - generic [ref=e1661]:
+            - generic [ref=e1662]: All Settings
+            - generic [ref=e1663]: lerno
+        - generic [ref=e1665]:
+          - combobox "Search" [ref=e1669]
+          - img [ref=e1670]
+        - button "Close Settings" [ref=e1674] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e1675]
+      - generic [ref=e1677]:
+        - navigation [ref=e1678]:
+          - generic [ref=e1680]:
+            - group [ref=e1681]:
+              - heading "Organisation Settings" [level=2] [ref=e1682]
+              - generic [ref=e1683]:
+                - region "Organisation" [ref=e1685]:
+                  - generic [ref=e1686]:
+                    - heading "Organisation" [level=3] [ref=e1687] [cursor=pointer]:
+                      - button "Organisation" [ref=e1688]:
+                        - img [ref=e2042]
+                        - generic [ref=e1692]: Organisation
+                    - text:      
+                - generic [ref=e1707]:
+                  - region "Users and Roles" [ref=e1708]:
+                    - generic [ref=e1709]:
+                      - heading "Users and Roles" [level=3] [ref=e1710] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e1711]:
+                          - img [ref=e2044]
+                          - generic [ref=e1715]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e1722]:
+                    - generic [ref=e1723]:
+                      - heading "Taxes" [level=3] [ref=e1724] [cursor=pointer]:
+                        - button "Taxes" [expanded] [ref=e1725]:
+                          - img [ref=e2046]
+                          - generic [ref=e1729]: Taxes
+                      - region "Taxes" [ref=e1730]:
+                        - link "Tax Details" [ref=e1732] [cursor=pointer]:
+                          - /url: "#/settings/taxes"
+                          - generic [ref=e2048]: Tax Details
+                          - text: 
+                - region "Setup & Configurations" [ref=e1735]:
+                  - generic [ref=e1736]:
+                    - heading "Setup & Configurations" [level=3] [ref=e1737] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e1738]:
+                        - img [ref=e2049]
+                        - generic [ref=e1742]: Setup & Configurations
+                    - text:     
+                - region "Customisations" [ref=e1756]:
+                  - generic [ref=e1757]:
+                    - heading "Customisations" [level=3] [ref=e1758] [cursor=pointer]:
+                      - button "Customisations" [ref=e1759]:
+                        - img [ref=e2051]
+                        - generic [ref=e1763]: Customisations
+                    - text:     
+                - region "Automations" [ref=e1777]:
+                  - generic [ref=e1778]:
+                    - heading "Automations" [level=3] [ref=e1779] [cursor=pointer]:
+                      - button "Automations" [ref=e1780]:
+                        - img [ref=e2053]
+                        - generic [ref=e1785]: Automations
+                    - text:    
+            - group [ref=e1796]:
+              - heading "Module Settings" [level=2] [ref=e1797]
+              - generic [ref=e1798]:
+                - region "General" [ref=e1800]:
+                  - generic [ref=e1801]:
+                    - heading "General" [level=3] [ref=e1802] [cursor=pointer]:
+                      - button "General" [ref=e1803]:
+                        - img [ref=e2055]
+                        - generic [ref=e1807]: General
+                    - text:     
+                - region "Payments" [ref=e1821]:
+                  - generic [ref=e1822]:
+                    - heading "Payments" [level=3] [ref=e1823] [cursor=pointer]:
+                      - button "Payments" [ref=e1824]:
+                        - img [ref=e2057]
+                        - generic [ref=e1828]: Payments
+                    - text: 
+            - group [ref=e1833]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e1834]
+              - generic [ref=e1835]:
+                - region "Integrations" [ref=e1837]:
+                  - generic [ref=e1838]:
+                    - heading "Integrations" [level=3] [ref=e1839] [cursor=pointer]:
+                      - button "Integrations" [ref=e1840]:
+                        - img [ref=e2059]
+                        - generic [ref=e1844]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e1850]:
+                  - generic [ref=e1851]:
+                    - heading "Developer Data" [level=3] [ref=e1852] [cursor=pointer]:
+                      - button "Developer Data" [ref=e1853]:
+                        - img [ref=e2061]
+                        - generic [ref=e1857]: Developer Data
+                    - text:   
+        - main [ref=e2063]:
+          - generic [ref=e2064]:
+            - heading "Tax Details" [level=3] [ref=e2065]
+            - button "Instant Helper" [ref=e2066] [cursor=pointer]:
+              - img [ref=e2067]
+          - form [ref=e2071]:
+            - heading "Organisation Tax Details" [level=4] [ref=e2072]
+            - generic [ref=e2074]:
+              - generic [ref=e2075]:
+                - generic [ref=e2076]:
+                  - generic [ref=e2077]: PAN*
+                  - textbox "PAN*" [active] [ref=e2079]:
+                    - /placeholder: AAAAA0000A
+                    - text: ABCDE1234F
+                  - generic [ref=e2080]: "Format: AAAAA0000A"
+                - generic [ref=e2081]:
+                  - generic [ref=e2082]: TAN
+                  - textbox "TAN" [ref=e2084]:
+                    - /placeholder: AAAA00000A
+                    - text: MUMR12345A
+              - generic [ref=e2085]:
+                - generic [ref=e2086]:
+                  - generic [ref=e2087]:
+                    - text: TDS circle / AO code
+                    - img [ref=e2090]
+                  - generic [ref=e2093]:
+                    - textbox "TDS circle / AO code" [ref=e2095]:
+                      - /placeholder: AAA
+                    - generic [ref=e2096]: /
+                    - textbox "TDS circle / AO code" [ref=e2098]:
+                      - /placeholder: AA
+                    - generic [ref=e2099]: /
+                    - textbox "TDS circle / AO code" [ref=e2101]:
+                      - /placeholder: "000"
+                    - generic [ref=e2102]: /
+                    - textbox "TDS circle / AO code" [ref=e2104]:
+                      - /placeholder: "00"
+                - generic [ref=e2105]:
+                  - generic [ref=e2106]:
+                    - text: Tax Payment Frequency
+                    - img [ref=e2109]
+                  - textbox "Tax Payment Frequency" [disabled] [ref=e2113]: Monthly
+            - heading "Tax Deductor Details" [level=4] [ref=e2114]
+            - radiogroup "Deductor's Type" [ref=e2116]:
+              - heading "Deductor's Type" [level=5] [ref=e2118]
+              - radio "Employee" [checked] [ref=e2119] [cursor=pointer]
+              - generic [ref=e2120] [cursor=pointer]: Employee
+              - radio "Non-Employee" [ref=e2121] [cursor=pointer]
+              - generic [ref=e2122] [cursor=pointer]: Non-Employee
+            - generic [ref=e2125]:
+              - generic [ref=e2126]:
+                - generic [ref=e2127]: Deductor's Name *
+                - generic [ref=e2130]:
+                  - combobox [ref=e2132]:
+                    - generic [ref=e2133] [cursor=pointer]:
+                      - generic "Arjun Mehta" [ref=e2134]
+                      - img [ref=e2137]
+                  - status [ref=e2139]
+              - generic [ref=e2140]:
+                - generic [ref=e2141]: Deductor's Father's Name *
+                - textbox "Deductor's Father's Name *" [disabled] [ref=e2143]: Rajesh Mehta
+            - separator [ref=e2144]
+            - generic [ref=e2146]:
+              - button "Save" [ref=e2147] [cursor=pointer]
+              - paragraph [ref=e2149]: "* indicates mandatory fields"
+  - status [ref=e525]: Settings Taxes page loaded.
+  - text:       Chats  Contacts   

@@ -1,0 +1,83 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "People" [ref=e10] [cursor=pointer]:
+        - /url: /employees
+        - img [ref=e11]
+        - text: People
+      - link "Settings" [ref=e16] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e17]
+        - text: Settings
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e23]: DE
+        - paragraph [ref=e24]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e25]:
+        - img [ref=e26]
+        - text: Sign out
+  - generic [ref=e29]:
+    - banner [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]: demo
+        - generic [ref=e33]: DE
+    - main [ref=e34]:
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - generic [ref=e37]:
+            - generic [ref=e39]: IP
+            - generic [ref=e40]: Settings
+          - button "Close Settings" [ref=e41]:
+            - img [ref=e42]
+            - text: Close Settings
+        - generic [ref=e45]:
+          - navigation [ref=e46]:
+            - generic [ref=e47]:
+              - button "Org Structure" [ref=e48]:
+                - generic [ref=e49]: Org Structure
+                - img [ref=e50]
+              - list [ref=e52]:
+                - listitem [ref=e53]:
+                  - link "Work Locations" [ref=e54] [cursor=pointer]:
+                    - /url: /settings/work-locations
+                - listitem [ref=e55]:
+                  - link "Departments" [ref=e56] [cursor=pointer]:
+                    - /url: /settings/departments
+                - listitem [ref=e57]:
+                  - link "Designations" [ref=e58] [cursor=pointer]:
+                    - /url: /settings/designations
+                - listitem [ref=e59]:
+                  - link "Cost Centres" [ref=e60] [cursor=pointer]:
+                    - /url: /settings/cost-centres
+                - listitem [ref=e61]:
+                  - link "Business Units" [ref=e62] [cursor=pointer]:
+                    - /url: /settings/business-units
+            - generic [ref=e63]:
+              - button "Setup & Configuration" [ref=e64]:
+                - generic [ref=e65]: Setup & Configuration
+                - img [ref=e66]
+              - list [ref=e68]:
+                - listitem [ref=e69]:
+                  - link "Pay Schedule" [ref=e70] [cursor=pointer]:
+                    - /url: /settings/pay-schedule
+                - listitem [ref=e71]:
+                  - link "Salary Components" [ref=e72] [cursor=pointer]:
+                    - /url: /settings/salary-components
+                - listitem [ref=e73]:
+                  - link "Salary Structures" [ref=e74] [cursor=pointer]:
+                    - /url: /settings/salary-structures
+                - listitem [ref=e75]:
+                  - link "Statutory Components" [ref=e76] [cursor=pointer]:
+                    - /url: /settings/statutory
+            - generic [ref=e77]:
+              - button "Taxes" [ref=e78]:
+                - generic [ref=e79]: Taxes
+                - img [ref=e80]
+              - list [ref=e82]:
+                - listitem [ref=e83]:
+                  - link "Tax Details" [ref=e84] [cursor=pointer]:
+                    - /url: /settings/tax-details
+          - img [ref=e87]

@@ -18,6 +18,9 @@ import StatutoryComponentsPage from '@/pages/settings/StatutoryComponentsPage'
 import TaxDetailsPage from '@/pages/settings/TaxDetailsPage'
 import LoginPage from '@/pages/LoginPage'
 import DashboardPage from '@/pages/DashboardPage'
+import EmployeesPage from '@/pages/employees/EmployeesPage'
+import AddEmployeeWizard from '@/pages/employees/AddEmployeeWizard'
+import EmployeeDetailPage from '@/pages/employees/EmployeeDetailPage'
 import TenantsPage from '@/pages/platform/TenantsPage'
 import ProvisionOrgPage from '@/pages/platform/ProvisionOrgPage'
 import OrgDetailPage from '@/pages/platform/OrgDetailPage'
@@ -72,6 +75,10 @@ export const router = createBrowserRouter([
     element: <RequireAuth><AppLayout /></RequireAuth>,
     children: [
       { path: 'dashboard', element: <DashboardPage /> },
+      { path: 'employees', element: <EmployeesPage /> },
+      { path: 'employees/new', element: <AddEmployeeWizard /> },
+      { path: 'employees/:id/wizard/:step', element: <AddEmployeeWizard /> },
+      { path: 'employees/:id', element: <EmployeeDetailPage /> },
       {
         path: 'settings',
         element: <SettingsLayout />,

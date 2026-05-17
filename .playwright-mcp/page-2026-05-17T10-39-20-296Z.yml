@@ -1,0 +1,124 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "People" [ref=e10] [cursor=pointer]:
+        - /url: /employees
+        - img [ref=e11]
+        - text: People
+      - link "Settings" [ref=e16] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e17]
+        - text: Settings
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e23]: DE
+        - paragraph [ref=e24]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e25]:
+        - img [ref=e26]
+        - text: Sign out
+  - generic [ref=e29]:
+    - banner [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]: demo
+        - generic [ref=e33]: DE
+    - main [ref=e34]:
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - heading "Add Employee" [level=1] [ref=e37]
+          - paragraph [ref=e38]: Complete all steps or skip individual sections — you can fill details from the employee profile later.
+        - generic [ref=e39]:
+          - generic [ref=e41]:
+            - img [ref=e124]
+            - generic [ref=e43]: Basic Details
+          - generic [ref=e46]:
+            - img [ref=e126]
+            - generic [ref=e48]: Salary Details
+          - generic [ref=e51]:
+            - generic [ref=e52]: "3"
+            - generic [ref=e53]: Personal Details
+          - generic [ref=e56]:
+            - generic [ref=e57]: "4"
+            - generic [ref=e58]: Payment Information
+        - generic [ref=e128]:
+          - generic [ref=e129]:
+            - generic [ref=e130]:
+              - generic [ref=e131]: Father's Name *
+              - textbox [ref=e132]
+            - generic [ref=e133]:
+              - generic [ref=e134]: PAN
+              - textbox "ABCDE1234F" [ref=e135]
+              - paragraph [ref=e136]: Required for TDS computation and Form 16
+          - generic [ref=e137]:
+            - generic [ref=e138]:
+              - generic [ref=e139]: Personal Email
+              - textbox [ref=e140]
+            - generic [ref=e141]:
+              - generic [ref=e142]: Differently Abled Type
+              - combobox [ref=e143]:
+                - option "None" [selected]
+                - option "Visual Impairment"
+                - option "Hearing Impairment"
+                - option "Locomotive Disability"
+                - option "Other"
+          - generic [ref=e144]:
+            - generic [ref=e145]: Address Line 1
+            - textbox [ref=e146]
+          - generic [ref=e147]:
+            - generic [ref=e148]: Address Line 2
+            - textbox [ref=e149]
+          - generic [ref=e150]:
+            - generic [ref=e151]:
+              - generic [ref=e152]: City
+              - textbox [ref=e153]
+            - generic [ref=e154]:
+              - generic [ref=e155]: State
+              - combobox [ref=e156]:
+                - option "Select state" [selected]
+                - option "Andhra Pradesh"
+                - option "Arunachal Pradesh"
+                - option "Assam"
+                - option "Bihar"
+                - option "Chhattisgarh"
+                - option "Goa"
+                - option "Gujarat"
+                - option "Haryana"
+                - option "Himachal Pradesh"
+                - option "Jharkhand"
+                - option "Karnataka"
+                - option "Kerala"
+                - option "Madhya Pradesh"
+                - option "Maharashtra"
+                - option "Manipur"
+                - option "Meghalaya"
+                - option "Mizoram"
+                - option "Nagaland"
+                - option "Odisha"
+                - option "Punjab"
+                - option "Rajasthan"
+                - option "Sikkim"
+                - option "Tamil Nadu"
+                - option "Telangana"
+                - option "Tripura"
+                - option "Uttar Pradesh"
+                - option "Uttarakhand"
+                - option "West Bengal"
+                - option "Andaman and Nicobar Islands"
+                - option "Chandigarh"
+                - option "Dadra and Nagar Haveli and Daman and Diu"
+                - option "Delhi"
+                - option "Jammu and Kashmir"
+                - option "Ladakh"
+                - option "Lakshadweep"
+                - option "Puducherry"
+            - generic [ref=e157]:
+              - generic [ref=e158]: PIN Code
+              - textbox [ref=e159]
+          - generic [ref=e160] [cursor=pointer]:
+            - checkbox "Person with Disability (PWD)" [ref=e161]
+            - generic [ref=e162]: Person with Disability (PWD)
+          - generic [ref=e163]:
+            - button "Save and Continue" [ref=e164]
+            - button "Skip" [ref=e165]

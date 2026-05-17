@@ -1,0 +1,137 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e2044]:
+      - generic [ref=e2358]:
+        - generic [ref=e2359]:
+          - generic [ref=e2360]: Build your Template
+          - generic [ref=e2361]: Include active salary components
+        - list [ref=e2363]:
+          - listitem [ref=e2364]:
+            - heading "Earnings" [level=3] [ref=e2368]:
+              - button "Earnings" [ref=e2369] [cursor=pointer]:
+                - generic [ref=e2370]:
+                  - text: Earnings
+                  - img [ref=e2372]
+          - listitem [ref=e2374]:
+            - heading "Reimbursements" [level=3] [ref=e2378]:
+              - button "Reimbursements" [ref=e2379] [cursor=pointer]:
+                - generic [ref=e2380]:
+                  - text: Reimbursements
+                  - img [ref=e2382]
+          - listitem [ref=e2384]:
+            - heading "FBP Components" [level=3] [ref=e2388]:
+              - button "FBP Components" [ref=e2389] [cursor=pointer]:
+                - generic [ref=e2390]:
+                  - text: FBP Components
+                  - img [ref=e2392]
+          - listitem [ref=e2394]:
+            - heading "Benefits" [level=3] [ref=e2398]:
+              - button "Benefits" [ref=e2399] [cursor=pointer]:
+                - generic [ref=e2400]:
+                  - text: Benefits
+                  - img [ref=e2402]
+          - listitem [ref=e2404]:
+            - heading "One Time Earnings" [level=3] [ref=e2408]:
+              - button "One Time Earnings" [ref=e2409] [cursor=pointer]:
+                - generic [ref=e2410]:
+                  - text: One Time Earnings
+                  - img [ref=e2412]
+      - generic [ref=e2414]:
+        - heading "Edit Salary Template Close" [level=3] [ref=e2417]:
+          - text: Edit Salary Template
+          - link "Close" [ref=e2419] [cursor=pointer]:
+            - /url: "#/settings/salary-templates"
+            - img [ref=e2420]
+        - generic [ref=e2424]:
+          - generic [ref=e2425]:
+            - generic [ref=e2426]: Template Name *
+            - generic [ref=e2427]: Description
+          - generic [ref=e2428]:
+            - textbox "Template Name *" [ref=e2430]: Standard-Exec
+            - textbox "Description" [ref=e2432]:
+              - /placeholder: Max 500 Characters
+          - generic [ref=e2436]:
+            - generic [ref=e2439]:
+              - generic [ref=e2440]: Annual CTC
+              - generic [ref=e2443]:
+                - generic [ref=e2445]: ₹
+                - generic [ref=e2446]: per year
+                - spinbutton [active] [ref=e2447]: "1200000"
+            - table [ref=e2449]:
+              - rowgroup [ref=e2450]:
+                - row "Salary Components Calculation Type Monthly Amount Annual Amount" [ref=e2451]:
+                  - columnheader "Salary Components" [ref=e2452]
+                  - columnheader "Calculation Type" [ref=e2453]
+                  - columnheader "Monthly Amount" [ref=e2454]
+                  - columnheader "Annual Amount" [ref=e2455]
+                  - columnheader [ref=e2456]
+              - rowgroup [ref=e2457]:
+                - row "Earnings" [ref=e2458]:
+                  - cell "Earnings" [ref=e2459]
+                - row "Basic % of CTC 600000" [ref=e2460]:
+                  - cell "Basic" [ref=e2461]:
+                    - generic [ref=e2463]: Basic
+                  - cell "% of CTC" [ref=e2464]:
+                    - generic [ref=e2466]:
+                      - spinbutton [ref=e2467]: "50.00"
+                      - generic [ref=e2468]: "% of CTC"
+                  - cell [ref=e2469]:
+                    - spinbutton [disabled] [ref=e2470]: "50000"
+                  - cell "600000" [ref=e2471]
+                  - cell [ref=e2472]
+                - row "House Rent Allowance % of Basic 300000" [ref=e2473]:
+                  - cell "House Rent Allowance" [ref=e2474]:
+                    - generic [ref=e2476]: House Rent Allowance
+                  - cell "% of Basic" [ref=e2477]:
+                    - generic [ref=e2479]:
+                      - spinbutton [ref=e2480]: "50.00"
+                      - generic [ref=e2481]: "% of Basic"
+                  - cell [ref=e2482]:
+                    - spinbutton [disabled] [ref=e2483]: "25000"
+                  - cell "300000" [ref=e2484]
+                  - cell [ref=e2485]
+                - row "Special Allowance Fixed amount 0" [ref=e2486]:
+                  - cell "Special Allowance" [ref=e2487]:
+                    - generic [ref=e2489]: Special Allowance
+                  - cell "Fixed amount" [ref=e2490]
+                  - cell [ref=e2491]:
+                    - spinbutton [ref=e2492]: "0"
+                  - cell "0" [ref=e2493]
+                  - cell [ref=e2494]
+                - row "Fixed Allowance Monthly CTC - Sum of all other components Fixed amount 25000 300000" [ref=e2495]:
+                  - cell "Fixed Allowance Monthly CTC - Sum of all other components" [ref=e2496]:
+                    - generic [ref=e2498]:
+                      - text: Fixed Allowance
+                      - img [ref=e2501]
+                      - generic [ref=e2503]: Monthly CTC - Sum of all other components
+                  - cell "Fixed amount" [ref=e2504]
+                  - cell "25000" [ref=e2505]
+                  - cell "300000" [ref=e2506]
+                  - cell [ref=e2507]
+              - rowgroup [ref=e2508]:
+                - row [ref=e2509]:
+                  - cell [ref=e2510]
+                - row "Cost to Company ₹100000 ₹1200000" [ref=e2511]:
+                  - cell "Cost to Company ₹100000 ₹1200000" [ref=e2512]:
+                    - table [ref=e2513]:
+                      - row "Cost to Company ₹100000 ₹1200000" [ref=e2514]:
+                        - cell "Cost to Company" [ref=e2515]:
+                          - strong [ref=e2516]: Cost to Company
+                        - cell "₹100000" [ref=e2517]:
+                          - strong [ref=e2518]: ₹100000
+                        - cell "₹1200000" [ref=e2519]:
+                          - strong [ref=e2520]: ₹1200000
+                        - cell [ref=e2521]
+            - generic [ref=e2523]:
+              - strong [ref=e2524]: "Note :"
+              - text: Any changes made to existing components will be applicable only for future association.
+            - generic [ref=e2526]:
+              - button "Save" [ref=e2527] [cursor=pointer]
+              - button "Cancel" [ref=e2528] [cursor=pointer]
+  - status [ref=e259]: Settings Salary Templates page loaded.
+  - text:       Chats  Contacts   
