@@ -24,12 +24,14 @@ const STATE_NAMES: Record<string, string> = {
   MH: 'Maharashtra', KA: 'Karnataka', AP: 'Andhra Pradesh',
   TS: 'Telangana', WB: 'West Bengal', GJ: 'Gujarat',
   MP: 'Madhya Pradesh', CH: 'Chandigarh', HR: 'Haryana',
+  KL: 'Kerala',
 }
 
 const stateCodeMap: Record<string, string> = {
   Maharashtra: 'MH', Karnataka: 'KA', AndhraPradesh: 'AP',
   Telangana: 'TS', WestBengal: 'WB', Gujarat: 'GJ',
   MadhyaPradesh: 'MP', Chandigarh: 'CH', Haryana: 'HR',
+  Kerala: 'KL',
 }
 
 function formatAmount(cfg: LwfConfig): string {

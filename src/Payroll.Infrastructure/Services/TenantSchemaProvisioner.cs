@@ -286,7 +286,8 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
                 Payroll.Domain.Entities.LwfStateConfig.Create("GJ", eff, 6m,  12m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
                 Payroll.Domain.Entities.LwfStateConfig.Create("MP", eff, 10m, 10m,  false, null, null, null, null, "Monthly",   null, null, 10000m, sys),
                 Payroll.Domain.Entities.LwfStateConfig.Create("CH", eff, 25m, 25m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
-                Payroll.Domain.Entities.LwfStateConfig.Create("HR", eff, 0m,  0m,   true,  0.002m, 0.002m, 25m, 25m, "Monthly", null, null, 25000m, sys));
+                Payroll.Domain.Entities.LwfStateConfig.Create("HR", eff, 0m,  0m,   true,  0.002m, 0.002m, 25m, 25m, "Monthly", null, null, 25000m, sys),
+                Payroll.Domain.Entities.LwfStateConfig.Create("KL", eff, 50m, 50m,  false, null, null, null, null, "Annual",    12,   31,   null,   sys));
 
             // Income Tax — FY2025-26, New Regime
             db.IncomeTaxSlabs.AddRange(
