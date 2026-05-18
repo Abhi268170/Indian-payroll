@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/Button'
 import { useToast } from '@/components/ui/useToast'
 import type { StatutoryConfig } from '../StatutoryComponentsPage'
 
-const CONTRIBUTION_RATES = [
+// Only two valid EPFO employer rate options — Gross12 is not a valid EPFO choice
+const EMPLOYER_RATES = [
   { value: 'ActualPfWage12', label: '12% of Actual PF Wage' },
   { value: 'RestrictedWage12', label: '12% of Restricted PF Wage (₹15,000)' },
-  { value: 'Gross12', label: '12% of Gross' },
 ]
 
 interface Props {
@@ -18,10 +18,10 @@ interface Props {
 
 export default function EpfTab({ config }: Props): ReactElement {
   const [editing, setEditing] = useState(false)
+  const [disabling, setDisabling] = useState(false)
   const [form, setForm] = useState({
     enabled: config.epfEnabled,
     establishmentCode: config.epfEstablishmentCode ?? '',
-    employeeContributionRate: config.epfEmployeeContributionRate,
     employerContributionRate: config.epfEmployerContributionRate,
     includeEmployerInCtc: config.epfIncludeEmployerInCtc,
     includeEdliInCtc: config.epfIncludeEdliInCtc,
@@ -39,7 +39,7 @@ export default function EpfTab({ config }: Props): ReactElement {
       api.put('/api/v1/statutory/epf', {
         enabled: form.enabled,
         establishmentCode: form.establishmentCode || null,
-        employeeContributionRate: form.employeeContributionRate,
+        employeeContributionRate: 'ActualPfWage12', // always 12%, not configurable
         employerContributionRate: form.employerContributionRate,
         includeEmployerInCtc: form.includeEmployerInCtc,
         includeEdliInCtc: form.includeEdliInCtc,
@@ -53,11 +53,65 @@ export default function EpfTab({ config }: Props): ReactElement {
       setEditing(false)
       toast.success('EPF settings saved')
     },
-    onError: () => { toast.error('Failed to save EPF settings'); },
+    onError: () => { toast.error('Failed to save EPF settings') },
+  })
+
+  const disable = useMutation({
+    mutationFn: () =>
+      api.put('/api/v1/statutory/epf', {
+        enabled: false,
+        establishmentCode: form.establishmentCode || null,
+        employeeContributionRate: 'ActualPfWage12',
+        employerContributionRate: form.employerContributionRate,
+        includeEmployerInCtc: form.includeEmployerInCtc,
+        includeEdliInCtc: form.includeEdliInCtc,
+        includeAdminInCtc: form.includeAdminInCtc,
+        overrideAtEmployeeLevel: form.overrideAtEmployeeLevel,
+        proRateRestrictedPfWage: form.proRateRestrictedPfWage,
+        considerSalaryOnLop: form.considerSalaryOnLop,
+      }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['statutory-config'] })
+      setDisabling(false)
+      setForm(f => ({ ...f, enabled: false }))
+      toast.success('EPF disabled')
+    },
+    onError: () => { toast.error('Failed to disable EPF') },
   })
 
   const rateLabel = (v: string): string =>
-    CONTRIBUTION_RATES.find(r => r.value === v)?.label ?? v
+    EMPLOYER_RATES.find(r => r.value === v)?.label ?? '12% of Actual PF Wage'
+
+  if (disabling) {
+    return (
+      <div className="space-y-4">
+        <h3 className="text-[15px] font-semibold text-[var(--color-text-primary)]">
+          Disable EPF
+        </h3>
+        <p className="text-[13px] text-[var(--color-text-muted)]">
+          Disabling EPF will stop deductions for all employees from the next payroll run.
+          Employees already exempt are not affected.
+        </p>
+        <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => { setDisabling(false) }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="danger"
+            size="sm"
+            loading={disable.isPending}
+            onClick={() => { disable.mutate() }}
+          >
+            Disable EPF
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   if (!editing) {
     return (
@@ -71,16 +125,27 @@ export default function EpfTab({ config }: Props): ReactElement {
               Configure EPF deductions and employer contributions
             </p>
           </div>
-          <Button variant="secondary" size="sm" onClick={() => { setEditing(true); }}>
-            <Pencil className="w-3.5 h-3.5 mr-1.5" />
-            Edit
-          </Button>
+          <div className="flex gap-2">
+            {config.epfEnabled && (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => { setDisabling(true) }}
+              >
+                Disable EPF
+              </Button>
+            )}
+            <Button variant="secondary" size="sm" onClick={() => { setEditing(true) }}>
+              <Pencil className="w-3.5 h-3.5 mr-1.5" />
+              Edit
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-x-12 gap-y-4">
           <ViewRow label="EPF Status" value={config.epfEnabled ? 'Enabled' : 'Disabled'} />
           <ViewRow label="Establishment Code" value={config.epfEstablishmentCode ?? '—'} />
-          <ViewRow label="Employee Contribution" value={rateLabel(config.epfEmployeeContributionRate)} />
+          <ViewRow label="Employee Contribution" value="12% of PF Wage (statutory)" />
           <ViewRow label="Employer Contribution" value={rateLabel(config.epfEmployerContributionRate)} />
           <ViewRow label="Include Employer EPF in CTC" value={config.epfIncludeEmployerInCtc ? 'Yes' : 'No'} />
           <ViewRow label="Include EDLI in CTC" value={config.epfIncludeEdliInCtc ? 'Yes' : 'No'} />
@@ -123,7 +188,7 @@ export default function EpfTab({ config }: Props): ReactElement {
             type="button"
             variant="secondary"
             size="sm"
-            onClick={() => { setEditing(false); }}
+            onClick={() => { setEditing(false) }}
           >
             Cancel
           </Button>
@@ -134,13 +199,6 @@ export default function EpfTab({ config }: Props): ReactElement {
       </div>
 
       <div className="space-y-5">
-        <CheckboxField
-          id="epf-enabled"
-          label="Enable EPF for this organisation"
-          checked={form.enabled}
-          onChange={v => { setForm(f => ({ ...f, enabled: v })); }}
-        />
-
         <div>
           <label className="block text-[13px] font-medium text-[var(--color-text-primary)] mb-1">
             EPF Establishment Code
@@ -149,22 +207,24 @@ export default function EpfTab({ config }: Props): ReactElement {
             className="form-input w-72"
             placeholder="e.g. MH/PUN/0012345/000"
             value={form.establishmentCode}
-            onChange={e => { setForm(f => ({ ...f, establishmentCode: e.target.value })); }}
+            onChange={e => { setForm(f => ({ ...f, establishmentCode: e.target.value })) }}
           />
         </div>
 
         <div className="grid grid-cols-2 gap-5">
-          <SelectField
-            label="Employee Contribution Rate"
-            value={form.employeeContributionRate}
-            options={CONTRIBUTION_RATES}
-            onChange={v => { setForm(f => ({ ...f, employeeContributionRate: v })); }}
-          />
+          <div>
+            <label className="block text-[13px] font-medium text-[var(--color-text-primary)] mb-1">
+              Employee Contribution Rate
+            </label>
+            <div className="form-input w-full bg-[var(--color-bg-muted)] text-[var(--color-text-muted)] cursor-not-allowed">
+              12% of PF Wage (statutory — not configurable)
+            </div>
+          </div>
           <SelectField
             label="Employer Contribution Rate"
             value={form.employerContributionRate}
-            options={CONTRIBUTION_RATES}
-            onChange={v => { setForm(f => ({ ...f, employerContributionRate: v })); }}
+            options={EMPLOYER_RATES}
+            onChange={v => { setForm(f => ({ ...f, employerContributionRate: v })) }}
           />
         </div>
 
@@ -173,25 +233,25 @@ export default function EpfTab({ config }: Props): ReactElement {
             id="include-employer"
             label="Include Employer EPF contribution in CTC"
             checked={form.includeEmployerInCtc}
-            onChange={v => { setForm(f => ({ ...f, includeEmployerInCtc: v })); }}
+            onChange={v => { setForm(f => ({ ...f, includeEmployerInCtc: v })) }}
           />
           <CheckboxField
             id="include-edli"
             label="Include EDLI contribution in CTC"
             checked={form.includeEdliInCtc}
-            onChange={v => { setForm(f => ({ ...f, includeEdliInCtc: v })); }}
+            onChange={v => { setForm(f => ({ ...f, includeEdliInCtc: v })) }}
           />
           <CheckboxField
             id="include-admin"
             label="Include EPF Admin charges in CTC"
             checked={form.includeAdminInCtc}
-            onChange={v => { setForm(f => ({ ...f, includeAdminInCtc: v })); }}
+            onChange={v => { setForm(f => ({ ...f, includeAdminInCtc: v })) }}
           />
           <CheckboxField
             id="override-employee"
             label="Allow EPF override at employee level"
             checked={form.overrideAtEmployeeLevel}
-            onChange={v => { setForm(f => ({ ...f, overrideAtEmployeeLevel: v })); }}
+            onChange={v => { setForm(f => ({ ...f, overrideAtEmployeeLevel: v })) }}
           />
         </div>
 
@@ -204,13 +264,13 @@ export default function EpfTab({ config }: Props): ReactElement {
               id="pro-rate"
               label="Pro-rate Restricted PF Wage based on paid days"
               checked={form.proRateRestrictedPfWage}
-              onChange={v => { setForm(f => ({ ...f, proRateRestrictedPfWage: v })); }}
+              onChange={v => { setForm(f => ({ ...f, proRateRestrictedPfWage: v })) }}
             />
             <CheckboxField
               id="consider-lop"
               label="Consider all applicable salary components if PF wage < ₹15,000 after LOP"
               checked={form.considerSalaryOnLop}
-              onChange={v => { setForm(f => ({ ...f, considerSalaryOnLop: v })); }}
+              onChange={v => { setForm(f => ({ ...f, considerSalaryOnLop: v })) }}
             />
           </div>
         </div>
@@ -272,7 +332,7 @@ function SelectField({
       <select
         className="form-input w-full"
         value={value}
-        onChange={e => { onChange(e.target.value); }}
+        onChange={e => { onChange(e.target.value) }}
       >
         {options.map(o => (
           <option key={o.value} value={o.value}>
