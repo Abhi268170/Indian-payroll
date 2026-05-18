@@ -182,6 +182,10 @@ public sealed class InitiatePayrollRunHandler(
             : [];
 
         var resultMap = results.ToDictionary(r => r.EmployeeId);
+        var epfFlagByComponent = engineInputs
+            .SelectMany(e => e.Components)
+            .GroupBy(c => c.ComponentId)
+            .ToDictionary(g => g.Key, g => g.First().ConsiderForEpf);
 
         // Create PayrollRun
         int employeeCount = activeEmployees.Count;
@@ -240,7 +244,9 @@ public sealed class InitiatePayrollRunHandler(
                     var breakdown = PayrunComponentBreakdown.Create(
                         payrollRun.Id, emp.Id, tenantContext.TenantId,
                         comp.ComponentId, comp.Code, comp.Code,
-                        comp.FullAmount, comp.ProratedAmount, isOneTimeEarning: false);
+                        comp.FullAmount, comp.ProratedAmount,
+                        isOneTimeEarning: false,
+                        considerForEpf: epfFlagByComponent.GetValueOrDefault(comp.ComponentId, false));
                     await breakdownRepo.AddAsync(breakdown, ct);
                 }
             }
@@ -311,7 +317,8 @@ public sealed class InitiatePayrollRunHandler(
             nonResidualSum += monthly;
 
             bool isTaxable = comp.Component.IsTaxable ?? true;
-            components.Add(new SalaryComponentInput(comp.ComponentId, comp.Component.Code, monthly, isTaxable));
+            bool considerForEpf = comp.Component.ConsiderForEpf ?? false;
+            components.Add(new SalaryComponentInput(comp.ComponentId, comp.Component.Code, monthly, isTaxable, considerForEpf));
         }
 
         // Residual
@@ -320,7 +327,8 @@ public sealed class InitiatePayrollRunHandler(
         {
             decimal residualMonthly = Math.Round(monthlyGross - nonResidualSum, 2, MidpointRounding.AwayFromZero);
             bool isTaxable = residual.Component.IsTaxable ?? true;
-            components.Add(new SalaryComponentInput(residual.ComponentId, residual.Component.Code, residualMonthly, isTaxable));
+            bool considerForEpf = residual.Component.ConsiderForEpf ?? false;
+            components.Add(new SalaryComponentInput(residual.ComponentId, residual.Component.Code, residualMonthly, isTaxable, considerForEpf));
         }
 
         return components;

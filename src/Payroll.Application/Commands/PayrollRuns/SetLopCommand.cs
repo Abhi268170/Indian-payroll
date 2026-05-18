@@ -115,7 +115,7 @@ public sealed class SetLopCommandHandler(
         // Build components from stored full amounts (excludes one-time earnings — handled separately)
         var components = breakdowns
             .Where(b => !b.IsOneTimeEarning)
-            .Select(b => new SalaryComponentInput(b.SalaryComponentId ?? Guid.Empty, b.ComponentCode, b.FullAmount, true))
+            .Select(b => new SalaryComponentInput(b.SalaryComponentId ?? Guid.Empty, b.ComponentCode, b.FullAmount, IsTaxable: true, ConsiderForEpf: b.ConsiderForEpf))
             .ToList();
 
         var empInput = new EmployeeInput(

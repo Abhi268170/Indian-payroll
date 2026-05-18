@@ -35,24 +35,27 @@ public class GrossCalculatorTests
 
     private static IReadOnlyList<SalaryComponentInput> DefaultComponents() =>
     [
-        new(BasicId, "BASIC", 28000m, true),
-        new(HraId, "HRA", 14000m, false),
-        new(FixedId, "FIXED_ALLOWANCE", 28000m, true),
+        new(BasicId, "BASIC", 28000m, IsTaxable: true, ConsiderForEpf: true),
+        new(HraId,   "HRA",   14000m, IsTaxable: false, ConsiderForEpf: false),
+        new(FixedId, "FIXED_ALLOWANCE", 28000m, IsTaxable: true, ConsiderForEpf: false),
     ];
 
     private static IReadOnlyList<SalaryComponentInput> WithDa() =>
     [
-        new(BasicId, "BASIC", 20000m, true),
-        new(DaId, "DA", 5000m, true),
-        new(HraId, "HRA", 10000m, false),
-        new(FixedId, "FIXED_ALLOWANCE", 10000m, true),
+        new(BasicId, "BASIC", 20000m, IsTaxable: true, ConsiderForEpf: true),
+        new(DaId,    "DA",     5000m, IsTaxable: true, ConsiderForEpf: true),
+        new(HraId,   "HRA",   10000m, IsTaxable: false, ConsiderForEpf: false),
+        new(FixedId, "FIXED_ALLOWANCE", 10000m, IsTaxable: true, ConsiderForEpf: false),
     ];
 
     private static PayrollRunInput Run31() =>
-        new(Year: 2025, Month: 5, CalendarDaysInMonth: 31, MonthsRemainingInFY: 10, FiscalYearLabel: "FY2025-26");
+        new(Year: 2025, Month: 5, CalendarDaysInMonth: 31, SalaryDivisor: 31, MonthsRemainingInFY: 10, FiscalYearLabel: "FY2025-26");
 
     private static PayrollRunInput Run30() =>
-        new(Year: 2025, Month: 6, CalendarDaysInMonth: 30, MonthsRemainingInFY: 9, FiscalYearLabel: "FY2025-26");
+        new(Year: 2025, Month: 6, CalendarDaysInMonth: 30, SalaryDivisor: 30, MonthsRemainingInFY: 9, FiscalYearLabel: "FY2025-26");
+
+    private static PayrollRunInput RunFixed26() =>
+        new(Year: 2025, Month: 5, CalendarDaysInMonth: 31, SalaryDivisor: 26, MonthsRemainingInFY: 10, FiscalYearLabel: "FY2025-26");
 
     // ── No LOP ────────────────────────────────────────────────────────────────
 
@@ -70,6 +73,19 @@ public class GrossCalculatorTests
         GrossResult result = GrossCalculator.Compute(MakeEmployee(lop: 0), Run31());
         result.ComponentBreakdown.Should().HaveCount(3);
         result.ComponentBreakdown.Should().AllSatisfy(c => c.ProratedAmount.Should().Be(c.FullAmount));
+    }
+
+    // ── Fixed-days divisor ────────────────────────────────────────────────────
+
+    [Fact]
+    public void WithLop_FixedDaysDivisor26_ProratesUsing26NotCalendarDays()
+    {
+        // May has 31 calendar days; fixed divisor = 26; 2 LOP days
+        // BASIC: 28000 × 24/26 = 25846.15 (rounded)
+        GrossResult result = GrossCalculator.Compute(MakeEmployee(lop: 2, calendarDays: 31), RunFixed26());
+
+        decimal expectedBasic = Math.Round(28000m * 24m / 26m, 2, MidpointRounding.AwayFromZero);
+        result.ComponentBreakdown.First(c => c.Code == "BASIC").ProratedAmount.Should().Be(expectedBasic);
     }
 
     // ── Per-component proration ───────────────────────────────────────────────
@@ -107,28 +123,37 @@ public class GrossCalculatorTests
         result.ComponentBreakdown.First(c => c.Code == "BASIC").ProratedAmount.Should().Be(expectedBasic);
     }
 
-    // ── PFWage uses prorated BASIC + DA ───────────────────────────────────────
+    // ── PFWage uses ConsiderForEpf flag ──────────────────────────────────────
 
     [Fact]
-    public void PFWage_NoLop_IsFullBasicPlusDA()
+    public void PFWage_NoLop_SumsConsiderForEpfComponents()
     {
         GrossResult result = GrossCalculator.Compute(
             MakeEmployee(lop: 0, components: WithDa()), Run31());
 
-        result.PFWage.Should().Be(25000m); // BASIC 20000 + DA 5000
+        result.PFWage.Should().Be(25000m);     // BASIC 20000 + DA 5000
+        result.FullPFWage.Should().Be(25000m); // same — no LOP
     }
 
     [Fact]
-    public void PFWage_WithLop_IsProratedBasicPlusDA()
+    public void PFWage_WithLop_IsProratedAndFullPFWageIsUnprorated()
     {
         // 2 LOP days, 31 calendar days
-        // PFWage = (20000 × 29/31) + (5000 × 29/31)
         GrossResult result = GrossCalculator.Compute(
             MakeEmployee(lop: 2, calendarDays: 31, components: WithDa()), Run31());
 
         decimal expectedBasic = Math.Round(20000m * 29m / 31m, 2, MidpointRounding.AwayFromZero);
         decimal expectedDa    = Math.Round(5000m  * 29m / 31m, 2, MidpointRounding.AwayFromZero);
         result.PFWage.Should().Be(expectedBasic + expectedDa);
+        result.FullPFWage.Should().Be(25000m); // full structure amount, no proration
+    }
+
+    [Fact]
+    public void PFWage_DefaultComponents_ExcludesHraAndFixedAllowance()
+    {
+        GrossResult result = GrossCalculator.Compute(MakeEmployee(lop: 0), Run31());
+        result.PFWage.Should().Be(28000m);     // BASIC only (ConsiderForEpf=true)
+        result.FullPFWage.Should().Be(28000m);
     }
 
     // ── ComponentBreakdown structure ──────────────────────────────────────────

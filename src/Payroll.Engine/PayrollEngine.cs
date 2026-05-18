@@ -23,10 +23,10 @@ public static class PayrollEngine
         StatutoryConfig config)
     {
         GrossResult gross = GrossCalculator.Compute(emp, run);
-        PFResult pf = PFCalculator.Compute(gross.PFWage, config, !emp.EpfEnabled, emp.VPFAmount);
+        PFResult pf = PFCalculator.Compute(gross.PFWage, gross.FullPFWage, emp.LOPDays, run.SalaryDivisor, config, !emp.EpfEnabled, emp.VPFAmount);
         ESIResult esi = ESICalculator.Compute(gross.GrossWage, config, emp.IsESIExempt, emp.IsPWD);
         PTResult pt = PTCalculator.Compute(gross.GrossWage, emp.WorkStateCode, config, run);
-        LWFResult lwf = LWFCalculator.Compute(emp.WorkStateCode, config, run);
+        LWFResult lwf = LWFCalculator.Compute(emp.WorkStateCode, gross.GrossWage, config, run);
         TDSResult tds = TDSCalculator.Compute(
             gross.AnnualProjectedGross,
             pt.Amount,

@@ -9,7 +9,6 @@ public static class StatutoryConfigBuilder
 {
     private const decimal PfWageCap = 15_000m;
     private const decimal EpfEmployeeRate = 0.12m;
-    private const decimal EpfEmployerRate = 0.0367m;
     private const decimal EpsEmployerRate = 0.0833m;
     private const decimal EpsCap = 1_250m;
     private const decimal EdliEmployerRate = 0.005m;
@@ -64,13 +63,15 @@ public static class StatutoryConfigBuilder
             CessRate: 0.04m,
             PFWageCap: PfWageCap,
             EPFEmployeeRate: EpfEmployeeRate,
-            EPFEmployerRate: EpfEmployerRate,
             EPSEmployerRate: EpsEmployerRate,
             EPSCap: EpsCap,
             EDLIEmployerRate: EdliEmployerRate,
             EDLICap: EdliCap,
             EPFAdminRate: EpfAdminRate,
             EPFAdminMinimum: EpfAdminMinimum,
+            EpfRestrictEmployerWage: orgConfig.EpfEmployerContributionRate == "RestrictedWage12",
+            EpfConsiderSalaryOnLop: orgConfig.EpfConsiderSalaryOnLop,
+            EpfProRateRestrictedPfWage: orgConfig.EpfProRateRestrictedPfWage,
             ESIWageLimit: EsiWageLimit,
             ESIPWDWageLimit: EsiPwdWageLimit,
             ESIEmployeeRate: EsiEmployeeRate,

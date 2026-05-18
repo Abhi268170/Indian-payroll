@@ -1638,6 +1638,11 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("boolean")
                         .HasColumnName("is_one_time_earning");
 
+                    b.Property<bool>("ConsiderForEpf")
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("consider_for_epf");
+
                     b.Property<Guid>("PayrollRunId")
                         .HasColumnType("uuid")
                         .HasColumnName("payroll_run_id");

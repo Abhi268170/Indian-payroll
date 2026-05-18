@@ -15,6 +15,7 @@ public sealed class PayrunComponentBreakdown : AuditableEntity
     public decimal FullAmount { get; private set; }
     public decimal ProratedAmount { get; private set; }
     public bool IsOneTimeEarning { get; private set; }
+    public bool ConsiderForEpf { get; private set; }
 
     public static PayrunComponentBreakdown Create(
         Guid payrollRunId,
@@ -25,7 +26,8 @@ public sealed class PayrunComponentBreakdown : AuditableEntity
         string componentName,
         decimal fullAmount,
         decimal proratedAmount,
-        bool isOneTimeEarning) =>
+        bool isOneTimeEarning,
+        bool considerForEpf = false) =>
         new()
         {
             PayrollRunId = payrollRunId,
@@ -36,7 +38,8 @@ public sealed class PayrunComponentBreakdown : AuditableEntity
             ComponentName = componentName,
             FullAmount = fullAmount,
             ProratedAmount = proratedAmount,
-            IsOneTimeEarning = isOneTimeEarning
+            IsOneTimeEarning = isOneTimeEarning,
+            ConsiderForEpf = considerForEpf
         };
 
     public void UpdateAmounts(decimal fullAmount, decimal proratedAmount)

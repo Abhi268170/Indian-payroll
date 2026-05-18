@@ -4,4 +4,5 @@ public sealed record SalaryComponentInput(
     Guid ComponentId,
     string Code,
     decimal Amount,
-    bool IsTaxable);
+    bool IsTaxable,
+    bool ConsiderForEpf = false);
