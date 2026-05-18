@@ -27,6 +27,8 @@ const STATE_NAMES: Record<string, string> = {
   MH: 'Maharashtra', KA: 'Karnataka', AP: 'Andhra Pradesh',
   TS: 'Telangana', WB: 'West Bengal', TN: 'Tamil Nadu',
   KL: 'Kerala', GJ: 'Gujarat', MP: 'Madhya Pradesh',
+  OR: 'Odisha', AS: 'Assam', SK: 'Sikkim',
+  ML: 'Meghalaya', TR: 'Tripura', JH: 'Jharkhand',
 }
 
 function formatCurrency(amount: number): string {
@@ -407,6 +409,8 @@ export default function PtTab(): ReactElement {
     Maharashtra: 'MH', Karnataka: 'KA', AndhraPradesh: 'AP',
     Telangana: 'TS', WestBengal: 'WB', TamilNadu: 'TN',
     Kerala: 'KL', Gujarat: 'GJ', MadhyaPradesh: 'MP',
+    Odisha: 'OR', Assam: 'AS', Sikkim: 'SK',
+    Meghalaya: 'ML', Tripura: 'TR', Jharkhand: 'JH',
   }
 
   const uniqueStates = [...new Set((locations ?? []).map(l => l.state))]

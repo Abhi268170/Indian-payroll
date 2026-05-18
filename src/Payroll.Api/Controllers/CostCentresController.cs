@@ -6,14 +6,23 @@ using Payroll.Application.Commands.OrgStructure;
 using Payroll.Application.DTOs;
 using Payroll.Application.Queries.OrgStructure;
 using Payroll.Domain.Common;
+using Payroll.Domain.Interfaces;
 
 namespace Payroll.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/cost-centres")]
 [Authorize]
-public sealed class CostCentresController(ISender sender) : ControllerBase
+public sealed class CostCentresController(ISender sender, ICostCentreRepository repo) : ControllerBase
 {
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+    {
+        var cc = await repo.GetByIdAsync(id, cancellationToken);
+        if (cc is null) return NotFound();
+        return Ok(new CostCentreDto(cc.Id, cc.Name, cc.Code));
+    }
+
     [HttpGet]
     public async Task<IActionResult> List(CancellationToken cancellationToken)
     {

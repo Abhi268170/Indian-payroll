@@ -6,14 +6,23 @@ using Payroll.Application.Commands.OrgStructure;
 using Payroll.Application.DTOs;
 using Payroll.Application.Queries.OrgStructure;
 using Payroll.Domain.Common;
+using Payroll.Domain.Interfaces;
 
 namespace Payroll.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/departments")]
 [Authorize]
-public sealed class DepartmentsController(ISender sender) : ControllerBase
+public sealed class DepartmentsController(ISender sender, IDepartmentRepository repo) : ControllerBase
 {
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+    {
+        var dept = await repo.GetByIdAsync(id, cancellationToken);
+        if (dept is null) return NotFound();
+        return Ok(new DepartmentDto(dept.Id, dept.Name, dept.Code, dept.Description));
+    }
+
     [HttpGet]
     public async Task<IActionResult> List(CancellationToken cancellationToken)
     {

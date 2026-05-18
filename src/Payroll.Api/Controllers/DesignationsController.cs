@@ -6,14 +6,23 @@ using Payroll.Application.Commands.OrgStructure;
 using Payroll.Application.DTOs;
 using Payroll.Application.Queries.OrgStructure;
 using Payroll.Domain.Common;
+using Payroll.Domain.Interfaces;
 
 namespace Payroll.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/designations")]
 [Authorize]
-public sealed class DesignationsController(ISender sender) : ControllerBase
+public sealed class DesignationsController(ISender sender, IDesignationRepository repo) : ControllerBase
 {
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+    {
+        var d = await repo.GetByIdAsync(id, cancellationToken);
+        if (d is null) return NotFound();
+        return Ok(new DesignationDto(d.Id, d.Name));
+    }
+
     [HttpGet]
     public async Task<IActionResult> List(CancellationToken cancellationToken)
     {
