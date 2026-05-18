@@ -12,10 +12,10 @@ internal sealed class GetLwfConfigsHandler(IStatutoryConfigRepository repo)
 {
     public async Task<IReadOnlyList<LwfStateConfigDto>> Handle(GetLwfConfigsQuery request, CancellationToken ct)
     {
-        IReadOnlyList<LwfStateConfig> configs = await repo.GetLwfConfigsAsync(request.StateCodes, ct);
+        IReadOnlyList<LwfStateConfig> configs = await repo.GetAllLwfConfigsForStatesAsync(request.StateCodes, ct);
         return configs.Select(c => new LwfStateConfigDto(
             c.StateCode, c.EffectiveDate, c.EmployeeAmount, c.EmployerAmount,
             c.IsPercentageBased, c.EmployeeRate, c.EmployerRate,
-            c.Frequency, c.DeductionMonth, c.WageThreshold)).ToList();
+            c.Frequency, c.DeductionMonth, c.WageThreshold, c.IsActive)).ToList();
     }
 }

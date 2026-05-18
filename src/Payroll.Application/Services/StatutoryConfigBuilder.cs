@@ -3,10 +3,8 @@ using Payroll.Engine.Inputs;
 
 namespace Payroll.Application.Services;
 
-/// <summary>
-/// Builds engine StatutoryConfig from persisted domain entities.
-/// All PF/ESI rates are statutory — EPF Act 1952 and ESI Act 1948 mandates.
-/// </summary>
+// Builds engine StatutoryConfig from persisted domain entities.
+// PF rates are statutory (EPF Act 1952). ESI rates are statutory (ESI Act 1948).
 public static class StatutoryConfigBuilder
 {
     private const decimal PfWageCap = 15_000m;
@@ -40,16 +38,22 @@ public static class StatutoryConfigBuilder
             .ToList();
 
         var ptSlabInputs = ptSlabs
-            .Select(s => new PTSlab(s.StateCode, s.MinGross, s.MaxGross, s.PtAmount, s.EffectiveDate))
+            .Select(s => new PTSlab(
+                s.StateCode, s.MinGross, s.MaxGross, s.PtAmount, s.EffectiveDate,
+                s.Frequency,
+                ParseDeductionMonths(s.DeductionMonthsCsv)))
             .ToList();
 
-        decimal? lwfEmployee = null;
-        decimal? lwfEmployer = null;
-        if (lwfConfigs.Count > 0)
-        {
-            lwfEmployee = lwfConfigs.Sum(l => l.EmployeeAmount);
-            lwfEmployer = lwfConfigs.Sum(l => l.EmployerAmount);
-        }
+        var lwfStates = lwfConfigs
+            .Select(l => new LwfStateInput(
+                l.StateCode,
+                l.EmployeeAmount, l.EmployerAmount,
+                l.IsPercentageBased,
+                l.EmployeeRate, l.EmployerRate,
+                l.RateCapEmployee, l.RateCapEmployer,
+                l.Frequency, l.DeductionMonth,
+                l.WageThreshold))
+            .ToList();
 
         return new StatutoryConfig(
             NewRegimeSlabs: newRegimeSlabs,
@@ -72,12 +76,19 @@ public static class StatutoryConfigBuilder
             ESIEmployeeRate: EsiEmployeeRate,
             ESIEmployerRate: EsiEmployerRate,
             PTSlabs: ptSlabInputs,
-            LWFEmployeeAmount: lwfEmployee,
-            LWFEmployerAmount: lwfEmployer,
+            LWFStates: lwfStates,
             PFEnabled: orgConfig.EpfEnabled,
             ESIEnabled: orgConfig.EsiEnabled,
-            PTEnabled: true,
-            LWFEnabled: lwfConfigs.Count > 0
+            PTEnabled: true
         );
+    }
+
+    private static IReadOnlyList<int> ParseDeductionMonths(string? csv)
+    {
+        if (string.IsNullOrWhiteSpace(csv)) return [];
+        return csv.Split(',')
+            .Select(s => int.TryParse(s.Trim(), out int m) ? m : 0)
+            .Where(m => m is >= 1 and <= 12)
+            .ToList();
     }
 }

@@ -46,5 +46,11 @@ public sealed record LwfStateConfigDto(
     decimal? EmployerRate,
     string Frequency,
     int? DeductionMonth,
-    decimal? WageThreshold
+    decimal? WageThreshold,
+    bool IsActive
+);
+
+public sealed record PtRegistrationDto(
+    string StateCode,
+    string RegistrationNumber
 );

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Payroll.Application.Commands.Statutory;
 using Payroll.Application.DTOs;
 using Payroll.Application.Queries.Statutory;
+using Payroll.Domain.Common;
 
 namespace Payroll.Api.Controllers;
 
@@ -107,6 +108,7 @@ public sealed class StatutoryComponentsController(ISender sender) : ControllerBa
                 stateCode,
                 request.EffectiveDate,
                 request.Frequency,
+                request.DeductionMonthsCsv,
                 request.Slabs.Select(s => new PtSlabInput(s.MinGross, s.MaxGross, s.PtAmount, s.Gender, s.IsFebruarySurcharge)).ToList(),
                 GetActorId()), ct);
             return NoContent();
@@ -123,6 +125,38 @@ public sealed class StatutoryComponentsController(ISender sender) : ControllerBa
     {
         IReadOnlyList<LwfStateConfigDto> configs = await sender.Send(new GetLwfConfigsQuery(states), ct);
         return Ok(configs);
+    }
+
+    [HttpPut("lwf-configs/{stateCode}/toggle")]
+    [Authorize(Policy = "OrgAdmin")]
+    public async Task<IActionResult> ToggleLwfState(
+        string stateCode, [FromBody] ToggleLwfRequest request, CancellationToken ct)
+    {
+        try
+        {
+            await sender.Send(new ToggleLwfStateCommand(stateCode, request.Enable, GetActorId()), ct);
+            return NoContent();
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+    }
+
+    [HttpGet("pt-registrations")]
+    public async Task<IActionResult> GetPtRegistrations(CancellationToken ct)
+    {
+        IReadOnlyList<PtRegistrationDto> registrations = await sender.Send(new GetPtRegistrationsQuery(), ct);
+        return Ok(registrations);
+    }
+
+    [HttpPut("pt-registrations/{stateCode}")]
+    [Authorize(Policy = "OrgAdmin")]
+    public async Task<IActionResult> UpsertPtRegistration(
+        string stateCode, [FromBody] UpsertPtRegistrationRequest request, CancellationToken ct)
+    {
+        await sender.Send(new UpsertPtRegistrationCommand(stateCode, request.RegistrationNumber, GetActorId()), ct);
+        return NoContent();
     }
 
     private Guid GetActorId()
@@ -151,9 +185,14 @@ public record ConfigureEsiRequest(
 
 public record ConfigureStatutoryBonusRequest(bool Enabled, decimal BonusRate, string BonusMode, int? BonusPayoutMonth);
 
+public record ToggleLwfRequest(bool Enable);
+
+public record UpsertPtRegistrationRequest(string RegistrationNumber);
+
 public record RevisePtSlabsRequest(
     DateOnly EffectiveDate,
     string Frequency,
+    string? DeductionMonthsCsv,
     IReadOnlyList<PtSlabRowRequest> Slabs);
 
 public record PtSlabRowRequest(

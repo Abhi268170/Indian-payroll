@@ -53,4 +53,16 @@ public sealed class LwfStateConfig : AuditableEntity
             WageThreshold = wageThreshold,
             CreatedBy = createdBy,
         };
+
+    public void Activate(Guid updatedBy)
+    {
+        IsActive = true;
+        SetUpdated(updatedBy);
+    }
+
+    public void Deactivate(Guid updatedBy)
+    {
+        IsActive = false;
+        SetUpdated(updatedBy);
+    }
 }

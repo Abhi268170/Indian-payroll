@@ -12,6 +12,7 @@ internal sealed class ProfessionalTaxSlabConfiguration : IEntityTypeConfiguratio
 
         builder.Property(s => s.StateCode).IsRequired().HasMaxLength(10);
         builder.Property(s => s.Frequency).IsRequired().HasMaxLength(20);
+        builder.Property(s => s.DeductionMonthsCsv).HasMaxLength(30);
         builder.Property(s => s.Gender).HasMaxLength(10);
         builder.Property(s => s.MinGross).HasColumnType("numeric(18,4)").IsRequired();
         builder.Property(s => s.MaxGross).HasColumnType("numeric(18,4)");

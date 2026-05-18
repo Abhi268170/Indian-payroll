@@ -1,8 +1,9 @@
 import { type ReactElement } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { MapPin } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Spinner } from '@/components/ui/Spinner'
+import { useToast } from '@/components/ui/useToast'
 import type { WorkLocation } from '../WorkLocationsPage'
 
 interface LwfConfig {
@@ -16,6 +17,7 @@ interface LwfConfig {
   frequency: string
   deductionMonth: number | null
   wageThreshold: number | null
+  isActive: boolean
 }
 
 const STATE_NAMES: Record<string, string> = {
@@ -40,6 +42,19 @@ function formatAmount(cfg: LwfConfig): string {
 }
 
 export default function LwfTab(): ReactElement {
+  const qc = useQueryClient()
+  const toast = useToast()
+
+  const toggle = useMutation({
+    mutationFn: ({ stateCode, enable }: { stateCode: string; enable: boolean }) =>
+      api.put(`/api/v1/statutory/lwf-configs/${stateCode}/toggle`, { enable }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['lwf-configs'] })
+      toast.success('LWF status updated')
+    },
+    onError: () => { toast.error('Failed to update LWF status') },
+  })
+
   const { data: locations } = useQuery<WorkLocation[]>({
     queryKey: ['work-locations'],
     queryFn: () => api.get<WorkLocation[]>('/api/v1/work-locations').then(r => r.data),
@@ -92,11 +107,19 @@ export default function LwfTab(): ReactElement {
             if (!cfg) return null
 
             return (
-              <div key={stateEnum} className="border border-[var(--color-border)] rounded-lg p-4">
+              <div
+                key={stateEnum}
+                className={`border rounded-lg p-4 ${cfg.isActive ? 'border-[var(--color-border)]' : 'border-[var(--color-border)] opacity-60'}`}
+              >
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="text-[14px] font-semibold text-[var(--color-text-primary)]">
-                      {stateName}
+                    <div className="flex items-center gap-2">
+                      <div className="text-[14px] font-semibold text-[var(--color-text-primary)]">
+                        {stateName}
+                      </div>
+                      <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded ${cfg.isActive ? 'bg-[var(--color-success-light)] text-[var(--color-success)]' : 'bg-[var(--color-border)] text-[var(--color-text-muted)]'}`}>
+                        {cfg.isActive ? 'Enabled' : 'Disabled'}
+                      </span>
                     </div>
                     <div className="text-[12px] text-[var(--color-text-muted)] mt-0.5">
                       {locs.map(l => l.name).join(', ')}
@@ -111,6 +134,12 @@ export default function LwfTab(): ReactElement {
                       {cfg.deductionMonth != null && ` (Month ${String(cfg.deductionMonth)})`}
                       {cfg.wageThreshold != null && ` · Exempt if wage > ₹${cfg.wageThreshold.toLocaleString('en-IN')}`}
                     </div>
+                    <button
+                      className={`mt-1 text-[12px] font-medium hover:underline ${cfg.isActive ? 'text-[var(--color-error)]' : 'text-[var(--color-primary)]'}`}
+                      onClick={() => { toggle.mutate({ stateCode: cfg.stateCode, enable: !cfg.isActive }) }}
+                    >
+                      {cfg.isActive ? 'Disable' : 'Enable'}
+                    </button>
                   </div>
                 </div>
               </div>

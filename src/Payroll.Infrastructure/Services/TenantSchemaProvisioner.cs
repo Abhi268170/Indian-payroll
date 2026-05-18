@@ -267,14 +267,14 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
                 Payroll.Domain.Entities.ProfessionalTaxSlab.Create("WB", eff, "Monthly", null, 15000m,  24999m,  130m,  false, sys),
                 Payroll.Domain.Entities.ProfessionalTaxSlab.Create("WB", eff, "Monthly", null, 25000m,  39999m,  150m,  false, sys),
                 Payroll.Domain.Entities.ProfessionalTaxSlab.Create("WB", eff, "Monthly", null, 40000m,  null,    200m,  false, sys),
-                // Tamil Nadu — half-yearly
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TN", eff, "HalfYearly", null, 0m,     21000m,  0m,    false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TN", eff, "HalfYearly", null, 21001m, null,    510m,  false, sys),
-                // Kerala — half-yearly
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearly", null, 0m,     11999m,  0m,    false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearly", null, 12000m, 17999m,  120m,  false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearly", null, 18000m, 29999m,  180m,  false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearly", null, 30000m, null,    240m,  false, sys));
+                // Tamil Nadu — half-yearly (September=9, March=3)
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TN", eff, "HalfYearly", null, 0m,     21000m,  0m,    false, sys, "9,3"),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TN", eff, "HalfYearly", null, 21001m, null,    510m,  false, sys, "9,3"),
+                // Kerala — half-yearly (September=9, March=3)
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearly", null, 0m,     11999m,  0m,    false, sys, "9,3"),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearly", null, 12000m, 17999m,  120m,  false, sys, "9,3"),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearly", null, 18000m, 29999m,  180m,  false, sys, "9,3"),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearly", null, 30000m, null,    240m,  false, sys, "9,3"));
 
             // LWF state configs (select active states)
             db.LwfStateConfigs.AddRange(

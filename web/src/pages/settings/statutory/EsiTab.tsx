@@ -22,9 +22,9 @@ export default function EsiTab({ config }: Props): ReactElement {
   const toast = useToast()
 
   const save = useMutation({
-    mutationFn: () =>
+    mutationFn: (payload?: { enabled: boolean }) =>
       api.put('/api/v1/statutory/esi', {
-        enabled: form.enabled,
+        enabled: payload?.enabled ?? form.enabled,
         establishmentCode: form.establishmentCode || null,
         notifiedArea: form.notifiedArea,
       }),
@@ -48,15 +48,28 @@ export default function EsiTab({ config }: Props): ReactElement {
               Configure ESI deductions for eligible employees
             </p>
           </div>
-          <Button variant="secondary" size="sm" onClick={() => { setEditing(true); }}>
-            <Pencil className="w-3.5 h-3.5 mr-1.5" />
-            Edit
-          </Button>
+          <div className="flex items-center gap-2">
+            {config.esiEnabled && (
+              <button
+                className="text-[13px] text-[var(--color-error)] hover:underline font-medium"
+                onClick={() => { save.mutate({ enabled: false }); }}
+              >
+                Disable
+              </button>
+            )}
+            <Button variant="secondary" size="sm" onClick={() => { setEditing(true); }}>
+              <Pencil className="w-3.5 h-3.5 mr-1.5" />
+              Edit
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-x-12 gap-y-4">
           <ViewRow label="ESI Status" value={config.esiEnabled ? 'Enabled' : 'Disabled'} />
           <ViewRow label="Establishment Code" value={config.esiEstablishmentCode ?? '—'} />
+          <ViewRow label="Deduction Cycle" value="Monthly" />
+          <ViewRow label="Employee Contribution" value="0.75%" />
+          <ViewRow label="Employer Contribution" value="3.25%" />
           <ViewRow
             label="ESI Notified Area"
             value={config.esiNotifiedArea ? 'Yes — ESI applicable' : 'No — ESI not applicable'}
@@ -65,8 +78,8 @@ export default function EsiTab({ config }: Props): ReactElement {
 
         <div className="bg-[var(--color-primary-light)] rounded-lg p-4 text-[13px] text-[var(--color-text-secondary)]">
           <strong className="text-[var(--color-primary)]">Eligibility threshold:</strong>{' '}
-          Employees earning ≤ ₹21,000/month gross (excluding overtime) are covered under ESI.
-          Employee contributes 0.75%, employer contributes 3.25% of ESI wages.
+          Employees earning ≤ ₹21,000/month gross are covered under ESI.
+          PWD employees are covered up to ₹25,000/month.
         </div>
       </div>
     )
@@ -77,7 +90,7 @@ export default function EsiTab({ config }: Props): ReactElement {
       className="space-y-6"
       onSubmit={e => {
         e.preventDefault()
-        save.mutate()
+        save.mutate(undefined)
       }}
     >
       <div className="flex items-center justify-between">

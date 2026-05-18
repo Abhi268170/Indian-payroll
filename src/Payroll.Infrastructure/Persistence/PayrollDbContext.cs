@@ -25,6 +25,7 @@ public sealed class PayrollDbContext(
     public DbSet<StatutoryOrgConfig> StatutoryOrgConfigs => Set<StatutoryOrgConfig>();
     public DbSet<ProfessionalTaxSlab> ProfessionalTaxSlabs => Set<ProfessionalTaxSlab>();
     public DbSet<LwfStateConfig> LwfStateConfigs => Set<LwfStateConfig>();
+    public DbSet<PtStateRegistration> PtStateRegistrations => Set<PtStateRegistration>();
     public DbSet<IncomeTaxSlab> IncomeTaxSlabs => Set<IncomeTaxSlab>();
     public DbSet<IncomeTaxSurchargeSlab> IncomeTaxSurchargeSlabs => Set<IncomeTaxSurchargeSlab>();
     public DbSet<IncomeTaxConfig> IncomeTaxConfigs => Set<IncomeTaxConfig>();
@@ -70,6 +71,7 @@ public sealed class PayrollDbContext(
         modelBuilder.ApplyConfiguration(new StatutoryOrgConfigConfiguration());
         modelBuilder.ApplyConfiguration(new ProfessionalTaxSlabConfiguration());
         modelBuilder.ApplyConfiguration(new LwfStateConfigConfiguration());
+        modelBuilder.ApplyConfiguration(new PtStateRegistrationConfiguration());
         modelBuilder.ApplyConfiguration(new IncomeTaxSlabConfiguration());
         modelBuilder.ApplyConfiguration(new IncomeTaxSurchargeSlabConfiguration());
         modelBuilder.ApplyConfiguration(new IncomeTaxConfigConfiguration());

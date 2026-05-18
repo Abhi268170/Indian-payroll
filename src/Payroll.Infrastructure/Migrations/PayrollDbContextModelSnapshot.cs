@@ -2052,6 +2052,11 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("numeric(18,4)")
                         .HasColumnName("pt_amount");
 
+                    b.Property<string>("DeductionMonthsCsv")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("deduction_months_csv");
+
                     b.Property<string>("StateCode")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -2073,6 +2078,64 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasDatabaseName("ix_professional_tax_slabs_state_code_effective_date");
 
                     b.ToTable("professional_tax_slabs", (string)null);
+                });
+
+            modelBuilder.Entity("Payroll.Domain.Entities.PtStateRegistration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("RegistrationNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("registration_number");
+
+                    b.Property<string>("StateCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("state_code");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_pt_state_registrations");
+
+                    b.HasIndex("StateCode")
+                        .IsUnique()
+                        .HasDatabaseName("ix_pt_state_registrations_state_code")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("pt_state_registrations", (string)null);
                 });
 
             modelBuilder.Entity("Payroll.Domain.Entities.SalaryComponent", b =>

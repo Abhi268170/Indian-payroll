@@ -16,6 +16,7 @@ public sealed record ReviseStatePtSlabsCommand(
     string StateCode,
     DateOnly EffectiveDate,
     string Frequency,
+    string? DeductionMonthsCsv,
     IReadOnlyList<PtSlabInput> Slabs,
     Guid ActorId) : IRequest;
 
@@ -55,7 +56,8 @@ internal sealed class ReviseStatePtSlabsHandler(IStatutoryConfigRepository repo,
                 s.MaxGross,
                 s.PtAmount,
                 s.IsFebruarySurcharge,
-                cmd.ActorId));
+                cmd.ActorId,
+                cmd.DeductionMonthsCsv));
 
         await repo.AddPtSlabsAsync(slabs, ct);
         await uow.SaveChangesAsync(ct);

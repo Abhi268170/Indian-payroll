@@ -22,12 +22,10 @@ public sealed record StatutoryConfig(
     decimal ESIEmployeeRate,
     decimal ESIEmployerRate,
     IReadOnlyList<PTSlab> PTSlabs,
-    decimal? LWFEmployeeAmount,
-    decimal? LWFEmployerAmount,
+    IReadOnlyList<LwfStateInput> LWFStates,
     bool PFEnabled,
     bool ESIEnabled,
-    bool PTEnabled,
-    bool LWFEnabled
+    bool PTEnabled
 );
 
 public sealed record TaxSlab(
@@ -44,5 +42,20 @@ public sealed record PTSlab(
     string StateCode,
     decimal SalaryFrom,
     decimal? SalaryTo,
-    decimal MonthlyAmount,
-    DateOnly EffectiveFrom);
+    decimal Amount,
+    DateOnly EffectiveFrom,
+    string Frequency,
+    IReadOnlyList<int> DeductionMonths);
+
+public sealed record LwfStateInput(
+    string StateCode,
+    decimal EmployeeAmount,
+    decimal EmployerAmount,
+    bool IsPercentageBased,
+    decimal? EmployeeRate,
+    decimal? EmployerRate,
+    decimal? RateCapEmployee,
+    decimal? RateCapEmployer,
+    string Frequency,
+    int? DeductionMonth,
+    decimal? WageThreshold);

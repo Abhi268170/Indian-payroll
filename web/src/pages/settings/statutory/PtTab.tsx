@@ -1,11 +1,16 @@
 import { useState, type ReactElement } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { MapPin, Pencil, Plus, Trash2 } from 'lucide-react'
+import { MapPin, Pencil, Plus, Trash2, Hash } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Spinner } from '@/components/ui/Spinner'
 import { Button } from '@/components/ui/Button'
 import { useToast } from '@/components/ui/useToast'
 import type { WorkLocation } from '../WorkLocationsPage'
+
+interface PtRegistration {
+  stateCode: string
+  registrationNumber: string
+}
 
 interface PtSlab {
   stateCode: string
@@ -56,6 +61,7 @@ function ReviseModal({
 
   const [effectiveDate, setEffectiveDate] = useState(today)
   const [frequency, setFrequency] = useState('Monthly')
+  const [deductionMonthsCsv, setDeductionMonthsCsv] = useState('')
   const [rows, setRows] = useState<SlabRow[]>([])
   const [initialized, setInitialized] = useState(false)
 
@@ -81,6 +87,7 @@ function ReviseModal({
       api.post(`/api/v1/statutory/pt-slabs/${stateCode}`, {
         effectiveDate,
         frequency,
+        deductionMonthsCsv: frequency !== 'Monthly' ? (deductionMonthsCsv || null) : null,
         slabs: rows.map(r => ({
           minGross: parseFloat(r.minGross) || 0,
           maxGross: r.maxGross ? parseFloat(r.maxGross) : null,
@@ -150,6 +157,22 @@ function ReviseModal({
                 </select>
               </div>
             </div>
+            {frequency !== 'Monthly' && (
+              <div>
+                <label className="block text-[12px] font-medium text-[var(--color-text-primary)] mb-1">
+                  Deduction Months (comma-separated, e.g. 9,3)
+                </label>
+                <input
+                  className="form-input w-full"
+                  placeholder="e.g. 9,3 for September and March"
+                  value={deductionMonthsCsv}
+                  onChange={e => { setDeductionMonthsCsv(e.target.value) }}
+                />
+                <p className="text-[11px] text-[var(--color-text-muted)] mt-1">
+                  Month numbers 1–12. Common: Half-Yearly → 9,3 · Annual → 3
+                </p>
+              </div>
+            )}
 
             <div>
               <p className="text-[11px] text-[var(--color-text-muted)] mb-2">
@@ -310,13 +333,74 @@ function ViewSlabsModal({
   )
 }
 
+function PtNumberModal({
+  stateCode,
+  stateName,
+  existing,
+  onClose,
+}: {
+  stateCode: string
+  stateName: string
+  existing: string
+  onClose: () => void
+}): ReactElement {
+  const [value, setValue] = useState(existing)
+  const qc = useQueryClient()
+  const toast = useToast()
+
+  const save = useMutation({
+    mutationFn: () =>
+      api.put(`/api/v1/statutory/pt-registrations/${stateCode}`, { registrationNumber: value }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['pt-registrations'] })
+      toast.success('PT number updated')
+      onClose()
+    },
+    onError: () => { toast.error('Failed to save PT number') },
+  })
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+      <div className="bg-white rounded-xl shadow-xl w-[420px]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--color-border)]">
+          <h3 className="text-[15px] font-semibold">{stateName} — PT Number</h3>
+          <button onClick={onClose} className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] text-lg leading-none">×</button>
+        </div>
+        <div className="px-6 py-4 space-y-4">
+          <div>
+            <label className="block text-[12px] font-medium text-[var(--color-text-primary)] mb-1">
+              Professional Tax Registration Number
+            </label>
+            <input
+              className="form-input w-full"
+              placeholder="e.g. 27AAACV9847J1ZA"
+              value={value}
+              onChange={e => { setValue(e.target.value) }}
+            />
+          </div>
+        </div>
+        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[var(--color-border)]">
+          <Button variant="secondary" size="sm" onClick={onClose}>Cancel</Button>
+          <Button size="sm" loading={save.isPending} onClick={() => { save.mutate() }}>Save</Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function PtTab(): ReactElement {
   const [viewState, setViewState] = useState<string | null>(null)
   const [reviseState, setReviseState] = useState<string | null>(null)
+  const [ptNumberState, setPtNumberState] = useState<string | null>(null)
 
   const { data: locations } = useQuery<WorkLocation[]>({
     queryKey: ['work-locations'],
     queryFn: () => api.get<WorkLocation[]>('/api/v1/work-locations').then(r => r.data),
+  })
+
+  const { data: ptRegistrations } = useQuery<PtRegistration[]>({
+    queryKey: ['pt-registrations'],
+    queryFn: () => api.get<PtRegistration[]>('/api/v1/statutory/pt-registrations').then(r => r.data),
   })
 
   const stateCodeMap: Record<string, string> = {
@@ -351,18 +435,42 @@ export default function PtTab(): ReactElement {
             const code = stateCodeMap[stateEnum] ?? stateEnum
             const stateName = STATE_NAMES[code] ?? stateEnum
             const locs = (locations ?? []).filter(l => l.state === stateEnum)
+            const reg = (ptRegistrations ?? []).find(r => r.stateCode === code)
             return (
               <div
                 key={stateEnum}
                 className="border border-[var(--color-border)] rounded-lg p-4"
               >
                 <div className="flex items-start justify-between">
-                  <div>
+                  <div className="flex-1">
                     <div className="text-[14px] font-semibold text-[var(--color-text-primary)]">
                       {stateName}
                     </div>
                     <div className="text-[12px] text-[var(--color-text-muted)] mt-0.5">
                       {locs.map(l => l.name).join(', ')}
+                    </div>
+                    <div className="flex items-center gap-4 mt-2">
+                      <span className="flex items-center gap-1 text-[12px] text-[var(--color-text-muted)]">
+                        <Hash className="w-3 h-3" />
+                        {reg ? (
+                          <span className="text-[var(--color-text-primary)]">{reg.registrationNumber}</span>
+                        ) : (
+                          <button
+                            className="text-[var(--color-primary)] hover:underline"
+                            onClick={() => { setPtNumberState(code) }}
+                          >
+                            Add PT Number
+                          </button>
+                        )}
+                      </span>
+                      {reg && (
+                        <button
+                          className="text-[12px] text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
+                          onClick={() => { setPtNumberState(code) }}
+                        >
+                          Update PT Number
+                        </button>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -398,6 +506,14 @@ export default function PtTab(): ReactElement {
           stateCode={reviseState}
           stateName={STATE_NAMES[reviseState] ?? reviseState}
           onClose={() => { setReviseState(null) }}
+        />
+      )}
+      {ptNumberState && (
+        <PtNumberModal
+          stateCode={ptNumberState}
+          stateName={STATE_NAMES[ptNumberState] ?? ptNumberState}
+          existing={(ptRegistrations ?? []).find(r => r.stateCode === ptNumberState)?.registrationNumber ?? ''}
+          onClose={() => { setPtNumberState(null) }}
         />
       )}
     </div>

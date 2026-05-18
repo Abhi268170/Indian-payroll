@@ -41,11 +41,9 @@ public static class StatutoryTestData
         ESIEmployeeRate: 0.0075m,
         ESIEmployerRate: 0.0325m,
         PTSlabs: [],
-        LWFEmployeeAmount: null,
-        LWFEmployerAmount: null,
+        LWFStates: [],
         PFEnabled: true,
         ESIEnabled: true,
-        PTEnabled: false,
-        LWFEnabled: false
+        PTEnabled: false
     );
 }

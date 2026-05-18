@@ -41,8 +41,33 @@ internal sealed class StatutoryConfigRepository(PayrollDbContext db, ITenantCont
             .ToListAsync(ct);
     }
 
+    public async Task<IReadOnlyList<LwfStateConfig>> GetAllLwfConfigsForStatesAsync(
+        IEnumerable<string> stateCodes, CancellationToken ct = default)
+    {
+        List<string> codes = stateCodes.ToList();
+        return await db.LwfStateConfigs
+            .Where(l => codes.Contains(l.StateCode))
+            .ToListAsync(ct);
+    }
+
+    // Returns the config regardless of IsActive — needed for toggle operations
     public Task<LwfStateConfig?> GetLwfConfigAsync(string stateCode, CancellationToken ct = default) =>
-        db.LwfStateConfigs.FirstOrDefaultAsync(l => l.StateCode == stateCode && l.IsActive, ct);
+        db.LwfStateConfigs.FirstOrDefaultAsync(l => l.StateCode == stateCode, ct);
+
+    public void UpdateLwfConfig(LwfStateConfig config) =>
+        db.LwfStateConfigs.Update(config);
+
+    public async Task<IReadOnlyList<PtStateRegistration>> GetPtRegistrationsAsync(CancellationToken ct = default) =>
+        await db.PtStateRegistrations.ToListAsync(ct);
+
+    public Task<PtStateRegistration?> GetPtRegistrationAsync(string stateCode, CancellationToken ct = default) =>
+        db.PtStateRegistrations.FirstOrDefaultAsync(r => r.StateCode == stateCode, ct);
+
+    public async Task AddPtRegistrationAsync(PtStateRegistration registration, CancellationToken ct = default) =>
+        await db.PtStateRegistrations.AddAsync(registration, ct);
+
+    public void UpdatePtRegistration(PtStateRegistration registration) =>
+        db.PtStateRegistrations.Update(registration);
 
     public Task<IncomeTaxConfig?> GetIncomeTaxConfigAsync(
         string fiscalYear, string regime, CancellationToken ct = default) =>
