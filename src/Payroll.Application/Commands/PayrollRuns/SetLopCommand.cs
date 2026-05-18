@@ -29,6 +29,8 @@ public sealed class SetLopCommandHandler(
     IPayrunEmployeeRepository payrunEmployeeRepo,
     IPayrunComponentBreakdownRepository breakdownRepo,
     IEmployeeRepository employeeRepo,
+    IWorkLocationRepository workLocationRepo,
+    IPayScheduleRepository payScheduleRepo,
     IUnitOfWork uow)
     : IRequestHandler<SetLopCommand>
 {
@@ -57,10 +59,22 @@ public sealed class SetLopCommandHandler(
         var employee = await employeeRepo.GetByIdAsync(req.EmployeeId, ct)
             ?? throw new NotFoundException($"Employee {req.EmployeeId} not found.");
 
+        var workLocation = await workLocationRepo.GetByIdAsync(employee.WorkLocationId, ct);
+        string workStateCode = workLocation?.State.ToString() ?? "MH";
+
         if (run.StatutoryConfigSnapshot is null)
             throw new InvalidOperationException("Payroll run is missing statutory config snapshot.");
         var staticConfig = JsonSerializer.Deserialize<StatutoryConfig>(run.StatutoryConfigSnapshot)!;
-        PayrollResult result = RecomputeEmployee(employee, payrunEmp, breakdowns, run, staticConfig);
+
+        var paySchedule = await payScheduleRepo.GetAsync(ct)
+            ?? throw new DomainException("Pay Schedule not configured.");
+        EngineWorkWeekDay workWeek = (EngineWorkWeekDay)(int)paySchedule.WorkWeekDays;
+        EngineSalaryCalculationMethod engineCalcMethod = paySchedule.SalaryCalculationMethod == SalaryCalculationMethod.ActualDays
+            ? EngineSalaryCalculationMethod.ActualDays
+            : EngineSalaryCalculationMethod.FixedDays;
+        int salaryDivisor = PayScheduleHelpers.GetDivisor(engineCalcMethod, paySchedule.FixedWorkingDaysPerMonth, run.PayPeriod.Year, run.PayPeriod.Month);
+
+        PayrollResult result = RecomputeEmployee(employee, workStateCode, payrunEmp, breakdowns, run, staticConfig, salaryDivisor);
 
         payrunEmp.UpdateComputedAmounts(
             grossPay: result.Gross.GrossWage,
@@ -91,10 +105,12 @@ public sealed class SetLopCommandHandler(
 
     internal static PayrollResult RecomputeEmployee(
         Domain.Entities.Employee employee,
+        string workStateCode,
         Domain.Entities.PayrunEmployee payrunEmp,
         IReadOnlyList<Domain.Entities.PayrunComponentBreakdown> breakdowns,
         Domain.Entities.PayrollRun run,
-        StatutoryConfig staticConfig)
+        StatutoryConfig staticConfig,
+        int salaryDivisor)
     {
         // Build components from stored full amounts (excludes one-time earnings — handled separately)
         var components = breakdowns
@@ -102,11 +118,10 @@ public sealed class SetLopCommandHandler(
             .Select(b => new SalaryComponentInput(b.SalaryComponentId ?? Guid.Empty, b.ComponentCode, b.FullAmount, true))
             .ToList();
 
-        string workState = employee.ResidentialState?.ToString() ?? "MH";
         var empInput = new EmployeeInput(
             EmployeeId: employee.Id,
             EmployeeCode: employee.EmployeeCode,
-            WorkStateCode: workState,
+            WorkStateCode: workStateCode,
             EpfEnabled: employee.EpfEnabled,
             IsESIExempt: !employee.EsiEnabled,
             IsPWD: employee.IsPWD,
@@ -123,6 +138,7 @@ public sealed class SetLopCommandHandler(
             Year: run.PayPeriod.Year,
             Month: run.PayPeriod.Month,
             CalendarDaysInMonth: payrunEmp.BaseDays,
+            SalaryDivisor: salaryDivisor,
             MonthsRemainingInFY: run.PayPeriod.MonthsRemainingInFiscalYear(),
             FiscalYearLabel: run.PayPeriod.FiscalYearLabel);
 

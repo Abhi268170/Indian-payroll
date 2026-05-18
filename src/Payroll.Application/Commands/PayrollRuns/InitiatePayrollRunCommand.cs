@@ -32,6 +32,7 @@ public sealed class InitiatePayrollRunHandler(
     IStatutoryConfigRepository statutoryRepo,
     IPayrunEmployeeRepository payrunEmployeeRepo,
     IPayrunComponentBreakdownRepository breakdownRepo,
+    IWorkLocationRepository workLocationRepo,
     ITenantContext tenantContext,
     IUnitOfWork uow)
     : IRequestHandler<InitiatePayrollRunCommand, PayrollRunSummaryDto>
@@ -76,15 +77,23 @@ public sealed class InitiatePayrollRunHandler(
         var employees = await employeeRepo.ListAsync(ct);
         var activeEmployees = employees.Where(e => e.Status == EmployeeStatus.Active).ToList();
 
-        // Resolve pay day
+        var workLocations = await workLocationRepo.ListAsync(ct);
+        var workLocationStateMap = workLocations.ToDictionary(wl => wl.Id, wl => wl.State.ToString());
+
+        // Resolve pay day and salary divisor from pay schedule settings
         EngineWorkWeekDay workWeek = (EngineWorkWeekDay)(int)paySchedule.WorkWeekDays;
         EnginePayDateType payDateType = paySchedule.PayDateType == PayDateType.LastDay
             ? EnginePayDateType.LastDay
             : EnginePayDateType.SpecificDay;
+        EngineSalaryCalculationMethod engineCalcMethod = paySchedule.SalaryCalculationMethod == SalaryCalculationMethod.ActualDays
+            ? EngineSalaryCalculationMethod.ActualDays
+            : EngineSalaryCalculationMethod.FixedDays;
         DateOnly payDay = PayScheduleHelpers.ResolveActualPayDate(payDateType, paySchedule.PayDateDay,
             period.Year, period.Month, workWeek);
 
         int calendarDays = DateTime.DaysInMonth(period.Year, period.Month);
+        int salaryDivisor = PayScheduleHelpers.GetDivisor(engineCalcMethod, paySchedule.FixedWorkingDaysPerMonth, period.Year, period.Month);
+        int workingDaysInMonth = PayScheduleHelpers.GetPayableDaysInMonth(workWeek, period.Year, period.Month);
 
         // Build engine inputs per employee
         var engineInputs = new List<EmployeeInput>();
@@ -115,7 +124,7 @@ public sealed class InitiatePayrollRunHandler(
             {
                 var components = BuildComponentInputs(salaryStructure, template);
                 bool hasPan = !string.IsNullOrWhiteSpace(emp.EncryptedPAN);
-                string workState = emp.ResidentialState?.ToString() ?? "MH";
+                string workState = workLocationStateMap.TryGetValue(emp.WorkLocationId, out string? wls) ? wls : "MH";
 
                 engineInputs.Add(new EmployeeInput(
                     EmployeeId: emp.Id,
@@ -127,7 +136,7 @@ public sealed class InitiatePayrollRunHandler(
                     MonthlyCTC: salaryStructure.AnnualCTC / 12m,
                     Components: components,
                     LOPDays: 0,
-                    WorkingDaysInMonth: calendarDays,
+                    WorkingDaysInMonth: workingDaysInMonth,
                     VPFAmount: 0,
                     PriorEmployerYTDTaxableIncome: 0,
                     PriorEmployerYTDTDSDeducted: 0,
@@ -135,10 +144,11 @@ public sealed class InitiatePayrollRunHandler(
             }
         }
 
-        // Load PT and LWF slabs for all employee states
+        // Load PT and LWF slabs for all employee work location states
         var stateCodes = activeEmployees
-            .Where(e => e.ResidentialState.HasValue)
-            .Select(e => e.ResidentialState!.Value.ToString())
+            .Select(e => workLocationStateMap.TryGetValue(e.WorkLocationId, out string? s) ? s : null)
+            .Where(s => s is not null)
+            .Select(s => s!)
             .Distinct()
             .ToList();
 
@@ -162,6 +172,7 @@ public sealed class InitiatePayrollRunHandler(
             Year: period.Year,
             Month: period.Month,
             CalendarDaysInMonth: calendarDays,
+            SalaryDivisor: salaryDivisor,
             MonthsRemainingInFY: period.MonthsRemainingInFiscalYear(),
             FiscalYearLabel: period.FiscalYearLabel);
 

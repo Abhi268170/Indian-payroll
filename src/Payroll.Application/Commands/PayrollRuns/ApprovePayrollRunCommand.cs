@@ -6,6 +6,7 @@ using Payroll.Domain.Entities;
 using Payroll.Domain.Enums;
 using Payroll.Domain.Interfaces;
 using System.Text.Json;
+using Payroll.Engine;
 using Payroll.Engine.Inputs;
 
 namespace Payroll.Application.Commands.PayrollRuns;
@@ -17,6 +18,8 @@ public sealed class ApprovePayrollRunHandler(
     IPayrunEmployeeRepository payrunEmployeeRepo,
     IPayrunComponentBreakdownRepository breakdownRepo,
     IEmployeeRepository employeeRepo,
+    IWorkLocationRepository workLocationRepo,
+    IPayScheduleRepository payScheduleRepo,
     ITdsWorksheetRepository tdsWorksheetRepo,
     IPayrollRunAuditLogRepository auditLogRepo,
     IUnitOfWork uow)
@@ -40,6 +43,15 @@ public sealed class ApprovePayrollRunHandler(
             throw new InvalidOperationException("Payroll run is missing statutory config snapshot.");
 
         var staticConfig = JsonSerializer.Deserialize<StatutoryConfig>(run.StatutoryConfigSnapshot)!;
+
+        var paySchedule = await payScheduleRepo.GetAsync(ct)
+            ?? throw new DomainException("Pay Schedule not configured.");
+        EngineWorkWeekDay workWeek = (EngineWorkWeekDay)(int)paySchedule.WorkWeekDays;
+        EngineSalaryCalculationMethod engineCalcMethod = paySchedule.SalaryCalculationMethod == SalaryCalculationMethod.ActualDays
+            ? EngineSalaryCalculationMethod.ActualDays
+            : EngineSalaryCalculationMethod.FixedDays;
+        int salaryDivisor = PayScheduleHelpers.GetDivisor(engineCalcMethod, paySchedule.FixedWorkingDaysPerMonth, run.PayPeriod.Year, run.PayPeriod.Month);
+
         var payrunEmployees = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
         var activeEmployees = payrunEmployees.Where(pe => pe.Status == PayrunEmployeeStatus.Active).ToList();
 
@@ -50,8 +62,11 @@ public sealed class ApprovePayrollRunHandler(
             var employee = await employeeRepo.GetByIdAsync(pe.EmployeeId, ct);
             if (employee is null) continue;
 
+            var workLocation = await workLocationRepo.GetByIdAsync(employee.WorkLocationId, ct);
+            string workStateCode = workLocation?.State.ToString() ?? "MH";
+
             var breakdowns = await breakdownRepo.GetByRunAndEmployeeAsync(req.RunId, pe.EmployeeId, ct);
-            var result = SetLopCommandHandler.RecomputeEmployee(employee, pe, breakdowns, run, staticConfig);
+            var result = SetLopCommandHandler.RecomputeEmployee(employee, workStateCode, pe, breakdowns, run, staticConfig, salaryDivisor);
 
             decimal tdsThisMonth = pe.TdsOverrideAmount ?? result.TDS.MonthlyTDS;
             bool hasPanOverride = string.IsNullOrWhiteSpace(employee.EncryptedPAN);
