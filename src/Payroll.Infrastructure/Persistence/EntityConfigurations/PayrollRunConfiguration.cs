@@ -42,7 +42,7 @@ internal sealed class PayrollRunConfiguration : IEntityTypeConfiguration<Payroll
         builder.Property(p => p.UpdatedAt).HasColumnType("timestamptz");
         builder.Property(p => p.DeletedAt).HasColumnType("timestamptz");
 
-        builder.ComplexProperty(p => p.PayPeriod, pp =>
+        builder.OwnsOne(p => p.PayPeriod, pp =>
         {
             pp.Property(x => x.Year).HasColumnName("pay_period_year").IsRequired();
             pp.Property(x => x.Month).HasColumnName("pay_period_month").IsRequired();
@@ -50,10 +50,9 @@ internal sealed class PayrollRunConfiguration : IEntityTypeConfiguration<Payroll
 
         builder.HasIndex(p => new { p.TenantId, p.Status });
 
-        // Prevent duplicate runs for same tenant+period (excludes deleted rows)
-        builder.HasIndex("TenantId", "pay_period_year", "pay_period_month")
-            .IsUnique()
-            .HasFilter("deleted_at IS NULL");
+        // Unique constraint on (tenant, period) excluding deleted rows is enforced via raw SQL
+        // migration 20260519110000_AddUniquePayrollRunPeriodConstraint — not modelled here
+        // because EF Core cannot index OwnsOne columns directly.
 
         builder.HasQueryFilter(p => !p.IsDeleted);
     }
