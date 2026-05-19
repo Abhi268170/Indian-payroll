@@ -57,6 +57,7 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
         CancellationToken cancellationToken)
     {
         HashSet<string> existing = (await db.SalaryComponents
+            .IgnoreQueryFilters()
             .Where(c => c.TenantId == tenantId)
             .Select(c => c.Code)
             .ToListAsync(cancellationToken))
@@ -100,64 +101,107 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
         if (!existing.Contains("FIXED_ALLOWANCE"))
             db.SalaryComponents.Add(Domain.Entities.SalaryComponent.CreateSystemFixedAllowance(tenantId, Guid.Empty));
 
-        // ── Earnings (Zoho defaults) ──────────────────────────────────────
-        // 1. Basic — 50% of CTC, fixed, EPF always, ESI yes
+        // ── Earnings (PIT Solutions defaults) ────────────────────────────
+        // 1. Basic — 37.5% of CTC, EPF always, ESI yes
         AddEarning("BASICSALARY", "Basic", "Basic",
             Domain.Enums.EarningType.Basic, Domain.Enums.PayType.Monthly,
-            Domain.Enums.ComponentFormulaType.PercentOfCTC, null, 50m,
+            Domain.Enums.ComponentFormulaType.PercentOfCTC, null, 37.5m,
             taxable: true, epf: true, Domain.Enums.EpfInclusionRule.Always, esi: true,
             proRata: true, showInPayslip: true);
 
-        // 2. House Rent Allowance — 50% of Basic, fixed, EPF no, ESI yes
+        // 2. House Rent Allowance — 40% of Basic, EPF no, ESI yes
         AddEarning("HOUSERENTALLOWANCE", "House Rent Allowance", "House Rent Allowance",
             Domain.Enums.EarningType.HouseRentAllowance, Domain.Enums.PayType.Monthly,
-            Domain.Enums.ComponentFormulaType.PercentOfBasic, null, 50m,
+            Domain.Enums.ComponentFormulaType.PercentOfBasic, null, 40m,
             taxable: true, epf: false, Domain.Enums.EpfInclusionRule.Always, esi: true,
             proRata: true, showInPayslip: true);
 
-        // 3. Conveyance Allowance — flat, fixed, EPF if<15k, ESI no
-        AddEarning("CONVEYANCEALLOWANCE", "Conveyance Allowance", "Conveyance Allowance",
-            Domain.Enums.EarningType.ConveyanceAllowance, Domain.Enums.PayType.Monthly,
-            Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
-            taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: false,
+        // 3. Medical Allowance — 10.67% of Basic, EPF if<15k, ESI yes
+        AddEarning("MEDICALALLOWANCE", "Medical Allowance", "Medical Allowance",
+            Domain.Enums.EarningType.MedicalAllowance, Domain.Enums.PayType.Monthly,
+            Domain.Enums.ComponentFormulaType.PercentOfBasic, null, 10.67m,
+            taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
             proRata: true, showInPayslip: true);
 
-        // 4. Children Education Allowance — flat, fixed, EPF if<15k, ESI yes, inactive
+        // 4. Attire Expenses — 10.67% of Basic, EPF if<15k, ESI yes
+        AddEarning("ATTIREEXPENSES", "Attire Expenses", "Attire Expenses",
+            Domain.Enums.EarningType.AttireExpenses, Domain.Enums.PayType.Monthly,
+            Domain.Enums.ComponentFormulaType.PercentOfBasic, null, 10.67m,
+            taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
+            proRata: true, showInPayslip: true);
+
+        // 5. Professional Pursuit Expenses — 10.67% of Basic, EPF if<15k, ESI yes
+        AddEarning("PROFPURSUITEXPENSES", "Prof. Pursuit Expenses", "Prof. Pursuit Expenses",
+            Domain.Enums.EarningType.ProfessionalPursuitExpenses, Domain.Enums.PayType.Monthly,
+            Domain.Enums.ComponentFormulaType.PercentOfBasic, null, 10.67m,
+            taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
+            proRata: true, showInPayslip: true);
+
+        // 6. Leave Travel Allowance — 22.67% of Basic, EPF no, ESI yes
+        AddEarning("LTAEARNING", "Leave Travel Allowance", "Leave Travel Allowance",
+            Domain.Enums.EarningType.LeaveTravelAllowance, Domain.Enums.PayType.Monthly,
+            Domain.Enums.ComponentFormulaType.PercentOfBasic, null, 22.67m,
+            taxable: true, epf: false, Domain.Enums.EpfInclusionRule.Always, esi: true,
+            proRata: true, showInPayslip: true);
+
+        // 7. Conveyance Allowance — flat ₹1,600, EPF if<15k, ESI yes
+        AddEarning("CONVEYANCEALLOWANCE", "Conveyance Allowance", "Conveyance Allowance",
+            Domain.Enums.EarningType.ConveyanceAllowance, Domain.Enums.PayType.Monthly,
+            Domain.Enums.ComponentFormulaType.Fixed, 1600m, null,
+            taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
+            proRata: true, showInPayslip: true);
+
+        // 8. Statutory Bonus — flat ₹1,750/month, EPF no, ESI yes
+        AddEarning("STATUTORYBONUS", "Statutory Bonus", "Statutory Bonus",
+            Domain.Enums.EarningType.StatutoryBonus, Domain.Enums.PayType.Monthly,
+            Domain.Enums.ComponentFormulaType.Fixed, 1750m, null,
+            taxable: true, epf: false, Domain.Enums.EpfInclusionRule.Always, esi: true,
+            proRata: false, showInPayslip: true);
+
+        // ── Supplementary / optional earnings (inactive by default) ─────────
+        // Children Education Allowance — doc §7.1, tax-exempt ₹100/child/mo
         AddEarning("CHILDRENEDALLOWANCE", "Children Education Allowance", "Children Education Allowance",
             Domain.Enums.EarningType.ChildrenEducationAllowance, Domain.Enums.PayType.Monthly,
             Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
             taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
             proRata: true, showInPayslip: true, active: false);
 
-        // 5. Transport Allowance — flat 1600, fixed, EPF if<15k, ESI yes, inactive
+        // Transport Allowance (Bata) — doc §7.1, field/sales staff
         AddEarning("TRANSPORTALLOWANCE", "Transport Allowance", "Transport Allowance",
             Domain.Enums.EarningType.TransportAllowance, Domain.Enums.PayType.Monthly,
             Domain.Enums.ComponentFormulaType.Fixed, 1600m, null,
             taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
             proRata: true, showInPayslip: true, active: false);
 
-        // 6. Travelling Allowance — flat, fixed, EPF if<15k, ESI no, inactive
+        // Travelling Allowance
         AddEarning("TRAVELLINGALLOWANCE", "Travelling Allowance", "Travelling Allowance",
             Domain.Enums.EarningType.TravellingAllowance, Domain.Enums.PayType.Monthly,
             Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
             taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: false,
             proRata: true, showInPayslip: true, active: false);
 
-        // 7. Overtime Allowance — variable flat, EPF no, ESI yes, inactive
+        // Overtime Allowance — doc §7.1
         AddEarning("OVERTIMEALLOWANCE", "Overtime Allowance", "Overtime Allowance",
             Domain.Enums.EarningType.OvertimeFlat, Domain.Enums.PayType.FlatAmount,
             Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
             taxable: true, epf: false, Domain.Enums.EpfInclusionRule.Always, esi: true,
             proRata: false, showInPayslip: true, active: false);
 
-        // 8. Gratuity — variable flat, EPF no, ESI no, non-taxable, active
+        // Gratuity — F&F item (§3 employer contribution), inactive by default
         AddEarning("GRATUITY", "Gratuity", "Gratuity",
             Domain.Enums.EarningType.Gratuity, Domain.Enums.PayType.FlatAmount,
             Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
             taxable: false, epf: false, Domain.Enums.EpfInclusionRule.Always, esi: false,
-            proRata: false, showInPayslip: true);
+            proRata: false, showInPayslip: true, active: false);
 
-        // 9. Bonus — variable flat, EPF no, ESI no, taxable, active
+        // Performance Bonus — doc §2.2, discretionary, inactive by default
+        AddEarning("PERFORMANCEBONUS", "Performance Bonus", "Performance Bonus",
+            Domain.Enums.EarningType.PerformanceBonus, Domain.Enums.PayType.FlatAmount,
+            Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
+            taxable: true, epf: false, Domain.Enums.EpfInclusionRule.Always, esi: false,
+            proRata: false, showInPayslip: true, active: false);
+
+        // Bonus — generic variable flat, EPF no, ESI no, taxable, active
         AddEarning("BONUS", "Bonus", "Bonus",
             Domain.Enums.EarningType.Bonus, Domain.Enums.PayType.FlatAmount,
             Domain.Enums.ComponentFormulaType.Fixed, 0m, null,
@@ -270,11 +314,18 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
                 // Tamil Nadu — half-yearly (September=9, March=3)
                 Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TN", eff, "HalfYearly", null, 0m,     21000m,  0m,    false, sys, "9,3"),
                 Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TN", eff, "HalfYearly", null, 21001m, null,    510m,  false, sys, "9,3"),
-                // Kerala — half-yearly (September=9, March=3)
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearly", null, 0m,     11999m,  0m,    false, sys, "9,3"),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearly", null, 12000m, 17999m,  120m,  false, sys, "9,3"),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearly", null, 18000m, 29999m,  180m,  false, sys, "9,3"),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearly", null, 30000m, null,    240m,  false, sys, "9,3"));
+                // Kerala — HalfYearlySplit: deduct every month, slab on half-year gross (monthly × months-in-half).
+                // Option A rounding: floor each month, last month absorbs remainder.
+                // Amounts are per half-year (Apr–Sep, Oct–Mar). Source: PIT Solutions reference manual.
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 1m,       11999m,   0m,    false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 12000m,   17999m,   120m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 18000m,   29999m,   180m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 30000m,   44999m,   300m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 45000m,   59999m,   450m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 60000m,   74999m,   600m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 75000m,   99999m,   750m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 100000m,  124999m,  1000m, false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 125000m,  null,     1250m, false, sys));
 
             // LWF state configs (select active states)
             db.LwfStateConfigs.AddRange(
@@ -287,7 +338,7 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
                 Payroll.Domain.Entities.LwfStateConfig.Create("MP", eff, 10m, 10m,  false, null, null, null, null, "Monthly",   null, null, 10000m, sys),
                 Payroll.Domain.Entities.LwfStateConfig.Create("CH", eff, 25m, 25m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
                 Payroll.Domain.Entities.LwfStateConfig.Create("HR", eff, 0m,  0m,   true,  0.002m, 0.002m, 25m, 25m, "Monthly", null, null, 25000m, sys),
-                Payroll.Domain.Entities.LwfStateConfig.Create("KL", eff, 50m, 50m,  false, null, null, null, null, "Annual",    12,   31,   null,   sys));
+                Payroll.Domain.Entities.LwfStateConfig.Create("KL", eff, 50m, 50m,  false, null, null, null, null, "Monthly",   null, null, null,   sys));
 
             // Income Tax — FY2025-26, New Regime
             db.IncomeTaxSlabs.AddRange(

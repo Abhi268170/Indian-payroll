@@ -59,5 +59,21 @@ public sealed class UpsertPayScheduleCommandValidator : AbstractValidator<Upsert
             .Null()
             .WithMessage("Pay date day must be empty when pay date type is LastDay.")
             .When(x => x.PayDateType == PayDateType.LastDay.ToString());
+
+        RuleFor(x => x.FirstPayPeriodMonth)
+            .InclusiveBetween(1, 12)
+            .WithMessage("First pay period month must be between 1 and 12.")
+            .When(x => x.FirstPayPeriodMonth.HasValue);
+
+        RuleFor(x => x.FirstPayPeriodYear)
+            .InclusiveBetween(2000, 2100)
+            .WithMessage("First pay period year must be between 2000 and 2100.")
+            .When(x => x.FirstPayPeriodYear.HasValue);
+
+        RuleFor(x => x)
+            .Must(x => !x.FirstPayPeriodMonth.HasValue || x.FirstPayPeriodYear.HasValue)
+            .WithMessage("First pay period year is required when month is provided.")
+            .Must(x => !x.FirstPayPeriodYear.HasValue || x.FirstPayPeriodMonth.HasValue)
+            .WithMessage("First pay period month is required when year is provided.");
     }
 }

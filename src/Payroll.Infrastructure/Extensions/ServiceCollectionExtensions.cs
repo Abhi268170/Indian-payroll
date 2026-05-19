@@ -27,7 +27,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        bool isWorkerOnly = false)
     {
         // Tenant-scoped DbContext — schema bound at construction via TenantModelCacheKeyFactory.
         // Connection string read lazily from IConfiguration so WAF test overrides are respected.
@@ -137,7 +138,11 @@ public static class ServiceCollectionExtensions
         });
         services.AddScoped<IFileStorageService, MinioFileStorageService>();
 
-        services.AddHostedService<SeedDataService>();
+        services.AddScoped<IPayslipPdfGenerator, PayslipPdfGenerator>();
+        services.AddScoped<IBankAdviceGenerator, BankAdviceGenerator>();
+
+        if (!isWorkerOnly)
+            services.AddHostedService<SeedDataService>();
 
         // Email
         services.Configure<EmailSettings>(configuration.GetSection("Email"));
