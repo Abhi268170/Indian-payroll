@@ -16,23 +16,18 @@ public static class PTCalculator
         var today = new DateOnly(run.Year, run.Month, 1);
 
         // HalfYearlySplit: deduct every month, slab on half-year gross, Option-A rounding.
+        decimal halfYearGrossForLookup = grossWage * emp.HalfYearTotalMonths;
         PTSlab? splitSlab = config.PTSlabs
             .Where(s => s.StateCode == emp.WorkStateCode
                 && s.Frequency == "HalfYearlySplit"
-                && s.EffectiveFrom <= today)
+                && s.EffectiveFrom <= today
+                && s.SalaryFrom <= halfYearGrossForLookup
+                && (s.SalaryTo is null || halfYearGrossForLookup <= s.SalaryTo))
             .OrderByDescending(s => s.EffectiveFrom)
-            .Where(s =>
-            {
-                decimal halfYearGross = grossWage * emp.HalfYearTotalMonths;
-                return s.SalaryFrom <= halfYearGross
-                    && (s.SalaryTo is null || halfYearGross <= s.SalaryTo);
-            })
             .FirstOrDefault();
 
         if (splitSlab is not null)
         {
-            decimal halfYearGross = grossWage * emp.HalfYearTotalMonths;
-            // re-lookup cleanly (LINQ above already filtered; just use it)
             decimal totalPt = splitSlab.Amount;
             if (totalPt == 0m) return new PTResult(0m, IsExempt: false);
 

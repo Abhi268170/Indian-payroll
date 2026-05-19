@@ -187,7 +187,7 @@ public sealed class InitiatePayrollRunHandler(
         var ptSlabs = new List<ProfessionalTaxSlab>();
         foreach (var state in stateCodes)
         {
-            var slabs = await statutoryRepo.GetPtSlabsAsync(state, DateOnly.FromDateTime(DateTime.UtcNow), ct);
+            var slabs = await statutoryRepo.GetPtSlabsAsync(state, new DateOnly(period.Year, period.Month, 1), ct);
             ptSlabs.AddRange(slabs);
         }
 

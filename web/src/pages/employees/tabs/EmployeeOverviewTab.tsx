@@ -326,7 +326,7 @@ function PersonalSection({ employee, onSaved }: Props): React.ReactElement {
   const { register, handleSubmit, reset, formState: { errors, isDirty } } = useForm<PersonalValues>({
     resolver: zodResolver(personalSchema),
     defaultValues: {
-      dateOfBirth: employee.dateOfBirth,
+      dateOfBirth: employee.dateOfBirth ?? '',
       fathersName: employee.fathersName ?? '',
       pan: '',
       personalEmail: employee.personalEmail ?? '',

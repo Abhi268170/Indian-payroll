@@ -22,9 +22,9 @@ public static class TDSCalculator
 
         // Section 87A rebate
         bool rebateApplied = false;
-        if (taxableIncome <= config.Rebate87ALimit && annualTax <= config.Rebate87AAmount)
+        if (taxableIncome <= config.Rebate87ALimit)
         {
-            annualTax = 0m;
+            annualTax -= Math.Min(annualTax, config.Rebate87AAmount);
             rebateApplied = true;
         }
 

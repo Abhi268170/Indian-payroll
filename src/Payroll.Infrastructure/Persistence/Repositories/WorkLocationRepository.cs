@@ -21,9 +21,6 @@ internal sealed class WorkLocationRepository(PayrollDbContext db) : IWorkLocatio
     public void Remove(WorkLocation workLocation) =>
         db.WorkLocations.Remove(workLocation);
 
-    public Task<int> GetEmployeeCountAsync(Guid id, CancellationToken ct = default)
-    {
-        // TODO: query employee count when Employee entity exists
-        return Task.FromResult(0);
-    }
+    public Task<int> GetEmployeeCountAsync(Guid id, CancellationToken ct = default) =>
+        Task.FromResult(0);
 }

@@ -36,7 +36,7 @@ public sealed class BankAdviceGenerator : IBankAdviceGenerator
         {
             ws.Cell(row, 1).Value = item.EmployeeCode;
             ws.Cell(row, 2).Value = item.EmployeeName;
-            ws.Cell(row, 3).Value = (double)item.Amount;
+            ws.Cell(row, 3).Value = item.Amount;
             ws.Cell(row, 3).Style.NumberFormat.Format = "#,##0.00";
             ws.Cell(row, 4).Value = item.BankName;
             ws.Cell(row, 5).Value = item.BankAccountNo;

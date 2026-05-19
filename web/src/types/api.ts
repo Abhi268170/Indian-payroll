@@ -40,7 +40,7 @@ export interface EmployeeDto {
   workLocationId: string
   workLocationName: string | null
   businessUnitId: string | null
-  dateOfBirth: string
+  dateOfBirth: string | null
   fathersName: string | null
   personalEmail: string | null
   differentlyAbledType: string

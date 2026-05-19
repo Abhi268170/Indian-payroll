@@ -83,7 +83,7 @@ public sealed class ApprovePayrollRunHandler(
                 rebate87A: result.TDS.Rebate87AApplied ? staticConfig.Rebate87AAmount : 0m,
                 surcharge: result.TDS.Surcharge,
                 cess: result.TDS.Cess,
-                annualTaxLiability: result.TDS.AnnualProjectedTax + result.TDS.Surcharge + result.TDS.Cess,
+                annualTaxLiability: result.TDS.AnnualProjectedTax,
                 ytdTdsDeducted: 0m,
                 remainingMonthsInFy: run.PayPeriod.MonthsRemainingInFiscalYear(),
                 tdsThisMonth: tdsThisMonth,

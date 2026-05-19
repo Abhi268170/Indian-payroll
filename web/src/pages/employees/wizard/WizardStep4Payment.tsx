@@ -32,7 +32,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 const MODES: { value: string; label: string; sub: string; disabled?: boolean }[] = [
-  { value: 'ManualBankTransfer', label: 'Bank Transfer', sub: 'Manual NEFT/IMPS — download bank advice after payroll run' },
+  { value: 'BankTransfer', label: 'Bank Transfer', sub: 'Manual NEFT/IMPS — download bank advice after payroll run' },
   { value: 'DirectDeposit', label: 'Direct Deposit', sub: 'Automated transfer', disabled: true },
   { value: 'Cheque', label: 'Cheque', sub: 'Physical cheque payment', disabled: true },
   { value: 'Cash', label: 'Cash', sub: 'Cash payment', disabled: true },
@@ -45,7 +45,7 @@ const errCls = 'mt-1 text-[11px] text-red-500'
 export default function WizardStep4Payment({ employeeId, onSuccess, onSkip }: Props): React.ReactElement {
   const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { paymentMode: 'ManualBankTransfer' },
+    defaultValues: { paymentMode: 'BankTransfer' },
   })
 
   const mode = watch('paymentMode')
