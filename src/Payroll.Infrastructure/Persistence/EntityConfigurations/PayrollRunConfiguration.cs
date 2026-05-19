@@ -42,7 +42,7 @@ internal sealed class PayrollRunConfiguration : IEntityTypeConfiguration<Payroll
         builder.Property(p => p.UpdatedAt).HasColumnType("timestamptz");
         builder.Property(p => p.DeletedAt).HasColumnType("timestamptz");
 
-        builder.OwnsOne(p => p.PayPeriod, pp =>
+        builder.ComplexProperty(p => p.PayPeriod, pp =>
         {
             pp.Property(x => x.Year).HasColumnName("pay_period_year").IsRequired();
             pp.Property(x => x.Month).HasColumnName("pay_period_month").IsRequired();

@@ -15,4 +15,8 @@ public sealed record EmployeeInput(
     // YTD from prior employer for mid-year joiners
     decimal PriorEmployerYTDTaxableIncome,
     decimal PriorEmployerYTDTDSDeducted,
-    decimal PriorEmployerYTDPF);
+    decimal PriorEmployerYTDPF,
+    // Half-year position for HalfYearlySplit PT states (e.g. Kerala).
+    // MonthIndex == TotalMonths means last month → absorb rounding remainder.
+    int HalfYearMonthIndex,
+    int HalfYearTotalMonths);

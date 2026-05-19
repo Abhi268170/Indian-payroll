@@ -59,3 +59,28 @@ public sealed record PayrollRunSummaryDto(
     DateTimeOffset CreatedAt,
     DateTimeOffset? ApprovedAt,
     DateTimeOffset? PaidAt);
+
+public sealed record PayrunEmployeeDto(
+    Guid EmployeeId,
+    string EmployeeCode,
+    string EmployeeName,
+    string Department,
+    string Designation,
+    string Status,
+    int LopDays,
+    int BaseDays,
+    decimal GrossPay,
+    decimal NetPay,
+    decimal EmployeePf,
+    decimal TdsAmount,
+    decimal? TdsOverrideAmount,
+    string? SkipReason);
+
+public sealed record PayrollHistoryItemDto(
+    Guid Id,
+    int Year,
+    int Month,
+    string PeriodLabel,
+    decimal TotalNetPay,
+    int EmployeeCount,
+    DateTimeOffset? PaidAt);

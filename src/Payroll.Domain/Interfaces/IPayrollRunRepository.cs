@@ -14,4 +14,5 @@ public interface IPayrollRunRepository
     void Update(PayrollRun run);
     Task<bool> ExistsForPeriodAsync(PayPeriod period, CancellationToken ct = default);
     Task<PayrollRun?> GetActiveForPeriodAsync(PayPeriod period, CancellationToken ct = default);
+    Task<IReadOnlyList<Guid>> GetPaidIdsForFiscalYearAsync(int fiscalYear, CancellationToken ct = default);
 }

@@ -126,6 +126,7 @@ public sealed class InitiatePayrollRunHandler(
                 bool hasPan = !string.IsNullOrWhiteSpace(emp.EncryptedPAN);
                 string workState = workLocationStateMap.TryGetValue(emp.WorkLocationId, out string? wls) ? wls : "MH";
 
+                var (hyIndex, hyTotal) = period.HalfYearPosition(emp.DateOfJoining);
                 engineInputs.Add(new EmployeeInput(
                     EmployeeId: emp.Id,
                     EmployeeCode: emp.EmployeeCode,
@@ -140,7 +141,9 @@ public sealed class InitiatePayrollRunHandler(
                     VPFAmount: 0,
                     PriorEmployerYTDTaxableIncome: 0,
                     PriorEmployerYTDTDSDeducted: 0,
-                    PriorEmployerYTDPF: 0));
+                    PriorEmployerYTDPF: 0,
+                    HalfYearMonthIndex: hyIndex,
+                    HalfYearTotalMonths: hyTotal));
             }
         }
 
@@ -282,7 +285,7 @@ public sealed class InitiatePayrollRunHandler(
             PaidAt: payrollRun.PaidAt);
     }
 
-    private static IReadOnlyList<SalaryComponentInput> BuildComponentInputs(
+    internal static IReadOnlyList<SalaryComponentInput> BuildComponentInputs(
         EmployeeSalaryStructure structure,
         SalaryStructureTemplate? template)
     {
@@ -313,7 +316,7 @@ public sealed class InitiatePayrollRunHandler(
                 _ => 0m
             };
 
-            if (comp.Component.Code == "BASIC") basicMonthly = monthly;
+            if (comp.Component.EarningType == EarningType.Basic) basicMonthly = monthly;
             nonResidualSum += monthly;
 
             bool isTaxable = comp.Component.IsTaxable ?? true;

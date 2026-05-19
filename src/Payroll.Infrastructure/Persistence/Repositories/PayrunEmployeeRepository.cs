@@ -30,4 +30,13 @@ internal sealed class PayrunEmployeeRepository(PayrollDbContext db) : IPayrunEmp
             .Where(e => e.PayrollRunId == payrollRunId && e.Status == status)
             .ToListAsync(ct)
             .ContinueWith<IReadOnlyList<PayrunEmployee>>(t => t.Result, ct);
+
+    public Task<IReadOnlyList<PayrunEmployee>> GetByEmployeeAndRunIdsAsync(Guid employeeId, IEnumerable<Guid> runIds, CancellationToken ct = default)
+    {
+        var ids = runIds.ToList();
+        return db.PayrunEmployees
+            .Where(e => e.EmployeeId == employeeId && ids.Contains(e.PayrollRunId))
+            .ToListAsync(ct)
+            .ContinueWith<IReadOnlyList<PayrunEmployee>>(t => t.Result, ct);
+    }
 }

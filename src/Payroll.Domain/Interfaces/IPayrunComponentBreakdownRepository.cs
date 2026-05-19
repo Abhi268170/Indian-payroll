@@ -11,4 +11,5 @@ public interface IPayrunComponentBreakdownRepository
     void Update(PayrunComponentBreakdown breakdown);
     void Remove(PayrunComponentBreakdown breakdown);
     Task RemoveRangeByRunAndEmployeeAsync(Guid payrollRunId, Guid employeeId, CancellationToken ct = default);
+    Task<IReadOnlyList<PayrunComponentBreakdown>> GetByEmployeeAndRunIdsAsync(Guid employeeId, IEnumerable<Guid> runIds, CancellationToken ct = default);
 }

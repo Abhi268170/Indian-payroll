@@ -37,4 +37,13 @@ internal sealed class PayrunComponentBreakdownRepository(PayrollDbContext db) : 
             .ToListAsync(ct);
         db.PayrunComponentBreakdowns.RemoveRange(rows);
     }
+
+    public Task<IReadOnlyList<PayrunComponentBreakdown>> GetByEmployeeAndRunIdsAsync(Guid employeeId, IEnumerable<Guid> runIds, CancellationToken ct = default)
+    {
+        var ids = runIds.ToList();
+        return db.PayrunComponentBreakdowns
+            .Where(b => b.EmployeeId == employeeId && ids.Contains(b.PayrollRunId))
+            .ToListAsync(ct)
+            .ContinueWith<IReadOnlyList<PayrunComponentBreakdown>>(t => t.Result, ct);
+    }
 }

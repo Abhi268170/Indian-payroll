@@ -30,6 +30,7 @@ public sealed class RecordPaymentCommandValidator : AbstractValidator<RecordPaym
 public sealed class RecordPaymentHandler(
     IPayrollRunRepository runRepo,
     IPayrollRunAuditLogRepository auditLogRepo,
+    IPayScheduleRepository payScheduleRepo,
     IPayrollJobDispatcher jobDispatcher,
     IUnitOfWork uow)
     : IRequestHandler<RecordPaymentCommand>
@@ -48,6 +49,13 @@ public sealed class RecordPaymentHandler(
         run.RecordPayment(req.PaymentDate, mode.ToString(), req.Reference, req.ActorId);
         runRepo.Update(run);
 
+        var paySchedule = await payScheduleRepo.GetAsync(ct);
+        if (paySchedule is not null && !paySchedule.IsLockedAfterPayrun)
+        {
+            paySchedule.LockAfterPayrun();
+            payScheduleRepo.Update(paySchedule);
+        }
+
         var auditEntry = PayrollRunAuditLog.Create(
             req.RunId, run.TenantId, PayrollRunStatus.Approved, PayrollRunStatus.Paid, req.ActorId, null);
         await auditLogRepo.AddAsync(auditEntry, ct);
@@ -55,8 +63,8 @@ public sealed class RecordPaymentHandler(
         await uow.SaveChangesAsync(ct);
 
         if (req.NotifyEmployees)
-            jobDispatcher.EnqueueGeneratePayslipsThenNotify(req.RunId);
+            jobDispatcher.EnqueueGeneratePayslipsThenNotify(req.RunId, run.TenantId);
         else
-            jobDispatcher.EnqueueGeneratePayslips(req.RunId);
+            jobDispatcher.EnqueueGeneratePayslips(req.RunId, run.TenantId);
     }
 }

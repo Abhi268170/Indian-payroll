@@ -11,4 +11,5 @@ public interface IPayrunEmployeeRepository
     Task AddAsync(PayrunEmployee employee, CancellationToken ct = default);
     void Update(PayrunEmployee employee);
     Task<IReadOnlyList<PayrunEmployee>> GetByRunIdWithStatusAsync(Guid payrollRunId, PayrunEmployeeStatus status, CancellationToken ct = default);
+    Task<IReadOnlyList<PayrunEmployee>> GetByEmployeeAndRunIdsAsync(Guid employeeId, IEnumerable<Guid> runIds, CancellationToken ct = default);
 }

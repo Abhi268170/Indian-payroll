@@ -47,6 +47,9 @@ public enum EarningType
     DriverAllowance,
     VehicleMaintenanceAllowance,
     ShiftAllowance,
+    StatutoryBonus,
+    AttireExpenses,
+    ProfessionalPursuitExpenses,
     // System-only: residual absorber. Cannot be created by tenants.
     FixedAllowance,
     ArrearsEarning,
