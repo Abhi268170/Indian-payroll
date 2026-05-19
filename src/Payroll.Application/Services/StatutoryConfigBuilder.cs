@@ -4,22 +4,8 @@ using Payroll.Engine.Inputs;
 namespace Payroll.Application.Services;
 
 // Builds engine StatutoryConfig from persisted domain entities.
-// PF rates are statutory (EPF Act 1952). ESI rates are statutory (ESI Act 1948).
 public static class StatutoryConfigBuilder
 {
-    private const decimal PfWageCap = 15_000m;
-    private const decimal EpfEmployeeRate = 0.12m;
-    private const decimal EpsEmployerRate = 0.0833m;
-    private const decimal EpsCap = 1_250m;
-    private const decimal EdliEmployerRate = 0.005m;
-    private const decimal EdliCap = 75m;
-    private const decimal EpfAdminRate = 0.005m;
-    private const decimal EpfAdminMinimum = 500m;
-    private const decimal EsiWageLimit = 21_000m;
-    private const decimal EsiPwdWageLimit = 25_000m;
-    private const decimal EsiEmployeeRate = 0.0075m;
-    private const decimal EsiEmployerRate = 0.0325m;
-
     public static StatutoryConfig Build(
         StatutoryOrgConfig orgConfig,
         IncomeTaxConfig? taxConfig,
@@ -60,22 +46,22 @@ public static class StatutoryConfigBuilder
             StandardDeduction: taxConfig?.StandardDeduction ?? 75_000m,
             Rebate87ALimit: taxConfig?.Rebate87ALimit ?? 700_000m,
             Rebate87AAmount: taxConfig?.Rebate87AAmount ?? 25_000m,
-            CessRate: 0.04m,
-            PFWageCap: PfWageCap,
-            EPFEmployeeRate: EpfEmployeeRate,
-            EPSEmployerRate: EpsEmployerRate,
-            EPSCap: EpsCap,
-            EDLIEmployerRate: EdliEmployerRate,
-            EDLICap: EdliCap,
-            EPFAdminRate: EpfAdminRate,
-            EPFAdminMinimum: EpfAdminMinimum,
+            CessRate: taxConfig?.CessRate ?? 0.04m,
+            PFWageCap: taxConfig?.PfWageCap ?? 15_000m,
+            EPFEmployeeRate: taxConfig?.EpfEmployeeRate ?? 0.12m,
+            EPSEmployerRate: taxConfig?.EpsEmployerRate ?? 0.0833m,
+            EPSCap: taxConfig?.EpsCap ?? 1_250m,
+            EDLIEmployerRate: taxConfig?.EdliEmployerRate ?? 0.005m,
+            EDLICap: taxConfig?.EdliCap ?? 75m,
+            EPFAdminRate: taxConfig?.EpfAdminRate ?? 0.005m,
+            EPFAdminMinimum: taxConfig?.EpfAdminMinimum ?? 500m,
             EpfRestrictEmployerWage: orgConfig.EpfEmployerContributionRate == "RestrictedWage12",
             EpfConsiderSalaryOnLop: orgConfig.EpfConsiderSalaryOnLop,
             EpfProRateRestrictedPfWage: orgConfig.EpfProRateRestrictedPfWage,
-            ESIWageLimit: EsiWageLimit,
-            ESIPWDWageLimit: EsiPwdWageLimit,
-            ESIEmployeeRate: EsiEmployeeRate,
-            ESIEmployerRate: EsiEmployerRate,
+            ESIWageLimit: taxConfig?.EsiWageLimit ?? 21_000m,
+            ESIPWDWageLimit: taxConfig?.EsiPwdWageLimit ?? 25_000m,
+            ESIEmployeeRate: taxConfig?.EsiEmployeeRate ?? 0.0075m,
+            ESIEmployerRate: taxConfig?.EsiEmployerRate ?? 0.0325m,
             PTSlabs: ptSlabInputs,
             LWFStates: lwfStates,
             PFEnabled: orgConfig.EpfEnabled,

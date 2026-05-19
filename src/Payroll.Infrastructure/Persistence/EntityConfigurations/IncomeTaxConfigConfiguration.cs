@@ -18,6 +18,19 @@ internal sealed class IncomeTaxConfigConfiguration : IEntityTypeConfiguration<In
         builder.Property(s => s.Rebate87AAmount).HasColumnType("numeric(18,4)").IsRequired();
         builder.Property(s => s.EmployerStatutoryCap).HasColumnType("numeric(18,4)").IsRequired();
         builder.Property(s => s.NpsEmployerMaxRate).HasColumnType("numeric(7,4)").IsRequired();
+        builder.Property(s => s.CessRate).HasColumnType("numeric(7,4)").IsRequired();
+        builder.Property(s => s.PfWageCap).HasColumnType("numeric(18,4)").IsRequired();
+        builder.Property(s => s.EpfEmployeeRate).HasColumnType("numeric(7,4)").IsRequired();
+        builder.Property(s => s.EpsEmployerRate).HasColumnType("numeric(7,4)").IsRequired();
+        builder.Property(s => s.EpsCap).HasColumnType("numeric(18,4)").IsRequired();
+        builder.Property(s => s.EdliEmployerRate).HasColumnType("numeric(7,4)").IsRequired();
+        builder.Property(s => s.EdliCap).HasColumnType("numeric(18,4)").IsRequired();
+        builder.Property(s => s.EpfAdminRate).HasColumnType("numeric(7,4)").IsRequired();
+        builder.Property(s => s.EpfAdminMinimum).HasColumnType("numeric(18,4)").IsRequired();
+        builder.Property(s => s.EsiWageLimit).HasColumnType("numeric(18,4)").IsRequired();
+        builder.Property(s => s.EsiPwdWageLimit).HasColumnType("numeric(18,4)").IsRequired();
+        builder.Property(s => s.EsiEmployeeRate).HasColumnType("numeric(7,4)").IsRequired();
+        builder.Property(s => s.EsiEmployerRate).HasColumnType("numeric(7,4)").IsRequired();
 
         builder.Property(s => s.CreatedAt).HasColumnType("timestamptz").IsRequired();
         builder.Property(s => s.UpdatedAt).HasColumnType("timestamptz");

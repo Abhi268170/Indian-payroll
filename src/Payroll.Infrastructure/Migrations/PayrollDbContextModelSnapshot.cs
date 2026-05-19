@@ -801,6 +801,58 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("numeric(7,4)")
                         .HasColumnName("nps_employer_max_rate");
 
+                    b.Property<decimal>("CessRate")
+                        .HasColumnType("numeric(7,4)")
+                        .HasColumnName("cess_rate");
+
+                    b.Property<decimal>("PfWageCap")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("pf_wage_cap");
+
+                    b.Property<decimal>("EpfEmployeeRate")
+                        .HasColumnType("numeric(7,4)")
+                        .HasColumnName("epf_employee_rate");
+
+                    b.Property<decimal>("EpsEmployerRate")
+                        .HasColumnType("numeric(7,4)")
+                        .HasColumnName("eps_employer_rate");
+
+                    b.Property<decimal>("EpsCap")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("eps_cap");
+
+                    b.Property<decimal>("EdliEmployerRate")
+                        .HasColumnType("numeric(7,4)")
+                        .HasColumnName("edli_employer_rate");
+
+                    b.Property<decimal>("EdliCap")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("edli_cap");
+
+                    b.Property<decimal>("EpfAdminRate")
+                        .HasColumnType("numeric(7,4)")
+                        .HasColumnName("epf_admin_rate");
+
+                    b.Property<decimal>("EpfAdminMinimum")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("epf_admin_minimum");
+
+                    b.Property<decimal>("EsiWageLimit")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("esi_wage_limit");
+
+                    b.Property<decimal>("EsiPwdWageLimit")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("esi_pwd_wage_limit");
+
+                    b.Property<decimal>("EsiEmployeeRate")
+                        .HasColumnType("numeric(7,4)")
+                        .HasColumnName("esi_employee_rate");
+
+                    b.Property<decimal>("EsiEmployerRate")
+                        .HasColumnType("numeric(7,4)")
+                        .HasColumnName("esi_employer_rate");
+
                     b.Property<decimal>("Rebate87AAmount")
                         .HasColumnType("numeric(18,4)")
                         .HasColumnName("rebate87a_amount");

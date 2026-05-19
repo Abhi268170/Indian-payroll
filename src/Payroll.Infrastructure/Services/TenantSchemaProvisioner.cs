@@ -364,6 +364,19 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
                     rebate87AAmount: 60000m,
                     employerStatutoryCap: 750000m,
                     npsEmployerMaxRate: 0.14m,
+                    cessRate: 0.04m,
+                    pfWageCap: 15000m,
+                    epfEmployeeRate: 0.12m,
+                    epsEmployerRate: 0.0833m,
+                    epsCap: 1250m,
+                    edliEmployerRate: 0.005m,
+                    edliCap: 75m,
+                    epfAdminRate: 0.005m,
+                    epfAdminMinimum: 500m,
+                    esiWageLimit: 21000m,
+                    esiPwdWageLimit: 25000m,
+                    esiEmployeeRate: 0.0075m,
+                    esiEmployerRate: 0.0325m,
                     createdBy: sys));
 
             await db.SaveChangesAsync(ct);
