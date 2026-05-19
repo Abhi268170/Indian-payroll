@@ -156,8 +156,6 @@ public sealed class InitiatePayrollRunHandler(
                 bool hasPan = !string.IsNullOrWhiteSpace(emp.EncryptedPAN);
                 string workState = workLocationStateMap.TryGetValue(emp.WorkLocationId, out string? wls) ? wls : "MH";
                 var (hyIndex, hyTotal) = period.HalfYearPosition(emp.DateOfJoining);
-
-                var (hyIndex, hyTotal) = period.HalfYearPosition(emp.DateOfJoining);
                 engineInputs.Add(new EmployeeInput(
                     EmployeeId: emp.Id,
                     EmployeeCode: emp.EmployeeCode,
