@@ -16,12 +16,6 @@ export interface DesignationDto {
   name: string
 }
 
-export interface CostCentreDto {
-  id: string
-  name: string
-  code: string | null
-}
-
 export interface EmployeeDto {
   id: string
   employeeCode: string
@@ -46,7 +40,6 @@ export interface EmployeeDto {
   workLocationId: string
   workLocationName: string | null
   businessUnitId: string | null
-  costCentreId: string | null
   dateOfBirth: string
   fathersName: string | null
   personalEmail: string | null
@@ -104,7 +97,6 @@ export interface CreateEmployeeRequest {
   designationId: string
   workLocationId: string
   businessUnitId?: string
-  costCentreId?: string
 }
 
 export interface SalaryStructureTemplateSummaryDto {

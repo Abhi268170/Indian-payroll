@@ -118,6 +118,8 @@ public sealed class SetLopCommandHandler(
             .Select(b => new SalaryComponentInput(b.SalaryComponentId ?? Guid.Empty, b.ComponentCode, b.FullAmount, IsTaxable: true, ConsiderForEpf: b.ConsiderForEpf))
             .ToList();
 
+        var (hyIndex, hyTotal) = run.PayPeriod.HalfYearPosition(employee.DateOfJoining);
+
         var empInput = new EmployeeInput(
             EmployeeId: employee.Id,
             EmployeeCode: employee.EmployeeCode,
@@ -132,7 +134,9 @@ public sealed class SetLopCommandHandler(
             VPFAmount: 0m,
             PriorEmployerYTDTaxableIncome: 0m,
             PriorEmployerYTDTDSDeducted: 0m,
-            PriorEmployerYTDPF: 0m);
+            PriorEmployerYTDPF: 0m,
+            HalfYearMonthIndex: hyIndex,
+            HalfYearTotalMonths: hyTotal);
 
         var runInput = new PayrollRunInput(
             Year: run.PayPeriod.Year,

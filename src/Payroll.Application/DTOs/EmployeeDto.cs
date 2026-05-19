@@ -24,7 +24,6 @@ public record EmployeeDto(
     Guid WorkLocationId,
     string? WorkLocationName,
     Guid? BusinessUnitId,
-    Guid? CostCentreId,
     // Personal
     string? DateOfBirth,
     string? FathersName,

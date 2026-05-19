@@ -63,7 +63,6 @@ public sealed class GetEmployeeHandler(
             employee.WorkLocationId,
             wl?.Name,
             employee.BusinessUnitId,
-            employee.CostCentreId,
             employee.DateOfBirth.ToString("yyyy-MM-dd"),
             employee.FathersName,
             employee.PersonalEmail,

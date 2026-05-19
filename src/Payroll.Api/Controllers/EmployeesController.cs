@@ -62,7 +62,6 @@ public sealed class EmployeesController(ISender sender) : ControllerBase
                 req.DesignationId,
                 req.WorkLocationId,
                 req.BusinessUnitId,
-                req.CostCentreId,
                 actorId), ct);
             return Created($"/api/v1/employees/{id}", new { id });
         }
@@ -88,7 +87,7 @@ public sealed class EmployeesController(ISender sender) : ControllerBase
                 id, req.FirstName, req.MiddleName, req.LastName,
                 req.MobileNumber, req.Gender, req.IsDirector, req.EnablePortalAccess,
                 req.DepartmentId, req.DesignationId, req.WorkLocationId,
-                req.BusinessUnitId, req.CostCentreId, GetActorId()), ct);
+                req.BusinessUnitId, GetActorId()), ct);
             return NoContent();
         }
         catch (NotFoundException) { return NotFound(); }
@@ -208,8 +207,7 @@ public record CreateEmployeeRequest(
     Guid DepartmentId,
     Guid DesignationId,
     Guid WorkLocationId,
-    Guid? BusinessUnitId,
-    Guid? CostCentreId);
+    Guid? BusinessUnitId);
 
 public record UpdateBasicDetailsRequest(
     string FirstName,
@@ -222,8 +220,7 @@ public record UpdateBasicDetailsRequest(
     Guid DepartmentId,
     Guid DesignationId,
     Guid WorkLocationId,
-    Guid? BusinessUnitId,
-    Guid? CostCentreId);
+    Guid? BusinessUnitId);
 
 public record UpdatePersonalDetailsRequest(
     string? DateOfBirth,

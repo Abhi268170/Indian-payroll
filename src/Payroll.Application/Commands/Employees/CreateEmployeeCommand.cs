@@ -24,7 +24,6 @@ public record CreateEmployeeCommand(
     Guid DesignationId,
     Guid WorkLocationId,
     Guid? BusinessUnitId,
-    Guid? CostCentreId,
     Guid ActorId) : IRequest<Guid>;
 
 internal sealed class CreateEmployeeCommandValidator : AbstractValidator<CreateEmployeeCommand>
@@ -86,7 +85,6 @@ public sealed class CreateEmployeeHandler(
             req.DesignationId,
             req.WorkLocationId,
             req.BusinessUnitId,
-            req.CostCentreId,
             DateOnly.Parse(req.DateOfBirth),
             req.ActorId);
 

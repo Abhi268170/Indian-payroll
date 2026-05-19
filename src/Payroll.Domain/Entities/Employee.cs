@@ -29,7 +29,6 @@ public sealed class Employee : AuditableEntity
     public Guid DesignationId { get; private set; }
     public Guid WorkLocationId { get; private set; }
     public Guid? BusinessUnitId { get; private set; }
-    public Guid? CostCentreId { get; private set; }
 
     // Personal details
     public DateOnly DateOfBirth { get; private set; }
@@ -83,7 +82,6 @@ public sealed class Employee : AuditableEntity
         Guid designationId,
         Guid workLocationId,
         Guid? businessUnitId,
-        Guid? costCentreId,
         DateOnly dateOfBirth,
         Guid createdBy) => new()
         {
@@ -105,7 +103,6 @@ public sealed class Employee : AuditableEntity
             DesignationId = designationId,
             WorkLocationId = workLocationId,
             BusinessUnitId = businessUnitId,
-            CostCentreId = costCentreId,
             DateOfBirth = dateOfBirth,
             DifferentlyAbledType = DifferentlyAbledType.None,
             PaymentMode = PaymentMode.BankTransfer,
@@ -124,7 +121,6 @@ public sealed class Employee : AuditableEntity
         Guid designationId,
         Guid workLocationId,
         Guid? businessUnitId,
-        Guid? costCentreId,
         Guid updatedBy)
     {
         FirstName = firstName;
@@ -138,7 +134,6 @@ public sealed class Employee : AuditableEntity
         DesignationId = designationId;
         WorkLocationId = workLocationId;
         BusinessUnitId = businessUnitId;
-        CostCentreId = costCentreId;
         SetUpdated(updatedBy);
     }
 

@@ -31,7 +31,9 @@ public class GrossCalculatorTests
             VPFAmount: 0,
             PriorEmployerYTDTaxableIncome: 0,
             PriorEmployerYTDTDSDeducted: 0,
-            PriorEmployerYTDPF: 0);
+            PriorEmployerYTDPF: 0,
+            HalfYearMonthIndex: 1,
+            HalfYearTotalMonths: 6);
 
     private static IReadOnlyList<SalaryComponentInput> DefaultComponents() =>
     [

@@ -125,6 +125,7 @@ public sealed class InitiatePayrollRunHandler(
                 var components = BuildComponentInputs(salaryStructure, template);
                 bool hasPan = !string.IsNullOrWhiteSpace(emp.EncryptedPAN);
                 string workState = workLocationStateMap.TryGetValue(emp.WorkLocationId, out string? wls) ? wls : "MH";
+                var (hyIndex, hyTotal) = period.HalfYearPosition(emp.DateOfJoining);
 
                 engineInputs.Add(new EmployeeInput(
                     EmployeeId: emp.Id,
@@ -140,7 +141,9 @@ public sealed class InitiatePayrollRunHandler(
                     VPFAmount: 0,
                     PriorEmployerYTDTaxableIncome: 0,
                     PriorEmployerYTDTDSDeducted: 0,
-                    PriorEmployerYTDPF: 0));
+                    PriorEmployerYTDPF: 0,
+                    HalfYearMonthIndex: hyIndex,
+                    HalfYearTotalMonths: hyTotal));
             }
         }
 

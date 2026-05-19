@@ -43,6 +43,8 @@ public class VariableInputCommandTests
             Substitute.For<IPayrunEmployeeRepository>(),
             Substitute.For<IPayrunComponentBreakdownRepository>(),
             Substitute.For<IEmployeeRepository>(),
+            Substitute.For<IWorkLocationRepository>(),
+            Substitute.For<IPayScheduleRepository>(),
             Substitute.For<IUnitOfWork>());
 
         Func<Task> act = () => handler.Handle(new SetLopCommand(RunId, EmpId, 2, ActorId), CancellationToken.None);
@@ -68,6 +70,8 @@ public class VariableInputCommandTests
             runRepo, empRepo,
             Substitute.For<IPayrunComponentBreakdownRepository>(),
             Substitute.For<IEmployeeRepository>(),
+            Substitute.For<IWorkLocationRepository>(),
+            Substitute.For<IPayScheduleRepository>(),
             Substitute.For<IUnitOfWork>());
 
         // lopDays = 31 >= baseDays = 31

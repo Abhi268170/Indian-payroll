@@ -46,6 +46,7 @@ public sealed class EmployeeTests
         {
             DisplayName = displayName,
             Slug = slug,
+            AdminEmail = $"admin@{slug}.test",
         });
         response.EnsureSuccessStatusCode();
         Dictionary<string, object>? body = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>();
@@ -111,11 +112,11 @@ public sealed class EmployeeTests
             client, tenantId, $"orgadmin-{suffix}@test.local", "OrgAdmin@Test1!", Roles.OrgAdmin);
     }
 
-    private async Task<(Guid DeptId, Guid DesigId)> CreateOrgPrereqsAsync(
+    private async Task<(Guid DeptId, Guid DesigId, Guid WorkLocationId)> CreateOrgPrereqsAsync(
         HttpClient client, string orgAdminToken, string slug)
     {
         using HttpRequestMessage deptReq = TenantRequest(
-            HttpMethod.Post, "/api/org/departments", orgAdminToken, slug,
+            HttpMethod.Post, "/api/v1/departments", orgAdminToken, slug,
             new { Name = "Engineering", Code = (string?)null });
         HttpResponseMessage deptResp = await client.SendAsync(deptReq);
         deptResp.EnsureSuccessStatusCode();
@@ -123,14 +124,22 @@ public sealed class EmployeeTests
         Guid deptId = Guid.Parse(deptBody!["id"].ToString()!);
 
         using HttpRequestMessage desigReq = TenantRequest(
-            HttpMethod.Post, "/api/org/designations", orgAdminToken, slug,
+            HttpMethod.Post, "/api/v1/designations", orgAdminToken, slug,
             new { Name = "Software Engineer" });
         HttpResponseMessage desigResp = await client.SendAsync(desigReq);
         desigResp.EnsureSuccessStatusCode();
         Dictionary<string, object>? desigBody = await desigResp.Content.ReadFromJsonAsync<Dictionary<string, object>>();
         Guid desigId = Guid.Parse(desigBody!["id"].ToString()!);
 
-        return (deptId, desigId);
+        using HttpRequestMessage wlReq = TenantRequest(
+            HttpMethod.Post, "/api/v1/work-locations", orgAdminToken, slug,
+            new { Name = "HQ", State = "Maharashtra" });
+        HttpResponseMessage wlResp = await client.SendAsync(wlReq);
+        wlResp.EnsureSuccessStatusCode();
+        Dictionary<string, object>? wlBody = await wlResp.Content.ReadFromJsonAsync<Dictionary<string, object>>();
+        Guid workLocationId = Guid.Parse(wlBody!["id"].ToString()!);
+
+        return (deptId, desigId, workLocationId);
     }
 
     [Fact]
@@ -144,24 +153,24 @@ public sealed class EmployeeTests
         string hrToken = await CreateTenantUserAndGetTokenAsync(
             client, tenantId, "hr@emp-corp-a.test", "HRAdmin@Test1!", Roles.HRManager);
 
-        (Guid deptId, Guid desigId) = await CreateOrgPrereqsAsync(client, orgToken, slug);
+        (Guid deptId, Guid desigId, Guid workLocationId) = await CreateOrgPrereqsAsync(client, orgToken, slug);
 
         using HttpRequestMessage request = TenantRequest(
-            HttpMethod.Post, "/api/employees", hrToken, slug, new
+            HttpMethod.Post, "/api/v1/employees", hrToken, slug, new
             {
                 FirstName = "Rahul",
                 LastName = "Sharma",
                 EmployeeCode = "EMP001",
-                PAN = "ABCDE1234F",
+                WorkEmail = "rahul.sharma@emp-corp-a.test",
                 DateOfBirth = "1990-01-15",
                 Gender = "Male",
                 DateOfJoining = "2024-04-01",
-                WorkState = "MH",
                 EmploymentType = "FullTime",
+                IsDirector = false,
+                EnablePortalAccess = false,
                 DepartmentId = deptId,
                 DesignationId = desigId,
-                BranchId = (Guid?)null,
-                CostCentreId = (Guid?)null,
+                WorkLocationId = workLocationId,
             });
         HttpResponseMessage response = await client.SendAsync(request);
 
@@ -171,7 +180,7 @@ public sealed class EmployeeTests
     }
 
     [Fact]
-    public async Task CreateEmployee_InvalidPAN_Returns400()
+    public async Task CreateEmployee_InvalidWorkEmail_Returns400()
     {
         HttpClient client = _factory.CreateClient();
         string superToken = await GetSuperAdminTokenAsync(client);
@@ -181,24 +190,24 @@ public sealed class EmployeeTests
         string hrToken = await CreateTenantUserAndGetTokenAsync(
             client, tenantId, "hr@emp-corp-b.test", "HRAdmin@Test1!", Roles.HRManager);
 
-        (Guid deptId, Guid desigId) = await CreateOrgPrereqsAsync(client, orgToken, slug);
+        (Guid deptId, Guid desigId, Guid workLocationId) = await CreateOrgPrereqsAsync(client, orgToken, slug);
 
         using HttpRequestMessage request = TenantRequest(
-            HttpMethod.Post, "/api/employees", hrToken, slug, new
+            HttpMethod.Post, "/api/v1/employees", hrToken, slug, new
             {
                 FirstName = "Test",
                 LastName = "User",
                 EmployeeCode = "EMP002",
-                PAN = "INVALID-PAN",
+                WorkEmail = "not-a-valid-email",
                 DateOfBirth = "1990-01-15",
                 Gender = "Male",
                 DateOfJoining = "2024-04-01",
-                WorkState = "MH",
                 EmploymentType = "FullTime",
+                IsDirector = false,
+                EnablePortalAccess = false,
                 DepartmentId = deptId,
                 DesignationId = desigId,
-                BranchId = (Guid?)null,
-                CostCentreId = (Guid?)null,
+                WorkLocationId = workLocationId,
             });
         HttpResponseMessage response = await client.SendAsync(request);
 
@@ -216,28 +225,28 @@ public sealed class EmployeeTests
         string hrToken = await CreateTenantUserAndGetTokenAsync(
             client, tenantId, "hr@emp-corp-c.test", "HRAdmin@Test1!", Roles.HRManager);
 
-        (Guid deptId, Guid desigId) = await CreateOrgPrereqsAsync(client, orgToken, slug);
+        (Guid deptId, Guid desigId, Guid workLocationId) = await CreateOrgPrereqsAsync(client, orgToken, slug);
 
         using HttpRequestMessage createReq = TenantRequest(
-            HttpMethod.Post, "/api/employees", hrToken, slug, new
+            HttpMethod.Post, "/api/v1/employees", hrToken, slug, new
             {
                 FirstName = "Priya",
                 LastName = "Nair",
                 EmployeeCode = "EMP003",
-                PAN = "PQRST9876Y",
+                WorkEmail = "priya.nair@emp-corp-c.test",
                 DateOfBirth = "1992-06-20",
                 Gender = "Female",
                 DateOfJoining = "2024-01-10",
-                WorkState = "KA",
                 EmploymentType = "FullTime",
+                IsDirector = false,
+                EnablePortalAccess = false,
                 DepartmentId = deptId,
                 DesignationId = desigId,
-                BranchId = (Guid?)null,
-                CostCentreId = (Guid?)null,
+                WorkLocationId = workLocationId,
             });
         (await client.SendAsync(createReq)).EnsureSuccessStatusCode();
 
-        using HttpRequestMessage listReq = TenantRequest(HttpMethod.Get, "/api/employees", hrToken, slug);
+        using HttpRequestMessage listReq = TenantRequest(HttpMethod.Get, "/api/v1/employees", hrToken, slug);
         HttpResponseMessage listResponse = await client.SendAsync(listReq);
 
         listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -258,31 +267,31 @@ public sealed class EmployeeTests
         string hrToken = await CreateTenantUserAndGetTokenAsync(
             client, tenantId, "hr@emp-corp-d.test", "HRAdmin@Test1!", Roles.HRManager);
 
-        (Guid deptId, Guid desigId) = await CreateOrgPrereqsAsync(client, orgToken, slug);
+        (Guid deptId, Guid desigId, Guid workLocationId) = await CreateOrgPrereqsAsync(client, orgToken, slug);
 
         using HttpRequestMessage createReq = TenantRequest(
-            HttpMethod.Post, "/api/employees", hrToken, slug, new
+            HttpMethod.Post, "/api/v1/employees", hrToken, slug, new
             {
                 FirstName = "Amit",
                 LastName = "Patel",
                 EmployeeCode = "EMP004",
-                PAN = "AMTPX1234Z",
+                WorkEmail = "amit.patel@emp-corp-d.test",
                 DateOfBirth = "1988-11-05",
                 Gender = "Male",
                 DateOfJoining = "2023-07-01",
-                WorkState = "GJ",
                 EmploymentType = "FullTime",
+                IsDirector = false,
+                EnablePortalAccess = false,
                 DepartmentId = deptId,
                 DesignationId = desigId,
-                BranchId = (Guid?)null,
-                CostCentreId = (Guid?)null,
+                WorkLocationId = workLocationId,
             });
         HttpResponseMessage createResponse = await client.SendAsync(createReq);
         createResponse.EnsureSuccessStatusCode();
         Dictionary<string, object>? created = await createResponse.Content.ReadFromJsonAsync<Dictionary<string, object>>();
         string empId = created!["id"].ToString()!;
 
-        using HttpRequestMessage getReq = TenantRequest(HttpMethod.Get, $"/api/employees/{empId}", hrToken, slug);
+        using HttpRequestMessage getReq = TenantRequest(HttpMethod.Get, $"/api/v1/employees/{empId}", hrToken, slug);
         HttpResponseMessage getResponse = await client.SendAsync(getReq);
 
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -302,7 +311,7 @@ public sealed class EmployeeTests
             client, tenantId, "hr@emp-corp-e.test", "HRAdmin@Test1!", Roles.HRManager);
 
         using HttpRequestMessage request = TenantRequest(
-            HttpMethod.Get, $"/api/employees/{Guid.NewGuid()}", hrToken, slug);
+            HttpMethod.Get, $"/api/v1/employees/{Guid.NewGuid()}", hrToken, slug);
         HttpResponseMessage response = await client.SendAsync(request);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -324,29 +333,29 @@ public sealed class EmployeeTests
         string tokenB = await CreateTenantUserAndGetTokenAsync(
             client, tenantIdB, "hr@isol-emp-b.test", "HRAdmin@Test1!", Roles.HRManager);
 
-        (Guid deptIdA, Guid desigIdA) = await CreateOrgPrereqsAsync(client, orgTokenA, slugA);
+        (Guid deptIdA, Guid desigIdA, Guid workLocationIdA) = await CreateOrgPrereqsAsync(client, orgTokenA, slugA);
 
         using HttpRequestMessage createReq = TenantRequest(
-            HttpMethod.Post, "/api/employees", tokenA, slugA, new
+            HttpMethod.Post, "/api/v1/employees", tokenA, slugA, new
             {
                 FirstName = "Isolated",
                 LastName = "Employee",
                 EmployeeCode = "ISOL001",
-                PAN = "ISOLX1234Y",
+                WorkEmail = "isolated.employee@isol-emp-a.test",
                 DateOfBirth = "1995-03-01",
                 Gender = "Male",
                 DateOfJoining = "2024-01-01",
-                WorkState = "MH",
                 EmploymentType = "FullTime",
+                IsDirector = false,
+                EnablePortalAccess = false,
                 DepartmentId = deptIdA,
                 DesignationId = desigIdA,
-                BranchId = (Guid?)null,
-                CostCentreId = (Guid?)null,
+                WorkLocationId = workLocationIdA,
             });
         (await client.SendAsync(createReq)).EnsureSuccessStatusCode();
 
         // Tenant B must see 0 employees
-        using HttpRequestMessage listReq = TenantRequest(HttpMethod.Get, "/api/employees", tokenB, slugB);
+        using HttpRequestMessage listReq = TenantRequest(HttpMethod.Get, "/api/v1/employees", tokenB, slugB);
         HttpResponseMessage listResponse = await client.SendAsync(listReq);
 
         listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
