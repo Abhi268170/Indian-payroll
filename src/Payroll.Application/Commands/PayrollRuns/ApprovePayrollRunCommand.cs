@@ -93,6 +93,17 @@ public sealed class ApprovePayrollRunHandler(
             await tdsWorksheetRepo.AddAsync(worksheet, ct);
         }
 
+        run.UpdateFinancialSummary(
+            payrollCost: activeEmployees.Sum(e => e.GrossPay + e.EmployerPf + e.EmployerEsi + e.EdliAmount),
+            totalNetPay: activeEmployees.Sum(e => e.NetPay),
+            totalEmployerPf: activeEmployees.Sum(e => e.EmployerPf),
+            totalEmployerEsi: activeEmployees.Sum(e => e.EmployerEsi),
+            totalEdli: activeEmployees.Sum(e => e.EdliAmount),
+            totalTds: activeEmployees.Sum(e => e.TdsAmount),
+            totalPt: activeEmployees.Sum(e => e.PtAmount),
+            employeeCount: activeEmployees.Count,
+            actorId: req.ActorId);
+
         run.Approve(req.ActorId);
         runRepo.Update(run);
 

@@ -197,7 +197,9 @@ if (!isWorkerOnly)
         context.Response.Headers["X-Content-Type-Options"] = "nosniff";
         context.Response.Headers["X-XSS-Protection"] = "1; mode=block";
         context.Response.Headers["Referrer-Policy"] = "no-referrer";
-        context.Response.Headers["Content-Security-Policy"] = "default-src 'none'; script-src 'self'";
+        context.Response.Headers["Content-Security-Policy"] =
+            "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; " +
+            "connect-src 'self'; img-src 'self' data:; font-src 'self'; frame-ancestors 'none'";
         await next();
     });
 

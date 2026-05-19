@@ -15,6 +15,7 @@ public enum EngineWorkWeekDay
     Thursday  = 1 << 4,
     Friday    = 1 << 5,
     Saturday  = 1 << 6,
+    StandardFiveDay = Monday | Tuesday | Wednesday | Thursday | Friday,
 }
 
 public enum EngineSalaryCalculationMethod

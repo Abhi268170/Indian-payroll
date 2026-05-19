@@ -143,7 +143,7 @@ public sealed class PayrollRun : AuditableEntity
             throw new InvalidOperationException($"Cannot delete a payroll run in {Status} status. Only Draft runs can be deleted.");
 
         Status = PayrollRunStatus.Deleted;
-        SetUpdated(actorId);
+        SoftDelete(actorId);
     }
 
     public void MarkFailed(string reason)

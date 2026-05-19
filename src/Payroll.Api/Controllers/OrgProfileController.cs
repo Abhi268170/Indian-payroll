@@ -90,7 +90,7 @@ public sealed class OrgProfileController(ISender sender) : ControllerBase
         }
         catch (NotFoundException)
         {
-            return NotFound();
+            return NoContent();
         }
     }
 
