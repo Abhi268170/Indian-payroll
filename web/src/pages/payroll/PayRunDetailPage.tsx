@@ -1,0 +1,202 @@
+import { useState } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { api } from '@/lib/api'
+import type { PayrollRunSummaryDto, PayrunEmployeeDto, PendingTasksDto } from '@/types/api'
+import PayRunHeader from './components/PayRunHeader'
+import PendingTasksBanner from './components/PendingTasksBanner'
+import EmployeeSummaryTable from './components/EmployeeSummaryTable'
+import VariableInputsPanel from './components/VariableInputsPanel'
+import ApprovePayrollDialog from './components/ApprovePayrollDialog'
+import RejectApprovalDialog from './components/RejectApprovalDialog'
+import RecordPaymentDialog from './components/RecordPaymentDialog'
+import DeletePaymentDialog from './components/DeletePaymentDialog'
+import SkipEmployeeDialog from './components/SkipEmployeeDialog'
+import PayslipPanel from './components/PayslipPanel'
+import BankAdviceModal from './components/BankAdviceModal'
+
+type Tab = 'employees' | 'taxes' | 'insights'
+
+interface VariableInputsState {
+  employeeId: string
+  employeeName: string
+}
+
+interface PayslipState {
+  employeeId: string
+  employeeName: string
+}
+
+interface SkipState {
+  employeeId: string
+  employeeName: string
+}
+
+const TABS: { key: Tab; label: string }[] = [
+  { key: 'employees', label: 'Employee Summary' },
+  { key: 'taxes', label: 'Taxes & Deductions' },
+  { key: 'insights', label: 'Overall Insights' },
+]
+
+export default function PayRunDetailPage(): React.ReactElement {
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
+  const [activeTab, setActiveTab] = useState<Tab>('employees')
+  const [showMenu, setShowMenu] = useState(false)
+  const [variableInputs, setVariableInputs] = useState<VariableInputsState | null>(null)
+  const [payslipState, setPayslipState] = useState<PayslipState | null>(null)
+  const [showApprove, setShowApprove] = useState(false)
+  const [showReject, setShowReject] = useState(false)
+  const [showRecordPayment, setShowRecordPayment] = useState(false)
+  const [showDeletePayment, setShowDeletePayment] = useState(false)
+  const [showBankAdvice, setShowBankAdvice] = useState(false)
+  const [skipState, setSkipState] = useState<SkipState | null>(null)
+
+  const runId = id ?? ''
+
+  const { data: run, isLoading: runLoading } = useQuery<PayrollRunSummaryDto>({
+    queryKey: ['payroll-run', runId],
+    queryFn: () => api.get<PayrollRunSummaryDto>(`/api/v1/payroll-runs/${runId}`).then(r => r.data),
+    enabled: runId !== '',
+  })
+
+  const { data: employees = [] } = useQuery<PayrunEmployeeDto[]>({
+    queryKey: ['run-employees', runId],
+    queryFn: () => api.get<PayrunEmployeeDto[]>(`/api/v1/payroll-runs/${runId}/employees`).then(r => r.data),
+    enabled: !!run,
+  })
+
+  const { data: pendingTasks } = useQuery<PendingTasksDto>({
+    queryKey: ['pending-tasks', runId],
+    queryFn: () => api.get<PendingTasksDto>(`/api/v1/payroll-runs/${runId}/pending-tasks`).then(r => r.data),
+    enabled: run?.status === 'Draft',
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: () => api.delete(`/api/v1/payroll-runs/${runId}`),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['payroll-runs'] })
+      void navigate('/pay-runs', { replace: true })
+    },
+  })
+
+  function handleDownloadPayslip(employeeId: string, employeeName: string): void {
+    setPayslipState({ employeeId, employeeName })
+  }
+
+  if (runLoading || !run) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <span className="inline-block w-6 h-6 border-2 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <PayRunHeader
+        run={run}
+        onApprove={() => { setShowApprove(true) }}
+        onDelete={() => { deleteMutation.mutate() }}
+        onRecordPayment={() => { setShowRecordPayment(true) }}
+        onDeletePayment={() => { setShowDeletePayment(true) }}
+        onRejectApproval={() => { setShowReject(true) }}
+        onBankAdvice={() => { setShowBankAdvice(true) }}
+        showMenu={showMenu}
+        onToggleMenu={() => { setShowMenu(v => !v) }}
+      />
+
+      {pendingTasks && <PendingTasksBanner tasks={pendingTasks} />}
+
+      {/* Tabs */}
+      <div className="flex items-center gap-1 mb-4 border-b border-[var(--color-border)]">
+        {TABS.map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => { setActiveTab(tab.key) }}
+            className={`h-9 px-4 text-[13px] font-medium border-b-2 -mb-px transition-colors ${
+              activeTab === tab.key
+                ? 'border-[var(--color-primary)] text-[var(--color-primary)]'
+                : 'border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'employees' && (
+        <EmployeeSummaryTable
+          employees={employees}
+          runStatus={run.status}
+          runId={runId}
+          onOpenVariableInputs={(empId, empName) => { setVariableInputs({ employeeId: empId, employeeName: empName }) }}
+          onSkipEmployee={(empId, empName) => { setSkipState({ employeeId: empId, employeeName: empName }) }}
+          onDownloadPayslip={handleDownloadPayslip}
+        />
+      )}
+
+      {activeTab === 'taxes' && (
+        <div className="flex items-center justify-center h-48 rounded-xl border border-dashed border-[var(--color-border)]">
+          <p className="text-[13px] text-[var(--color-text-secondary)]">Taxes & Deductions — coming soon</p>
+        </div>
+      )}
+
+      {activeTab === 'insights' && (
+        <div className="flex items-center justify-center h-48 rounded-xl border border-dashed border-[var(--color-border)]">
+          <p className="text-[13px] text-[var(--color-text-secondary)]">Overall Insights — coming soon</p>
+        </div>
+      )}
+
+      {variableInputs && (
+        <VariableInputsPanel
+          runId={runId}
+          employeeId={variableInputs.employeeId}
+          employeeName={variableInputs.employeeName}
+          onClose={() => { setVariableInputs(null) }}
+        />
+      )}
+
+      {payslipState && (
+        <PayslipPanel
+          runId={runId}
+          employeeId={payslipState.employeeId}
+          employeeName={payslipState.employeeName}
+          onClose={() => { setPayslipState(null) }}
+        />
+      )}
+
+      {showApprove && (
+        <ApprovePayrollDialog run={run} onClose={() => { setShowApprove(false) }} />
+      )}
+
+      {showReject && (
+        <RejectApprovalDialog runId={runId} onClose={() => { setShowReject(false) }} />
+      )}
+
+      {showRecordPayment && (
+        <RecordPaymentDialog run={run} onClose={() => { setShowRecordPayment(false) }} />
+      )}
+
+      {showDeletePayment && (
+        <DeletePaymentDialog runId={runId} periodLabel={run.periodLabel} onClose={() => { setShowDeletePayment(false) }} />
+      )}
+
+      {showBankAdvice && (
+        <BankAdviceModal runId={runId} periodLabel={run.periodLabel} onClose={() => { setShowBankAdvice(false) }} />
+      )}
+
+      {skipState && (
+        <SkipEmployeeDialog
+          runId={runId}
+          employeeId={skipState.employeeId}
+          employeeName={skipState.employeeName}
+          periodLabel={run.periodLabel}
+          onClose={() => { setSkipState(null) }}
+        />
+      )}
+    </div>
+  )
+}
