@@ -97,8 +97,8 @@ public sealed class SalaryComponent : AuditableEntity
 
     public static SalaryComponent CreateSystemFixedAllowance(Guid tenantId, Guid createdBy) => new()
     {
-        Name = "Fixed Allowance",
-        NameInPayslip = "Fixed Allowance",
+        Name = "Special Allowance",
+        NameInPayslip = "Special Allowance",
         Code = "FIXED_ALLOWANCE",
         Category = ComponentCategory.Earning,
         EarningType = Enums.EarningType.FixedAllowance,

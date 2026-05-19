@@ -70,7 +70,7 @@ public sealed class GetEmployeeSalaryStructureHandler(
                     _ => 0m,
                 };
 
-                if (comp.Component.Code == "BASIC")
+                if (comp.Component.EarningType == EarningType.Basic)
                     basicMonthly = monthly;
 
                 nonResidualSum += monthly;

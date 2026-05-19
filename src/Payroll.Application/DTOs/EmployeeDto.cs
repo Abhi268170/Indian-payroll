@@ -41,6 +41,7 @@ public record EmployeeDto(
     string? BankName,
     string? AccountType,
     string? MaskedAccountNumber,
+    string? IfscCode,
     // Statutory
     string? UAN,
     string? ESICIPNumber,

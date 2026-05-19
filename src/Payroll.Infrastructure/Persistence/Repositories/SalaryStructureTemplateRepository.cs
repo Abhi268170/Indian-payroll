@@ -25,4 +25,12 @@ internal sealed class SalaryStructureTemplateRepository(PayrollDbContext db)
 
     public async Task AddAsync(SalaryStructureTemplate template, CancellationToken ct = default) =>
         await db.SalaryStructureTemplates.AddAsync(template, ct);
+
+    public async Task ReplaceComponentsAsync(Guid templateId, IEnumerable<SalaryStructureComponent> newComponents, CancellationToken ct = default)
+    {
+        await db.SalaryStructureComponents
+            .Where(c => c.TemplateId == templateId)
+            .ExecuteDeleteAsync(ct);
+        await db.SalaryStructureComponents.AddRangeAsync(newComponents, ct);
+    }
 }

@@ -14,7 +14,7 @@ public sealed class UpdateSalaryStructureTemplateHandler(
 {
     public async Task Handle(UpdateSalaryStructureTemplateCommand req, CancellationToken ct)
     {
-        SalaryStructureTemplate? template = await templateRepo.GetByIdWithComponentsAsync(req.Id, ct);
+        SalaryStructureTemplate? template = await templateRepo.GetByIdAsync(req.Id, ct);
         if (template is null || template.TenantId != tenantContext.TenantId)
             throw new InvalidOperationException("Salary structure template not found.");
 
@@ -34,7 +34,7 @@ public sealed class UpdateSalaryStructureTemplateHandler(
                 input.DisplayOrder));
         }
 
-        template.SetComponents(slots);
+        await templateRepo.ReplaceComponentsAsync(req.Id, slots, ct);
         await uow.SaveChangesAsync(ct);
     }
 }

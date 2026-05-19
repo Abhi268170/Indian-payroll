@@ -1,3 +1,4 @@
+using FluentValidation;
 using MediatR;
 using Payroll.Domain.Common;
 using Payroll.Domain.Interfaces;
@@ -13,6 +14,17 @@ public record UpdateStatutoryDetailsCommand(
     string? UAN,
     string? ESICIPNumber,
     Guid ActorId) : IRequest;
+
+internal sealed class UpdateStatutoryDetailsValidator : AbstractValidator<UpdateStatutoryDetailsCommand>
+{
+    public UpdateStatutoryDetailsValidator()
+    {
+        RuleFor(x => x.UAN).Matches(@"^\d{12}$")
+            .When(x => !string.IsNullOrEmpty(x.UAN)).WithMessage("UAN must be 12 digits.");
+        RuleFor(x => x.ESICIPNumber).MaximumLength(20)
+            .When(x => !string.IsNullOrEmpty(x.ESICIPNumber));
+    }
+}
 
 public sealed class UpdateStatutoryDetailsHandler(IEmployeeRepository repo, IUnitOfWork uow)
     : IRequestHandler<UpdateStatutoryDetailsCommand>

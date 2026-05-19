@@ -148,6 +148,7 @@ public sealed class Employee : AuditableEntity
         string? encryptedPAN,
         string? personalEmail,
         DifferentlyAbledType differentlyAbledType,
+        bool isPWD,
         string? addressLine1,
         string? addressLine2,
         string? city,
@@ -160,6 +161,7 @@ public sealed class Employee : AuditableEntity
         EncryptedPAN = encryptedPAN;
         PersonalEmail = personalEmail;
         DifferentlyAbledType = differentlyAbledType;
+        IsPWD = isPWD;
         AddressLine1 = addressLine1;
         AddressLine2 = addressLine2;
         City = city;

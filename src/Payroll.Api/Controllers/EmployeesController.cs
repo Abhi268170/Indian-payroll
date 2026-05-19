@@ -108,7 +108,7 @@ public sealed class EmployeesController(ISender sender) : ControllerBase
         {
             await sender.Send(new UpdatePersonalDetailsCommand(
                 id, req.DateOfBirth, req.FathersName, req.PAN, req.PersonalEmail,
-                req.DifferentlyAbledType, req.AddressLine1, req.AddressLine2,
+                req.DifferentlyAbledType, req.IsPWD, req.AddressLine1, req.AddressLine2,
                 req.City, req.ResidentialState, req.PinCode, GetActorId()), ct);
             return NoContent();
         }
@@ -183,6 +183,10 @@ public sealed class EmployeesController(ISender sender) : ControllerBase
             return NoContent();
         }
         catch (NotFoundException) { return NotFound(); }
+        catch (ValidationException ex)
+        {
+            return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });
+        }
     }
 
     private Guid GetActorId()
@@ -231,6 +235,7 @@ public record UpdatePersonalDetailsRequest(
     string? PAN,
     string? PersonalEmail,
     string DifferentlyAbledType,
+    bool IsPWD,
     string? AddressLine1,
     string? AddressLine2,
     string? City,

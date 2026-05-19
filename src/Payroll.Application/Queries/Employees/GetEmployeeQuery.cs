@@ -32,6 +32,10 @@ public sealed class GetEmployeeHandler(
             maskedAcct = plain.Length > 4 ? $"XXXX{plain[^4..]}" : "XXXX";
         }
 
+        string? ifscCode = employee.EncryptedIFSC is not null
+            ? enc.Decrypt(employee.EncryptedIFSC)
+            : null;
+
         string? maskedPAN = null;
         if (employee.EncryptedPAN is not null)
         {
@@ -64,7 +68,7 @@ public sealed class GetEmployeeHandler(
             wl?.Name,
             employee.BusinessUnitId,
             employee.CostCentreId,
-            employee.DateOfBirth.ToString("yyyy-MM-dd"),
+            employee.DateOfBirth == default ? null : employee.DateOfBirth.ToString("yyyy-MM-dd"),
             employee.FathersName,
             employee.PersonalEmail,
             employee.DifferentlyAbledType.ToString(),
@@ -78,6 +82,7 @@ public sealed class GetEmployeeHandler(
             employee.BankName,
             employee.AccountType?.ToString(),
             maskedAcct,
+            ifscCode,
             employee.UAN,
             employee.ESICIPNumber,
             employee.EpfEnabled,

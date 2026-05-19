@@ -41,8 +41,10 @@ internal sealed class CreateEmployeeCommandValidator : AbstractValidator<CreateE
             .WithMessage("Mobile number must be 10 digits.");
         RuleFor(x => x.Gender).NotEmpty()
             .Must(g => Enum.TryParse<Gender>(g, out _)).WithMessage("Invalid gender.");
-        RuleFor(x => x.DateOfJoining).NotEmpty();
-        RuleFor(x => x.DateOfBirth).NotEmpty();
+        RuleFor(x => x.DateOfJoining).NotEmpty()
+            .Must(d => DateOnly.TryParse(d, out _)).WithMessage("Date of joining must be a valid date.");
+        RuleFor(x => x.DateOfBirth).NotEmpty()
+            .Must(d => DateOnly.TryParse(d, out _)).WithMessage("Date of birth must be a valid date.");
         RuleFor(x => x.EmploymentType).NotEmpty()
             .Must(e => Enum.TryParse<EmploymentType>(e, out _)).WithMessage("Invalid employment type.");
         RuleFor(x => x.DepartmentId).NotEmpty();
