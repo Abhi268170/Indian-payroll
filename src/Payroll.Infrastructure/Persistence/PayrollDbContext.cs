@@ -14,7 +14,6 @@ public sealed class PayrollDbContext(
     public DbSet<WorkLocation> WorkLocations => Set<WorkLocation>();
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<Designation> Designations => Set<Designation>();
-    public DbSet<CostCentre> CostCentres => Set<CostCentre>();
     public DbSet<BusinessUnit> BusinessUnits => Set<BusinessUnit>();
     public DbSet<OrgProfile> OrgProfiles => Set<OrgProfile>();
     public DbSet<PaySchedule> PaySchedules => Set<PaySchedule>();
@@ -60,7 +59,6 @@ public sealed class PayrollDbContext(
         modelBuilder.ApplyConfiguration(new WorkLocationConfiguration());
         modelBuilder.ApplyConfiguration(new DepartmentConfiguration());
         modelBuilder.ApplyConfiguration(new DesignationConfiguration());
-        modelBuilder.ApplyConfiguration(new CostCentreConfiguration());
         modelBuilder.ApplyConfiguration(new BusinessUnitConfiguration());
         modelBuilder.ApplyConfiguration(new OrgProfileConfiguration());
         modelBuilder.ApplyConfiguration(new PayScheduleConfiguration());

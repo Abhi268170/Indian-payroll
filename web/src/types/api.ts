@@ -16,12 +16,6 @@ export interface DesignationDto {
   name: string
 }
 
-export interface CostCentreDto {
-  id: string
-  name: string
-  code: string | null
-}
-
 export interface EmployeeDto {
   id: string
   employeeCode: string
@@ -46,7 +40,6 @@ export interface EmployeeDto {
   workLocationId: string
   workLocationName: string | null
   businessUnitId: string | null
-  costCentreId: string | null
   dateOfBirth: string
   fathersName: string | null
   personalEmail: string | null
@@ -70,6 +63,7 @@ export interface EmployeeDto {
   lwfEnabled: boolean
   isPWD: boolean
   maskedPAN: string | null
+  maskedAadhaar: string | null
 }
 
 export interface EmployeeListItemDto {
@@ -105,7 +99,6 @@ export interface CreateEmployeeRequest {
   designationId: string
   workLocationId: string
   businessUnitId?: string
-  costCentreId?: string
 }
 
 export interface SalaryStructureTemplateSummaryDto {
@@ -155,6 +148,14 @@ export interface EmployeeSalaryComponentBreakdownDto {
   monthlyAmount: number
   annualAmount: number
   isResidual: boolean
+  isOverride: boolean
+}
+
+export interface ComponentOverrideRequest {
+  salaryComponentId: string
+  formulaType: string
+  percentage: number | null
+  fixedAmount: number | null
 }
 
 export interface TenantDto {

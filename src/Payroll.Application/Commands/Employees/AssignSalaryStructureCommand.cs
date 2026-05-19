@@ -2,9 +2,16 @@ using FluentValidation;
 using MediatR;
 using Payroll.Domain.Common;
 using Payroll.Domain.Entities;
+using Payroll.Domain.Enums;
 using Payroll.Domain.Interfaces;
 
 namespace Payroll.Application.Commands.Employees;
+
+public record ComponentOverrideInput(
+    Guid SalaryComponentId,
+    string FormulaType,
+    decimal? Percentage,
+    decimal? FixedAmount);
 
 public record AssignSalaryStructureCommand(
     Guid EmployeeId,
@@ -14,6 +21,7 @@ public record AssignSalaryStructureCommand(
     bool EsiEnabled,
     bool PtEnabled,
     bool LwfEnabled,
+    IReadOnlyList<ComponentOverrideInput> Overrides,
     Guid ActorId) : IRequest;
 
 internal sealed class AssignSalaryStructureCommandValidator : AbstractValidator<AssignSalaryStructureCommand>
@@ -50,6 +58,14 @@ public sealed class AssignSalaryStructureHandler(
             req.AnnualCTC,
             DateOnly.FromDateTime(DateTime.UtcNow),
             req.ActorId);
+
+        foreach (ComponentOverrideInput o in req.Overrides)
+        {
+            if (!Enum.TryParse<ComponentFormulaType>(o.FormulaType, out ComponentFormulaType formulaType))
+                continue;
+            structure.AddOverride(EmployeeSalaryComponentOverride.Create(
+                structure.Id, o.SalaryComponentId, formulaType, o.Percentage, o.FixedAmount, req.ActorId));
+        }
 
         await salaryRepo.AddAsync(structure, ct);
 

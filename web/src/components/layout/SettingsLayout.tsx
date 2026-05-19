@@ -20,7 +20,6 @@ const NAV: NavSection[] = [
       { label: 'Work Locations', to: '/settings/work-locations' },
       { label: 'Departments', to: '/settings/departments' },
       { label: 'Designations', to: '/settings/designations' },
-      { label: 'Cost Centres', to: '/settings/cost-centres' },
       { label: 'Business Units', to: '/settings/business-units' },
     ],
   },

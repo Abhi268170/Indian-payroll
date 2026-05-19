@@ -24,7 +24,6 @@ public record EmployeeDto(
     Guid WorkLocationId,
     string? WorkLocationName,
     Guid? BusinessUnitId,
-    Guid? CostCentreId,
     // Personal
     string? DateOfBirth,
     string? FathersName,
@@ -50,7 +49,8 @@ public record EmployeeDto(
     bool PtEnabled,
     bool LwfEnabled,
     bool IsPWD,
-    string? MaskedPAN
+    string? MaskedPAN,
+    string? MaskedAadhaar
 );
 
 public record EmployeeListItemDto(

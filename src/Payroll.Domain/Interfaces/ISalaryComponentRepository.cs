@@ -6,6 +6,7 @@ namespace Payroll.Domain.Interfaces;
 public interface ISalaryComponentRepository
 {
     Task<SalaryComponent?> GetByIdAsync(Guid id, CancellationToken ct = default);
+    Task<List<SalaryComponent>> GetByIdsAsync(IReadOnlyList<Guid> ids, CancellationToken ct = default);
     Task<List<SalaryComponent>> ListByTenantAsync(Guid tenantId, ComponentCategory? category = null, CancellationToken ct = default);
     Task<List<SalaryComponent>> ListActiveEarningsAsync(Guid tenantId, CancellationToken ct = default);
     Task AddAsync(SalaryComponent component, CancellationToken ct = default);

@@ -19,7 +19,6 @@ public record UpdateBasicDetailsCommand(
     Guid DesignationId,
     Guid WorkLocationId,
     Guid? BusinessUnitId,
-    Guid? CostCentreId,
     Guid ActorId) : IRequest;
 
 internal sealed class UpdateBasicDetailsValidator : AbstractValidator<UpdateBasicDetailsCommand>
@@ -53,7 +52,7 @@ public sealed class UpdateBasicDetailsHandler(IEmployeeRepository repo, IUnitOfW
             Enum.Parse<Gender>(req.Gender),
             req.IsDirector, req.EnablePortalAccess,
             req.DepartmentId, req.DesignationId, req.WorkLocationId,
-            req.BusinessUnitId, req.CostCentreId,
+            req.BusinessUnitId,
             req.ActorId);
 
         repo.Update(employee);

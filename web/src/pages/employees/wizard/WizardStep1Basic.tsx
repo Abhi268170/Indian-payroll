@@ -7,7 +7,6 @@ import { api } from '@/lib/api'
 import type { DepartmentDto, DesignationDto, CreateEmployeeRequest } from '@/types/api'
 import type { WorkLocation } from '@/pages/settings/WorkLocationsPage'
 import type { BusinessUnit } from '@/pages/settings/BusinessUnitsPage'
-import type { CostCentre } from '@/pages/settings/CostCentresPage'
 import InlineCreateModal from './InlineCreateModal'
 
 const schema = z.object({
@@ -27,7 +26,6 @@ const schema = z.object({
   designationId: z.string().min(1, 'Required'),
   workLocationId: z.string().min(1, 'Required'),
   businessUnitId: z.string().optional(),
-  costCentreId: z.string().optional(),
 })
 type FormValues = z.infer<typeof schema>
 
@@ -43,6 +41,7 @@ interface Props {
 export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.ReactElement {
   const [showNewDept, setShowNewDept] = useState(false)
   const [showNewDesig, setShowNewDesig] = useState(false)
+  const [showNewBU, setShowNewBU] = useState(false)
 
   const { data: departments = [], refetch: refetchDepts } = useQuery<DepartmentDto[]>({
     queryKey: ['departments'],
@@ -56,13 +55,9 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
     queryKey: ['work-locations'],
     queryFn: () => api.get<WorkLocation[]>('/api/v1/work-locations').then(r => r.data),
   })
-  const { data: businessUnits = [] } = useQuery<BusinessUnit[]>({
+  const { data: businessUnits = [], refetch: refetchBUs } = useQuery<BusinessUnit[]>({
     queryKey: ['business-units'],
     queryFn: () => api.get<BusinessUnit[]>('/api/v1/business-units').then(r => r.data),
-  })
-  const { data: costCentres = [] } = useQuery<CostCentre[]>({
-    queryKey: ['cost-centres'],
-    queryFn: () => api.get<CostCentre[]>('/api/v1/cost-centres').then(r => r.data),
   })
 
   const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<FormValues>({
@@ -106,7 +101,6 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
       designationId: v.designationId,
       workLocationId: v.workLocationId,
       businessUnitId: v.businessUnitId || undefined,
-      costCentreId: v.costCentreId || undefined,
     })
   }
 
@@ -249,17 +243,21 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
             {errors.workLocationId && <p className={errCls}>{errors.workLocationId.message}</p>}
           </div>
           <div>
-            <label className={labelCls}>Business Unit</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-[12px] font-medium text-[var(--color-text-secondary)]">
+                Business Unit
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowNewBU(true)}
+                className="text-[11px] text-[var(--color-primary)] hover:underline"
+              >
+                + New
+              </button>
+            </div>
             <select {...register('businessUnitId')} className={inputCls}>
               <option value="">None</option>
               {businessUnits.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className={labelCls}>Cost Centre</label>
-            <select {...register('costCentreId')} className={inputCls}>
-              <option value="">None</option>
-              {costCentres.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
         </div>
@@ -338,6 +336,26 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
             setShowNewDesig(false)
           }}
           onClose={() => setShowNewDesig(false)}
+        />
+      )}
+
+      {showNewBU && (
+        <InlineCreateModal
+          title="New Business Unit"
+          fields={[
+            { name: 'name', label: 'Business Unit Name', required: true },
+            { name: 'description', label: 'Description', required: false },
+          ]}
+          onSave={async (values) => {
+            const res = await api.post<{ id: string }>('/api/v1/business-units', {
+              name: values.name,
+              description: values.description || null,
+            })
+            await refetchBUs()
+            setValue('businessUnitId', res.data.id)
+            setShowNewBU(false)
+          }}
+          onClose={() => setShowNewBU(false)}
         />
       )}
     </>

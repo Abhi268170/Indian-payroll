@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import { Plus, RotateCcw, Trash2 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { formatINR } from '@/lib/format'
-import type { SalaryStructureTemplateSummaryDto, SalaryStructureTemplateDetailDto } from '@/types/api'
+import type { SalaryStructureTemplateSummaryDto, SalaryStructureTemplateDetailDto, ComponentOverrideRequest } from '@/types/api'
 
 interface Props {
   employeeId: string
@@ -13,20 +14,39 @@ interface Props {
 const inputCls = 'w-full h-9 px-3 text-[13px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]'
 const labelCls = 'block text-[12px] font-medium text-[var(--color-text-secondary)] mb-1'
 
+interface SalaryComponentSummary {
+  id: string
+  name: string
+  code: string
+}
+
+interface Override {
+  formulaType: string
+  percentage: number | null
+  fixedAmount: number | null
+}
+
+// overrideMap: componentId -> override (only for changed template comps or added comps)
+type OverrideMap = Record<string, Override>
+
 interface ComponentRow {
   componentId: string
   name: string
   code: string
   formulaType: string
   percentage: number | null
+  fixedAmount: number | null
   monthlyAmount: number
   annualAmount: number
   isResidual: boolean
+  isAdded: boolean  // true for override-only (added earning)
 }
 
-function computeComponents(
+function computeRows(
   template: SalaryStructureTemplateDetailDto,
-  annualCTC: number
+  annualCTC: number,
+  overrides: OverrideMap,
+  addedComps: SalaryComponentSummary[]
 ): ComponentRow[] {
   if (!annualCTC || annualCTC <= 0) return []
 
@@ -40,15 +60,20 @@ function computeComponents(
   for (const c of sorted) {
     if (c.formulaType === 'ResidualCTC') continue
 
+    const ov = overrides[c.componentId]
+    const ft = ov?.formulaType ?? c.formulaType
+    const pct = ov?.percentage ?? c.percentage
+    const fixed = ov?.fixedAmount ?? c.fixedAmount
+
     let monthly = 0
-    if (c.formulaType === 'PercentOfCTC' && c.percentage != null) {
-      monthly = Math.round((annualCTC * (c.percentage / 100) / 12) * 100) / 100
-    } else if (c.formulaType === 'PercentOfBasic' && c.percentage != null) {
-      monthly = Math.round(basicMonthly * (c.percentage / 100) * 100) / 100
-    } else if (c.formulaType === 'PercentOfGross' && c.percentage != null) {
-      monthly = Math.round(monthlyGross * (c.percentage / 100) * 100) / 100
-    } else if (c.formulaType === 'Fixed' && c.fixedAmount != null) {
-      monthly = c.fixedAmount
+    if (ft === 'PercentOfCTC' && pct != null) {
+      monthly = Math.round((annualCTC * (pct / 100) / 12) * 100) / 100
+    } else if (ft === 'PercentOfBasic' && pct != null) {
+      monthly = Math.round(basicMonthly * (pct / 100) * 100) / 100
+    } else if (ft === 'PercentOfGross' && pct != null) {
+      monthly = Math.round(monthlyGross * (pct / 100) * 100) / 100
+    } else if (ft === 'Fixed') {
+      monthly = fixed ?? 0
     }
 
     if (c.componentCode === 'BASIC') basicMonthly = monthly
@@ -58,11 +83,13 @@ function computeComponents(
       componentId: c.componentId,
       name: c.componentName,
       code: c.componentCode,
-      formulaType: c.formulaType,
-      percentage: c.percentage ?? null,
+      formulaType: ft,
+      percentage: pct ?? null,
+      fixedAmount: fixed ?? null,
       monthlyAmount: monthly,
       annualAmount: Math.round(monthly * 12 * 100) / 100,
       isResidual: false,
+      isAdded: false,
     })
   }
 
@@ -75,9 +102,29 @@ function computeComponents(
       code: residual.componentCode,
       formulaType: 'ResidualCTC',
       percentage: null,
+      fixedAmount: null,
       monthlyAmount: residualMonthly,
       annualAmount: Math.round(residualMonthly * 12 * 100) / 100,
       isResidual: true,
+      isAdded: false,
+    })
+  }
+
+  // Added earnings (override-only)
+  for (const sc of addedComps) {
+    const ov = overrides[sc.id]
+    const monthly = ov?.fixedAmount ?? 0
+    rows.push({
+      componentId: sc.id,
+      name: sc.name,
+      code: sc.code,
+      formulaType: 'Fixed',
+      percentage: null,
+      fixedAmount: monthly,
+      monthlyAmount: monthly,
+      annualAmount: Math.round(monthly * 12 * 100) / 100,
+      isResidual: false,
+      isAdded: true,
     })
   }
 
@@ -91,6 +138,11 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip }: Pro
   const [esiEnabled, setEsiEnabled] = useState(true)
   const [ptEnabled, setPtEnabled] = useState(true)
   const [lwfEnabled, setLwfEnabled] = useState(true)
+  const [overrides, setOverrides] = useState<OverrideMap>({})
+  const [addedComps, setAddedComps] = useState<SalaryComponentSummary[]>([])
+  const [showAddEarning, setShowAddEarning] = useState(false)
+  const [addEarningId, setAddEarningId] = useState('')
+  const [addEarningAmount, setAddEarningAmount] = useState('')
   const [error, setError] = useState<string | null>(null)
 
   const { data: templates = [] } = useQuery<SalaryStructureTemplateSummaryDto[]>({
@@ -104,7 +156,11 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip }: Pro
     enabled: !!templateId,
   })
 
-  // Auto-select first active template
+  const { data: activeEarnings = [] } = useQuery<SalaryComponentSummary[]>({
+    queryKey: ['active-earnings'],
+    queryFn: () => api.get<SalaryComponentSummary[]>('/api/v1/salary-components/active-earnings').then(r => r.data),
+  })
+
   useEffect(() => {
     if (templates.length > 0 && !templateId) {
       const active = templates.find(t => t.isActive) ?? templates[0]
@@ -112,20 +168,118 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip }: Pro
     }
   }, [templates, templateId])
 
+  // Reset overrides and added comps when template changes
+  useEffect(() => {
+    setOverrides({})
+    setAddedComps([])
+  }, [templateId])
+
   const ctcNum = parseFloat(annualCTC.replace(/,/g, '')) || 0
-  const components = templateDetail && ctcNum > 0
-    ? computeComponents(templateDetail, ctcNum)
+  const rows = templateDetail && ctcNum > 0
+    ? computeRows(templateDetail, ctcNum, overrides, addedComps)
     : []
+  const monthlyGross = ctcNum > 0 ? ctcNum / 12 : 0
+
+  const templateCompIds = new Set(templateDetail?.components.map(c => c.componentId) ?? [])
+
+  // Earnings available to add (not already in template and not already added)
+  const addedCompIds = new Set(addedComps.map(c => c.id))
+  const availableToAdd = activeEarnings.filter(e => !templateCompIds.has(e.id) && !addedCompIds.has(e.id))
+
+  function handlePctChange(componentId: string, rawVal: string, formulaType: string): void {
+    const val = parseFloat(rawVal)
+    if (isNaN(val)) {
+      setOverrides(prev => {
+        const next = { ...prev }
+        delete next[componentId]
+        return next
+      })
+      return
+    }
+    setOverrides(prev => ({ ...prev, [componentId]: { formulaType, percentage: val, fixedAmount: null } }))
+  }
+
+  function handleFixedChange(componentId: string, rawVal: string): void {
+    const val = parseFloat(rawVal)
+    if (isNaN(val)) {
+      setOverrides(prev => {
+        const next = { ...prev }
+        delete next[componentId]
+        return next
+      })
+      return
+    }
+    setOverrides(prev => ({ ...prev, [componentId]: { formulaType: 'Fixed', percentage: null, fixedAmount: val } }))
+  }
+
+  function handleResetOverride(componentId: string): void {
+    setOverrides(prev => {
+      const next = { ...prev }
+      delete next[componentId]
+      return next
+    })
+  }
+
+  function handleAddEarning(): void {
+    const sc = availableToAdd.find(e => e.id === addEarningId)
+    if (!sc) return
+    const amount = parseFloat(addEarningAmount) || 0
+    setAddedComps(prev => [...prev, sc])
+    setOverrides(prev => ({ ...prev, [sc.id]: { formulaType: 'Fixed', percentage: null, fixedAmount: amount } }))
+    setAddEarningId('')
+    setAddEarningAmount('')
+    setShowAddEarning(false)
+  }
+
+  function handleRemoveAdded(componentId: string): void {
+    setAddedComps(prev => prev.filter(c => c.id !== componentId))
+    setOverrides(prev => {
+      const next = { ...prev }
+      delete next[componentId]
+      return next
+    })
+  }
 
   const save = useMutation({
-    mutationFn: () => api.put(`/api/v1/employees/${employeeId}/salary-structure`, {
-      annualCTC: ctcNum,
-      salaryStructureTemplateId: templateId || null,
-      epfEnabled,
-      esiEnabled,
-      ptEnabled,
-      lwfEnabled,
-    }),
+    mutationFn: () => {
+      const overridesPayload: ComponentOverrideRequest[] = []
+
+      // Collect template overrides (only changed ones)
+      if (templateDetail) {
+        for (const comp of templateDetail.components) {
+          const ov = overrides[comp.componentId]
+          if (ov) {
+            overridesPayload.push({
+              salaryComponentId: comp.componentId,
+              formulaType: ov.formulaType,
+              percentage: ov.percentage,
+              fixedAmount: ov.fixedAmount,
+            })
+          }
+        }
+      }
+
+      // Collect added (override-only) components
+      for (const sc of addedComps) {
+        const ov = overrides[sc.id]
+        overridesPayload.push({
+          salaryComponentId: sc.id,
+          formulaType: 'Fixed',
+          percentage: null,
+          fixedAmount: ov?.fixedAmount ?? 0,
+        })
+      }
+
+      return api.put(`/api/v1/employees/${employeeId}/salary-structure`, {
+        annualCTC: ctcNum,
+        salaryStructureTemplateId: templateId || null,
+        epfEnabled,
+        esiEnabled,
+        ptEnabled,
+        lwfEnabled,
+        overrides: overridesPayload,
+      })
+    },
     onSuccess: () => { setError(null); onSuccess() },
     onError: () => setError('Failed to save salary details. Please try again.'),
   })
@@ -139,7 +293,16 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip }: Pro
     save.mutate()
   }
 
-  const monthlyGross = ctcNum > 0 ? ctcNum / 12 : 0
+  function calcLabel(row: ComponentRow): string {
+    if (row.isResidual) return 'Fixed Allowance (residual)'
+    if (row.formulaType === 'PercentOfCTC') return `${row.percentage ?? ''}% of CTC`
+    if (row.formulaType === 'PercentOfBasic') return `${row.percentage ?? ''}% of Basic`
+    if (row.formulaType === 'PercentOfGross') return `${row.percentage ?? ''}% of Gross`
+    return 'Fixed'
+  }
+
+  const isPctType = (ft: string): boolean =>
+    ft === 'PercentOfCTC' || ft === 'PercentOfBasic' || ft === 'PercentOfGross'
 
   return (
     <div className="space-y-6">
@@ -202,46 +365,151 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip }: Pro
           </div>
         </div>
 
-        {/* Component breakdown */}
-        {components.length > 0 && (
+        {/* Component breakdown table */}
+        {rows.length > 0 && (
           <div className="border border-[var(--color-border)] rounded-lg overflow-hidden">
             <table className="w-full text-[12px]">
               <thead>
                 <tr className="bg-[var(--color-page-bg)] border-b border-[var(--color-border)]">
                   <th className="text-left px-4 py-2.5 font-medium text-[var(--color-text-secondary)]">Component</th>
                   <th className="text-left px-4 py-2.5 font-medium text-[var(--color-text-secondary)]">Calculation</th>
+                  <th className="px-4 py-2.5 font-medium text-[var(--color-text-secondary)] text-center w-28">Value</th>
                   <th className="text-right px-4 py-2.5 font-medium text-[var(--color-text-secondary)]">Monthly</th>
                   <th className="text-right px-4 py-2.5 font-medium text-[var(--color-text-secondary)]">Annual</th>
+                  <th className="w-8"></th>
                 </tr>
               </thead>
               <tbody>
-                {components.map(c => (
-                  <tr key={c.componentId} className="border-b border-[var(--color-border)] last:border-0">
-                    <td className="px-4 py-2.5 text-[var(--color-text-primary)]">{c.name}</td>
-                    <td className="px-4 py-2.5 text-[var(--color-text-secondary)]">
-                      {c.isResidual
-                        ? 'Fixed Allowance (residual)'
-                        : c.formulaType === 'PercentOfCTC'
-                          ? `${c.percentage}% of CTC`
-                          : c.formulaType === 'PercentOfBasic'
-                            ? `${c.percentage}% of Basic`
-                            : c.formulaType === 'PercentOfGross'
-                              ? `${c.percentage}% of Gross`
-                              : 'Fixed'}
-                    </td>
-                    <td className="px-4 py-2.5 text-right text-[var(--color-text-primary)]">{formatINR(c.monthlyAmount)}</td>
-                    <td className="px-4 py-2.5 text-right text-[var(--color-text-primary)]">{formatINR(c.annualAmount)}</td>
-                  </tr>
-                ))}
+                {rows.map(row => {
+                  const isChanged = !!overrides[row.componentId]
+                  return (
+                    <tr key={row.componentId} className="border-b border-[var(--color-border)] last:border-0">
+                      <td className="px-4 py-2 text-[var(--color-text-primary)]">
+                        {row.name}
+                        {isChanged && (
+                          <span className="ml-1.5 text-[10px] px-1 py-0.5 rounded bg-amber-50 text-amber-600 border border-amber-200">
+                            modified
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-2 text-[var(--color-text-secondary)]">{calcLabel(row)}</td>
+                      <td className="px-4 py-2 text-center">
+                        {row.isResidual ? (
+                          <span className="text-[var(--color-text-secondary)]">—</span>
+                        ) : isPctType(row.formulaType) ? (
+                          <div className="flex items-center gap-1 justify-center">
+                            <input
+                              type="number"
+                              min={0}
+                              max={100}
+                              step={0.5}
+                              value={overrides[row.componentId]?.percentage ?? row.percentage ?? ''}
+                              onChange={e => handlePctChange(row.componentId, e.target.value, row.formulaType)}
+                              className="w-16 h-7 px-2 text-[12px] border border-[var(--color-border)] rounded text-center bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
+                            />
+                            <span className="text-[var(--color-text-secondary)]">%</span>
+                          </div>
+                        ) : (
+                          <input
+                            type="number"
+                            min={0}
+                            step={100}
+                            value={overrides[row.componentId]?.fixedAmount ?? row.fixedAmount ?? ''}
+                            onChange={e => handleFixedChange(row.componentId, e.target.value)}
+                            className="w-24 h-7 px-2 text-[12px] border border-[var(--color-border)] rounded text-right bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
+                          />
+                        )}
+                      </td>
+                      <td className="px-4 py-2 text-right text-[var(--color-text-primary)]">{formatINR(row.monthlyAmount)}</td>
+                      <td className="px-4 py-2 text-right text-[var(--color-text-primary)]">{formatINR(row.annualAmount)}</td>
+                      <td className="px-2 py-2 text-center">
+                        {!row.isResidual && isChanged && !row.isAdded && (
+                          <button
+                            type="button"
+                            onClick={() => handleResetOverride(row.componentId)}
+                            title="Reset to template default"
+                            className="p-1 rounded hover:bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+                          >
+                            <RotateCcw size={13} />
+                          </button>
+                        )}
+                        {row.isAdded && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveAdded(row.componentId)}
+                            title="Remove added earning"
+                            className="p-1 rounded hover:bg-red-50 text-[var(--color-text-secondary)] hover:text-red-500"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
               <tfoot>
                 <tr className="bg-[var(--color-page-bg)] font-semibold">
-                  <td className="px-4 py-2.5 text-[var(--color-text-primary)]" colSpan={2}>Cost to Company</td>
+                  <td className="px-4 py-2.5 text-[var(--color-text-primary)]" colSpan={3}>Cost to Company</td>
                   <td className="px-4 py-2.5 text-right text-[var(--color-text-primary)]">{formatINR(monthlyGross)}</td>
                   <td className="px-4 py-2.5 text-right text-[var(--color-text-primary)]">{formatINR(ctcNum)}</td>
+                  <td></td>
                 </tr>
               </tfoot>
             </table>
+
+            {/* Add Earning inline row */}
+            {availableToAdd.length > 0 && (
+              <div className="border-t border-[var(--color-border)] px-4 py-2.5">
+                {showAddEarning ? (
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={addEarningId}
+                      onChange={e => setAddEarningId(e.target.value)}
+                      className="h-8 px-2 text-[12px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] flex-1"
+                    >
+                      <option value="">Select earning component</option>
+                      {availableToAdd.map(e => (
+                        <option key={e.id} value={e.id}>{e.name}</option>
+                      ))}
+                    </select>
+                    <input
+                      type="number"
+                      min={0}
+                      step={100}
+                      placeholder="Amount ₹"
+                      value={addEarningAmount}
+                      onChange={e => setAddEarningAmount(e.target.value)}
+                      className="w-28 h-8 px-2 text-[12px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddEarning}
+                      disabled={!addEarningId}
+                      className="h-8 px-3 text-[12px] font-medium bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-hover)] disabled:opacity-50"
+                    >
+                      Add
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowAddEarning(false); setAddEarningId(''); setAddEarningAmount('') }}
+                      className="h-8 px-3 text-[12px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowAddEarning(true)}
+                    className="flex items-center gap-1.5 text-[12px] text-[var(--color-primary)] hover:text-[var(--color-primary-hover)]"
+                  >
+                    <Plus size={13} />
+                    Add Earning
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>

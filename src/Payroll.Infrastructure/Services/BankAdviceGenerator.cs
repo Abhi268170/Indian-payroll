@@ -22,7 +22,6 @@ public sealed class BankAdviceGenerator : IBankAdviceGenerator
         using var workbook = new XLWorkbook();
         var ws = workbook.AddWorksheet("Bank Statement");
 
-        // Header row
         for (int col = 1; col <= Headers.Length; col++)
         {
             var cell = ws.Cell(1, col);
@@ -32,7 +31,6 @@ public sealed class BankAdviceGenerator : IBankAdviceGenerator
             cell.Style.Font.FontColor = XLColor.White;
         }
 
-        // Data rows
         int row = 2;
         foreach (BankAdviceRowDto item in data.Rows)
         {

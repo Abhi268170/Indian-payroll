@@ -31,12 +31,12 @@ const schema = z.object({
 })
 type FormValues = z.infer<typeof schema>
 
-const MODES = [
-  { value: 'DirectDeposit', label: 'Direct Deposit', sub: 'Automated NEFT/RTGS transfer' },
-  { value: 'BankTransfer', label: 'Bank Transfer', sub: 'Manual bank transfer' },
-  { value: 'Cheque', label: 'Cheque', sub: 'Physical cheque payment' },
-  { value: 'Cash', label: 'Cash', sub: 'Cash payment' },
-] as const
+const MODES: { value: string; label: string; sub: string; disabled?: boolean }[] = [
+  { value: 'ManualBankTransfer', label: 'Bank Transfer', sub: 'Manual NEFT/IMPS — download bank advice after payroll run' },
+  { value: 'DirectDeposit', label: 'Direct Deposit', sub: 'Automated transfer', disabled: true },
+  { value: 'Cheque', label: 'Cheque', sub: 'Physical cheque payment', disabled: true },
+  { value: 'Cash', label: 'Cash', sub: 'Cash payment', disabled: true },
+]
 
 const inputCls = 'w-full h-9 px-3 text-[13px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]'
 const labelCls = 'block text-[12px] font-medium text-[var(--color-text-secondary)] mb-1'
@@ -45,7 +45,7 @@ const errCls = 'mt-1 text-[11px] text-red-500'
 export default function WizardStep4Payment({ employeeId, onSuccess, onSkip }: Props): React.ReactElement {
   const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { paymentMode: 'DirectDeposit' },
+    defaultValues: { paymentMode: 'ManualBankTransfer' },
   })
 
   const mode = watch('paymentMode')
@@ -74,20 +74,30 @@ export default function WizardStep4Payment({ employeeId, onSuccess, onSkip }: Pr
             return (
               <label
                 key={m.value}
-                className={`flex items-start gap-3 p-3.5 border-2 rounded-xl cursor-pointer transition-colors ${
-                  active
-                    ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/5'
-                    : 'border-[var(--color-border)] hover:border-[var(--color-primary)]/40'
+                className={`flex items-start gap-3 p-3.5 border-2 rounded-xl transition-colors ${
+                  m.disabled
+                    ? 'border-[var(--color-border)] opacity-50 cursor-not-allowed'
+                    : active
+                      ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/5 cursor-pointer'
+                      : 'border-[var(--color-border)] hover:border-[var(--color-primary)]/40 cursor-pointer'
                 }`}
               >
                 <input
                   type="radio"
                   value={m.value}
                   {...register('paymentMode')}
+                  disabled={m.disabled}
                   className="mt-0.5 accent-[var(--color-primary)]"
                 />
-                <div>
-                  <p className="text-[13px] font-medium text-[var(--color-text-primary)]">{m.label}</p>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="text-[13px] font-medium text-[var(--color-text-primary)]">{m.label}</p>
+                    {m.disabled && (
+                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)]">
+                        Coming soon
+                      </span>
+                    )}
+                  </div>
                   <p className="text-[11px] text-[var(--color-text-secondary)]">{m.sub}</p>
                 </div>
               </label>

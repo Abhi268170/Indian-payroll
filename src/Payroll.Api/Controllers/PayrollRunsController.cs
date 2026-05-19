@@ -239,7 +239,6 @@ public sealed class PayrollRunsController(ISender sender) : ControllerBase
         try
         {
             BankAdviceDto data = await sender.Send(new GetBankAdviceQuery(id), ct);
-            // Return as JSON — caller can POST to get XLS
             return Ok(data);
         }
         catch (NotFoundException) { return NotFound(); }

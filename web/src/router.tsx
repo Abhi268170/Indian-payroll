@@ -7,7 +7,6 @@ import SettingsHomePage from '@/pages/settings/SettingsHomePage'
 import WorkLocationsPage from '@/pages/settings/WorkLocationsPage'
 import DepartmentsPage from '@/pages/settings/DepartmentsPage'
 import DesignationsPage from '@/pages/settings/DesignationsPage'
-import CostCentresPage from '@/pages/settings/CostCentresPage'
 import BusinessUnitsPage from '@/pages/settings/BusinessUnitsPage'
 import OrgProfilePage from '@/pages/settings/OrgProfilePage'
 import PaySchedulesPage from '@/pages/settings/PaySchedulesPage'
@@ -91,7 +90,6 @@ export const router = createBrowserRouter([
           { path: 'work-locations', element: <WorkLocationsPage /> },
           { path: 'departments', element: <DepartmentsPage /> },
           { path: 'designations', element: <DesignationsPage /> },
-          { path: 'cost-centres', element: <CostCentresPage /> },
           { path: 'business-units', element: <BusinessUnitsPage /> },
           { path: 'org-profile', element: <OrgProfilePage /> },
           { path: 'pay-schedule', element: <PaySchedulesPage /> },

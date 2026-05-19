@@ -62,7 +62,6 @@ public sealed class EmployeesController(ISender sender) : ControllerBase
                 req.DesignationId,
                 req.WorkLocationId,
                 req.BusinessUnitId,
-                req.CostCentreId,
                 actorId), ct);
             return Created($"/api/v1/employees/{id}", new { id });
         }
@@ -88,7 +87,7 @@ public sealed class EmployeesController(ISender sender) : ControllerBase
                 id, req.FirstName, req.MiddleName, req.LastName,
                 req.MobileNumber, req.Gender, req.IsDirector, req.EnablePortalAccess,
                 req.DepartmentId, req.DesignationId, req.WorkLocationId,
-                req.BusinessUnitId, req.CostCentreId, GetActorId()), ct);
+                req.BusinessUnitId, GetActorId()), ct);
             return NoContent();
         }
         catch (NotFoundException) { return NotFound(); }
@@ -107,8 +106,8 @@ public sealed class EmployeesController(ISender sender) : ControllerBase
         try
         {
             await sender.Send(new UpdatePersonalDetailsCommand(
-                id, req.DateOfBirth, req.FathersName, req.PAN, req.PersonalEmail,
-                req.DifferentlyAbledType, req.IsPWD, req.AddressLine1, req.AddressLine2,
+                id, req.DateOfBirth, req.FathersName, req.PAN, req.Aadhaar,
+                req.PersonalEmail, req.DifferentlyAbledType, req.IsPWD, req.AddressLine1, req.AddressLine2,
                 req.City, req.ResidentialState, req.PinCode, GetActorId()), ct);
             return NoContent();
         }
@@ -150,6 +149,8 @@ public sealed class EmployeesController(ISender sender) : ControllerBase
             await sender.Send(new AssignSalaryStructureCommand(
                 id, req.AnnualCTC, req.SalaryStructureTemplateId,
                 req.EpfEnabled, req.EsiEnabled, req.PtEnabled, req.LwfEnabled,
+                req.Overrides?.Select(o => new ComponentOverrideInput(o.SalaryComponentId, o.FormulaType, o.Percentage, o.FixedAmount)).ToList()
+                    ?? [],
                 GetActorId()), ct);
             return NoContent();
         }
@@ -212,8 +213,7 @@ public record CreateEmployeeRequest(
     Guid DepartmentId,
     Guid DesignationId,
     Guid WorkLocationId,
-    Guid? BusinessUnitId,
-    Guid? CostCentreId);
+    Guid? BusinessUnitId);
 
 public record UpdateBasicDetailsRequest(
     string FirstName,
@@ -226,13 +226,13 @@ public record UpdateBasicDetailsRequest(
     Guid DepartmentId,
     Guid DesignationId,
     Guid WorkLocationId,
-    Guid? BusinessUnitId,
-    Guid? CostCentreId);
+    Guid? BusinessUnitId);
 
 public record UpdatePersonalDetailsRequest(
     string? DateOfBirth,
     string? FathersName,
     string? PAN,
+    string? Aadhaar,
     string? PersonalEmail,
     string DifferentlyAbledType,
     bool IsPWD,
@@ -258,10 +258,17 @@ public record UpdateStatutoryDetailsRequest(
     string? UAN,
     string? ESICIPNumber);
 
+public record ComponentOverrideRequest(
+    Guid SalaryComponentId,
+    string FormulaType,
+    decimal? Percentage,
+    decimal? FixedAmount);
+
 public record AssignSalaryStructureRequest(
     decimal AnnualCTC,
     Guid? SalaryStructureTemplateId,
     bool EpfEnabled,
     bool EsiEnabled,
     bool PtEnabled,
-    bool LwfEnabled);
+    bool LwfEnabled,
+    IReadOnlyList<ComponentOverrideRequest>? Overrides);

@@ -12,6 +12,12 @@ internal sealed class SalaryComponentRepository(PayrollDbContext db) : ISalaryCo
           .Include(c => c.ForCorrectionOfComponent)
           .FirstOrDefaultAsync(c => c.Id == id, ct);
 
+    public Task<List<SalaryComponent>> GetByIdsAsync(
+        IReadOnlyList<Guid> ids, CancellationToken ct = default) =>
+        db.SalaryComponents
+          .Where(c => ids.Contains(c.Id))
+          .ToListAsync(ct);
+
     public Task<List<SalaryComponent>> ListByTenantAsync(
         Guid tenantId, ComponentCategory? category = null, CancellationToken ct = default) =>
         db.SalaryComponents

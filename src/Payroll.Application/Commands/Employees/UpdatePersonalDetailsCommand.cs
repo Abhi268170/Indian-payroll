@@ -11,6 +11,7 @@ public record UpdatePersonalDetailsCommand(
     string? DateOfBirth,
     string? FathersName,
     string? PAN,
+    string? Aadhaar,
     string? PersonalEmail,
     string DifferentlyAbledType,
     bool IsPWD,
@@ -31,6 +32,8 @@ internal sealed class UpdatePersonalDetailsValidator : AbstractValidator<UpdateP
             .WithMessage("Date of birth cannot be empty if provided.");
         RuleFor(x => x.PAN).Matches(@"^[A-Z]{5}[0-9]{4}[A-Z]$")
             .When(x => !string.IsNullOrEmpty(x.PAN)).WithMessage("PAN must be in format AAAAA9999A.");
+        RuleFor(x => x.Aadhaar).Matches(@"^\d{12}$")
+            .When(x => !string.IsNullOrEmpty(x.Aadhaar)).WithMessage("Aadhaar must be 12 digits.");
         RuleFor(x => x.PersonalEmail).EmailAddress()
             .When(x => !string.IsNullOrEmpty(x.PersonalEmail)).WithMessage("Invalid email.");
         RuleFor(x => x.DifferentlyAbledType)
@@ -55,6 +58,7 @@ public sealed class UpdatePersonalDetailsHandler(
             ?? throw new NotFoundException($"Employee {req.EmployeeId} not found.");
 
         string? encryptedPan = req.PAN is not null ? enc.Encrypt(req.PAN) : null;
+        string? encryptedAadhaar = !string.IsNullOrWhiteSpace(req.Aadhaar) ? enc.Encrypt(req.Aadhaar) : null;
         IndianState? state = req.ResidentialState is not null
             ? Enum.Parse<IndianState>(req.ResidentialState)
             : null;
@@ -67,6 +71,7 @@ public sealed class UpdatePersonalDetailsHandler(
             dob,
             req.FathersName,
             encryptedPan,
+            encryptedAadhaar,
             req.PersonalEmail,
             Enum.Parse<DifferentlyAbledType>(req.DifferentlyAbledType),
             req.IsPWD,
