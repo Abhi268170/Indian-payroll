@@ -8,7 +8,6 @@ import { api } from '@/lib/api'
 import type { EmployeeDto, DepartmentDto, DesignationDto } from '@/types/api'
 import type { WorkLocation } from '@/pages/settings/WorkLocationsPage'
 import type { BusinessUnit } from '@/pages/settings/BusinessUnitsPage'
-import type { CostCentre } from '@/pages/settings/CostCentresPage'
 
 interface Props {
   employee: EmployeeDto
@@ -90,7 +89,6 @@ const basicSchema = z.object({
   designationId: z.string().min(1, 'Required'),
   workLocationId: z.string().min(1, 'Required'),
   businessUnitId: z.string().optional(),
-  costCentreId: z.string().optional(),
 })
 type BasicValues = z.infer<typeof basicSchema>
 
@@ -113,10 +111,6 @@ function BasicSection({ employee, onSaved }: Props): React.ReactElement {
     queryKey: ['business-units'],
     queryFn: () => api.get<BusinessUnit[]>('/api/v1/business-units').then(r => r.data),
   })
-  const { data: costCentres = [] } = useQuery<CostCentre[]>({
-    queryKey: ['cost-centres'],
-    queryFn: () => api.get<CostCentre[]>('/api/v1/cost-centres').then(r => r.data),
-  })
 
   const { register, handleSubmit, reset, formState: { errors, isDirty } } = useForm<BasicValues>({
     resolver: zodResolver(basicSchema),
@@ -132,7 +126,6 @@ function BasicSection({ employee, onSaved }: Props): React.ReactElement {
       designationId: employee.designationId,
       workLocationId: employee.workLocationId,
       businessUnitId: employee.businessUnitId ?? '',
-      costCentreId: employee.costCentreId ?? '',
     },
   })
 
@@ -149,7 +142,6 @@ function BasicSection({ employee, onSaved }: Props): React.ReactElement {
       designationId: v.designationId,
       workLocationId: v.workLocationId,
       businessUnitId: v.businessUnitId || null,
-      costCentreId: v.costCentreId || null,
     }),
     onSuccess: () => { setEditing(false); onSaved() },
   })
@@ -180,7 +172,6 @@ function BasicSection({ employee, onSaved }: Props): React.ReactElement {
           <ReadField label="Designation" value={employee.designationName} />
           <ReadField label="Work Location" value={employee.workLocationName} />
           <ReadField label="Business Unit" value={businessUnits.find(b => b.id === employee.businessUnitId)?.name ?? null} />
-          <ReadField label="Cost Centre" value={costCentres.find(c => c.id === employee.costCentreId)?.name ?? null} />
           <ReadField label="Director" value={fmtBool(employee.isDirector)} />
           <ReadField label="Portal Access" value={fmtBool(employee.enablePortalAccess)} />
         </div>
@@ -249,13 +240,6 @@ function BasicSection({ employee, onSaved }: Props): React.ReactElement {
               <select {...register('businessUnitId')} className={inputCls}>
                 <option value="">None</option>
                 {businessUnits.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className={fieldLabelCls}>Cost Centre</label>
-              <select {...register('costCentreId')} className={inputCls}>
-                <option value="">None</option>
-                {costCentres.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
             </div>
           </div>
