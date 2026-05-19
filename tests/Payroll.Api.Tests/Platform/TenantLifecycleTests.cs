@@ -58,7 +58,7 @@ public sealed class TenantLifecycleTests
         string token = await GetSuperAdminTokenAsync(client);
         client.DefaultRequestHeaders.Authorization = new("Bearer", token);
 
-        string slug = $"suspend-evict-{Guid.NewGuid():N[..8]}";
+        string slug = $"suspend-evict-{Guid.NewGuid().ToString("N")[..8]}";
         Guid id = await CreateTenantAsync(client, slug[..20]);
 
         // Seed a fake cache entry to simulate a warm cache
@@ -79,7 +79,7 @@ public sealed class TenantLifecycleTests
         string token = await GetSuperAdminTokenAsync(client);
         client.DefaultRequestHeaders.Authorization = new("Bearer", token);
 
-        string slug = $"activate-evict-{Guid.NewGuid():N[..8]}";
+        string slug = $"activate-evict-{Guid.NewGuid().ToString("N")[..8]}";
         Guid id = await CreateTenantAsync(client, slug[..20]);
 
         // Suspend first so we can activate

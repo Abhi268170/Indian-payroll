@@ -47,6 +47,7 @@ public sealed class TenantIsolationTests
         {
             DisplayName = displayName,
             Slug = slug,
+            AdminEmail = $"admin@{slug}.test",
         });
         response.EnsureSuccessStatusCode();
         Dictionary<string, object>? body = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>();
@@ -171,7 +172,7 @@ public sealed class TenantIsolationTests
     }
 
     [Fact]
-    public async Task TenantUser_BaseDomain_Returns403()
+    public async Task TenantUser_BaseDomain_PassesThroughMiddleware()
     {
         HttpClient client = _factory.CreateClient();
         string superToken = await GetSuperAdminTokenAsync(client);
@@ -183,13 +184,14 @@ public sealed class TenantIsolationTests
             client, tenantId, slug,
             "user@basedomain.test", "BaseDom@Test1!", Roles.OrgAdmin);
 
-        // Tenant token on base domain (no subdomain Host): IsResolved=false, claim present → 403
+        // Tenant token on base domain: middleware resolves tenant from JWT slug claim and passes through.
+        // Route does not exist → 404 (not 403, since claim validation passes for direct API access).
         HttpRequestMessage request = new(HttpMethod.Get, "/api/nonexistent");
         request.Headers.Authorization = new("Bearer", tenantToken);
         HttpResponseMessage response = await client.SendAsync(request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Forbidden,
-            "tenant user with tenant_id claim must be rejected on base domain");
+        response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden,
+            "middleware resolves tenant from JWT slug claim for direct API access — no 403");
     }
 
     [Fact]

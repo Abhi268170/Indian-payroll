@@ -57,6 +57,7 @@ public sealed class TenantProvisioningTests
         {
             DisplayName = "Acme Corp",
             Slug = "acme-corp",
+            AdminEmail = "admin@acme-corp.test",
         });
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -75,8 +76,8 @@ public sealed class TenantProvisioningTests
         string token = await GetSuperAdminTokenAsync(client);
         client.DefaultRequestHeaders.Authorization = new("Bearer", token);
 
-        await client.PostAsJsonAsync("/api/tenants", new { DisplayName = "Beta Corp", Slug = "beta-corp" });
-        HttpResponseMessage response = await client.PostAsJsonAsync("/api/tenants", new { DisplayName = "Beta Corp 2", Slug = "beta-corp" });
+        await client.PostAsJsonAsync("/api/tenants", new { DisplayName = "Beta Corp", Slug = "beta-corp", AdminEmail = "admin@beta-corp.test" });
+        HttpResponseMessage response = await client.PostAsJsonAsync("/api/tenants", new { DisplayName = "Beta Corp 2", Slug = "beta-corp", AdminEmail = "admin2@beta-corp.test" });
 
         response.StatusCode.Should().Be(HttpStatusCode.Conflict);
     }
@@ -122,6 +123,7 @@ public sealed class TenantProvisioningTests
         {
             DisplayName = "Suspend Corp",
             Slug = "suspend-corp-x",
+            AdminEmail = "admin@suspend-corp-x.test",
         });
         createResponse.EnsureSuccessStatusCode();
         Dictionary<string, object>? created = await createResponse.Content.ReadFromJsonAsync<Dictionary<string, object>>();

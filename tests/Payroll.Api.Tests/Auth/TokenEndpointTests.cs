@@ -108,6 +108,7 @@ public sealed class TokenEndpointTests
         {
             DisplayName = "Token Test Corp",
             Slug = "token-test-corp",
+            AdminEmail = "admin@token-test-corp.test",
         });
         createResp.EnsureSuccessStatusCode();
         Dictionary<string, object>? tenantBody = await createResp.Content.ReadFromJsonAsync<Dictionary<string, object>>();
@@ -161,6 +162,7 @@ public sealed class TokenEndpointTests
         {
             DisplayName = "Suspended Corp",
             Slug = "suspended-corp",
+            AdminEmail = "admin@suspended-corp.test",
         });
         createResp.EnsureSuccessStatusCode();
         Dictionary<string, object>? tenantBody = await createResp.Content.ReadFromJsonAsync<Dictionary<string, object>>();

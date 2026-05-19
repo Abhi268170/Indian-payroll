@@ -122,4 +122,61 @@ public class UpsertPayScheduleValidatorTests
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(e => e.ErrorMessage.Contains("must be empty"));
     }
+
+    // ── FirstPayPeriod validation ─────────────────────────────────────────────
+
+    [Fact]
+    public void FirstPayPeriod_BothNull_Passes()
+    {
+        ValidationResult result = _validator.Validate(ValidCommand());
+        result.IsValid.Should().BeTrue();
+    }
+
+    [Fact]
+    public void FirstPayPeriod_ValidMonthAndYear_Passes()
+    {
+        UpsertPayScheduleCommand cmd = ValidCommand() with { FirstPayPeriodMonth = 4, FirstPayPeriodYear = 2025 };
+        ValidationResult result = _validator.Validate(cmd);
+        result.IsValid.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(13)]
+    public void FirstPayPeriod_InvalidMonth_Fails(int month)
+    {
+        UpsertPayScheduleCommand cmd = ValidCommand() with { FirstPayPeriodMonth = month, FirstPayPeriodYear = 2025 };
+        ValidationResult result = _validator.Validate(cmd);
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(e => e.ErrorMessage.Contains("between 1 and 12"));
+    }
+
+    [Theory]
+    [InlineData(1999)]
+    [InlineData(2101)]
+    public void FirstPayPeriod_InvalidYear_Fails(int year)
+    {
+        UpsertPayScheduleCommand cmd = ValidCommand() with { FirstPayPeriodMonth = 4, FirstPayPeriodYear = year };
+        ValidationResult result = _validator.Validate(cmd);
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(e => e.ErrorMessage.Contains("between 2000 and 2100"));
+    }
+
+    [Fact]
+    public void FirstPayPeriod_MonthWithoutYear_Fails()
+    {
+        UpsertPayScheduleCommand cmd = ValidCommand() with { FirstPayPeriodMonth = 4, FirstPayPeriodYear = null };
+        ValidationResult result = _validator.Validate(cmd);
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(e => e.ErrorMessage.Contains("year is required"));
+    }
+
+    [Fact]
+    public void FirstPayPeriod_YearWithoutMonth_Fails()
+    {
+        UpsertPayScheduleCommand cmd = ValidCommand() with { FirstPayPeriodMonth = null, FirstPayPeriodYear = 2025 };
+        ValidationResult result = _validator.Validate(cmd);
+        result.IsValid.Should().BeFalse();
+        result.Errors.Should().Contain(e => e.ErrorMessage.Contains("month is required"));
+    }
 }

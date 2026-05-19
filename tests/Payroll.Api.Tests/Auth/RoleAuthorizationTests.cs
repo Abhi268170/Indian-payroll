@@ -75,6 +75,7 @@ public sealed class RoleAuthorizationTests
         {
             DisplayName = $"Role Test Corp {slug}",
             Slug = slug,
+            AdminEmail = $"admin@{slug}.test",
         });
         response.EnsureSuccessStatusCode();
         Dictionary<string, object>? body = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>();
@@ -135,6 +136,7 @@ public sealed class RoleAuthorizationTests
         {
             DisplayName = "Super Auth Corp",
             Slug = "super-auth-corp",
+            AdminEmail = "admin@super-auth-corp.test",
         });
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);

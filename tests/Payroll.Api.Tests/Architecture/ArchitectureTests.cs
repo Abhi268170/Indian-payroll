@@ -69,10 +69,11 @@ public sealed class ArchitectureTests
 
         bool allInPlatform = types.All(t =>
             t.Namespace?.StartsWith("Payroll.Application.Commands.Platform") == true ||
-            t.Namespace?.StartsWith("Payroll.Application.Queries.Platform") == true);
+            t.Namespace?.StartsWith("Payroll.Application.Queries.Platform") == true ||
+            t.Namespace?.StartsWith("Payroll.Application.Commands.Auth") == true);
 
         allInPlatform.Should().BeTrue(
-            "IAllowWithoutTenant types must reside in Payroll.Application.Commands.Platform or Payroll.Application.Queries.Platform");
+            "IAllowWithoutTenant types must reside in Payroll.Application.Commands.Platform, Payroll.Application.Queries.Platform, or Payroll.Application.Commands.Auth");
     }
 
     [Fact]
