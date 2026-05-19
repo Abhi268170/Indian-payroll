@@ -40,6 +40,9 @@ e2e/test-results/
 .DS_Store
 Thumbs.db
 
+# Playwright MCP screenshots
+.playwright-mcp/
+
 # JetBrains / Rider
 .idea/
 **/*.iml
@@ -52,3 +55,4 @@ Thumbs.db
 # Logs
 *.log
 logs/
+.worktrees/
