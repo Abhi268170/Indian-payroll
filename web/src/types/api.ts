@@ -147,6 +147,14 @@ export interface EmployeeSalaryComponentBreakdownDto {
   monthlyAmount: number
   annualAmount: number
   isResidual: boolean
+  isOverride: boolean
+}
+
+export interface ComponentOverrideRequest {
+  salaryComponentId: string
+  formulaType: string
+  percentage: number | null
+  fixedAmount: number | null
 }
 
 export interface TenantDto {

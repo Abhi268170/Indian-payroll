@@ -149,6 +149,8 @@ public sealed class EmployeesController(ISender sender) : ControllerBase
             await sender.Send(new AssignSalaryStructureCommand(
                 id, req.AnnualCTC, req.SalaryStructureTemplateId,
                 req.EpfEnabled, req.EsiEnabled, req.PtEnabled, req.LwfEnabled,
+                req.Overrides?.Select(o => new ComponentOverrideInput(o.SalaryComponentId, o.FormulaType, o.Percentage, o.FixedAmount)).ToList()
+                    ?? [],
                 GetActorId()), ct);
             return NoContent();
         }
@@ -251,10 +253,17 @@ public record UpdateStatutoryDetailsRequest(
     string? UAN,
     string? ESICIPNumber);
 
+public record ComponentOverrideRequest(
+    Guid SalaryComponentId,
+    string FormulaType,
+    decimal? Percentage,
+    decimal? FixedAmount);
+
 public record AssignSalaryStructureRequest(
     decimal AnnualCTC,
     Guid? SalaryStructureTemplateId,
     bool EpfEnabled,
     bool EsiEnabled,
     bool PtEnabled,
-    bool LwfEnabled);
+    bool LwfEnabled,
+    IReadOnlyList<ComponentOverrideRequest>? Overrides);

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Payroll.Application.Commands.PayrollRuns;
 using Payroll.Application.DTOs;
+using Payroll.Application.Interfaces;
 using Payroll.Application.Queries.PayrollRuns;
 using Payroll.Domain.Common;
 
@@ -42,6 +43,31 @@ public sealed class PayrollRunsController(ISender sender) : ControllerBase
             return Ok(dto);
         }
         catch (NotFoundException) { return NotFound(); }
+    }
+
+    [HttpGet("{id:guid}/bank-advice")]
+    public async Task<IActionResult> GetBankAdvice(Guid id, CancellationToken ct)
+    {
+        try
+        {
+            BankAdviceDto data = await sender.Send(new GetBankAdviceQuery(id), ct);
+            return Ok(data);
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+    }
+
+    [HttpGet("{id:guid}/bank-advice/download")]
+    public async Task<IActionResult> DownloadBankAdvice(Guid id, [FromServices] IBankAdviceGenerator generator, CancellationToken ct)
+    {
+        try
+        {
+            BankAdviceDto data = await sender.Send(new GetBankAdviceQuery(id), ct);
+            byte[] xls = generator.Generate(data);
+            return File(xls, "application/vnd.ms-excel", "Payroll_Bank_Statement.xls");
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
     }
 
     private Guid GetActorId()

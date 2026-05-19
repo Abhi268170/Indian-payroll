@@ -144,6 +144,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IEmailService, SmtpEmailService>();
         services.AddTransient<IEmailJobDispatcher, HangfireEmailJobDispatcher>();
 
+        services.AddSingleton<IBankAdviceGenerator, BankAdviceGenerator>();
+
         return services;
     }
 }

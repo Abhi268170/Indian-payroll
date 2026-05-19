@@ -32,6 +32,9 @@ public sealed class EmployeeSalaryStructure : AuditableEntity
             CreatedBy = createdBy
         };
 
+    public void AddOverride(EmployeeSalaryComponentOverride o) =>
+        ComponentOverrides.Add(o);
+
     public void Close(DateOnly effectiveTo, Guid updatedBy)
     {
         EffectiveTo = effectiveTo;

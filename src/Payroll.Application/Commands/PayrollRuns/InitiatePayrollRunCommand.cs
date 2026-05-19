@@ -29,6 +29,7 @@ public sealed class InitiatePayrollRunHandler(
     IEmployeeRepository employeeRepo,
     IEmployeeSalaryStructureRepository salaryStructureRepo,
     ISalaryStructureTemplateRepository templateRepo,
+    ISalaryComponentRepository salaryComponentRepo,
     IStatutoryConfigRepository statutoryRepo,
     IPayrunEmployeeRepository payrunEmployeeRepo,
     IPayrunComponentBreakdownRepository breakdownRepo,
@@ -99,18 +100,35 @@ public sealed class InitiatePayrollRunHandler(
         var engineInputs = new List<EmployeeInput>();
         var eligibleMap = new Dictionary<Guid, (EmployeeSalaryStructure structure, SalaryStructureTemplate? template, string? skipReason)>();
 
+        // Collect override-only component IDs for batch load
+        var addedComponentIds = new HashSet<Guid>();
+        var structureOverrideMap = new Dictionary<Guid, EmployeeSalaryStructure>();
+
         foreach (var emp in activeEmployees)
         {
-            var salaryStructure = await salaryStructureRepo.GetActiveAsync(emp.Id, ct);
+            var salaryStructure = await salaryStructureRepo.GetActiveWithOverridesAsync(emp.Id, ct);
             if (salaryStructure is null)
             {
                 eligibleMap[emp.Id] = (null!, null, "No active salary structure");
                 continue;
             }
 
+            structureOverrideMap[emp.Id] = salaryStructure;
+
             SalaryStructureTemplate? template = salaryStructure.SalaryStructureTemplateId.HasValue
                 ? await templateRepo.GetByIdWithComponentsAsync(salaryStructure.SalaryStructureTemplateId.Value, ct)
                 : null;
+
+            // Identify override-only components (not in template)
+            if (salaryStructure.ComponentOverrides.Count > 0 && template is not null)
+            {
+                var templateCompIds = new HashSet<Guid>(template.Components.Select(c => c.ComponentId));
+                foreach (var ov in salaryStructure.ComponentOverrides)
+                {
+                    if (!templateCompIds.Contains(ov.SalaryComponentId))
+                        addedComponentIds.Add(ov.SalaryComponentId);
+                }
+            }
 
             // Hard-block onboarding checks
             string? skipReason = null;
@@ -119,10 +137,22 @@ public sealed class InitiatePayrollRunHandler(
             else if (string.IsNullOrWhiteSpace(emp.EncryptedBankAccount)) skipReason = "Onboarding incomplete: Bank account missing";
 
             eligibleMap[emp.Id] = (salaryStructure, template, skipReason);
+        }
+
+        // Batch-load SalaryComponent details for added (override-only) components
+        Dictionary<Guid, SalaryComponent> addedCompDetails = addedComponentIds.Count > 0
+            ? (await salaryComponentRepo.GetByIdsAsync([.. addedComponentIds], ct)).ToDictionary(c => c.Id)
+            : [];
+
+        foreach (var emp in activeEmployees)
+        {
+            if (!eligibleMap.TryGetValue(emp.Id, out var entry)) continue;
+            var (salaryStructure, template, skipReason) = entry;
+            if (salaryStructure is null) continue;
 
             if (skipReason is null)
             {
-                var components = BuildComponentInputs(salaryStructure, template);
+                var components = BuildComponentInputs(salaryStructure, template, addedCompDetails);
                 bool hasPan = !string.IsNullOrWhiteSpace(emp.EncryptedPAN);
                 string workState = workLocationStateMap.TryGetValue(emp.WorkLocationId, out string? wls) ? wls : "MH";
                 var (hyIndex, hyTotal) = period.HalfYearPosition(emp.DateOfJoining);
@@ -287,9 +317,13 @@ public sealed class InitiatePayrollRunHandler(
 
     private static IReadOnlyList<SalaryComponentInput> BuildComponentInputs(
         EmployeeSalaryStructure structure,
-        SalaryStructureTemplate? template)
+        SalaryStructureTemplate? template,
+        Dictionary<Guid, SalaryComponent> addedCompDetails)
     {
         if (template is null) return [];
+
+        Dictionary<Guid, EmployeeSalaryComponentOverride> overrideMap =
+            structure.ComponentOverrides.ToDictionary(o => o.SalaryComponentId);
 
         decimal monthlyGross = structure.AnnualCTC / 12m;
         var components = new List<SalaryComponentInput>();
@@ -297,22 +331,29 @@ public sealed class InitiatePayrollRunHandler(
         decimal nonResidualSum = 0m;
 
         var ordered = template.Components.OrderBy(c => c.DisplayOrder).ToList();
+        var templateCompIds = new HashSet<Guid>(ordered.Select(c => c.ComponentId));
 
+        // Pass 1: template components (with overrides applied)
         foreach (var comp in ordered)
         {
             if (comp.Component is null) continue;
             if (comp.FormulaType == ComponentFormulaType.ResidualCTC) continue;
 
-            decimal monthly = comp.FormulaType switch
+            overrideMap.TryGetValue(comp.ComponentId, out EmployeeSalaryComponentOverride? ov);
+            ComponentFormulaType effectiveType = ov?.FormulaType ?? comp.FormulaType;
+            decimal? effectivePct = ov?.Percentage ?? comp.Percentage;
+            decimal? effectiveFixed = ov?.FixedAmount ?? comp.FixedAmount;
+
+            decimal monthly = effectiveType switch
             {
                 ComponentFormulaType.PercentOfCTC =>
-                    Math.Round(structure.AnnualCTC * (comp.Percentage!.Value / 100m) / 12m, 2, MidpointRounding.AwayFromZero),
+                    Math.Round(structure.AnnualCTC * (effectivePct!.Value / 100m) / 12m, 2, MidpointRounding.AwayFromZero),
                 ComponentFormulaType.PercentOfBasic =>
-                    Math.Round(basicMonthly * (comp.Percentage!.Value / 100m), 2, MidpointRounding.AwayFromZero),
+                    Math.Round(basicMonthly * (effectivePct!.Value / 100m), 2, MidpointRounding.AwayFromZero),
                 ComponentFormulaType.PercentOfGross =>
-                    Math.Round(monthlyGross * (comp.Percentage!.Value / 100m), 2, MidpointRounding.AwayFromZero),
+                    Math.Round(monthlyGross * (effectivePct!.Value / 100m), 2, MidpointRounding.AwayFromZero),
                 ComponentFormulaType.Fixed =>
-                    comp.FixedAmount ?? 0m,
+                    effectiveFixed ?? 0m,
                 _ => 0m
             };
 
@@ -332,6 +373,18 @@ public sealed class InitiatePayrollRunHandler(
             bool isTaxable = residual.Component.IsTaxable ?? true;
             bool considerForEpf = residual.Component.ConsiderForEpf ?? false;
             components.Add(new SalaryComponentInput(residual.ComponentId, residual.Component.Code, residualMonthly, isTaxable, considerForEpf));
+        }
+
+        // Pass 2: override-only (added earnings not in template)
+        foreach (var ov in structure.ComponentOverrides)
+        {
+            if (templateCompIds.Contains(ov.SalaryComponentId)) continue;
+            if (!addedCompDetails.TryGetValue(ov.SalaryComponentId, out SalaryComponent? sc)) continue;
+
+            decimal monthly = ov.FormulaType == ComponentFormulaType.Fixed ? ov.FixedAmount ?? 0m : 0m;
+            bool isTaxable = sc.IsTaxable ?? true;
+            bool considerForEpf = sc.ConsiderForEpf ?? false;
+            components.Add(new SalaryComponentInput(ov.SalaryComponentId, sc.Code, monthly, isTaxable, considerForEpf));
         }
 
         return components;
