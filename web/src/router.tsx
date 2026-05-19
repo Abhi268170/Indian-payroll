@@ -21,6 +21,8 @@ import DashboardPage from '@/pages/DashboardPage'
 import EmployeesPage from '@/pages/employees/EmployeesPage'
 import AddEmployeeWizard from '@/pages/employees/AddEmployeeWizard'
 import EmployeeDetailPage from '@/pages/employees/EmployeeDetailPage'
+import PayRunsPage from '@/pages/payroll/PayRunsPage'
+import PayRunDetailPage from '@/pages/payroll/PayRunDetailPage'
 import TenantsPage from '@/pages/platform/TenantsPage'
 import ProvisionOrgPage from '@/pages/platform/ProvisionOrgPage'
 import OrgDetailPage from '@/pages/platform/OrgDetailPage'
@@ -79,6 +81,8 @@ export const router = createBrowserRouter([
       { path: 'employees/new', element: <AddEmployeeWizard /> },
       { path: 'employees/:id/wizard/:step', element: <AddEmployeeWizard /> },
       { path: 'employees/:id', element: <EmployeeDetailPage /> },
+      { path: 'pay-runs', element: <PayRunsPage /> },
+      { path: 'pay-runs/:id', element: <PayRunDetailPage /> },
       {
         path: 'settings',
         element: <SettingsLayout />,

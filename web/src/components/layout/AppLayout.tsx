@@ -1,7 +1,7 @@
 import { type ReactElement } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
-import { LogOut, Settings, Users } from 'lucide-react'
+import { LogOut, Settings, Users, CreditCard } from 'lucide-react'
 import { clsx } from 'clsx'
 
 function navItemCls(isActive: boolean): string {
@@ -42,6 +42,10 @@ export default function AppLayout(): ReactElement {
           <NavLink to="/employees" className={({ isActive }) => navItemCls(isActive)}>
             <Users className="w-4 h-4 flex-shrink-0" />
             People
+          </NavLink>
+          <NavLink to="/pay-runs" className={({ isActive }) => navItemCls(isActive)}>
+            <CreditCard className="w-4 h-4 flex-shrink-0" />
+            Pay Runs
           </NavLink>
           <NavLink to="/settings" className={({ isActive }) => navItemCls(isActive)}>
             <Settings className="w-4 h-4 flex-shrink-0" />

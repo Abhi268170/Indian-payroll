@@ -7,6 +7,8 @@ import { Pencil, X, Check } from 'lucide-react'
 import { api } from '@/lib/api'
 import type { EmployeeDto, DepartmentDto, DesignationDto } from '@/types/api'
 import type { WorkLocation } from '@/pages/settings/WorkLocationsPage'
+import type { BusinessUnit } from '@/pages/settings/BusinessUnitsPage'
+import type { CostCentre } from '@/pages/settings/CostCentresPage'
 
 interface Props {
   employee: EmployeeDto
@@ -87,6 +89,8 @@ const basicSchema = z.object({
   departmentId: z.string().min(1, 'Required'),
   designationId: z.string().min(1, 'Required'),
   workLocationId: z.string().min(1, 'Required'),
+  businessUnitId: z.string().optional(),
+  costCentreId: z.string().optional(),
 })
 type BasicValues = z.infer<typeof basicSchema>
 
@@ -105,6 +109,14 @@ function BasicSection({ employee, onSaved }: Props): React.ReactElement {
     queryKey: ['work-locations'],
     queryFn: () => api.get<WorkLocation[]>('/api/v1/work-locations').then(r => r.data),
   })
+  const { data: businessUnits = [] } = useQuery<BusinessUnit[]>({
+    queryKey: ['business-units'],
+    queryFn: () => api.get<BusinessUnit[]>('/api/v1/business-units').then(r => r.data),
+  })
+  const { data: costCentres = [] } = useQuery<CostCentre[]>({
+    queryKey: ['cost-centres'],
+    queryFn: () => api.get<CostCentre[]>('/api/v1/cost-centres').then(r => r.data),
+  })
 
   const { register, handleSubmit, reset, formState: { errors, isDirty } } = useForm<BasicValues>({
     resolver: zodResolver(basicSchema),
@@ -119,6 +131,8 @@ function BasicSection({ employee, onSaved }: Props): React.ReactElement {
       departmentId: employee.departmentId,
       designationId: employee.designationId,
       workLocationId: employee.workLocationId,
+      businessUnitId: employee.businessUnitId ?? '',
+      costCentreId: employee.costCentreId ?? '',
     },
   })
 
@@ -134,6 +148,8 @@ function BasicSection({ employee, onSaved }: Props): React.ReactElement {
       departmentId: v.departmentId,
       designationId: v.designationId,
       workLocationId: v.workLocationId,
+      businessUnitId: v.businessUnitId || null,
+      costCentreId: v.costCentreId || null,
     }),
     onSuccess: () => { setEditing(false); onSaved() },
   })
@@ -163,6 +179,8 @@ function BasicSection({ employee, onSaved }: Props): React.ReactElement {
           <ReadField label="Department" value={employee.departmentName} />
           <ReadField label="Designation" value={employee.designationName} />
           <ReadField label="Work Location" value={employee.workLocationName} />
+          <ReadField label="Business Unit" value={businessUnits.find(b => b.id === employee.businessUnitId)?.name ?? null} />
+          <ReadField label="Cost Centre" value={costCentres.find(c => c.id === employee.costCentreId)?.name ?? null} />
           <ReadField label="Director" value={fmtBool(employee.isDirector)} />
           <ReadField label="Portal Access" value={fmtBool(employee.enablePortalAccess)} />
         </div>
@@ -222,6 +240,23 @@ function BasicSection({ employee, onSaved }: Props): React.ReactElement {
                 {workLocations.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
               </select>
               {errors.workLocationId && <p className={errCls}>{errors.workLocationId.message}</p>}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={fieldLabelCls}>Business Unit</label>
+              <select {...register('businessUnitId')} className={inputCls}>
+                <option value="">None</option>
+                {businessUnits.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={fieldLabelCls}>Cost Centre</label>
+              <select {...register('costCentreId')} className={inputCls}>
+                <option value="">None</option>
+                {costCentres.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
             </div>
           </div>
 
@@ -561,12 +596,18 @@ function StatutorySection({ employee, onSaved }: Props): React.ReactElement {
 // ── Payment Information ────────────────────────────────────────────────────────
 
 const paymentSchema = z.object({
-  paymentMode: z.enum(['Cash', 'Cheque', 'ManualBankTransfer', 'DirectDeposit']),
+  paymentMode: z.enum(['Cash', 'Cheque', 'BankTransfer', 'DirectDeposit']),
   accountHolderName: z.string().max(150).optional(),
   bankName: z.string().max(150).optional(),
   accountType: z.enum(['Savings', 'Current', 'Salary']).optional(),
   accountNumber: z.string().max(20).optional(),
-  ifscCode: z.string().max(11).optional(),
+  confirmAccountNumber: z.string().max(20).optional(),
+  ifscCode: z.string().length(11, 'IFSC must be 11 characters').optional().or(z.literal('')),
+}).superRefine((v, ctx) => {
+  const needsBank = v.paymentMode === 'BankTransfer' || v.paymentMode === 'DirectDeposit'
+  if (needsBank && v.accountNumber && v.confirmAccountNumber && v.accountNumber !== v.confirmAccountNumber) {
+    ctx.addIssue({ code: 'custom', path: ['confirmAccountNumber'], message: 'Account numbers do not match' })
+  }
 })
 type PaymentValues = z.infer<typeof paymentSchema>
 
@@ -581,12 +622,13 @@ function PaymentSection({ employee, onSaved }: Props): React.ReactElement {
       bankName: employee.bankName ?? '',
       accountType: (employee.accountType as PaymentValues['accountType']) ?? undefined,
       accountNumber: '',
-      ifscCode: '',
+      confirmAccountNumber: '',
+      ifscCode: employee.ifscCode ?? '',
     },
   })
 
   const mode = watch('paymentMode')
-  const hasBankFields = mode === 'ManualBankTransfer' || mode === 'DirectDeposit'
+  const hasBankFields = mode === 'BankTransfer' || mode === 'DirectDeposit'
 
   const save = useMutation({
     mutationFn: (v: PaymentValues) => api.put(`/api/v1/employees/${employee.id}/payment-info`, {
@@ -595,7 +637,7 @@ function PaymentSection({ employee, onSaved }: Props): React.ReactElement {
       bankName: hasBankFields ? (v.bankName || null) : null,
       accountType: hasBankFields ? (v.accountType || null) : null,
       accountNumber: hasBankFields ? (v.accountNumber || null) : null,
-      ifscCode: hasBankFields ? (v.ifscCode || null) : null,
+      ifsc: hasBankFields ? (v.ifscCode || null) : null,
     }),
     onSuccess: () => { setEditing(false); onSaved() },
   })
@@ -603,7 +645,7 @@ function PaymentSection({ employee, onSaved }: Props): React.ReactElement {
   function cancel(): void { reset(); setEditing(false); save.reset() }
 
   const modeLabel: Record<string, string> = {
-    Cash: 'Cash', Cheque: 'Cheque', ManualBankTransfer: 'Manual Bank Transfer', DirectDeposit: 'Direct Deposit (NEFT/RTGS)',
+    Cash: 'Cash', Cheque: 'Cheque', BankTransfer: 'Bank Transfer', DirectDeposit: 'Direct Deposit (NEFT/RTGS)',
   }
 
   return (
@@ -613,7 +655,7 @@ function PaymentSection({ employee, onSaved }: Props): React.ReactElement {
       {!editing ? (
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">
           <ReadField label="Payment Mode" value={modeLabel[employee.paymentMode] ?? employee.paymentMode} />
-          {(employee.paymentMode === 'ManualBankTransfer' || employee.paymentMode === 'DirectDeposit') && (
+          {(employee.paymentMode === 'BankTransfer' || employee.paymentMode === 'DirectDeposit') && (
             <>
               <ReadField label="Account Holder Name" value={employee.accountHolderName} />
               <ReadField label="Bank Name" value={employee.bankName} />
@@ -629,7 +671,7 @@ function PaymentSection({ employee, onSaved }: Props): React.ReactElement {
             <select {...register('paymentMode')} className={`${inputCls} w-64`}>
               <option value="Cash">Cash</option>
               <option value="Cheque">Cheque</option>
-              <option value="ManualBankTransfer">Manual Bank Transfer</option>
+              <option value="BankTransfer">Bank Transfer</option>
               <option value="DirectDeposit">Direct Deposit (NEFT/RTGS)</option>
             </select>
           </div>
@@ -657,17 +699,36 @@ function PaymentSection({ employee, onSaved }: Props): React.ReactElement {
                   </select>
                 </div>
                 <div>
+                  <label className={fieldLabelCls}>IFSC Code</label>
+                  <input {...register('ifscCode')} className={`${inputCls} font-mono uppercase`} maxLength={11} placeholder="HDFC0001234" />
+                  {errors.ifscCode && <p className={errCls}>{errors.ifscCode.message}</p>}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
                   <label className={fieldLabelCls}>Account Number</label>
-                  <input {...register('accountNumber')} className={inputCls} placeholder="Enter new account number" />
+                  <input
+                    type="password"
+                    {...register('accountNumber')}
+                    className={inputCls}
+                    autoComplete="new-password"
+                    placeholder="Enter new account number"
+                  />
                   {employee.maskedAccountNumber && (
-                    <p className="mt-1 text-[11px] text-[var(--color-text-secondary)]">Current: {employee.maskedAccountNumber}</p>
+                    <p className="mt-1 text-[11px] text-[var(--color-text-secondary)]">Current: {employee.maskedAccountNumber} (leave blank to keep)</p>
                   )}
                   {errors.accountNumber && <p className={errCls}>{errors.accountNumber.message}</p>}
                 </div>
-              </div>
-              <div>
-                <label className={fieldLabelCls}>IFSC Code</label>
-                <input {...register('ifscCode')} className={`${inputCls} w-48 font-mono uppercase`} maxLength={11} />
+                <div>
+                  <label className={fieldLabelCls}>Re-enter Account Number</label>
+                  <input
+                    type="password"
+                    {...register('confirmAccountNumber')}
+                    className={inputCls}
+                    autoComplete="new-password"
+                  />
+                  {errors.confirmAccountNumber && <p className={errCls}>{errors.confirmAccountNumber.message}</p>}
+                </div>
               </div>
             </>
           )}

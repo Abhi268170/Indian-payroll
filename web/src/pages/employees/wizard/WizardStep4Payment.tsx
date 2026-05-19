@@ -11,7 +11,7 @@ interface Props {
 }
 
 const schema = z.object({
-  paymentMode: z.enum(['Cash', 'Cheque', 'ManualBankTransfer', 'DirectDeposit']),
+  paymentMode: z.enum(['Cash', 'Cheque', 'BankTransfer', 'DirectDeposit']),
   accountHolderName: z.string().max(150).optional(),
   bankName: z.string().max(150).optional(),
   accountType: z.enum(['Savings', 'Current', 'Salary']).optional(),
@@ -19,7 +19,7 @@ const schema = z.object({
   confirmAccountNumber: z.string().max(20).optional(),
   ifscCode: z.string().max(11).optional(),
 }).superRefine((v, ctx) => {
-  const needsBank = v.paymentMode === 'ManualBankTransfer' || v.paymentMode === 'DirectDeposit'
+  const needsBank = v.paymentMode === 'BankTransfer' || v.paymentMode === 'DirectDeposit'
   if (needsBank) {
     if (!v.accountNumber) {
       ctx.addIssue({ code: 'custom', path: ['accountNumber'], message: 'Account number required' })
@@ -33,7 +33,7 @@ type FormValues = z.infer<typeof schema>
 
 const MODES = [
   { value: 'DirectDeposit', label: 'Direct Deposit', sub: 'Automated NEFT/RTGS transfer' },
-  { value: 'ManualBankTransfer', label: 'Bank Transfer', sub: 'Manual bank transfer' },
+  { value: 'BankTransfer', label: 'Bank Transfer', sub: 'Manual bank transfer' },
   { value: 'Cheque', label: 'Cheque', sub: 'Physical cheque payment' },
   { value: 'Cash', label: 'Cash', sub: 'Cash payment' },
 ] as const
@@ -49,7 +49,7 @@ export default function WizardStep4Payment({ employeeId, onSuccess, onSkip }: Pr
   })
 
   const mode = watch('paymentMode')
-  const hasBankFields = mode === 'ManualBankTransfer' || mode === 'DirectDeposit'
+  const hasBankFields = mode === 'BankTransfer' || mode === 'DirectDeposit'
 
   const save = useMutation({
     mutationFn: (v: FormValues) => api.put(`/api/v1/employees/${employeeId}/payment-info`, {

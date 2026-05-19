@@ -1,6 +1,6 @@
 import { type ReactElement } from 'react'
 import { Outlet, useNavigate, NavLink } from 'react-router-dom'
-import { X, ChevronDown } from 'lucide-react'
+import { X, ChevronDown, ArrowLeft } from 'lucide-react'
 import { clsx } from 'clsx'
 
 interface NavItem {
@@ -78,17 +78,26 @@ export default function SettingsLayout(): ReactElement {
   const navigate = useNavigate()
 
   function handleClose(): void {
-    void navigate(-1)
+    void navigate('/dashboard')
   }
 
   return (
     <div className="fixed inset-0 z-50 bg-[var(--color-page-bg)] flex flex-col">
       <header className="h-14 flex-shrink-0 bg-white border-b border-[var(--color-border)] flex items-center justify-between px-6">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[var(--color-primary)] flex items-center justify-center flex-shrink-0">
-            <span className="text-[11px] font-bold text-white">IP</span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => { void navigate(-1) }}
+            className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-[var(--color-text-secondary)] hover:bg-gray-100 transition-colors"
+            aria-label="Go back"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-[var(--color-primary)] flex items-center justify-center flex-shrink-0">
+              <span className="text-[11px] font-bold text-white">IP</span>
+            </div>
+            <span className="text-[15px] font-semibold text-[var(--color-text-primary)]">Settings</span>
           </div>
-          <span className="text-[15px] font-semibold text-[var(--color-text-primary)]">Settings</span>
         </div>
         <button
           onClick={handleClose}

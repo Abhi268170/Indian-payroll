@@ -23,11 +23,24 @@ const MONTH_NAMES = [
   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
 ]
 
+const DOW_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+
+function walkBackToWorkingDay(year: number, month: number, day: number, workWeekDays: string[]): number {
+  if (workWeekDays.length === 0) return day
+  for (let d = day; d >= 1; d--) {
+    const dow = new Date(year, month - 1, d).getDay()
+    const name = DOW_NAMES[dow]
+    if (name !== undefined && workWeekDays.includes(name)) return d
+  }
+  return 1
+}
+
 function getUpcomingPayDates(
   startMonth: number,
   startYear: number,
   payDateType: string,
   payDateDay: number | null,
+  workWeekDays: string[],
   count: number,
 ): string[] {
   const dates: string[] = []
@@ -41,6 +54,7 @@ function getUpcomingPayDates(
       const daysInMonth = new Date(year, month, 0).getDate()
       day = Math.min(payDateDay ?? 1, daysInMonth)
     }
+    day = walkBackToWorkingDay(year, month, day, workWeekDays)
     dates.push(`${day} ${MONTH_NAMES[month - 1]} ${year}`)
     month++
     if (month > 12) { month = 1; year++ }
@@ -324,6 +338,7 @@ function PayScheduleForm({
                     parseInt(firstPayPeriodYear, 10),
                     payDateType,
                     payDateType === 'SpecificDay' ? parseInt(payDateDay, 10) : null,
+                    workWeekDays,
                     3
                   ).map((d, i) => (
                     <div key={i} className="px-3 py-1.5 bg-[var(--color-primary-light)] rounded-lg text-[12px] text-[var(--color-primary)] font-medium">

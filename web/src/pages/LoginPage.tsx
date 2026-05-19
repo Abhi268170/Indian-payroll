@@ -25,8 +25,8 @@ export default function LoginPage(): React.ReactElement {
   async function onSubmit(values: FormValues): Promise<void> {
     setError(null)
     try {
-      const token = await getToken(values.username, values.password)
-      login(token)
+      const { accessToken, refreshToken } = await getToken(values.username, values.password)
+      login(accessToken, refreshToken)
       navigate('/', { replace: true })
     } catch {
       setError('Invalid credentials or server error.')

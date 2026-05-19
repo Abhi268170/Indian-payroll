@@ -61,6 +61,7 @@ export interface EmployeeDto {
   bankName: string | null
   accountType: string | null
   maskedAccountNumber: string | null
+  ifscCode: string | null
   uan: string | null
   esicipNumber: string | null
   epfEnabled: boolean

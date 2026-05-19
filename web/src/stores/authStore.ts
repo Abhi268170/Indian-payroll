@@ -18,8 +18,10 @@ function decodeToken(token: string): DecodedToken {
 
 interface AuthState {
   token: string | null
+  refreshToken: string | null
   user: DecodedToken | null
-  login: (token: string) => void
+  login: (token: string, refreshToken: string) => void
+  setToken: (token: string) => void
   logout: () => void
   isAuthenticated: () => boolean
   hasRole: (...roles: string[]) => boolean
@@ -29,15 +31,21 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       token: null,
+      refreshToken: null,
       user: null,
 
-      login(token: string) {
+      login(token: string, refreshToken: string) {
+        const user = decodeToken(token)
+        set({ token, refreshToken, user })
+      },
+
+      setToken(token: string) {
         const user = decodeToken(token)
         set({ token, user })
       },
 
       logout() {
-        set({ token: null, user: null })
+        set({ token: null, refreshToken: null, user: null })
       },
 
       isAuthenticated() {
@@ -55,7 +63,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'payroll-auth',
-      partialize: (state) => ({ token: state.token, user: state.user }),
+      partialize: (state) => ({ token: state.token, refreshToken: state.refreshToken, user: state.user }),
     },
   ),
 )

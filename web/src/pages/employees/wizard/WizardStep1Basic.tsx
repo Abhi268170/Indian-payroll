@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -6,6 +6,8 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import type { DepartmentDto, DesignationDto, CreateEmployeeRequest } from '@/types/api'
 import type { WorkLocation } from '@/pages/settings/WorkLocationsPage'
+import type { BusinessUnit } from '@/pages/settings/BusinessUnitsPage'
+import type { CostCentre } from '@/pages/settings/CostCentresPage'
 import InlineCreateModal from './InlineCreateModal'
 
 const schema = z.object({
@@ -24,6 +26,8 @@ const schema = z.object({
   departmentId: z.string().min(1, 'Required'),
   designationId: z.string().min(1, 'Required'),
   workLocationId: z.string().min(1, 'Required'),
+  businessUnitId: z.string().optional(),
+  costCentreId: z.string().optional(),
 })
 type FormValues = z.infer<typeof schema>
 
@@ -52,15 +56,29 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
     queryKey: ['work-locations'],
     queryFn: () => api.get<WorkLocation[]>('/api/v1/work-locations').then(r => r.data),
   })
+  const { data: businessUnits = [] } = useQuery<BusinessUnit[]>({
+    queryKey: ['business-units'],
+    queryFn: () => api.get<BusinessUnit[]>('/api/v1/business-units').then(r => r.data),
+  })
+  const { data: costCentres = [] } = useQuery<CostCentre[]>({
+    queryKey: ['cost-centres'],
+    queryFn: () => api.get<CostCentre[]>('/api/v1/cost-centres').then(r => r.data),
+  })
 
   const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       isDirector: false,
       enablePortalAccess: false,
-      workLocationId: workLocations[0]?.id ?? '',
+      workLocationId: '',
     },
   })
+
+  // Auto-select first work location once the query resolves
+  useEffect(() => {
+    const first = workLocations[0]
+    if (first) setValue('workLocationId', first.id, { shouldValidate: false })
+  }, [workLocations, setValue])
 
   const workEmail = watch('workEmail')
 
@@ -87,6 +105,8 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
       departmentId: v.departmentId,
       designationId: v.designationId,
       workLocationId: v.workLocationId,
+      businessUnitId: v.businessUnitId || undefined,
+      costCentreId: v.costCentreId || undefined,
     })
   }
 
@@ -181,7 +201,7 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
         </div>
 
         {/* Org */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="block text-[12px] font-medium text-[var(--color-text-secondary)]">
@@ -227,6 +247,20 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
               {workLocations.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
             </select>
             {errors.workLocationId && <p className={errCls}>{errors.workLocationId.message}</p>}
+          </div>
+          <div>
+            <label className={labelCls}>Business Unit</label>
+            <select {...register('businessUnitId')} className={inputCls}>
+              <option value="">None</option>
+              {businessUnits.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className={labelCls}>Cost Centre</label>
+            <select {...register('costCentreId')} className={inputCls}>
+              <option value="">None</option>
+              {costCentres.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
           </div>
         </div>
 

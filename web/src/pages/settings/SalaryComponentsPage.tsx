@@ -12,6 +12,7 @@ import AddDeductionModal from './salary-components/AddDeductionModal'
 import AddReimbursementModal from './salary-components/AddReimbursementModal'
 import AddBenefitModal from './salary-components/AddBenefitModal'
 import AddCorrectionModal from './salary-components/AddCorrectionModal'
+import EditComponentModal from './salary-components/EditComponentModal'
 
 export type ComponentCategory = 'Earning' | 'Deduction' | 'Reimbursement' | 'Benefit' | 'Correction'
 
@@ -100,6 +101,7 @@ export default function SalaryComponentsPage(): ReactElement {
   const [activeTab, setActiveTab] = useState<ComponentCategory | null>(null)
   const [showAddMenu, setShowAddMenu] = useState(false)
   const [openModal, setOpenModal] = useState<ModalType>(null)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const qc = useQueryClient()
   const { success: toastSuccess, error: toastError } = useToast()
 
@@ -216,7 +218,13 @@ export default function SalaryComponentsPage(): ReactElement {
                   className={i < filtered.length - 1 ? 'border-b border-[var(--color-border)]' : ''}
                 >
                   <td className="px-5 py-3">
-                    <div className="font-medium text-[var(--color-text-primary)]">{comp.name}</div>
+                    <button
+                      type="button"
+                      onClick={() => { setEditingId(comp.id) }}
+                      className="font-medium text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:underline text-left"
+                    >
+                      {comp.name}
+                    </button>
                     {comp.nameInPayslip !== comp.name && (
                       <div className="text-[11px] text-[var(--color-text-muted)]">
                         Payslip: {comp.nameInPayslip}
@@ -227,6 +235,7 @@ export default function SalaryComponentsPage(): ReactElement {
                         System
                       </span>
                     )}
+
                   </td>
                   <td className="px-5 py-3 text-[var(--color-text-secondary)] font-mono text-[12px]">
                     {comp.code}
@@ -281,6 +290,17 @@ export default function SalaryComponentsPage(): ReactElement {
       )}
       {openModal === 'Correction' && (
         <AddCorrectionModal onClose={() => { setOpenModal(null) }} onAdded={handleAdded} />
+      )}
+
+      {editingId && (
+        <EditComponentModal
+          id={editingId}
+          onClose={() => { setEditingId(null) }}
+          onSaved={() => {
+            setEditingId(null)
+            void qc.invalidateQueries({ queryKey: ['salary-components'] })
+          }}
+        />
       )}
 
       {showAddMenu && (
