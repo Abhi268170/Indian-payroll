@@ -21,6 +21,7 @@ public sealed class RejectApprovalCommandValidator : AbstractValidator<RejectApp
 
 public sealed class RejectApprovalHandler(
     IPayrollRunRepository runRepo,
+    ITdsWorksheetRepository tdsWorksheetRepo,
     IPayrollRunAuditLogRepository auditLogRepo,
     IUnitOfWork uow)
     : IRequestHandler<RejectApprovalCommand>
@@ -33,6 +34,7 @@ public sealed class RejectApprovalHandler(
         if (run.Status != PayrollRunStatus.Approved)
             throw new InvalidOperationException("Only an Approved payroll run can have its approval rejected.");
 
+        await tdsWorksheetRepo.DeleteByRunIdAsync(req.RunId, ct);
         run.RejectApproval(req.Reason, req.ActorId);
         runRepo.Update(run);
 

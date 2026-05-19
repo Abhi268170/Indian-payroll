@@ -2,6 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Payroll.Application.Commands.Auth;
 using Payroll.Domain.Common;
 
@@ -12,6 +13,7 @@ namespace Payroll.Api.Controllers;
 public sealed class AuthController(ISender sender) : ControllerBase
 {
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     [HttpPost("set-password")]
     public async Task<IActionResult> SetPassword(
         [FromBody] SetPasswordRequest request,
@@ -33,6 +35,7 @@ public sealed class AuthController(ISender sender) : ControllerBase
     }
 
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword(
         [FromBody] ForgotPasswordRequest request,

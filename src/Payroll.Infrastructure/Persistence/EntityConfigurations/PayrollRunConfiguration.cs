@@ -49,6 +49,12 @@ internal sealed class PayrollRunConfiguration : IEntityTypeConfiguration<Payroll
         });
 
         builder.HasIndex(p => new { p.TenantId, p.Status });
+
+        // Prevent duplicate runs for same tenant+period (excludes deleted rows)
+        builder.HasIndex("TenantId", "pay_period_year", "pay_period_month")
+            .IsUnique()
+            .HasFilter("deleted_at IS NULL");
+
         builder.HasQueryFilter(p => !p.IsDeleted);
     }
 }

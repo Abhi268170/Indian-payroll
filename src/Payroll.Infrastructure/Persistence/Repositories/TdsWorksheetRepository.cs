@@ -20,4 +20,7 @@ internal sealed class TdsWorksheetRepository(PayrollDbContext db) : ITdsWorkshee
 
     public async Task AddRangeAsync(IEnumerable<TdsWorksheet> worksheets, CancellationToken ct = default) =>
         await db.TdsWorksheets.AddRangeAsync(worksheets, ct);
+
+    public async Task DeleteByRunIdAsync(Guid payrollRunId, CancellationToken ct = default) =>
+        await db.TdsWorksheets.Where(w => w.PayrollRunId == payrollRunId).ExecuteDeleteAsync(ct);
 }

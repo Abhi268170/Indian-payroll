@@ -31,7 +31,12 @@ public sealed class TenantClaimValidationMiddleware(
 
         if (!tenantContext.IsResolved && tenantIdClaim is null)
         {
-            // SuperAdmin on base domain — legitimate
+            if (!context.User.IsInRole("SuperAdmin"))
+            {
+                logger.LogWarning("TENANT_BYPASS_ATTEMPT: authenticated user with no tenant_id claim and not SuperAdmin");
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                return;
+            }
             await next(context);
             return;
         }

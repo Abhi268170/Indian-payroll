@@ -234,6 +234,7 @@ public sealed class PayrollRunsController(ISender sender) : ControllerBase
     }
 
     [HttpGet("{id:guid}/bank-advice")]
+    [Authorize(Policy = "FinanceViewer")]
     public async Task<IActionResult> GetBankAdvice(Guid id, CancellationToken ct)
     {
         try
@@ -246,6 +247,7 @@ public sealed class PayrollRunsController(ISender sender) : ControllerBase
     }
 
     [HttpGet("{id:guid}/bank-advice/download")]
+    [Authorize(Policy = "FinanceViewer")]
     public async Task<IActionResult> DownloadBankAdvice(Guid id, [FromServices] IBankAdviceGenerator generator, CancellationToken ct)
     {
         try
@@ -278,23 +280,15 @@ public sealed class PayrollRunsController(ISender sender) : ControllerBase
     }
 
     [HttpPost("{id:guid}/regenerate-payslips")]
-    public async Task<IActionResult> RegeneratePayslips(Guid id, [FromServices] IPayrollJobDispatcher jobDispatcher, CancellationToken ct)
+    public async Task<IActionResult> RegeneratePayslips(Guid id, CancellationToken ct)
     {
         try
         {
-            PayrollRunSummaryDto run = await sender.Send(new GetPayrollRunSummaryQuery(id), ct);
-            if (run.Status != "Paid")
-                return UnprocessableEntity(new { error = "Payslips can only be regenerated for Paid runs." });
-
-            // TenantId extracted from JWT claims (sub/tenant_id)
-            string? tenantClaim = User.FindFirst("tenant_id")?.Value;
-            if (!Guid.TryParse(tenantClaim, out Guid tenantId))
-                return Unauthorized();
-
-            jobDispatcher.EnqueueGeneratePayslips(run.Id, tenantId);
+            await sender.Send(new RegeneratePayslipsCommand(id), ct);
             return Accepted();
         }
         catch (NotFoundException) { return NotFound(); }
+        catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
     }
 
     private Guid GetActorId()

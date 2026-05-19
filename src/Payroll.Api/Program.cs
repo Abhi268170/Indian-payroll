@@ -128,11 +128,16 @@ if (!isWorkerOnly)
     });
 
     // Forward real client IP from nginx — required for per-IP rate limiting to work
+    // Trust only loopback and Docker bridge (172.16-31.x/12) — not all proxies
     builder.Services.Configure<ForwardedHeadersOptions>(options =>
     {
         options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
         options.KnownNetworks.Clear();
         options.KnownProxies.Clear();
+        options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(
+            System.Net.IPAddress.Parse("127.0.0.1"), 8));
+        options.KnownNetworks.Add(new Microsoft.AspNetCore.HttpOverrides.IPNetwork(
+            System.Net.IPAddress.Parse("172.16.0.0"), 12));
     });
 
     builder.Services.AddCors(options =>

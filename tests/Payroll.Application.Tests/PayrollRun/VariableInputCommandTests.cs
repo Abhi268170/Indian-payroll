@@ -54,7 +54,7 @@ public class VariableInputCommandTests
     }
 
     [Fact]
-    public async Task SetLop_WhenLopGeqBaseDays_ThrowsInvalidOperation()
+    public async Task SetLop_WhenLopGeqSalaryDivisor_ThrowsInvalidOperation()
     {
         var run = CreateDraft();
         var payrunEmp = CreateActiveEmployee(baseDays: 31);
@@ -66,18 +66,26 @@ public class VariableInputCommandTests
         empRepo.GetByRunAndEmployeeAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(payrunEmp);
 
+        var scheduleRepo = Substitute.For<IPayScheduleRepository>();
+        var paySchedule = Domain.Entities.PaySchedule.Create(
+            WorkWeekDay.Monday | WorkWeekDay.Friday,
+            SalaryCalculationMethod.FixedDays, 26,
+            PayDateType.LastDay, null, null, null, ActorId);
+        scheduleRepo.GetAsync(Arg.Any<CancellationToken>()).Returns(paySchedule);
+
         var handler = new SetLopCommandHandler(
             runRepo, empRepo,
             Substitute.For<IPayrunComponentBreakdownRepository>(),
             Substitute.For<IEmployeeRepository>(),
             Substitute.For<IWorkLocationRepository>(),
-            Substitute.For<IPayScheduleRepository>(),
+            scheduleRepo,
             Substitute.For<IUnitOfWork>());
 
-        // lopDays = 31 >= baseDays = 31
-        Func<Task> act = () => handler.Handle(new SetLopCommand(RunId, EmpId, 31, ActorId), CancellationToken.None);
+        // lopDays = 26 >= salaryDivisor = 26 (FixedDays/26)
+        Func<Task> act = () => handler.Handle(new SetLopCommand(RunId, EmpId, 26, ActorId), CancellationToken.None);
 
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*salary divisor*");
     }
 
     // ── OverrideTds ──────────────────────────────────────────────────────────

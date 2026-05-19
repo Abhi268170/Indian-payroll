@@ -22,7 +22,8 @@ public sealed class ApprovePayrollRunHandler(
     IPayScheduleRepository payScheduleRepo,
     ITdsWorksheetRepository tdsWorksheetRepo,
     IPayrollRunAuditLogRepository auditLogRepo,
-    IUnitOfWork uow)
+    IUnitOfWork uow,
+    ISender sender)
     : IRequestHandler<ApprovePayrollRunCommand>
 {
     public async Task Handle(ApprovePayrollRunCommand req, CancellationToken ct)
@@ -34,8 +35,7 @@ public sealed class ApprovePayrollRunHandler(
             throw new InvalidOperationException("Only a Draft payroll run can be approved.");
 
         // Guard: no hard blocks
-        var pendingHandler = new GetPendingTasksHandler(runRepo, payrunEmployeeRepo, employeeRepo);
-        var pending = await pendingHandler.Handle(new GetPendingTasksQuery(req.RunId), ct);
+        var pending = await sender.Send(new GetPendingTasksQuery(req.RunId), ct);
         if (pending.HasAnyHardBlocks)
             throw new PayrollRunHasBlockingTasksException(pending.HardBlocks.Count);
 
@@ -59,8 +59,8 @@ public sealed class ApprovePayrollRunHandler(
 
         foreach (var pe in activeEmployees)
         {
-            var employee = await employeeRepo.GetByIdAsync(pe.EmployeeId, ct);
-            if (employee is null) continue;
+            var employee = await employeeRepo.GetByIdAsync(pe.EmployeeId, ct)
+                ?? throw new InvalidOperationException($"Employee {pe.EmployeeId} in payroll run but not found in employees table.");
 
             var workLocation = await workLocationRepo.GetByIdAsync(employee.WorkLocationId, ct);
             string workStateCode = workLocation?.State.ToString() ?? "MH";

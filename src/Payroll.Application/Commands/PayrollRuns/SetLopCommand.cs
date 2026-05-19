@@ -48,9 +48,17 @@ public sealed class SetLopCommandHandler(
         if (payrunEmp.Status == PayrunEmployeeStatus.Skipped)
             throw new InvalidOperationException("Cannot set LOP for a skipped employee.");
 
-        // Domain guard — LOP must be < baseDays
-        if (req.LopDays >= payrunEmp.BaseDays)
-            throw new InvalidOperationException($"LOP days ({req.LopDays}) must be less than base days ({payrunEmp.BaseDays}).");
+        var paySchedule = await payScheduleRepo.GetAsync(ct)
+            ?? throw new DomainException("Pay Schedule not configured.");
+        EngineWorkWeekDay workWeek = (EngineWorkWeekDay)(int)paySchedule.WorkWeekDays;
+        EngineSalaryCalculationMethod engineCalcMethod = paySchedule.SalaryCalculationMethod == SalaryCalculationMethod.ActualDays
+            ? EngineSalaryCalculationMethod.ActualDays
+            : EngineSalaryCalculationMethod.FixedDays;
+        int salaryDivisor = PayScheduleHelpers.GetDivisor(engineCalcMethod, paySchedule.FixedWorkingDaysPerMonth, run.PayPeriod.Year, run.PayPeriod.Month);
+
+        // Guard — LOP must not exceed the salary divisor to prevent negative net pay
+        if (req.LopDays >= salaryDivisor)
+            throw new InvalidOperationException($"LOP days ({req.LopDays}) must be less than the salary divisor ({salaryDivisor}).");
 
         payrunEmp.SetLop(req.LopDays, req.ActorId);
 
@@ -65,14 +73,6 @@ public sealed class SetLopCommandHandler(
         if (run.StatutoryConfigSnapshot is null)
             throw new InvalidOperationException("Payroll run is missing statutory config snapshot.");
         var staticConfig = JsonSerializer.Deserialize<StatutoryConfig>(run.StatutoryConfigSnapshot)!;
-
-        var paySchedule = await payScheduleRepo.GetAsync(ct)
-            ?? throw new DomainException("Pay Schedule not configured.");
-        EngineWorkWeekDay workWeek = (EngineWorkWeekDay)(int)paySchedule.WorkWeekDays;
-        EngineSalaryCalculationMethod engineCalcMethod = paySchedule.SalaryCalculationMethod == SalaryCalculationMethod.ActualDays
-            ? EngineSalaryCalculationMethod.ActualDays
-            : EngineSalaryCalculationMethod.FixedDays;
-        int salaryDivisor = PayScheduleHelpers.GetDivisor(engineCalcMethod, paySchedule.FixedWorkingDaysPerMonth, run.PayPeriod.Year, run.PayPeriod.Month);
 
         PayrollResult result = RecomputeEmployee(employee, workStateCode, payrunEmp, breakdowns, run, staticConfig, salaryDivisor);
 
