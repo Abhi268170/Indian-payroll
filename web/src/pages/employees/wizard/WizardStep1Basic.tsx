@@ -6,6 +6,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import type { DepartmentDto, DesignationDto, CreateEmployeeRequest } from '@/types/api'
 import type { WorkLocation } from '@/pages/settings/WorkLocationsPage'
+import type { BusinessUnit } from '@/pages/settings/BusinessUnitsPage'
 import InlineCreateModal from './InlineCreateModal'
 
 const schema = z.object({
@@ -24,6 +25,7 @@ const schema = z.object({
   departmentId: z.string().min(1, 'Required'),
   designationId: z.string().min(1, 'Required'),
   workLocationId: z.string().min(1, 'Required'),
+  businessUnitId: z.string().optional(),
 })
 type FormValues = z.infer<typeof schema>
 
@@ -39,6 +41,7 @@ interface Props {
 export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.ReactElement {
   const [showNewDept, setShowNewDept] = useState(false)
   const [showNewDesig, setShowNewDesig] = useState(false)
+  const [showNewBU, setShowNewBU] = useState(false)
 
   const { data: departments = [], refetch: refetchDepts } = useQuery<DepartmentDto[]>({
     queryKey: ['departments'],
@@ -51,6 +54,10 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
   const { data: workLocations = [] } = useQuery<WorkLocation[]>({
     queryKey: ['work-locations'],
     queryFn: () => api.get<WorkLocation[]>('/api/v1/work-locations').then(r => r.data),
+  })
+  const { data: businessUnits = [], refetch: refetchBUs } = useQuery<BusinessUnit[]>({
+    queryKey: ['business-units'],
+    queryFn: () => api.get<BusinessUnit[]>('/api/v1/business-units').then(r => r.data),
   })
 
   const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<FormValues>({
@@ -87,6 +94,7 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
       departmentId: v.departmentId,
       designationId: v.designationId,
       workLocationId: v.workLocationId,
+      businessUnitId: v.businessUnitId || undefined,
     })
   }
 
@@ -181,7 +189,7 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
         </div>
 
         {/* Org */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="block text-[12px] font-medium text-[var(--color-text-secondary)]">
@@ -227,6 +235,24 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
               {workLocations.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
             </select>
             {errors.workLocationId && <p className={errCls}>{errors.workLocationId.message}</p>}
+          </div>
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-[12px] font-medium text-[var(--color-text-secondary)]">
+                Business Unit
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowNewBU(true)}
+                className="text-[11px] text-[var(--color-primary)] hover:underline"
+              >
+                + New
+              </button>
+            </div>
+            <select {...register('businessUnitId')} className={inputCls}>
+              <option value="">None</option>
+              {businessUnits.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+            </select>
           </div>
         </div>
 
@@ -304,6 +330,26 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
             setShowNewDesig(false)
           }}
           onClose={() => setShowNewDesig(false)}
+        />
+      )}
+
+      {showNewBU && (
+        <InlineCreateModal
+          title="New Business Unit"
+          fields={[
+            { name: 'name', label: 'Business Unit Name', required: true },
+            { name: 'description', label: 'Description', required: false },
+          ]}
+          onSave={async (values) => {
+            const res = await api.post<{ id: string }>('/api/v1/business-units', {
+              name: values.name,
+              description: values.description || null,
+            })
+            await refetchBUs()
+            setValue('businessUnitId', res.data.id)
+            setShowNewBU(false)
+          }}
+          onClose={() => setShowNewBU(false)}
         />
       )}
     </>
