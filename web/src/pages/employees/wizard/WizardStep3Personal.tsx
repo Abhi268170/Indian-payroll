@@ -20,10 +20,12 @@ const INDIAN_STATES = [
 ]
 
 const PAN_REGEX = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/
+const AADHAAR_REGEX = /^\d{12}$/
 
 const schema = z.object({
   fathersName: z.string().min(1, 'Required').max(150),
   pan: z.string().regex(PAN_REGEX, 'Invalid PAN format (e.g. ABCPM1234A)').optional().or(z.literal('')),
+  aadhaar: z.string().regex(AADHAAR_REGEX, 'Must be 12 digits').optional().or(z.literal('')),
   personalEmail: z.string().email('Invalid email').optional().or(z.literal('')),
   differentlyAbledType: z.enum(['None', 'Visual', 'Hearing', 'Locomotive', 'Other']),
   isPWD: z.boolean(),
@@ -49,6 +51,7 @@ export default function WizardStep3Personal({ employeeId, onSuccess, onSkip }: P
     mutationFn: (v: FormValues) => api.put(`/api/v1/employees/${employeeId}/personal-details`, {
       fathersName: v.fathersName,
       pan: v.pan || null,
+      aadhaar: v.aadhaar || null,
       personalEmail: v.personalEmail || null,
       differentlyAbledType: v.differentlyAbledType,
       isPWD: v.isPWD,
@@ -79,6 +82,21 @@ export default function WizardStep3Personal({ employeeId, onSuccess, onSkip }: P
           />
           <p className="mt-1 text-[11px] text-[var(--color-text-secondary)]">Required for TDS computation and Form 16</p>
           {errors.pan && <p className={errCls}>{errors.pan.message}</p>}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className={labelCls}>Aadhaar Number</label>
+          <input
+            {...register('aadhaar')}
+            className={`${inputCls} font-mono`}
+            placeholder="12-digit Aadhaar number"
+            maxLength={12}
+            inputMode="numeric"
+          />
+          <p className="mt-1 text-[11px] text-[var(--color-text-secondary)]">Stored encrypted. Masked as XXXX-XXXX-1234 in all views.</p>
+          {errors.aadhaar && <p className={errCls}>{errors.aadhaar.message}</p>}
         </div>
       </div>
 

@@ -39,6 +39,13 @@ public sealed class GetEmployeeHandler(
             maskedPAN = plain.Length >= 4 ? $"XXXXX{plain[^4..]}" : "XXXXXXXXXX";
         }
 
+        string? maskedAadhaar = null;
+        if (employee.EncryptedAadhaar is not null)
+        {
+            string plain = enc.Decrypt(employee.EncryptedAadhaar);
+            maskedAadhaar = plain.Length == 12 ? $"XXXX-XXXX-{plain[^4..]}" : "XXXX-XXXX-XXXX";
+        }
+
         return new EmployeeDto(
             employee.Id,
             employee.EmployeeCode,
@@ -84,6 +91,7 @@ public sealed class GetEmployeeHandler(
             employee.PtEnabled,
             employee.LwfEnabled,
             employee.IsPWD,
-            maskedPAN);
+            maskedPAN,
+            maskedAadhaar);
     }
 }

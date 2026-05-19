@@ -62,6 +62,7 @@ export interface EmployeeDto {
   lwfEnabled: boolean
   isPWD: boolean
   maskedPAN: string | null
+  maskedAadhaar: string | null
 }
 
 export interface EmployeeListItemDto {

@@ -106,8 +106,8 @@ public sealed class EmployeesController(ISender sender) : ControllerBase
         try
         {
             await sender.Send(new UpdatePersonalDetailsCommand(
-                id, req.DateOfBirth, req.FathersName, req.PAN, req.PersonalEmail,
-                req.DifferentlyAbledType, req.AddressLine1, req.AddressLine2,
+                id, req.DateOfBirth, req.FathersName, req.PAN, req.Aadhaar,
+                req.PersonalEmail, req.DifferentlyAbledType, req.AddressLine1, req.AddressLine2,
                 req.City, req.ResidentialState, req.PinCode, GetActorId()), ct);
             return NoContent();
         }
@@ -226,6 +226,7 @@ public record UpdatePersonalDetailsRequest(
     string? DateOfBirth,
     string? FathersName,
     string? PAN,
+    string? Aadhaar,
     string? PersonalEmail,
     string DifferentlyAbledType,
     string? AddressLine1,

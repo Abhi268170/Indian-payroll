@@ -141,6 +141,7 @@ public sealed class Employee : AuditableEntity
         DateOnly dateOfBirth,
         string? fathersName,
         string? encryptedPAN,
+        string? encryptedAadhaar,
         string? personalEmail,
         DifferentlyAbledType differentlyAbledType,
         string? addressLine1,
@@ -153,6 +154,8 @@ public sealed class Employee : AuditableEntity
         DateOfBirth = dateOfBirth;
         FathersName = fathersName;
         EncryptedPAN = encryptedPAN;
+        if (encryptedAadhaar is not null)
+            EncryptedAadhaar = encryptedAadhaar;
         PersonalEmail = personalEmail;
         DifferentlyAbledType = differentlyAbledType;
         AddressLine1 = addressLine1;

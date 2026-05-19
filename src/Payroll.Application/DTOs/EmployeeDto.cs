@@ -48,7 +48,8 @@ public record EmployeeDto(
     bool PtEnabled,
     bool LwfEnabled,
     bool IsPWD,
-    string? MaskedPAN
+    string? MaskedPAN,
+    string? MaskedAadhaar
 );
 
 public record EmployeeListItemDto(
