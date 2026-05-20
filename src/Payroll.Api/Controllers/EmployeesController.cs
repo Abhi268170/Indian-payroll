@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Payroll.Application.Commands.Employees;
 using Payroll.Application.DTOs;
 using Payroll.Application.Queries.Employees;
+using Payroll.Application.Queries.Payslips;
 using Payroll.Domain.Common;
 using Payroll.Domain.Interfaces;
 
@@ -160,6 +161,10 @@ public sealed class EmployeesController(ISender sender) : ControllerBase
             return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });
         }
     }
+
+    [HttpGet("{id:guid}/payslips")]
+    public async Task<IActionResult> GetPayslips(Guid id, CancellationToken ct)
+        => Ok(await sender.Send(new GetEmployeePayslipsQuery(id), ct));
 
     [HttpGet("{id:guid}/salary-structure")]
     public async Task<IActionResult> GetSalaryStructure(Guid id, CancellationToken ct)

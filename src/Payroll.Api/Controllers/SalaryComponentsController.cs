@@ -45,6 +45,13 @@ public sealed class SalaryComponentsController(ISender sender) : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("active-benefits")]
+    public async Task<IActionResult> ActiveBenefits(CancellationToken ct)
+    {
+        List<SalaryComponentSummaryDto> result = await sender.Send(new ListActiveBenefitsQuery(), ct);
+        return Ok(result);
+    }
+
     [HttpPost("earnings")]
     public async Task<IActionResult> CreateEarning(
         [FromBody] CreateEarningRequest req, CancellationToken ct)

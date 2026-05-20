@@ -86,7 +86,7 @@ export async function getToken(
     password,
     client_id: 'payroll-api',
     client_secret: import.meta.env['VITE_CLIENT_SECRET'] ?? 'dev-client-secret-2024',
-    scope: 'openid profile email offline_access payroll.api',
+    scope: 'profile email roles offline_access payroll.api',
   })
   const resp = await axios.post(`${API_BASE}/connect/token`, params)
   return {

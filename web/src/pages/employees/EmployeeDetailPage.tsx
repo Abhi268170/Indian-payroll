@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowLeft, AlertCircle } from 'lucide-react'
 import { api } from '@/lib/api'
 import type { EmployeeDto } from '@/types/api'
 import EmployeeOverviewTab from './tabs/EmployeeOverviewTab'
 import EmployeeSalaryTab from './tabs/EmployeeSalaryTab'
+import EmployeePayslipsTab from './tabs/EmployeePayslipsTab'
 
 type Tab = 'overview' | 'salary' | 'investments' | 'payslips'
 
@@ -44,7 +45,11 @@ function ComingSoon(): React.ReactElement {
 export default function EmployeeDetailPage(): React.ReactElement {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const [tab, setTab] = useState<Tab>('overview')
+  const [searchParams] = useSearchParams()
+  const [tab, setTab] = useState<Tab>(() => {
+    const t = searchParams.get('tab')
+    return (t === 'salary' || t === 'investments' || t === 'payslips') ? t : 'overview'
+  })
 
   const { data: employee, isLoading, error, refetch } = useQuery<EmployeeDto>({
     queryKey: ['employee', id],
@@ -136,7 +141,7 @@ export default function EmployeeDetailPage(): React.ReactElement {
         {tab === 'overview' && <EmployeeOverviewTab employee={employee} onSaved={() => void refetch()} />}
         {tab === 'salary' && <EmployeeSalaryTab employeeId={employee.id} />}
         {tab === 'investments' && <ComingSoon />}
-        {tab === 'payslips' && <ComingSoon />}
+        {tab === 'payslips' && <EmployeePayslipsTab employeeId={employee.id} />}
       </div>
     </div>
   )

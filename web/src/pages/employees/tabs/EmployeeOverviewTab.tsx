@@ -468,7 +468,7 @@ const statutorySchema = z.object({
   esiEnabled: z.boolean(),
   ptEnabled: z.boolean(),
   lwfEnabled: z.boolean(),
-  uan: z.string().max(20).optional(),
+  uan: z.string().regex(/^\d{12}$/, 'UAN must be exactly 12 digits').or(z.literal('')).optional(),
   esicipNumber: z.string().max(20).optional(),
 })
 type StatutoryValues = z.infer<typeof statutorySchema>
@@ -476,7 +476,7 @@ type StatutoryValues = z.infer<typeof statutorySchema>
 function StatutorySection({ employee, onSaved }: Props): React.ReactElement {
   const [editing, setEditing] = useState(false)
 
-  const { register, handleSubmit, reset, formState: { isDirty } } = useForm<StatutoryValues>({
+  const { register, handleSubmit, reset, formState: { isDirty, errors } } = useForm<StatutoryValues>({
     resolver: zodResolver(statutorySchema),
     defaultValues: {
       epfEnabled: employee.epfEnabled,
@@ -498,6 +498,7 @@ function StatutorySection({ employee, onSaved }: Props): React.ReactElement {
       esicipNumber: v.esicipNumber || null,
     }),
     onSuccess: () => { setEditing(false); onSaved() },
+    onError: () => { /* error shown via save.isError */ },
   })
 
   function cancel(): void { reset(); setEditing(false); save.reset() }
@@ -548,11 +549,13 @@ function StatutorySection({ employee, onSaved }: Props): React.ReactElement {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={fieldLabelCls}>UAN</label>
-              <input {...register('uan')} className={inputCls} placeholder="Universal Account Number" />
+              <input {...register('uan')} className={inputCls} placeholder="12-digit UAN" />
+              {errors.uan && <p className={errCls}>{errors.uan.message}</p>}
             </div>
             <div>
               <label className={fieldLabelCls}>ESIC IP Number</label>
               <input {...register('esicipNumber')} className={inputCls} />
+              {errors.esicipNumber && <p className={errCls}>{errors.esicipNumber.message}</p>}
             </div>
           </div>
 

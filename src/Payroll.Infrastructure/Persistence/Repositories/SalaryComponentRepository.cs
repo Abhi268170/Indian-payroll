@@ -35,6 +35,15 @@ internal sealed class SalaryComponentRepository(PayrollDbContext db) : ISalaryCo
           .OrderBy(c => c.Name)
           .ToListAsync(ct);
 
+    public Task<List<SalaryComponent>> ListActiveBenefitsAsync(
+        Guid tenantId, CancellationToken ct = default) =>
+        db.SalaryComponents
+          .Where(c => c.TenantId == tenantId
+                   && c.Category == ComponentCategory.Benefit
+                   && c.IsActive)
+          .OrderBy(c => c.Name)
+          .ToListAsync(ct);
+
     public async Task AddAsync(SalaryComponent component, CancellationToken ct = default) =>
         await db.SalaryComponents.AddAsync(component, ct);
 
