@@ -39,10 +39,13 @@ public sealed class SeedDataService(
             .GetRequiredService<UserManager<ApplicationUser>>();
         IOpenIddictApplicationManager appManager = scope.ServiceProvider
             .GetRequiredService<IOpenIddictApplicationManager>();
+        IOpenIddictScopeManager scopeManager = scope.ServiceProvider
+            .GetRequiredService<IOpenIddictScopeManager>();
 
         await SeedRolesAsync(roleManager, cancellationToken);
         await SeedSuperAdminAsync(userManager, superAdminEmail, superAdminPassword, cancellationToken);
         await SeedOpenIddictClientAsync(appManager, clientSecret, cancellationToken);
+        await SeedOpenIddictScopesAsync(scopeManager, cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
@@ -132,5 +135,23 @@ public sealed class SeedDataService(
         }, cancellationToken);
 
         logger.LogInformation("Created OpenIddict client 'payroll-api'");
+    }
+
+    private async Task SeedOpenIddictScopesAsync(
+        IOpenIddictScopeManager scopeManager,
+        CancellationToken cancellationToken)
+    {
+        string[][] scopes = [["payroll.api", "Payroll API"], ["roles", "User Roles"]];
+        foreach (string[] s in scopes)
+        {
+            if (await scopeManager.FindByNameAsync(s[0], cancellationToken) is not null)
+                continue;
+            await scopeManager.CreateAsync(new OpenIddictScopeDescriptor
+            {
+                Name = s[0],
+                DisplayName = s[1],
+            }, cancellationToken);
+            logger.LogInformation("Created OpenIddict scope '{Scope}'", s[0]);
+        }
     }
 }
