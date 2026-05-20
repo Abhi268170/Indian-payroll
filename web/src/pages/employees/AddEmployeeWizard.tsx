@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import WizardProgress from './wizard/WizardProgress'
 import WizardStep1Basic from './wizard/WizardStep1Basic'
 import WizardStep2Salary from './wizard/WizardStep2Salary'
@@ -14,6 +14,8 @@ const STEP_LABELS: Record<string, number> = {
 export default function AddEmployeeWizard(): React.ReactElement {
   const navigate = useNavigate()
   const { id, step } = useParams<{ id?: string; step?: string }>()
+  const [searchParams] = useSearchParams()
+  const isRevise = searchParams.get('revise') === '1'
 
   const currentStep = step ? (STEP_LABELS[step] ?? 1) : 1
 
@@ -30,15 +32,19 @@ export default function AddEmployeeWizard(): React.ReactElement {
     <div className="max-w-3xl">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-[18px] font-semibold text-[var(--color-text-primary)]">Add Employee</h1>
+        <h1 className="text-[18px] font-semibold text-[var(--color-text-primary)]">
+          {isRevise ? 'Revise Salary' : 'Add Employee'}
+        </h1>
         <p className="text-[12px] text-[var(--color-text-secondary)] mt-0.5">
-          {currentStep < 4
-            ? 'Complete all steps or skip individual sections — you can fill details from the employee profile later.'
-            : 'Almost done — add payment details or skip to finish.'}
+          {isRevise
+            ? 'Update CTC, template, or component values. Changes apply from the next payroll run.'
+            : currentStep < 4
+              ? 'Complete all steps or skip individual sections — you can fill details from the employee profile later.'
+              : 'Almost done — add payment details or skip to finish.'}
         </p>
       </div>
 
-      <WizardProgress current={currentStep} />
+      {!isRevise && <WizardProgress current={currentStep} />}
 
       <div className="bg-white border border-[var(--color-border)] rounded-xl p-6">
         {currentStep === 1 && (
@@ -50,7 +56,8 @@ export default function AddEmployeeWizard(): React.ReactElement {
         {currentStep === 2 && id && (
           <WizardStep2Salary
             employeeId={id}
-            onSuccess={() => goToStep(id, 3)}
+            isRevise={isRevise}
+            onSuccess={() => isRevise ? navigate(`/employees/${id}?tab=salary`) : goToStep(id, 3)}
             onSkip={() => goToStep(id, 3)}
           />
         )}
