@@ -155,6 +155,7 @@ function ReviseModal({
                 >
                   <option value="Monthly">Monthly</option>
                   <option value="HalfYearly">Half-Yearly</option>
+                  <option value="HalfYearlySplit">Half-Yearly Split (Kerala model)</option>
                   <option value="Annual">Annual</option>
                 </select>
               </div>
