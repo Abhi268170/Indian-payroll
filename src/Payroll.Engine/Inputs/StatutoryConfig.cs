@@ -8,14 +8,10 @@ public sealed record StatutoryConfig(
     decimal Rebate87ALimit,
     decimal Rebate87AAmount,
     decimal CessRate,
-    decimal PFWageCap,           // EPS/EDLI statutory ceiling (₹15,000) — always applies
+    decimal PFWageCap,
     decimal EPFEmployeeRate,
     decimal EPSEmployerRate,
     decimal EPSCap,
-    decimal EDLIEmployerRate,
-    decimal EDLICap,
-    decimal EPFAdminRate,
-    decimal EPFAdminMinimum,
     bool EpfRestrictEmployerWage,    // true = cap employer wage at PFWageCap; false = use actual
     bool EpfConsiderSalaryOnLop,     // true = use LOP-reduced PF wage; false = use full structure
     bool EpfProRateRestrictedPfWage, // true = pro-rate PFWageCap by paid days when restricted
@@ -27,7 +23,9 @@ public sealed record StatutoryConfig(
     IReadOnlyList<LwfStateInput> LWFStates,
     bool PFEnabled,
     bool ESIEnabled,
-    bool PTEnabled
+    bool PTEnabled,
+    bool EpfIncludeEmployerInCtc,
+    bool GratuityIncludedInCtc
 );
 
 public sealed record TaxSlab(

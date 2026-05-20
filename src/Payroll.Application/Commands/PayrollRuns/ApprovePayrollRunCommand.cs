@@ -1,5 +1,6 @@
 using MediatR;
 using Payroll.Application.Commands.PayrollRuns;
+using Payroll.Application.Interfaces;
 using Payroll.Application.Queries.PayrollRuns;
 using Payroll.Domain.Common;
 using Payroll.Domain.Entities;
@@ -23,7 +24,8 @@ public sealed class ApprovePayrollRunHandler(
     ITdsWorksheetRepository tdsWorksheetRepo,
     IPayrollRunAuditLogRepository auditLogRepo,
     IUnitOfWork uow,
-    ISender sender)
+    ISender sender,
+    IPayrollJobDispatcher jobDispatcher)
     : IRequestHandler<ApprovePayrollRunCommand>
 {
     public async Task Handle(ApprovePayrollRunCommand req, CancellationToken ct)
@@ -94,11 +96,10 @@ public sealed class ApprovePayrollRunHandler(
         }
 
         run.UpdateFinancialSummary(
-            payrollCost: activeEmployees.Sum(e => e.GrossPay + e.EmployerPf + e.EmployerEsi + e.EdliAmount),
+            payrollCost: activeEmployees.Sum(e => e.GrossPay + e.EmployerPf + e.EmployerEsi),
             totalNetPay: activeEmployees.Sum(e => e.NetPay),
             totalEmployerPf: activeEmployees.Sum(e => e.EmployerPf),
             totalEmployerEsi: activeEmployees.Sum(e => e.EmployerEsi),
-            totalEdli: activeEmployees.Sum(e => e.EdliAmount),
             totalTds: activeEmployees.Sum(e => e.TdsAmount),
             totalPt: activeEmployees.Sum(e => e.PtAmount),
             employeeCount: activeEmployees.Count,
@@ -112,5 +113,7 @@ public sealed class ApprovePayrollRunHandler(
         await auditLogRepo.AddAsync(auditEntry, ct);
 
         await uow.SaveChangesAsync(ct);
+
+        jobDispatcher.EnqueueGeneratePayslips(req.RunId, run.TenantId);
     }
 }

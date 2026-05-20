@@ -7,8 +7,6 @@ public sealed record StatutoryConfigDto(
     string EpfEmployeeContributionRate,
     string EpfEmployerContributionRate,
     bool EpfIncludeEmployerInCtc,
-    bool EpfIncludeEdliInCtc,
-    bool EpfIncludeAdminInCtc,
     bool EpfOverrideAtEmployeeLevel,
     bool EpfProRateRestrictedPfWage,
     bool EpfConsiderSalaryOnLop,

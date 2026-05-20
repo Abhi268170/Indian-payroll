@@ -120,21 +120,21 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
         AddEarning("MEDICALALLOWANCE", "Medical Allowance", "Medical Allowance",
             Domain.Enums.EarningType.MedicalAllowance, Domain.Enums.PayType.Monthly,
             Domain.Enums.ComponentFormulaType.PercentOfBasic, null, 10.67m,
-            taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
+            taxable: true, epf: false, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
             proRata: true, showInPayslip: true);
 
         // 4. Attire Expenses — 10.67% of Basic, EPF if<15k, ESI yes
         AddEarning("ATTIREEXPENSES", "Attire Expenses", "Attire Expenses",
             Domain.Enums.EarningType.AttireExpenses, Domain.Enums.PayType.Monthly,
             Domain.Enums.ComponentFormulaType.PercentOfBasic, null, 10.67m,
-            taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
+            taxable: true, epf: false, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
             proRata: true, showInPayslip: true);
 
         // 5. Professional Pursuit Expenses — 10.67% of Basic, EPF if<15k, ESI yes
         AddEarning("PROFPURSUITEXPENSES", "Prof. Pursuit Expenses", "Prof. Pursuit Expenses",
             Domain.Enums.EarningType.ProfessionalPursuitExpenses, Domain.Enums.PayType.Monthly,
             Domain.Enums.ComponentFormulaType.PercentOfBasic, null, 10.67m,
-            taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
+            taxable: true, epf: false, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
             proRata: true, showInPayslip: true);
 
         // 6. Leave Travel Allowance — 22.67% of Basic, EPF no, ESI yes
@@ -148,7 +148,7 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
         AddEarning("CONVEYANCEALLOWANCE", "Conveyance Allowance", "Conveyance Allowance",
             Domain.Enums.EarningType.ConveyanceAllowance, Domain.Enums.PayType.Monthly,
             Domain.Enums.ComponentFormulaType.Fixed, 1600m, null,
-            taxable: true, epf: true, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
+            taxable: true, epf: false, Domain.Enums.EpfInclusionRule.OnlyWhenPfWageBelowLimit, esi: true,
             proRata: true, showInPayslip: true);
 
         // 8. Statutory Bonus — flat ₹1,750/month, EPF no, ESI yes
@@ -338,27 +338,32 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
                 Payroll.Domain.Entities.LwfStateConfig.Create("MP", eff, 10m, 10m,  false, null, null, null, null, "Monthly",   null, null, 10000m, sys),
                 Payroll.Domain.Entities.LwfStateConfig.Create("CH", eff, 25m, 25m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
                 Payroll.Domain.Entities.LwfStateConfig.Create("HR", eff, 0m,  0m,   true,  0.002m, 0.002m, 25m, 25m, "Monthly", null, null, 25000m, sys),
-                Payroll.Domain.Entities.LwfStateConfig.Create("KL", eff, 50m, 50m,  false, null, null, null, null, "Monthly",   null, null, null,   sys));
+                Payroll.Domain.Entities.LwfStateConfig.Create("KL", eff, 50m, 0m,   false, null, null, null, null, "Monthly",    null, null, null,   sys));
 
-            // Income Tax — FY2025-26, New Regime
-            db.IncomeTaxSlabs.AddRange(
-                Payroll.Domain.Entities.IncomeTaxSlab.Create("2025-26", "New", 0m,       400000m,    0m,     sys),
-                Payroll.Domain.Entities.IncomeTaxSlab.Create("2025-26", "New", 400000m,  800000m,    0.05m,  sys),
-                Payroll.Domain.Entities.IncomeTaxSlab.Create("2025-26", "New", 800000m,  1200000m,   0.10m,  sys),
-                Payroll.Domain.Entities.IncomeTaxSlab.Create("2025-26", "New", 1200000m, 1600000m,   0.15m,  sys),
-                Payroll.Domain.Entities.IncomeTaxSlab.Create("2025-26", "New", 1600000m, 2000000m,   0.20m,  sys),
-                Payroll.Domain.Entities.IncomeTaxSlab.Create("2025-26", "New", 2000000m, 2400000m,   0.25m,  sys),
-                Payroll.Domain.Entities.IncomeTaxSlab.Create("2025-26", "New", 2400000m, null,       0.30m,  sys));
+            // Income Tax — FY2026-27 (key="2027") and FY2025-26 (key="2026"), New Regime.
+            // Key format: FiscalYearLabel.Replace("FY","") — e.g. April 2026 → FY2027 → "2027".
+            // Same Budget-2025 slabs apply to both fiscal years.
+            string[] fyKeys = ["2026", "2027"];
+            foreach (string fy in fyKeys)
+            {
+                db.IncomeTaxSlabs.AddRange(
+                    Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 0m,       400000m,    0m,     sys),
+                    Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 400000m,  800000m,    0.05m,  sys),
+                    Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 800000m,  1200000m,   0.10m,  sys),
+                    Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 1200000m, 1600000m,   0.15m,  sys),
+                    Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 1600000m, 2000000m,   0.20m,  sys),
+                    Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 2000000m, 2400000m,   0.25m,  sys),
+                    Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 2400000m, null,       0.30m,  sys));
 
-            db.IncomeTaxSurchargeSlabs.AddRange(
-                Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create("2025-26", "New", 5000000m,   10000000m, 0.10m, sys),
-                Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create("2025-26", "New", 10000000m,  20000000m, 0.15m, sys),
-                Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create("2025-26", "New", 20000000m,  50000000m, 0.25m, sys),
-                Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create("2025-26", "New", 50000000m,  null,      0.25m, sys));
+                db.IncomeTaxSurchargeSlabs.AddRange(
+                    Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create(fy, "New", 5000000m,   10000000m, 0.10m, sys),
+                    Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create(fy, "New", 10000000m,  20000000m, 0.15m, sys),
+                    Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create(fy, "New", 20000000m,  50000000m, 0.25m, sys),
+                    Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create(fy, "New", 50000000m,  null,      0.25m, sys));
 
-            db.IncomeTaxConfigs.Add(
-                Payroll.Domain.Entities.IncomeTaxConfig.Create(
-                    "2025-26", "New",
+                db.IncomeTaxConfigs.Add(
+                    Payroll.Domain.Entities.IncomeTaxConfig.Create(
+                        fy, "New",
                     standardDeduction: 75000m,
                     rebate87ALimit: 1200000m,
                     rebate87AAmount: 60000m,
@@ -369,15 +374,12 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
                     epfEmployeeRate: 0.12m,
                     epsEmployerRate: 0.0833m,
                     epsCap: 1250m,
-                    edliEmployerRate: 0.005m,
-                    edliCap: 75m,
-                    epfAdminRate: 0.005m,
-                    epfAdminMinimum: 500m,
                     esiWageLimit: 21000m,
                     esiPwdWageLimit: 25000m,
                     esiEmployeeRate: 0.0075m,
                     esiEmployerRate: 0.0325m,
                     createdBy: sys));
+            }
 
             await db.SaveChangesAsync(ct);
         }

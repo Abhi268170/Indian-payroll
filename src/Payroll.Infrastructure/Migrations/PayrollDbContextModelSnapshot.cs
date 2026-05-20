@@ -1712,6 +1712,30 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("numeric(18,2)")
                         .HasColumnName("edli_amount");
 
+                    b.Property<decimal>("LwfEmployeeAmount")
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("lwf_employee_amount");
+
+                    b.Property<decimal>("LwfEmployerAmount")
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("lwf_employer_amount");
+
+                    b.Property<decimal>("GratuityAmount")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("gratuity_amount");
+
+                    b.Property<decimal>("EpsAmount")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("eps_amount");
+
+                    b.Property<decimal>("AdminAmount")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("admin_amount");
+
+                    b.Property<decimal>("MonthlyCTC")
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("monthly_ctc");
+
                     b.Property<decimal>("EmployeeEsi")
                         .HasColumnType("numeric(18,2)")
                         .HasColumnName("employee_esi");
@@ -2641,6 +2665,11 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.Property<bool>("EsiNotifiedArea")
                         .HasColumnType("boolean")
                         .HasColumnName("esi_notified_area");
+
+                    b.Property<bool>("GratuityIncludedInCtc")
+                        .HasDefaultValue(true)
+                        .HasColumnType("boolean")
+                        .HasColumnName("gratuity_included_in_ctc");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean")

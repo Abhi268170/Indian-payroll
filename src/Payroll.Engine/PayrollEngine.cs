@@ -35,6 +35,8 @@ public static class PayrollEngine
             config,
             run.MonthsRemainingInFY);
 
+        GratuityResult gratuity = GratuityCalculator.Compute(emp.BasicWage, emp.GratuityEnabled);
+
         decimal netPay = gross.GrossWage
             - tds.MonthlyTDS
             - pf.EmployeeContribution
@@ -43,6 +45,6 @@ public static class PayrollEngine
             - pt.Amount
             - lwf.EmployeeAmount;
 
-        return new PayrollResult(emp.EmployeeId, gross, tds, pf, esi, pt, lwf, netPay);
+        return new PayrollResult(emp.EmployeeId, gross, tds, pf, esi, pt, lwf, netPay, gratuity);
     }
 }

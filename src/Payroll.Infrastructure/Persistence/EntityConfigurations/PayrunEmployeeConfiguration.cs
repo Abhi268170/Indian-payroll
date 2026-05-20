@@ -25,7 +25,11 @@ internal sealed class PayrunEmployeeConfiguration : IEntityTypeConfiguration<Pay
         builder.Property(e => e.EmployerEsi).HasColumnType("numeric(18,2)");
         builder.Property(e => e.PtAmount).HasColumnType("numeric(18,2)");
         builder.Property(e => e.TdsAmount).HasColumnType("numeric(18,2)");
-        builder.Property(e => e.EdliAmount).HasColumnType("numeric(18,2)");
+        builder.Property(e => e.LwfEmployeeAmount).HasColumnType("numeric(18,2)");
+        builder.Property(e => e.LwfEmployerAmount).HasColumnType("numeric(18,2)");
+        builder.Property(e => e.GratuityAmount).HasColumnType("numeric(18,4)");
+        builder.Property(e => e.EpsAmount).HasColumnType("numeric(18,4)");
+        builder.Property(e => e.MonthlyCTC).HasColumnType("numeric(18,2)");
         builder.Property(e => e.TdsOverrideAmount).HasColumnType("numeric(18,2)");
         builder.Property(e => e.TdsOverrideReason).HasMaxLength(2000);
         builder.Property(e => e.SkipReason).HasMaxLength(2000);

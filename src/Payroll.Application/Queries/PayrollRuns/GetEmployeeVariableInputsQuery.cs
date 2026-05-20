@@ -45,6 +45,16 @@ internal sealed class GetEmployeeVariableInputsHandler(
             TdsAmount: payrunEmp.TdsAmount,
             TdsOverrideAmount: payrunEmp.TdsOverrideAmount,
             TdsOverrideReason: payrunEmp.TdsOverrideReason,
+            EmployeePf: payrunEmp.EmployeePf,
+            EmployerPf: payrunEmp.EmployerPf,
+            EmployeeEsi: payrunEmp.EmployeeEsi,
+            EmployerEsi: payrunEmp.EmployerEsi,
+            PtAmount: payrunEmp.PtAmount,
+            LwfEmployeeAmount: payrunEmp.LwfEmployeeAmount,
+            LwfEmployerAmount: payrunEmp.LwfEmployerAmount,
+            GratuityAmount: payrunEmp.GratuityAmount,
+            EpsAmount: payrunEmp.EpsAmount,
+            MonthlyCTC: payrunEmp.MonthlyCTC,
             Components: components);
     }
 }

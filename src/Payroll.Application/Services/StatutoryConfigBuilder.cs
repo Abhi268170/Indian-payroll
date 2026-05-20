@@ -51,10 +51,6 @@ public static class StatutoryConfigBuilder
             EPFEmployeeRate: taxConfig?.EpfEmployeeRate ?? 0.12m,
             EPSEmployerRate: taxConfig?.EpsEmployerRate ?? 0.0833m,
             EPSCap: taxConfig?.EpsCap ?? 1_250m,
-            EDLIEmployerRate: taxConfig?.EdliEmployerRate ?? 0.005m,
-            EDLICap: taxConfig?.EdliCap ?? 75m,
-            EPFAdminRate: taxConfig?.EpfAdminRate ?? 0.005m,
-            EPFAdminMinimum: taxConfig?.EpfAdminMinimum ?? 500m,
             EpfRestrictEmployerWage: orgConfig.EpfEmployerContributionRate == "RestrictedWage12",
             EpfConsiderSalaryOnLop: orgConfig.EpfConsiderSalaryOnLop,
             EpfProRateRestrictedPfWage: orgConfig.EpfProRateRestrictedPfWage,
@@ -66,7 +62,9 @@ public static class StatutoryConfigBuilder
             LWFStates: lwfStates,
             PFEnabled: orgConfig.EpfEnabled,
             ESIEnabled: orgConfig.EsiEnabled,
-            PTEnabled: true
+            PTEnabled: true,
+            EpfIncludeEmployerInCtc: orgConfig.EpfIncludeEmployerInCtc,
+            GratuityIncludedInCtc: orgConfig.GratuityIncludedInCtc
         );
     }
 

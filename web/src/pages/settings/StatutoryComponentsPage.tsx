@@ -16,8 +16,6 @@ export interface StatutoryConfig {
   epfEmployeeContributionRate: string
   epfEmployerContributionRate: string
   epfIncludeEmployerInCtc: boolean
-  epfIncludeEdliInCtc: boolean
-  epfIncludeAdminInCtc: boolean
   epfOverrideAtEmployeeLevel: boolean
   epfProRateRestrictedPfWage: boolean
   epfConsiderSalaryOnLop: boolean

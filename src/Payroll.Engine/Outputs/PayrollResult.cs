@@ -8,4 +8,5 @@ public sealed record PayrollResult(
     ESIResult ESI,
     PTResult PT,
     LWFResult LWF,
-    decimal NetPay);
+    decimal NetPay,
+    GratuityResult Gratuity);

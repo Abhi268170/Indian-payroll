@@ -88,7 +88,11 @@ public sealed class SetLopCommandHandler(
             employerEsi: result.ESI.EmployerContribution,
             ptAmount: result.PT.Amount,
             tdsAmount: result.TDS.MonthlyTDS,
-            edliAmount: result.PF.EDLIEmployerContribution,
+            lwfEmployeeAmount: result.LWF.EmployeeAmount,
+            lwfEmployerAmount: result.LWF.EmployerAmount,
+            gratuityAmount: result.Gratuity.MonthlyAccrual,
+            epsAmount: result.PF.EPSEmployerContribution,
+            monthlyCTC: payrunEmp.MonthlyCTC,
             actorId: req.ActorId);
 
         // Update prorated amounts on salary component breakdowns
@@ -104,11 +108,10 @@ public sealed class SetLopCommandHandler(
         var allEmployees = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
         var activeEmployees = allEmployees.Where(e => e.Status == PayrunEmployeeStatus.Active).ToList();
         run.UpdateFinancialSummary(
-            payrollCost: activeEmployees.Sum(e => e.GrossPay + e.EmployerPf + e.EmployerEsi + e.EdliAmount),
+            payrollCost: activeEmployees.Sum(e => e.GrossPay + e.EmployerPf + e.EmployerEsi),
             totalNetPay: activeEmployees.Sum(e => e.NetPay),
             totalEmployerPf: activeEmployees.Sum(e => e.EmployerPf),
             totalEmployerEsi: activeEmployees.Sum(e => e.EmployerEsi),
-            totalEdli: activeEmployees.Sum(e => e.EdliAmount),
             totalTds: activeEmployees.Sum(e => e.TdsAmount),
             totalPt: activeEmployees.Sum(e => e.PtAmount),
             employeeCount: activeEmployees.Count,
@@ -133,6 +136,9 @@ public sealed class SetLopCommandHandler(
             .Select(b => new SalaryComponentInput(b.SalaryComponentId ?? Guid.Empty, b.ComponentCode, b.FullAmount, IsTaxable: true, ConsiderForEpf: b.ConsiderForEpf))
             .ToList();
 
+        decimal basicWage = breakdowns
+            .FirstOrDefault(b => b.ComponentCode == "BASICSALARY")?.FullAmount ?? 0m;
+
         var (hyIndex, hyTotal) = run.PayPeriod.HalfYearPosition(employee.DateOfJoining);
         var empInput = new EmployeeInput(
             EmployeeId: employee.Id,
@@ -150,7 +156,8 @@ public sealed class SetLopCommandHandler(
             PriorEmployerYTDTDSDeducted: 0m,
             PriorEmployerYTDPF: 0m,
             HalfYearMonthIndex: hyIndex,
-            HalfYearTotalMonths: hyTotal);
+            HalfYearTotalMonths: hyTotal,
+            BasicWage: basicWage);
 
         var runInput = new PayrollRunInput(
             Year: run.PayPeriod.Year,

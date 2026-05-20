@@ -18,7 +18,6 @@ public sealed class PayrollRun : AuditableEntity
     public decimal TotalNetPay { get; private set; }
     public decimal TotalEmployerPf { get; private set; }
     public decimal TotalEmployerEsi { get; private set; }
-    public decimal TotalEdli { get; private set; }
     public decimal TotalTds { get; private set; }
     public decimal TotalPt { get; private set; }
     public int EmployeeCount { get; private set; }
@@ -72,7 +71,6 @@ public sealed class PayrollRun : AuditableEntity
         decimal totalNetPay,
         decimal totalEmployerPf,
         decimal totalEmployerEsi,
-        decimal totalEdli,
         decimal totalTds,
         decimal totalPt,
         int employeeCount,
@@ -82,7 +80,6 @@ public sealed class PayrollRun : AuditableEntity
         TotalNetPay = totalNetPay;
         TotalEmployerPf = totalEmployerPf;
         TotalEmployerEsi = totalEmployerEsi;
-        TotalEdli = totalEdli;
         TotalTds = totalTds;
         TotalPt = totalPt;
         EmployeeCount = employeeCount;

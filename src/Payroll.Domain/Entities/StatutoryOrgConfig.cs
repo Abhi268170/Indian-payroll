@@ -14,8 +14,6 @@ public sealed class StatutoryOrgConfig : AuditableEntity
     public string EpfEmployeeContributionRate { get; private set; } = "ActualPfWage12";
     public string EpfEmployerContributionRate { get; private set; } = "ActualPfWage12";
     public bool EpfIncludeEmployerInCtc { get; private set; } = true;
-    public bool EpfIncludeEdliInCtc { get; private set; }
-    public bool EpfIncludeAdminInCtc { get; private set; }
     public bool EpfOverrideAtEmployeeLevel { get; private set; }
     public bool EpfProRateRestrictedPfWage { get; private set; }
     public bool EpfConsiderSalaryOnLop { get; private set; } = true;
@@ -24,6 +22,9 @@ public sealed class StatutoryOrgConfig : AuditableEntity
     public bool EsiEnabled { get; private set; }
     public string? EsiEstablishmentCode { get; private set; }
     public bool EsiNotifiedArea { get; private set; } = true;
+
+    // Gratuity CTC inclusion
+    public bool GratuityIncludedInCtc { get; private set; } = true;
 
     // Statutory Bonus
     public bool StatutoryBonusEnabled { get; private set; }
@@ -40,8 +41,6 @@ public sealed class StatutoryOrgConfig : AuditableEntity
         string employeeContributionRate,
         string employerContributionRate,
         bool includeEmployerInCtc,
-        bool includeEdliInCtc,
-        bool includeAdminInCtc,
         bool overrideAtEmployeeLevel,
         bool proRateRestrictedPfWage,
         bool considerSalaryOnLop,
@@ -52,8 +51,6 @@ public sealed class StatutoryOrgConfig : AuditableEntity
         EpfEmployeeContributionRate = employeeContributionRate;
         EpfEmployerContributionRate = employerContributionRate;
         EpfIncludeEmployerInCtc = includeEmployerInCtc;
-        EpfIncludeEdliInCtc = includeEdliInCtc;
-        EpfIncludeAdminInCtc = includeAdminInCtc;
         EpfOverrideAtEmployeeLevel = overrideAtEmployeeLevel;
         EpfProRateRestrictedPfWage = proRateRestrictedPfWage;
         EpfConsiderSalaryOnLop = considerSalaryOnLop;
@@ -69,6 +66,12 @@ public sealed class StatutoryOrgConfig : AuditableEntity
         EsiEnabled = enabled;
         EsiEstablishmentCode = establishmentCode;
         EsiNotifiedArea = notifiedArea;
+        SetUpdated(updatedBy);
+    }
+
+    public void ConfigureGratuity(bool includedInCtc, Guid updatedBy)
+    {
+        GratuityIncludedInCtc = includedInCtc;
         SetUpdated(updatedBy);
     }
 

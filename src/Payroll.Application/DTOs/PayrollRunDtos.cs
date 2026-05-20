@@ -29,6 +29,16 @@ public sealed record EmployeeVariableInputsDto(
     decimal TdsAmount,
     decimal? TdsOverrideAmount,
     string? TdsOverrideReason,
+    decimal EmployeePf,
+    decimal EmployerPf,
+    decimal EmployeeEsi,
+    decimal EmployerEsi,
+    decimal PtAmount,
+    decimal LwfEmployeeAmount,
+    decimal LwfEmployerAmount,
+    decimal GratuityAmount,
+    decimal EpsAmount,
+    decimal MonthlyCTC,
     IReadOnlyList<ComponentBreakdownDto> Components);
 
 public sealed record CurrentPayPeriodDto(

@@ -5,6 +5,4 @@ public sealed record PFResult(
     decimal VPFContribution,
     decimal EPFEmployerContribution,
     decimal EPSEmployerContribution,
-    decimal EDLIEmployerContribution,
-    decimal EPFAdminContribution,
     bool IsExempt);

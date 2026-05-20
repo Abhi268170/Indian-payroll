@@ -5,6 +5,7 @@ using Payroll.Application.Services;
 using Payroll.Domain.Common;
 using Payroll.Domain.Entities;
 using Payroll.Domain.Enums;
+using Payroll.Domain.Extensions;
 using Payroll.Domain.Interfaces;
 using Payroll.Domain.ValueObjects;
 using Payroll.Engine;
@@ -79,7 +80,7 @@ public sealed class InitiatePayrollRunHandler(
         var activeEmployees = employees.Where(e => e.Status == EmployeeStatus.Active).ToList();
 
         var workLocations = await workLocationRepo.ListAsync(ct);
-        var workLocationStateMap = workLocations.ToDictionary(wl => wl.Id, wl => wl.State.ToString());
+        var workLocationStateMap = workLocations.ToDictionary(wl => wl.Id, wl => wl.State.ToIsoCode());
 
         // Resolve pay day and salary divisor from pay schedule settings
         EngineWorkWeekDay workWeek = (EngineWorkWeekDay)(int)paySchedule.WorkWeekDays;
@@ -95,6 +96,28 @@ public sealed class InitiatePayrollRunHandler(
         int calendarDays = DateTime.DaysInMonth(period.Year, period.Month);
         int salaryDivisor = PayScheduleHelpers.GetDivisor(engineCalcMethod, paySchedule.FixedWorkingDaysPerMonth, period.Year, period.Month);
         int workingDaysInMonth = PayScheduleHelpers.GetPayableDaysInMonth(workWeek, period.Year, period.Month);
+
+        // Load PT and LWF slabs for all employee work location states
+        var stateCodes = activeEmployees
+            .Select(e => workLocationStateMap.TryGetValue(e.WorkLocationId, out string? s) ? s : null)
+            .Where(s => s is not null)
+            .Select(s => s!)
+            .Distinct()
+            .ToList();
+
+        var ptSlabs = new List<ProfessionalTaxSlab>();
+        foreach (var state in stateCodes)
+        {
+            var slabs = await statutoryRepo.GetPtSlabsAsync(state, new DateOnly(period.Year, period.Month, 1), ct);
+            ptSlabs.AddRange(slabs);
+        }
+
+        var lwfConfigs = stateCodes.Count > 0
+            ? await statutoryRepo.GetLwfConfigsAsync(stateCodes, ct)
+            : [];
+
+        var staticConfig = StatutoryConfigBuilder.Build(orgConfig, taxConfig, taxSlabs, surchargeSlabs, ptSlabs, lwfConfigs);
+        string snapshot = JsonSerializer.Serialize(staticConfig);
 
         // Build engine inputs per employee
         var engineInputs = new List<EmployeeInput>();
@@ -152,7 +175,8 @@ public sealed class InitiatePayrollRunHandler(
 
             if (skipReason is null)
             {
-                var components = BuildComponentInputs(salaryStructure, template, addedCompDetails);
+                var components = BuildComponentInputs(salaryStructure, template, addedCompDetails, staticConfig);
+                decimal basicWage = components.FirstOrDefault(c => c.Code == "BASICSALARY")?.Amount ?? 0m;
                 bool hasPan = !string.IsNullOrWhiteSpace(emp.EncryptedPAN);
                 string workState = workLocationStateMap.TryGetValue(emp.WorkLocationId, out string? wls) ? wls : "MH";
                 var (hyIndex, hyTotal) = period.HalfYearPosition(emp.DateOfJoining);
@@ -172,33 +196,10 @@ public sealed class InitiatePayrollRunHandler(
                     PriorEmployerYTDTDSDeducted: 0,
                     PriorEmployerYTDPF: 0,
                     HalfYearMonthIndex: hyIndex,
-                    HalfYearTotalMonths: hyTotal));
+                    HalfYearTotalMonths: hyTotal,
+                    BasicWage: basicWage));
             }
         }
-
-        // Load PT and LWF slabs for all employee work location states
-        var stateCodes = activeEmployees
-            .Select(e => workLocationStateMap.TryGetValue(e.WorkLocationId, out string? s) ? s : null)
-            .Where(s => s is not null)
-            .Select(s => s!)
-            .Distinct()
-            .ToList();
-
-        var ptSlabs = new List<ProfessionalTaxSlab>();
-        foreach (var state in stateCodes)
-        {
-            var slabs = await statutoryRepo.GetPtSlabsAsync(state, new DateOnly(period.Year, period.Month, 1), ct);
-            ptSlabs.AddRange(slabs);
-        }
-
-        var lwfConfigs = stateCodes.Count > 0
-            ? await statutoryRepo.GetLwfConfigsAsync(stateCodes, ct)
-            : [];
-
-        var staticConfig = StatutoryConfigBuilder.Build(orgConfig, taxConfig, taxSlabs, surchargeSlabs, ptSlabs, lwfConfigs);
-
-        // Serialize snapshot for reproducibility
-        string snapshot = JsonSerializer.Serialize(staticConfig);
 
         var runInput = new PayrollRunInput(
             Year: period.Year,
@@ -233,7 +234,8 @@ public sealed class InitiatePayrollRunHandler(
         await payrollRunRepo.AddAsync(payrollRun, ct);
 
         // Create PayrunEmployee + PayrunComponentBreakdown rows
-        decimal totalNetPay = 0m, totalEmployerPf = 0m, totalEmployerEsi = 0m, totalEdli = 0m, totalTds = 0m, totalPt = 0m;
+        decimal totalNetPay = 0m, totalEmployerPf = 0m, totalEmployerEsi = 0m, totalTds = 0m, totalPt = 0m;
+        decimal totalGross = 0m, totalEmployerEps = 0m, totalLwfEmployer = 0m, totalGratuity = 0m;
 
         foreach (var emp in activeEmployees)
         {
@@ -260,15 +262,22 @@ public sealed class InitiatePayrollRunHandler(
                     employerEsi: result.ESI.EmployerContribution,
                     ptAmount: result.PT.Amount,
                     tdsAmount: result.TDS.MonthlyTDS,
-                    edliAmount: result.PF.EDLIEmployerContribution,
+                    lwfEmployeeAmount: result.LWF.EmployeeAmount,
+                    lwfEmployerAmount: result.LWF.EmployerAmount,
+                    gratuityAmount: result.Gratuity.MonthlyAccrual,
+                    epsAmount: result.PF.EPSEmployerContribution,
+                    monthlyCTC: info.structure.AnnualCTC / 12m,
                     actorId: req.ActorId);
 
+                totalGross += result.Gross.GrossWage;
                 totalNetPay += result.NetPay;
                 totalEmployerPf += result.PF.EPFEmployerContribution;
+                totalEmployerEps += result.PF.EPSEmployerContribution;
                 totalEmployerEsi += result.ESI.EmployerContribution;
-                totalEdli += result.PF.EDLIEmployerContribution;
                 totalTds += result.TDS.MonthlyTDS;
                 totalPt += result.PT.Amount;
+                totalLwfEmployer += result.LWF.EmployerAmount;
+                totalGratuity += result.Gratuity.MonthlyAccrual;
 
                 // Component breakdowns
                 foreach (var comp in result.Gross.ComponentBreakdown)
@@ -287,9 +296,14 @@ public sealed class InitiatePayrollRunHandler(
         }
 
         // Update payroll run financial summary
-        decimal payrollCost = totalNetPay + totalEmployerPf + totalEmployerEsi + totalEdli;
+        // CTC = gross + all employer-side costs
+        decimal payrollCost = totalGross
+            + totalEmployerPf + totalEmployerEps
+            + totalEmployerEsi
+            + totalLwfEmployer
+            + totalGratuity;
         payrollRun.UpdateFinancialSummary(
-            payrollCost, totalNetPay, totalEmployerPf, totalEmployerEsi, totalEdli, totalTds, totalPt,
+            payrollCost, totalNetPay, totalEmployerPf, totalEmployerEsi, totalTds, totalPt,
             employeeCount, req.ActorId);
 
         await uow.SaveChangesAsync(ct);
@@ -317,29 +331,32 @@ public sealed class InitiatePayrollRunHandler(
     internal static IReadOnlyList<SalaryComponentInput> BuildComponentInputs(
         EmployeeSalaryStructure structure,
         SalaryStructureTemplate? template,
-        Dictionary<Guid, SalaryComponent> addedCompDetails)
+        Dictionary<Guid, SalaryComponent> addedCompDetails,
+        StatutoryConfig config)
     {
         if (template is null) return [];
 
         Dictionary<Guid, EmployeeSalaryComponentOverride> overrideMap =
             structure.ComponentOverrides.ToDictionary(o => o.SalaryComponentId);
 
-        decimal monthlyGross = structure.AnnualCTC / 12m;
-        var components = new List<SalaryComponentInput>();
+        decimal monthlyCTC = structure.AnnualCTC / 12m;
+        var raw = new List<(Guid Id, string Code, decimal Amount, bool IsTaxable, bool ConsiderForEpf, EpfInclusionRule EpfRule)>();
         decimal basicMonthly = 0m;
         decimal nonResidualSum = 0m;
 
         var ordered = template.Components.OrderBy(c => c.DisplayOrder).ToList();
         var templateCompIds = new HashSet<Guid>(ordered.Select(c => c.ComponentId));
 
-        // Pass 1: template components (with overrides applied)
-        foreach (var comp in ordered)
+        // Pass 1: non-residual, non-PercentOfGross components (CTC/Basic/Fixed — no Gross dependency)
+        foreach (SalaryStructureComponent comp in ordered)
         {
             if (comp.Component is null) continue;
             if (comp.FormulaType == ComponentFormulaType.ResidualCTC) continue;
 
             overrideMap.TryGetValue(comp.ComponentId, out EmployeeSalaryComponentOverride? ov);
             ComponentFormulaType effectiveType = ov?.FormulaType ?? comp.FormulaType;
+            if (effectiveType == ComponentFormulaType.PercentOfGross) continue; // deferred to Pass 2
+
             decimal? effectivePct = ov?.Percentage ?? comp.Percentage;
             decimal? effectiveFixed = ov?.FixedAmount ?? comp.FixedAmount;
 
@@ -349,8 +366,6 @@ public sealed class InitiatePayrollRunHandler(
                     Math.Round(structure.AnnualCTC * (effectivePct!.Value / 100m) / 12m, 2, MidpointRounding.AwayFromZero),
                 ComponentFormulaType.PercentOfBasic =>
                     Math.Round(basicMonthly * (effectivePct!.Value / 100m), 2, MidpointRounding.AwayFromZero),
-                ComponentFormulaType.PercentOfGross =>
-                    Math.Round(monthlyGross * (effectivePct!.Value / 100m), 2, MidpointRounding.AwayFromZero),
                 ComponentFormulaType.Fixed =>
                     effectiveFixed ?? 0m,
                 _ => 0m
@@ -359,33 +374,105 @@ public sealed class InitiatePayrollRunHandler(
             if (comp.Component.EarningType == EarningType.Basic) basicMonthly = monthly;
             nonResidualSum += monthly;
 
-            bool isTaxable = comp.Component.IsTaxable ?? true;
-            bool considerForEpf = comp.Component.ConsiderForEpf ?? false;
-            components.Add(new SalaryComponentInput(comp.ComponentId, comp.Component.Code, monthly, isTaxable, considerForEpf));
+            raw.Add((comp.ComponentId, comp.Component.Code, monthly,
+                comp.Component.IsTaxable ?? true,
+                comp.Component.ConsiderForEpf ?? false,
+                comp.Component.EpfInclusionRule ?? EpfInclusionRule.Always));
         }
 
-        // Residual
-        var residual = ordered.FirstOrDefault(c => c.FormulaType == ComponentFormulaType.ResidualCTC);
+        // Compute employer contributions included in CTC to derive actual Gross
+        // PF wage uses only Pass-1 components (no residual, no PercentOfGross) — avoids circular dependency
+        decimal alwaysPfWagePass1 = raw
+            .Where(r => r.ConsiderForEpf && r.EpfRule == EpfInclusionRule.Always)
+            .Sum(r => r.Amount);
+        decimal pfWageForCtc = config.EpfRestrictEmployerWage
+            ? Math.Min(alwaysPfWagePass1, config.PFWageCap)
+            : alwaysPfWagePass1;
+
+        decimal employerCtcDeductions = 0m;
+
+        if (config.PFEnabled && config.EpfIncludeEmployerInCtc)
+        {
+            decimal epsWage = Math.Min(pfWageForCtc, config.PFWageCap);
+            decimal eps = Math.Min(
+                Math.Round(epsWage * config.EPSEmployerRate, 2, MidpointRounding.AwayFromZero),
+                config.EPSCap);
+            decimal epfEmployer = Math.Round(pfWageForCtc * config.EPFEmployeeRate, 2, MidpointRounding.AwayFromZero) - eps;
+            employerCtcDeductions += eps + epfEmployer;
+        }
+        if (config.GratuityIncludedInCtc && basicMonthly > 0m)
+            employerCtcDeductions += Math.Round(basicMonthly * 15m / 26m / 12m, 2, MidpointRounding.AwayFromZero);
+
+        decimal monthlyGross = Math.Max(0m, monthlyCTC - employerCtcDeductions);
+
+        // Pass 2: PercentOfGross components (now Gross is known)
+        foreach (SalaryStructureComponent comp in ordered)
+        {
+            if (comp.Component is null) continue;
+            if (comp.FormulaType == ComponentFormulaType.ResidualCTC) continue;
+
+            overrideMap.TryGetValue(comp.ComponentId, out EmployeeSalaryComponentOverride? ov);
+            ComponentFormulaType effectiveType = ov?.FormulaType ?? comp.FormulaType;
+            if (effectiveType != ComponentFormulaType.PercentOfGross) continue;
+
+            decimal? effectivePct = ov?.Percentage ?? comp.Percentage;
+            decimal monthly = Math.Round(monthlyGross * (effectivePct!.Value / 100m), 2, MidpointRounding.AwayFromZero);
+            nonResidualSum += monthly;
+
+            raw.Add((comp.ComponentId, comp.Component.Code, monthly,
+                comp.Component.IsTaxable ?? true,
+                comp.Component.ConsiderForEpf ?? false,
+                comp.Component.EpfInclusionRule ?? EpfInclusionRule.Always));
+        }
+
+        // Residual: Special Allowance = Gross − all other components
+        SalaryStructureComponent? residual = ordered.FirstOrDefault(c => c.FormulaType == ComponentFormulaType.ResidualCTC);
         if (residual?.Component is not null)
         {
             decimal residualMonthly = Math.Round(monthlyGross - nonResidualSum, 2, MidpointRounding.AwayFromZero);
-            bool isTaxable = residual.Component.IsTaxable ?? true;
-            bool considerForEpf = residual.Component.ConsiderForEpf ?? false;
-            components.Add(new SalaryComponentInput(residual.ComponentId, residual.Component.Code, residualMonthly, isTaxable, considerForEpf));
+            raw.Add((residual.ComponentId, residual.Component.Code, residualMonthly,
+                residual.Component.IsTaxable ?? true,
+                residual.Component.ConsiderForEpf ?? false,
+                residual.Component.EpfInclusionRule ?? EpfInclusionRule.Always));
         }
 
-        // Pass 2: override-only (added earnings not in template)
-        foreach (var ov in structure.ComponentOverrides)
+        // Pass 3: override-only components (not in template)
+        foreach (EmployeeSalaryComponentOverride ov in structure.ComponentOverrides)
         {
             if (templateCompIds.Contains(ov.SalaryComponentId)) continue;
             if (!addedCompDetails.TryGetValue(ov.SalaryComponentId, out SalaryComponent? sc)) continue;
 
-            decimal monthly = ov.FormulaType == ComponentFormulaType.Fixed ? ov.FixedAmount ?? 0m : 0m;
-            bool isTaxable = sc.IsTaxable ?? true;
-            bool considerForEpf = sc.ConsiderForEpf ?? false;
-            components.Add(new SalaryComponentInput(ov.SalaryComponentId, sc.Code, monthly, isTaxable, considerForEpf));
+            decimal monthly = ov.FormulaType switch
+            {
+                ComponentFormulaType.Fixed =>
+                    ov.FixedAmount ?? 0m,
+                ComponentFormulaType.PercentOfCTC =>
+                    Math.Round(structure.AnnualCTC * (ov.Percentage ?? 0m) / 100m / 12m, 2, MidpointRounding.AwayFromZero),
+                ComponentFormulaType.PercentOfBasic =>
+                    Math.Round(basicMonthly * (ov.Percentage ?? 0m) / 100m, 2, MidpointRounding.AwayFromZero),
+                ComponentFormulaType.PercentOfGross =>
+                    Math.Round(monthlyGross * (ov.Percentage ?? 0m) / 100m, 2, MidpointRounding.AwayFromZero),
+                _ => 0m
+            };
+            raw.Add((ov.SalaryComponentId, sc.Code, monthly,
+                sc.IsTaxable ?? true,
+                sc.ConsiderForEpf ?? false,
+                sc.EpfInclusionRule ?? EpfInclusionRule.Always));
         }
 
-        return components;
+        // Resolve OnlyWhenPfWageBelowLimit using final PF wage (includes all passes)
+        decimal alwaysPfWage = raw
+            .Where(r => r.ConsiderForEpf && r.EpfRule == EpfInclusionRule.Always)
+            .Sum(r => r.Amount);
+
+        return raw
+            .Select(r =>
+            {
+                bool considerForEpf = r.EpfRule == EpfInclusionRule.OnlyWhenPfWageBelowLimit
+                    ? r.ConsiderForEpf && alwaysPfWage < config.PFWageCap
+                    : r.ConsiderForEpf;
+                return new SalaryComponentInput(r.Id, r.Code, r.Amount, r.IsTaxable, considerForEpf);
+            })
+            .ToList();
     }
 }

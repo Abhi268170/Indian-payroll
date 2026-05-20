@@ -231,6 +231,22 @@ export interface PayrunEmployeeDto {
   skipReason: string | null
 }
 
+export interface PayRunTaxLineDto {
+  employeeId: string
+  employeeCode: string
+  employeeName: string
+  annualProjectedIncome: number
+  standardDeduction: number
+  taxableIncome: number
+  taxBeforeRebate: number
+  rebate87A: number
+  surcharge: number
+  cess: number
+  annualTaxLiability: number
+  tdsThisMonth: number
+  hasPanOverride: boolean
+}
+
 export interface PendingTaskItemDto {
   employeeId: string
   employeeCode: string
@@ -264,6 +280,16 @@ export interface EmployeeVariableInputsDto {
   tdsAmount: number
   tdsOverrideAmount: number | null
   tdsOverrideReason: string | null
+  employeePf: number
+  employerPf: number
+  employeeEsi: number
+  employerEsi: number
+  ptAmount: number
+  lwfEmployeeAmount: number
+  lwfEmployerAmount: number
+  gratuityAmount: number
+  epsAmount: number
+  monthlyCTC: number
   components: ComponentBreakdownDto[]
 }
 
@@ -296,6 +322,7 @@ export interface PayslipData {
   employeeEsi: number
   employerEsi: number
   ptAmount: number
+  lwfEmployeeAmount: number
   tdsAmount: number
   ytdGross: number
   ytdNetPay: number

@@ -21,8 +21,6 @@ internal sealed class GetStatutoryConfigHandler(IStatutoryConfigRepository repo)
             config.EpfEmployeeContributionRate,
             config.EpfEmployerContributionRate,
             config.EpfIncludeEmployerInCtc,
-            config.EpfIncludeEdliInCtc,
-            config.EpfIncludeAdminInCtc,
             config.EpfOverrideAtEmployeeLevel,
             config.EpfProRateRestrictedPfWage,
             config.EpfConsiderSalaryOnLop,

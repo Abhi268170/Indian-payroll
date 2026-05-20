@@ -57,7 +57,11 @@ public sealed class OverrideTdsHandler(
             employerEsi: payrunEmp.EmployerEsi,
             ptAmount: payrunEmp.PtAmount,
             tdsAmount: req.OverrideAmount,
-            edliAmount: payrunEmp.EdliAmount,
+            lwfEmployeeAmount: payrunEmp.LwfEmployeeAmount,
+            lwfEmployerAmount: payrunEmp.LwfEmployerAmount,
+            gratuityAmount: payrunEmp.GratuityAmount,
+            epsAmount: payrunEmp.EpsAmount,
+            monthlyCTC: payrunEmp.MonthlyCTC,
             actorId: req.ActorId);
 
         payrunEmployeeRepo.Update(payrunEmp);

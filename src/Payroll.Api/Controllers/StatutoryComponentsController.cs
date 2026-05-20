@@ -21,7 +21,7 @@ public sealed class StatutoryComponentsController(ISender sender) : ControllerBa
         if (config is null)
             return Ok(new StatutoryConfigDto(
                 false, null, "ActualPfWage12", "ActualPfWage12",
-                true, false, false, false, false, true,
+                true, false, false, true,
                 false, null, true,
                 false, 8.33m, "Yearly", null));
         return Ok(config);
@@ -40,8 +40,6 @@ public sealed class StatutoryComponentsController(ISender sender) : ControllerBa
                 request.EmployeeContributionRate,
                 request.EmployerContributionRate,
                 request.IncludeEmployerInCtc,
-                request.IncludeEdliInCtc,
-                request.IncludeAdminInCtc,
                 request.OverrideAtEmployeeLevel,
                 request.ProRateRestrictedPfWage,
                 request.ConsiderSalaryOnLop,
@@ -172,8 +170,6 @@ public record ConfigureEpfRequest(
     string EmployeeContributionRate,
     string EmployerContributionRate,
     bool IncludeEmployerInCtc,
-    bool IncludeEdliInCtc,
-    bool IncludeAdminInCtc,
     bool OverrideAtEmployeeLevel,
     bool ProRateRestrictedPfWage,
     bool ConsiderSalaryOnLop);

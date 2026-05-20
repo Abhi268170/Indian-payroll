@@ -57,13 +57,12 @@ public sealed class SkipEmployeeHandler(
         decimal totalNetPay = active.Sum(e => e.NetPay);
         decimal totalEmployerPf = active.Sum(e => e.EmployerPf);
         decimal totalEmployerEsi = active.Sum(e => e.EmployerEsi);
-        decimal totalEdli = active.Sum(e => e.EdliAmount);
         decimal totalTds = active.Sum(e => e.TdsAmount);
         decimal totalPt = active.Sum(e => e.PtAmount);
-        decimal payrollCost = totalNetPay + totalEmployerPf + totalEmployerEsi + totalEdli;
+        decimal payrollCost = totalNetPay + totalEmployerPf + totalEmployerEsi;
 
         run.UpdateFinancialSummary(
-            payrollCost, totalNetPay, totalEmployerPf, totalEmployerEsi, totalEdli,
+            payrollCost, totalNetPay, totalEmployerPf, totalEmployerEsi,
             totalTds, totalPt, allEmployees.Count, actorId);
     }
 }

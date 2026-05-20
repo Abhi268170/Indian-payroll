@@ -59,7 +59,11 @@ public sealed class RemoveOneTimeEarningHandler(
             employerEsi: payrunEmp.EmployerEsi,
             ptAmount: payrunEmp.PtAmount,
             tdsAmount: payrunEmp.TdsAmount,
-            edliAmount: payrunEmp.EdliAmount,
+            lwfEmployeeAmount: payrunEmp.LwfEmployeeAmount,
+            lwfEmployerAmount: payrunEmp.LwfEmployerAmount,
+            gratuityAmount: payrunEmp.GratuityAmount,
+            epsAmount: payrunEmp.EpsAmount,
+            monthlyCTC: payrunEmp.MonthlyCTC,
             actorId: req.ActorId);
 
         payrunEmployeeRepo.Update(payrunEmp);

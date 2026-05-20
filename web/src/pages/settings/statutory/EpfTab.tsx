@@ -24,8 +24,6 @@ export default function EpfTab({ config }: Props): ReactElement {
     establishmentCode: config.epfEstablishmentCode ?? '',
     employerContributionRate: config.epfEmployerContributionRate,
     includeEmployerInCtc: config.epfIncludeEmployerInCtc,
-    includeEdliInCtc: config.epfIncludeEdliInCtc,
-    includeAdminInCtc: config.epfIncludeAdminInCtc,
     overrideAtEmployeeLevel: config.epfOverrideAtEmployeeLevel,
     proRateRestrictedPfWage: config.epfProRateRestrictedPfWage,
     considerSalaryOnLop: config.epfConsiderSalaryOnLop,
@@ -42,8 +40,6 @@ export default function EpfTab({ config }: Props): ReactElement {
         employeeContributionRate: 'ActualPfWage12', // always 12%, not configurable
         employerContributionRate: form.employerContributionRate,
         includeEmployerInCtc: form.includeEmployerInCtc,
-        includeEdliInCtc: form.includeEdliInCtc,
-        includeAdminInCtc: form.includeAdminInCtc,
         overrideAtEmployeeLevel: form.overrideAtEmployeeLevel,
         proRateRestrictedPfWage: form.proRateRestrictedPfWage,
         considerSalaryOnLop: form.considerSalaryOnLop,
@@ -64,8 +60,6 @@ export default function EpfTab({ config }: Props): ReactElement {
         employeeContributionRate: 'ActualPfWage12',
         employerContributionRate: form.employerContributionRate,
         includeEmployerInCtc: form.includeEmployerInCtc,
-        includeEdliInCtc: form.includeEdliInCtc,
-        includeAdminInCtc: form.includeAdminInCtc,
         overrideAtEmployeeLevel: form.overrideAtEmployeeLevel,
         proRateRestrictedPfWage: form.proRateRestrictedPfWage,
         considerSalaryOnLop: form.considerSalaryOnLop,
@@ -126,13 +120,24 @@ export default function EpfTab({ config }: Props): ReactElement {
             </p>
           </div>
           <div className="flex gap-2">
-            {config.epfEnabled && (
+            {config.epfEnabled ? (
               <Button
                 variant="secondary"
                 size="sm"
                 onClick={() => { setDisabling(true) }}
               >
                 Disable EPF
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setForm(f => ({ ...f, enabled: true }))
+                  setEditing(true)
+                }}
+              >
+                Enable EPF
               </Button>
             )}
             <Button variant="secondary" size="sm" onClick={() => { setEditing(true) }}>
@@ -148,8 +153,6 @@ export default function EpfTab({ config }: Props): ReactElement {
           <ViewRow label="Employee Contribution" value="12% of PF Wage (statutory)" />
           <ViewRow label="Employer Contribution" value={rateLabel(config.epfEmployerContributionRate)} />
           <ViewRow label="Include Employer EPF in CTC" value={config.epfIncludeEmployerInCtc ? 'Yes' : 'No'} />
-          <ViewRow label="Include EDLI in CTC" value={config.epfIncludeEdliInCtc ? 'Yes' : 'No'} />
-          <ViewRow label="Include Admin Charges in CTC" value={config.epfIncludeAdminInCtc ? 'Yes' : 'No'} />
         </div>
 
         <div className="border-t border-[var(--color-border)] pt-4">
@@ -234,18 +237,6 @@ export default function EpfTab({ config }: Props): ReactElement {
             label="Include Employer EPF contribution in CTC"
             checked={form.includeEmployerInCtc}
             onChange={v => { setForm(f => ({ ...f, includeEmployerInCtc: v })) }}
-          />
-          <CheckboxField
-            id="include-edli"
-            label="Include EDLI contribution in CTC"
-            checked={form.includeEdliInCtc}
-            onChange={v => { setForm(f => ({ ...f, includeEdliInCtc: v })) }}
-          />
-          <CheckboxField
-            id="include-admin"
-            label="Include EPF Admin charges in CTC"
-            checked={form.includeAdminInCtc}
-            onChange={v => { setForm(f => ({ ...f, includeAdminInCtc: v })) }}
           />
           <CheckboxField
             id="override-employee"

@@ -31,7 +31,11 @@ public sealed class PayrunEmployee : AuditableEntity
     public decimal EmployerEsi { get; private set; }
     public decimal PtAmount { get; private set; }
     public decimal TdsAmount { get; private set; }
-    public decimal EdliAmount { get; private set; }
+    public decimal LwfEmployeeAmount { get; private set; }
+    public decimal LwfEmployerAmount { get; private set; }
+    public decimal GratuityAmount { get; private set; }
+    public decimal EpsAmount { get; private set; }
+    public decimal MonthlyCTC { get; private set; }
 
     // TDS override
     public decimal? TdsOverrideAmount { get; private set; }
@@ -74,7 +78,11 @@ public sealed class PayrunEmployee : AuditableEntity
         decimal employerEsi,
         decimal ptAmount,
         decimal tdsAmount,
-        decimal edliAmount,
+        decimal lwfEmployeeAmount,
+        decimal lwfEmployerAmount,
+        decimal gratuityAmount,
+        decimal epsAmount,
+        decimal monthlyCTC,
         Guid actorId)
     {
         GrossPay = grossPay;
@@ -88,7 +96,11 @@ public sealed class PayrunEmployee : AuditableEntity
         EmployerEsi = employerEsi;
         PtAmount = ptAmount;
         TdsAmount = tdsAmount;
-        EdliAmount = edliAmount;
+        LwfEmployeeAmount = lwfEmployeeAmount;
+        LwfEmployerAmount = lwfEmployerAmount;
+        GratuityAmount = gratuityAmount;
+        EpsAmount = epsAmount;
+        MonthlyCTC = monthlyCTC;
         SetUpdated(actorId);
     }
 

@@ -11,20 +11,14 @@ public sealed class IncomeTaxConfig : AuditableEntity
     public decimal StandardDeduction { get; private set; }
     public decimal Rebate87ALimit { get; private set; }
     public decimal Rebate87AAmount { get; private set; }
-    public decimal EmployerStatutoryCap { get; private set; }  // ₹7.5L aggregate (EPF+NPS+Super)
-    public decimal NpsEmployerMaxRate { get; private set; }    // 0.14 for FY2025-26
+    public decimal EmployerStatutoryCap { get; private set; }
+    public decimal NpsEmployerMaxRate { get; private set; }
 
-    // Statutory rates — regime-invariant (duplicated per-regime row until Old regime exits deferred status).
-    // PF rates: EPF Act 1952. ESI rates: ESI Act 1948. Cess rate: Finance Act.
     public decimal CessRate { get; private set; }
     public decimal PfWageCap { get; private set; }
     public decimal EpfEmployeeRate { get; private set; }
     public decimal EpsEmployerRate { get; private set; }
     public decimal EpsCap { get; private set; }
-    public decimal EdliEmployerRate { get; private set; }
-    public decimal EdliCap { get; private set; }
-    public decimal EpfAdminRate { get; private set; }
-    public decimal EpfAdminMinimum { get; private set; }
     public decimal EsiWageLimit { get; private set; }
     public decimal EsiPwdWageLimit { get; private set; }
     public decimal EsiEmployeeRate { get; private set; }
@@ -36,7 +30,6 @@ public sealed class IncomeTaxConfig : AuditableEntity
         decimal employerStatutoryCap, decimal npsEmployerMaxRate,
         decimal cessRate,
         decimal pfWageCap, decimal epfEmployeeRate, decimal epsEmployerRate, decimal epsCap,
-        decimal edliEmployerRate, decimal edliCap, decimal epfAdminRate, decimal epfAdminMinimum,
         decimal esiWageLimit, decimal esiPwdWageLimit, decimal esiEmployeeRate, decimal esiEmployerRate,
         Guid createdBy) =>
         new()
@@ -51,10 +44,6 @@ public sealed class IncomeTaxConfig : AuditableEntity
             EpfEmployeeRate = epfEmployeeRate,
             EpsEmployerRate = epsEmployerRate,
             EpsCap = epsCap,
-            EdliEmployerRate = edliEmployerRate,
-            EdliCap = edliCap,
-            EpfAdminRate = epfAdminRate,
-            EpfAdminMinimum = epfAdminMinimum,
             EsiWageLimit = esiWageLimit,
             EsiPwdWageLimit = esiPwdWageLimit,
             EsiEmployeeRate = esiEmployeeRate,

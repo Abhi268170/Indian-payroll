@@ -19,7 +19,6 @@ internal sealed class PayrollRunConfiguration : IEntityTypeConfiguration<Payroll
         builder.Property(p => p.TotalNetPay).HasColumnType("numeric(18,2)");
         builder.Property(p => p.TotalEmployerPf).HasColumnType("numeric(18,2)");
         builder.Property(p => p.TotalEmployerEsi).HasColumnType("numeric(18,2)");
-        builder.Property(p => p.TotalEdli).HasColumnType("numeric(18,2)");
         builder.Property(p => p.TotalTds).HasColumnType("numeric(18,2)");
         builder.Property(p => p.TotalPt).HasColumnType("numeric(18,2)");
 
