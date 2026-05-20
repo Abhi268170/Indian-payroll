@@ -46,6 +46,10 @@ public static class StatutoryTestData
         LWFStates: [],
         PFEnabled: true,
         ESIEnabled: true,
-        PTEnabled: false
+        PTEnabled: false,
+        EpfIncludeEmployerInCtc: true,
+        EpfIncludeEdliInCtc: false,
+        EpfIncludeAdminInCtc: false,
+        GratuityIncludedInCtc: true
     );
 }

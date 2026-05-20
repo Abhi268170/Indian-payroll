@@ -10,6 +10,8 @@ interface EmployeeSummaryTableProps {
   onOpenVariableInputs: (employeeId: string, employeeName: string) => void
   onSkipEmployee: (employeeId: string, employeeName: string) => void
   onDownloadPayslip: (employeeId: string, employeeName: string) => void
+  onReEvaluate: () => void
+  isReEvaluating: boolean
 }
 
 type FilterMode = 'All' | 'Active' | 'Skipped'
@@ -20,6 +22,8 @@ export default function EmployeeSummaryTable({
   onOpenVariableInputs,
   onSkipEmployee,
   onDownloadPayslip,
+  onReEvaluate,
+  isReEvaluating,
 }: EmployeeSummaryTableProps): React.ReactElement {
   const [filter, setFilter] = useState<FilterMode>('All')
 
@@ -31,6 +35,9 @@ export default function EmployeeSummaryTable({
 
   const isDraft = runStatus === 'Draft'
   const isPaidOrApproved = runStatus === 'Approved' || runStatus === 'Paid'
+  const hasOnboardingBlocked = employees.some(
+    e => e.status === 'Skipped' && e.skipReason?.startsWith('Onboarding incomplete')
+  )
 
   return (
     <div>
@@ -52,6 +59,15 @@ export default function EmployeeSummaryTable({
             </span>
           </button>
         ))}
+        {isDraft && hasOnboardingBlocked && (
+          <button
+            onClick={onReEvaluate}
+            disabled={isReEvaluating}
+            className="ml-auto h-7 px-3 rounded-lg text-[12px] font-medium border border-amber-400 text-amber-700 bg-amber-50 hover:bg-amber-100 disabled:opacity-50 transition-colors"
+          >
+            {isReEvaluating ? 'Re-evaluating…' : 'Re-evaluate Skipped'}
+          </button>
+        )}
       </div>
 
       <div className="rounded-xl border border-[var(--color-border)] overflow-hidden">

@@ -233,6 +233,17 @@ public sealed class PayrollRunsController(ISender sender) : ControllerBase
         catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
     }
 
+    [HttpGet("{id:guid}/taxes")]
+    public async Task<IActionResult> GetTaxes(Guid id, CancellationToken ct)
+    {
+        try
+        {
+            IReadOnlyList<PayRunTaxLineDto> list = await sender.Send(new GetPayRunTaxesQuery(id), ct);
+            return Ok(list);
+        }
+        catch (NotFoundException) { return NotFound(); }
+    }
+
     [HttpGet("{id:guid}/bank-advice")]
     [Authorize(Policy = "FinanceViewer")]
     public async Task<IActionResult> GetBankAdvice(Guid id, CancellationToken ct)
@@ -289,6 +300,18 @@ public sealed class PayrollRunsController(ISender sender) : ControllerBase
         }
         catch (NotFoundException) { return NotFound(); }
         catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+    }
+
+    [HttpPost("{id:guid}/re-evaluate")]
+    public async Task<IActionResult> ReEvaluateSkipped(Guid id, CancellationToken ct)
+    {
+        try
+        {
+            int count = await sender.Send(new ReEvaluateSkippedCommand(id, GetActorId()), ct);
+            return Ok(new { recomputedCount = count });
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (DomainException ex) { return BadRequest(new { error = ex.Message }); }
     }
 
     private Guid GetActorId()

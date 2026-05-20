@@ -101,7 +101,8 @@ public class VariableInputCommandTests
             grossPay: 50_000m, netPay: 44_000m,
             taxesAmount: 6_000m, benefitsAmount: 0m, reimbursementsAmount: 0m,
             employeePf: 0m, employerPf: 0m, employeeEsi: 0m, employerEsi: 0m,
-            ptAmount: 0m, tdsAmount: 6_000m, edliAmount: 0m,
+            ptAmount: 0m, tdsAmount: 6_000m, edliAmount: 0m, lwfEmployeeAmount: 0m, lwfEmployerAmount: 0m, gratuityAmount: 0m,
+            monthlyCTC: 0m,
             actorId: ActorId);
 
         var runRepo = Substitute.For<IPayrollRunRepository>();
@@ -154,7 +155,8 @@ public class VariableInputCommandTests
             grossPay: 50_000m, netPay: 44_000m,
             taxesAmount: 6_000m, benefitsAmount: 0m, reimbursementsAmount: 0m,
             employeePf: 0m, employerPf: 0m, employeeEsi: 0m, employerEsi: 0m,
-            ptAmount: 0m, tdsAmount: 6_000m, edliAmount: 0m,
+            ptAmount: 0m, tdsAmount: 6_000m, edliAmount: 0m, lwfEmployeeAmount: 0m, lwfEmployerAmount: 0m, gratuityAmount: 0m,
+            monthlyCTC: 0m,
             actorId: ActorId);
 
         var runRepo = Substitute.For<IPayrollRunRepository>();
@@ -202,7 +204,8 @@ public class VariableInputCommandTests
             grossPay: 60_000m, netPay: 54_000m,
             taxesAmount: 6_000m, benefitsAmount: 0m, reimbursementsAmount: 0m,
             employeePf: 0m, employerPf: 0m, employeeEsi: 0m, employerEsi: 0m,
-            ptAmount: 0m, tdsAmount: 6_000m, edliAmount: 0m,
+            ptAmount: 0m, tdsAmount: 6_000m, edliAmount: 0m, lwfEmployeeAmount: 0m, lwfEmployerAmount: 0m, gratuityAmount: 0m,
+            monthlyCTC: 0m,
             actorId: ActorId);
 
         var bd = PayrunComponentBreakdown.Create(

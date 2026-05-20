@@ -14,6 +14,7 @@ import DeletePaymentDialog from './components/DeletePaymentDialog'
 import SkipEmployeeDialog from './components/SkipEmployeeDialog'
 import PayslipPanel from './components/PayslipPanel'
 import BankAdviceModal from './components/BankAdviceModal'
+import PayRunTaxesTab from './tabs/PayRunTaxesTab'
 
 type Tab = 'employees' | 'taxes' | 'insights'
 
@@ -82,6 +83,15 @@ export default function PayRunDetailPage(): React.ReactElement {
     },
   })
 
+  const reEvaluateMutation = useMutation({
+    mutationFn: () => api.post(`/api/v1/payroll-runs/${runId}/re-evaluate`),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['run-employees', runId] })
+      void queryClient.invalidateQueries({ queryKey: ['payroll-run', runId] })
+      void queryClient.invalidateQueries({ queryKey: ['pending-tasks', runId] })
+    },
+  })
+
   function handleDownloadPayslip(employeeId: string, employeeName: string): void {
     setPayslipState({ employeeId, employeeName })
   }
@@ -135,14 +145,12 @@ export default function PayRunDetailPage(): React.ReactElement {
           onOpenVariableInputs={(empId, empName) => { setVariableInputs({ employeeId: empId, employeeName: empName }) }}
           onSkipEmployee={(empId, empName) => { setSkipState({ employeeId: empId, employeeName: empName }) }}
           onDownloadPayslip={handleDownloadPayslip}
+          onReEvaluate={() => { reEvaluateMutation.mutate() }}
+          isReEvaluating={reEvaluateMutation.isPending}
         />
       )}
 
-      {activeTab === 'taxes' && (
-        <div className="flex items-center justify-center h-48 rounded-xl border border-dashed border-[var(--color-border)]">
-          <p className="text-[13px] text-[var(--color-text-secondary)]">Taxes & Deductions — coming soon</p>
-        </div>
-      )}
+      {activeTab === 'taxes' && <PayRunTaxesTab runId={runId} />}
 
       {activeTab === 'insights' && (
         <div className="flex items-center justify-center h-48 rounded-xl border border-dashed border-[var(--color-border)]">

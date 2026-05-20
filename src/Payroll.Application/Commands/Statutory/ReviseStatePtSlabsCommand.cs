@@ -26,8 +26,8 @@ public sealed class ReviseStatePtSlabsCommandValidator : AbstractValidator<Revis
     {
         RuleFor(x => x.StateCode).NotEmpty().Length(2);
         RuleFor(x => x.EffectiveDate).NotEmpty();
-        RuleFor(x => x.Frequency).NotEmpty().Must(f => f is "Monthly" or "HalfYearly" or "Annual")
-            .WithMessage("Frequency must be Monthly, HalfYearly, or Annual.");
+        RuleFor(x => x.Frequency).NotEmpty().Must(f => f is "Monthly" or "HalfYearly" or "HalfYearlySplit" or "Annual")
+            .WithMessage("Frequency must be Monthly, HalfYearly, HalfYearlySplit, or Annual.");
         RuleFor(x => x.Slabs).NotEmpty().WithMessage("At least one slab is required.");
         RuleForEach(x => x.Slabs).ChildRules(slab =>
         {

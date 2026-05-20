@@ -22,12 +22,15 @@ internal sealed class StatutoryConfigRepository(PayrollDbContext db, ITenantCont
     public async Task<IReadOnlyList<ProfessionalTaxSlab>> GetPtSlabsAsync(
         string stateCode, DateOnly asOf, CancellationToken ct = default)
     {
-        DateOnly effectiveDate = await db.ProfessionalTaxSlabs
+        DateOnly? latestEffective = await db.ProfessionalTaxSlabs
             .Where(s => s.StateCode == stateCode && s.EffectiveDate <= asOf && s.IsActive)
-            .MaxAsync(s => (DateOnly?)s.EffectiveDate, ct) ?? asOf;
+            .MaxAsync(s => (DateOnly?)s.EffectiveDate, ct);
+
+        if (latestEffective is null)
+            return [];
 
         return await db.ProfessionalTaxSlabs
-            .Where(s => s.StateCode == stateCode && s.EffectiveDate == effectiveDate && s.IsActive)
+            .Where(s => s.StateCode == stateCode && s.EffectiveDate == latestEffective && s.IsActive)
             .OrderBy(s => s.MinGross)
             .ToListAsync(ct);
     }

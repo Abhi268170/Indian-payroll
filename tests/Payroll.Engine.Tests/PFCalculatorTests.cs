@@ -71,13 +71,13 @@ public class PFCalculatorTests
     // ── Above wage cap — restricted employer ─────────────────────────────────
 
     [Fact]
-    public void AboveCap_Restricted_EmployeeOnActualWage_EmployerCappedAt15000()
+    public void AboveCap_Restricted_BothEmployeeAndEmployerCappedAt15000()
     {
-        // PF wage = 30,000; restricted cap = 15,000
+        // PF wage = 30,000; restricted cap = 15,000 — both employee and employer capped
         // EPS = min(15000 × 8.33%, 1250) = min(1249.50, 1250) = 1249.50
         var result = PFCalculator.Compute(30000m, 30000m, 0m, 26, RestrictedConfig(), optOut: false);
 
-        result.EmployeeContribution.Should().Be(Math.Round(30000m * 0.12m, 2, MidpointRounding.AwayFromZero)); // 3600
+        result.EmployeeContribution.Should().Be(1800m); // 12% × 15,000 (capped)
         decimal eps = Math.Round(15000m * 0.0833m, 2, MidpointRounding.AwayFromZero); // 1249.50
         result.EPSEmployerContribution.Should().Be(eps);
         decimal expectedEpfEmployer = Math.Round(15000m * 0.12m, 2, MidpointRounding.AwayFromZero) - eps; // 1800 - 1249.50 = 550.50
