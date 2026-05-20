@@ -19,4 +19,6 @@ public sealed record EmployeeInput(
     // Half-year position for HalfYearlySplit PT states (e.g. Kerala).
     // MonthIndex == TotalMonths means last month → absorb rounding remainder.
     int HalfYearMonthIndex,
-    int HalfYearTotalMonths);
+    int HalfYearTotalMonths,
+    decimal BasicWage = 0m,
+    bool GratuityEnabled = true);

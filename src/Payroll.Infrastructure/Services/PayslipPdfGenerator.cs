@@ -35,6 +35,11 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
                     col.Item().Element(c => ComposeEmployeeDetails(c, data));
                     col.Item().Height(8);
                     col.Item().Element(c => ComposeEarningsDeductions(c, data));
+                    if (data.MonthlyCTC > data.GrossPay)
+                    {
+                        col.Item().Height(8);
+                        col.Item().Element(c => ComposeCTCBreakdown(c, data));
+                    }
                     col.Item().Height(8);
                     col.Item().Element(c => ComposeNetPaySummary(c, data));
                     col.Item().Height(8);
@@ -115,13 +120,12 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
             foreach (string label in new[] { "Component", "Amount (₹)", "YTD (₹)" })
                 table.Cell().Background(Color.FromHex("#e2e8f0")).Padding(4).Text(label).Bold().FontSize(8);
 
-            var deductions = new List<(string Name, decimal Amount, decimal Ytd)>
-            {
-                ("Employee PF", data.EmployeePf, data.YtdPf),
-                ("Employee ESI", data.EmployeeEsi, 0m),
-                ("Professional Tax", data.PtAmount, 0m),
-                ("Income Tax (TDS)", data.TdsAmount, data.YtdTds),
-            };
+            var deductions = new List<(string Name, decimal Amount, decimal Ytd)>();
+            if (data.EmployeePf > 0m)   deductions.Add(("Employee PF", data.EmployeePf, data.YtdPf));
+            if (data.EmployeeEsi > 0m)  deductions.Add(("Employee ESI", data.EmployeeEsi, 0m));
+            if (data.PtAmount > 0m)     deductions.Add(("Professional Tax", data.PtAmount, 0m));
+            if (data.LwfEmployeeAmount > 0m) deductions.Add(("Labour Welfare Fund", data.LwfEmployeeAmount, 0m));
+            if (data.TdsAmount > 0m)    deductions.Add(("Income Tax (TDS)", data.TdsAmount, data.YtdTds));
 
             int maxRows = Math.Max(earnings.Count, deductions.Count);
             for (int i = 0; i < maxRows; i++)
@@ -155,7 +159,7 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
                 }
             }
 
-            decimal totalDeductions = data.EmployeePf + data.EmployeeEsi + data.PtAmount + data.TdsAmount;
+            decimal totalDeductions = data.EmployeePf + data.EmployeeEsi + data.PtAmount + data.LwfEmployeeAmount + data.TdsAmount;
             table.Cell().BorderBottom(1).BorderColor(BorderColor).Padding(3).Text("Gross Pay").Bold().FontSize(8);
             table.Cell().BorderBottom(1).BorderColor(BorderColor).Padding(3).AlignRight().Text(FormatAmount(data.GrossPay)).Bold().FontSize(8);
             table.Cell().BorderBottom(1).BorderColor(BorderColor).Padding(3).Text(string.Empty);
@@ -198,6 +202,46 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
             AddDetailRow(table, "YTD Gross", FormatAmount(data.YtdGross), "YTD Net Pay", FormatAmount(data.YtdNetPay));
             AddDetailRow(table, "YTD TDS", FormatAmount(data.YtdTds), "YTD PF (Employee)", FormatAmount(data.YtdPf));
         });
+    }
+
+    private static void ComposeCTCBreakdown(IContainer container, PayslipData data)
+    {
+        decimal employerPfInCtc = data.MonthlyCTC - data.GrossPay - data.GratuityAmount;
+
+        container.Border(1).BorderColor(BorderColor).Table(table =>
+        {
+            table.ColumnsDefinition(cols =>
+            {
+                cols.RelativeColumn(5);
+                cols.RelativeColumn(2);
+            });
+
+            table.Cell().ColumnSpan(2).Background(SectionHeaderBg).Padding(5)
+                .Text("CTC Breakdown").Bold().FontSize(9);
+
+            AddCtcRow(table, "Gross Salary (A)", data.GrossPay, bold: false);
+            if (data.GratuityAmount > 0m)
+                AddCtcRow(table, "Gratuity", data.GratuityAmount, bold: false);
+            if (employerPfInCtc > 0m)
+                AddCtcRow(table, "Employer PF Contribution", employerPfInCtc, bold: false);
+            AddCtcRow(table, "Cost to Company (B)", data.MonthlyCTC, bold: true);
+        });
+    }
+
+    private static void AddCtcRow(TableDescriptor table, string label, decimal amount, bool bold)
+    {
+        IContainer labelCell = table.Cell().BorderBottom(1).BorderColor(BorderColor).Padding(4);
+        IContainer amountCell = table.Cell().BorderBottom(1).BorderColor(BorderColor).Padding(4).AlignRight();
+        if (bold)
+        {
+            labelCell.Text(label).FontSize(8).Bold();
+            amountCell.Text(FormatAmount(amount)).FontSize(8).Bold();
+        }
+        else
+        {
+            labelCell.Text(label).FontSize(8);
+            amountCell.Text(FormatAmount(amount)).FontSize(8);
+        }
     }
 
     private static string FormatAmount(decimal amount) =>

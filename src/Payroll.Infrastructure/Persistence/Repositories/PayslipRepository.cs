@@ -15,6 +15,12 @@ internal sealed class PayslipRepository(PayrollDbContext db) : IPayslipRepositor
             .ToListAsync(ct)
             .ContinueWith<IReadOnlyList<Payslip>>(t => t.Result, ct);
 
+    public Task<IReadOnlyList<Payslip>> GetByEmployeeIdAsync(Guid employeeId, CancellationToken ct = default) =>
+        db.Payslips
+            .Where(p => p.EmployeeId == employeeId)
+            .ToListAsync(ct)
+            .ContinueWith<IReadOnlyList<Payslip>>(t => t.Result, ct);
+
     public async Task AddAsync(Payslip payslip, CancellationToken ct = default) =>
         await db.Payslips.AddAsync(payslip, ct);
 

@@ -167,10 +167,47 @@ export default function PayslipPanel({ runId, employeeId, employeeName, onClose 
                           <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-secondary)]">{formatINR(c.ytdAmount)}</td>
                         </tr>
                       ))}
+                      {data.employeePf > 0 && (
+                        <tr className="divide-y divide-[var(--color-border)]">
+                          <td className="px-3 py-2 text-[13px] text-[var(--color-text-primary)]">Employee PF</td>
+                          <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-primary)]">{formatINR(data.employeePf)}</td>
+                          <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-secondary)]">{formatINR(data.ytdPf)}</td>
+                        </tr>
+                      )}
+                      {data.employeeEsi > 0 && (
+                        <tr>
+                          <td className="px-3 py-2 text-[13px] text-[var(--color-text-primary)]">Employee ESI</td>
+                          <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-primary)]">{formatINR(data.employeeEsi)}</td>
+                          <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-secondary)]">—</td>
+                        </tr>
+                      )}
+                      {data.ptAmount > 0 && (
+                        <tr>
+                          <td className="px-3 py-2 text-[13px] text-[var(--color-text-primary)]">Professional Tax</td>
+                          <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-primary)]">{formatINR(data.ptAmount)}</td>
+                          <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-secondary)]">—</td>
+                        </tr>
+                      )}
+                      {data.lwfEmployeeAmount > 0 && (
+                        <tr>
+                          <td className="px-3 py-2 text-[13px] text-[var(--color-text-primary)]">Labour Welfare Fund</td>
+                          <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-primary)]">{formatINR(data.lwfEmployeeAmount)}</td>
+                          <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-secondary)]">—</td>
+                        </tr>
+                      )}
+                      {data.tdsAmount > 0 && (
+                        <tr>
+                          <td className="px-3 py-2 text-[13px] text-[var(--color-text-primary)]">Income Tax (TDS)</td>
+                          <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-primary)]">{formatINR(data.tdsAmount)}</td>
+                          <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-secondary)]">{formatINR(data.ytdTds)}</td>
+                        </tr>
+                      )}
                       <tr className="bg-[var(--color-page-bg)]">
-                        <td className="px-3 py-2 text-[13px] font-semibold text-[var(--color-text-primary)]">Income Tax (TDS)</td>
-                        <td className="px-3 py-2 text-[13px] text-right font-semibold text-[var(--color-text-primary)]">{formatINR(data.tdsAmount)}</td>
-                        <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-secondary)]">{formatINR(data.ytdTds)}</td>
+                        <td className="px-3 py-2 text-[13px] font-semibold text-[var(--color-text-primary)]">Total Deductions</td>
+                        <td className="px-3 py-2 text-[13px] text-right font-semibold text-[var(--color-text-primary)]">
+                          {formatINR(data.employeePf + data.employeeEsi + data.ptAmount + data.lwfEmployeeAmount + data.tdsAmount)}
+                        </td>
+                        <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-secondary)]">—</td>
                       </tr>
                     </tbody>
                   </table>
