@@ -9,4 +9,5 @@ public interface ITdsWorksheetRepository
     Task AddAsync(TdsWorksheet worksheet, CancellationToken ct = default);
     Task AddRangeAsync(IEnumerable<TdsWorksheet> worksheets, CancellationToken ct = default);
     Task DeleteByRunIdAsync(Guid payrollRunId, CancellationToken ct = default);
+    Task DeleteByRunAndEmployeeAsync(Guid payrollRunId, Guid employeeId, CancellationToken ct = default);
 }

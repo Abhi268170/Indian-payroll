@@ -23,6 +23,7 @@ public sealed class OverrideTdsCommandValidator : AbstractValidator<OverrideTdsC
 public sealed class OverrideTdsHandler(
     IPayrollRunRepository runRepo,
     IPayrunEmployeeRepository payrunEmployeeRepo,
+    ITdsWorksheetRepository tdsWorksheetRepo,
     IUnitOfWork uow)
     : IRequestHandler<OverrideTdsCommand>
 {
@@ -65,6 +66,11 @@ public sealed class OverrideTdsHandler(
             actorId: req.ActorId);
 
         payrunEmployeeRepo.Update(payrunEmp);
+
+        // Sync TdsWorksheet to reflect the override
+        var worksheet = await tdsWorksheetRepo.GetByRunAndEmployeeAsync(req.RunId, req.EmployeeId, ct);
+        worksheet?.UpdateTdsThisMonth(req.OverrideAmount, req.ActorId);
+
         await uow.SaveChangesAsync(ct);
     }
 }

@@ -35,6 +35,8 @@ public sealed class InitiatePayrollRunHandler(
     IPayrunEmployeeRepository payrunEmployeeRepo,
     IPayrunComponentBreakdownRepository breakdownRepo,
     IWorkLocationRepository workLocationRepo,
+    IPriorEmployerYtdRepository priorYtdRepo,
+    ITdsWorksheetRepository tdsWorksheetRepo,
     ITenantContext tenantContext,
     IUnitOfWork uow)
     : IRequestHandler<InitiatePayrollRunCommand, PayrollRunSummaryDto>
@@ -71,7 +73,7 @@ public sealed class InitiatePayrollRunHandler(
         var orgConfig = await statutoryRepo.GetByTenantAsync(ct)
             ?? throw new DomainException("Statutory configuration not found. Configure EPF/ESI settings first.");
 
-        string fiscalYear = period.FiscalYearLabel.Replace("FY", "");
+        string fiscalYear = $"{period.FiscalYear}-{(period.FiscalYear + 1) % 100:D2}";
         var taxConfig = await statutoryRepo.GetIncomeTaxConfigAsync(fiscalYear, "New", ct);
         var taxSlabs = await statutoryRepo.GetIncomeTaxSlabsAsync(fiscalYear, "New", ct);
         var surchargeSlabs = await statutoryRepo.GetSurchargeSlabsAsync(fiscalYear, "New", ct);
@@ -118,6 +120,13 @@ public sealed class InitiatePayrollRunHandler(
 
         var staticConfig = StatutoryConfigBuilder.Build(orgConfig, taxConfig, taxSlabs, surchargeSlabs, ptSlabs, lwfConfigs);
         string snapshot = JsonSerializer.Serialize(staticConfig);
+
+        // Load prior employer YTD for mid-year joiners (bulk, keyed by employeeId)
+        IReadOnlyList<Guid> employeeIds = activeEmployees.Select(e => e.Id).ToList();
+        IReadOnlyList<Domain.Entities.PriorEmployerYtd> priorYtdList =
+            await priorYtdRepo.GetByEmployeesAndFiscalYearAsync(employeeIds, period.FiscalYear, ct);
+        Dictionary<Guid, Domain.Entities.PriorEmployerYtd> priorYtdByEmployee =
+            priorYtdList.ToDictionary(p => p.EmployeeId);
 
         // Build engine inputs per employee
         var engineInputs = new List<EmployeeInput>();
@@ -192,12 +201,13 @@ public sealed class InitiatePayrollRunHandler(
                     LOPDays: 0,
                     WorkingDaysInMonth: workingDaysInMonth,
                     VPFAmount: 0,
-                    PriorEmployerYTDTaxableIncome: 0,
-                    PriorEmployerYTDTDSDeducted: 0,
-                    PriorEmployerYTDPF: 0,
+                    PriorEmployerYTDTaxableIncome: priorYtdByEmployee.TryGetValue(emp.Id, out var ytd) ? ytd.GrossSalary : 0m,
+                    PriorEmployerYTDTDSDeducted: ytd?.TdsDeducted ?? 0m,
+                    PriorEmployerYTDPF: 0m,
                     HalfYearMonthIndex: hyIndex,
                     HalfYearTotalMonths: hyTotal,
-                    BasicWage: basicWage));
+                    BasicWage: basicWage,
+                    HasPan: hasPan));
             }
         }
 
@@ -236,6 +246,7 @@ public sealed class InitiatePayrollRunHandler(
         // Create PayrunEmployee + PayrunComponentBreakdown rows
         decimal totalNetPay = 0m, totalEmployerPf = 0m, totalEmployerEsi = 0m, totalTds = 0m, totalPt = 0m;
         decimal totalGross = 0m, totalEmployerEps = 0m, totalLwfEmployer = 0m, totalGratuity = 0m;
+        var tdsWorksheets = new List<TdsWorksheet>();
 
         foreach (var emp in activeEmployees)
         {
@@ -268,6 +279,28 @@ public sealed class InitiatePayrollRunHandler(
                     epsAmount: result.PF.EPSEmployerContribution,
                     monthlyCTC: info.structure.AnnualCTC / 12m,
                     actorId: req.ActorId);
+
+                // Build TdsWorksheet for this employee
+                priorYtdByEmployee.TryGetValue(emp.Id, out var empYtd);
+                decimal priorYtdTdsDeducted = empYtd?.TdsDeducted ?? 0m;
+                tdsWorksheets.Add(TdsWorksheet.Create(
+                    payrollRunId: payrollRun.Id,
+                    employeeId: emp.Id,
+                    tenantId: tenantContext.TenantId,
+                    fiscalYear: period.FiscalYear,
+                    annualProjectedIncome: result.TDS.TaxableIncome + staticConfig.StandardDeduction,
+                    standardDeduction: staticConfig.StandardDeduction,
+                    taxableIncome: result.TDS.TaxableIncome,
+                    taxBeforeRebate: result.TDS.TaxBeforeRebate,
+                    rebate87A: result.TDS.Rebate87AApplied ? Math.Min(result.TDS.TaxBeforeRebate, staticConfig.Rebate87AAmount) : 0m,
+                    surcharge: result.TDS.Surcharge,
+                    cess: result.TDS.Cess,
+                    annualTaxLiability: result.TDS.AnnualProjectedTax,
+                    ytdTdsDeducted: priorYtdTdsDeducted,
+                    remainingMonthsInFy: runInput.MonthsRemainingInFY,
+                    tdsThisMonth: result.TDS.MonthlyTDS,
+                    hasPanOverride: result.TDS.HasPanOverride,
+                    createdBy: req.ActorId));
 
                 totalGross += result.Gross.GrossWage;
                 totalNetPay += result.NetPay;
@@ -305,6 +338,9 @@ public sealed class InitiatePayrollRunHandler(
         payrollRun.UpdateFinancialSummary(
             payrollCost, totalNetPay, totalEmployerPf, totalEmployerEsi, totalTds, totalPt,
             employeeCount, req.ActorId);
+
+        if (tdsWorksheets.Count > 0)
+            await tdsWorksheetRepo.AddRangeAsync(tdsWorksheets, ct);
 
         await uow.SaveChangesAsync(ct);
 

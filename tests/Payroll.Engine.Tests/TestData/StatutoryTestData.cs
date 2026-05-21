@@ -31,10 +31,6 @@ public static class StatutoryTestData
         EPFEmployeeRate: 0.12m,
         EPSEmployerRate: 0.0833m,
         EPSCap: 1_250m,
-        EDLIEmployerRate: 0.005m,
-        EDLICap: 75m,
-        EPFAdminRate: 0.005m,
-        EPFAdminMinimum: 500m,
         EpfRestrictEmployerWage: true,
         EpfConsiderSalaryOnLop: true,
         EpfProRateRestrictedPfWage: false,
@@ -48,8 +44,6 @@ public static class StatutoryTestData
         ESIEnabled: true,
         PTEnabled: false,
         EpfIncludeEmployerInCtc: true,
-        EpfIncludeEdliInCtc: false,
-        EpfIncludeAdminInCtc: false,
         GratuityIncludedInCtc: true
     );
 }

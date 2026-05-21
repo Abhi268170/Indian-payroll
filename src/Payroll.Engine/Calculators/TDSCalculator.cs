@@ -8,17 +8,30 @@ public static class TDSCalculator
 {
     public static TDSResult Compute(
         decimal annualProjectedGross,
-        decimal ptDeduction,
-        decimal pfEmployeeContribution,
+        decimal priorEmployerYTDTaxableIncome,
         decimal priorEmployerYTDTDSDeducted,
+        bool hasPan,
         StatutoryConfig config,
         int monthsRemainingInFY)
     {
-        decimal taxableIncome = annualProjectedGross - config.StandardDeduction;
+        decimal totalProjected = annualProjectedGross + priorEmployerYTDTaxableIncome;
+
+        // Section 206AA: 20% flat if PAN not furnished, overrides all slab logic
+        if (!hasPan)
+        {
+            decimal flatAnnualTax = Math.Round(totalProjected * 0.20m, 2, MidpointRounding.AwayFromZero);
+            decimal flatMonthly = monthsRemainingInFY > 0
+                ? Math.Round(flatAnnualTax / monthsRemainingInFY, 2, MidpointRounding.AwayFromZero)
+                : 0m;
+            return new TDSResult(flatMonthly, flatAnnualTax, 0m, 0m, TaxableIncome: 0m, TaxBeforeRebate: 0m, Rebate87AApplied: false, HasPanOverride: true);
+        }
+
+        decimal taxableIncome = totalProjected - config.StandardDeduction;
         if (taxableIncome <= 0m)
-            return new TDSResult(0m, 0m, 0m, 0m, TaxableIncome: 0m, Rebate87AApplied: false);
+            return new TDSResult(0m, 0m, 0m, 0m, TaxableIncome: 0m, TaxBeforeRebate: 0m, Rebate87AApplied: false, HasPanOverride: false);
 
         decimal annualTax = ComputeSlabTax(taxableIncome, config.NewRegimeSlabs);
+        decimal taxBeforeRebate = annualTax;
 
         // Section 87A rebate
         bool rebateApplied = false;
@@ -28,7 +41,7 @@ public static class TDSCalculator
             rebateApplied = true;
         }
 
-        decimal surcharge = ComputeSurcharge(taxableIncome, annualTax, config.SurchargeSlabs);
+        decimal surcharge = ComputeSurcharge(taxableIncome, annualTax, config.SurchargeSlabs, config.NewRegimeSlabs);
         decimal cess = Math.Round((annualTax + surcharge) * config.CessRate, 2, MidpointRounding.AwayFromZero);
         decimal totalAnnualTax = annualTax + surcharge + cess;
 
@@ -37,7 +50,7 @@ public static class TDSCalculator
             ? Math.Max(0m, Math.Round(remainingTax / monthsRemainingInFY, 2, MidpointRounding.AwayFromZero))
             : 0m;
 
-        return new TDSResult(monthlyTDS, totalAnnualTax, surcharge, cess, taxableIncome, rebateApplied);
+        return new TDSResult(monthlyTDS, totalAnnualTax, surcharge, cess, taxableIncome, taxBeforeRebate, rebateApplied, HasPanOverride: false);
     }
 
     private static decimal ComputeSlabTax(decimal income, IReadOnlyList<TaxSlab> slabs)
@@ -53,12 +66,26 @@ public static class TDSCalculator
         return tax;
     }
 
-    private static decimal ComputeSurcharge(decimal income, decimal tax, IReadOnlyList<SurchargeConfig> slabs)
+    private static decimal ComputeSurcharge(
+        decimal income,
+        decimal tax,
+        IReadOnlyList<SurchargeConfig> surchargeSlabs,
+        IReadOnlyList<TaxSlab> taxSlabs)
     {
-        SurchargeConfig? slab = slabs
+        SurchargeConfig? slab = surchargeSlabs
             .Where(s => income > s.IncomeFrom && (s.IncomeTo is null || income <= s.IncomeTo))
             .OrderByDescending(s => s.IncomeFrom)
             .FirstOrDefault();
-        return slab is null ? 0m : Math.Round(tax * slab.Rate, 2, MidpointRounding.AwayFromZero);
+        if (slab is null) return 0m;
+
+        decimal rawSurcharge = Math.Round(tax * slab.Rate, 2, MidpointRounding.AwayFromZero);
+
+        // Marginal relief: tax+surcharge must not exceed taxAtThreshold + (income - threshold)
+        decimal taxAtThreshold = ComputeSlabTax(slab.IncomeFrom, taxSlabs);
+        decimal reliefLimit = taxAtThreshold + (income - slab.IncomeFrom);
+        if (tax + rawSurcharge > reliefLimit)
+            return Math.Max(0m, Math.Round(reliefLimit - tax, 2, MidpointRounding.AwayFromZero));
+
+        return rawSurcharge;
     }
 }

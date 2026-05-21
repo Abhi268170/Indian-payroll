@@ -6,4 +6,6 @@ public sealed record TDSResult(
     decimal Surcharge,
     decimal Cess,
     decimal TaxableIncome,
-    bool Rebate87AApplied);
+    decimal TaxBeforeRebate,
+    bool Rebate87AApplied,
+    bool HasPanOverride);

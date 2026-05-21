@@ -36,8 +36,6 @@ public class PFCalculatorTests
         result.EmployeeContribution.Should().Be(0m);
         result.EPFEmployerContribution.Should().Be(0m);
         result.EPSEmployerContribution.Should().Be(0m);
-        result.EDLIEmployerContribution.Should().Be(0m);
-        result.EPFAdminContribution.Should().Be(0m);
         result.IsExempt.Should().BeTrue();
     }
 
@@ -95,32 +93,6 @@ public class PFCalculatorTests
         decimal expectedEpfEmployer = Math.Round(30000m * 0.12m, 2, MidpointRounding.AwayFromZero) - eps; // 3600 - 1249.50 = 2350.50
         result.EPFEmployerContribution.Should().Be(expectedEpfEmployer);
         result.EPSEmployerContribution.Should().Be(eps);
-    }
-
-    // ── EDLI ──────────────────────────────────────────────────────────────────
-
-    [Fact]
-    public void EDLI_CappedAt75WhenWageAboveCap()
-    {
-        var result = PFCalculator.Compute(30000m, 30000m, 0m, 26, RestrictedConfig(), optOut: false);
-        result.EDLIEmployerContribution.Should().Be(75m); // 0.5% × 15,000 = 75
-    }
-
-    [Fact]
-    public void EDLI_ProportionalWhenWageBelowCap()
-    {
-        var result = PFCalculator.Compute(10000m, 10000m, 0m, 26, RestrictedConfig(), optOut: false);
-        result.EDLIEmployerContribution.Should().Be(Math.Round(10000m * 0.005m, 2, MidpointRounding.AwayFromZero)); // 50
-    }
-
-    // ── Admin ──────────────────────────────────────────────────────────────────
-
-    [Fact]
-    public void Admin_MinimumFloorIs500()
-    {
-        // PF wage 1,000 → 0.5% = 5 → floor to 500
-        var result = PFCalculator.Compute(1000m, 1000m, 0m, 26, RestrictedConfig(), optOut: false);
-        result.EPFAdminContribution.Should().Be(500m);
     }
 
     // ── LOP: EpfConsiderSalaryOnLop = true ───────────────────────────────────

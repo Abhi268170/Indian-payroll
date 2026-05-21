@@ -25,10 +25,6 @@ public class BuildComponentInputsTests
         EPFEmployeeRate: 0.12m,
         EPSEmployerRate: 0.0833m,
         EPSCap: 1_250m,
-        EDLIEmployerRate: 0.005m,
-        EDLICap: 75m,
-        EPFAdminRate: 0.005m,
-        EPFAdminMinimum: 500m,
         EpfRestrictEmployerWage: true,
         EpfConsiderSalaryOnLop: true,
         EpfProRateRestrictedPfWage: false,
@@ -42,8 +38,6 @@ public class BuildComponentInputsTests
         ESIEnabled: true,
         PTEnabled: false,
         EpfIncludeEmployerInCtc: false,
-        EpfIncludeEdliInCtc: false,
-        EpfIncludeAdminInCtc: false,
         GratuityIncludedInCtc: false
     );
 

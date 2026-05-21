@@ -79,6 +79,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPayrunEmployeeRepository, PayrunEmployeeRepository>();
         services.AddScoped<IPayrunComponentBreakdownRepository, PayrunComponentBreakdownRepository>();
         services.AddScoped<ITdsWorksheetRepository, TdsWorksheetRepository>();
+        services.AddScoped<IPriorEmployerYtdRepository, PriorEmployerYtdRepository>();
         services.AddScoped<IPayrollRunAuditLogRepository, PayrollRunAuditLogRepository>();
         services.AddScoped<IPayslipRepository, PayslipRepository>();
         services.AddTransient<IPayrollJobDispatcher, HangfirePayrollJobDispatcher>();

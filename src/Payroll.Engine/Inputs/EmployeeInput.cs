@@ -21,4 +21,5 @@ public sealed record EmployeeInput(
     int HalfYearMonthIndex,
     int HalfYearTotalMonths,
     decimal BasicWage = 0m,
-    bool GratuityEnabled = true);
+    bool GratuityEnabled = true,
+    bool HasPan = true);

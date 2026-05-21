@@ -29,6 +29,12 @@ public sealed class TdsWorksheet : AuditableEntity
     // §206AA: 20% flat if PAN missing
     public bool HasPanOverride { get; private set; }
 
+    public void UpdateTdsThisMonth(decimal newTdsThisMonth, Guid updatedBy)
+    {
+        TdsThisMonth = newTdsThisMonth;
+        SetUpdated(updatedBy);
+    }
+
     public static TdsWorksheet Create(
         Guid payrollRunId,
         Guid employeeId,

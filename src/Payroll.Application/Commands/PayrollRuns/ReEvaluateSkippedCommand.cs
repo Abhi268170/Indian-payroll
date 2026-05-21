@@ -34,6 +34,8 @@ public sealed class ReEvaluateSkippedHandler(
     ISalaryComponentRepository salaryComponentRepo,
     IPayScheduleRepository payScheduleRepo,
     IWorkLocationRepository workLocationRepo,
+    IPriorEmployerYtdRepository priorYtdRepo,
+    ITdsWorksheetRepository tdsWorksheetRepo,
     IUnitOfWork uow)
     : IRequestHandler<ReEvaluateSkippedCommand, int>
 {
@@ -82,6 +84,10 @@ public sealed class ReEvaluateSkippedHandler(
         Dictionary<Guid, Employee> empById = allEmployees
             .Where(e => targetIds.Contains(e.Id))
             .ToDictionary(e => e.Id);
+
+        IReadOnlyList<PriorEmployerYtd> priorYtdList =
+            await priorYtdRepo.GetByEmployeesAndFiscalYearAsync([.. targetIds], period.FiscalYear, ct);
+        Dictionary<Guid, PriorEmployerYtd> priorYtdByEmployee = priorYtdList.ToDictionary(p => p.EmployeeId);
 
         var addedComponentIds = new HashSet<Guid>();
         var processedMap = new Dictionary<Guid, (PayrunEmployee PayrunEmp, EmployeeSalaryStructure Structure, SalaryStructureTemplate? Template)>();
@@ -150,6 +156,7 @@ public sealed class ReEvaluateSkippedHandler(
             IReadOnlyList<SalaryComponentInput> components = InitiatePayrollRunHandler.BuildComponentInputs(
                 salaryStructure, template, addedCompDetails, staticConfig);
             decimal basicWage = components.FirstOrDefault(c => c.Code == "BASICSALARY")?.Amount ?? 0m;
+            bool hasPan = !string.IsNullOrWhiteSpace(emp.EncryptedPAN);
             string workState = workLocationStateMap.TryGetValue(emp.WorkLocationId, out string? wls) ? wls : "MH";
             (int hyIndex, int hyTotal) = period.HalfYearPosition(emp.DateOfJoining);
 
@@ -165,12 +172,13 @@ public sealed class ReEvaluateSkippedHandler(
                 LOPDays: 0,
                 WorkingDaysInMonth: workingDaysInMonth,
                 VPFAmount: 0,
-                PriorEmployerYTDTaxableIncome: 0,
-                PriorEmployerYTDTDSDeducted: 0,
-                PriorEmployerYTDPF: 0,
+                PriorEmployerYTDTaxableIncome: priorYtdByEmployee.TryGetValue(emp.Id, out var ytd) ? ytd.GrossSalary : 0m,
+                PriorEmployerYTDTDSDeducted: ytd?.TdsDeducted ?? 0m,
+                PriorEmployerYTDPF: 0m,
                 HalfYearMonthIndex: hyIndex,
                 HalfYearTotalMonths: hyTotal,
-                BasicWage: basicWage));
+                BasicWage: basicWage,
+                HasPan: hasPan));
         }
 
         var runInput = new PayrollRunInput(
@@ -219,6 +227,28 @@ public sealed class ReEvaluateSkippedHandler(
                 actorId: req.ActorId);
 
             payrunEmployeeRepo.Update(payrunEmp);
+
+            // Upsert TDS worksheet
+            await tdsWorksheetRepo.DeleteByRunAndEmployeeAsync(req.PayrollRunId, empId, ct);
+            priorYtdByEmployee.TryGetValue(empId, out var empYtd);
+            await tdsWorksheetRepo.AddAsync(TdsWorksheet.Create(
+                payrollRunId: req.PayrollRunId,
+                employeeId: empId,
+                tenantId: payrunEmp.TenantId,
+                fiscalYear: period.FiscalYear,
+                annualProjectedIncome: result.TDS.TaxableIncome + staticConfig.StandardDeduction,
+                standardDeduction: staticConfig.StandardDeduction,
+                taxableIncome: result.TDS.TaxableIncome,
+                taxBeforeRebate: result.TDS.TaxBeforeRebate,
+                rebate87A: result.TDS.Rebate87AApplied ? Math.Min(result.TDS.TaxBeforeRebate, staticConfig.Rebate87AAmount) : 0m,
+                surcharge: result.TDS.Surcharge,
+                cess: result.TDS.Cess,
+                annualTaxLiability: result.TDS.AnnualProjectedTax,
+                ytdTdsDeducted: empYtd?.TdsDeducted ?? 0m,
+                remainingMonthsInFy: runInput.MonthsRemainingInFY,
+                tdsThisMonth: result.TDS.MonthlyTDS,
+                hasPanOverride: result.TDS.HasPanOverride,
+                createdBy: req.ActorId), ct);
 
             await breakdownRepo.RemoveRangeByRunAndEmployeeAsync(req.PayrollRunId, empId, ct);
             foreach (var comp in result.Gross.ComponentBreakdown)

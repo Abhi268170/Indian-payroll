@@ -23,4 +23,7 @@ internal sealed class TdsWorksheetRepository(PayrollDbContext db) : ITdsWorkshee
 
     public async Task DeleteByRunIdAsync(Guid payrollRunId, CancellationToken ct = default) =>
         await db.TdsWorksheets.Where(w => w.PayrollRunId == payrollRunId).ExecuteDeleteAsync(ct);
+
+    public async Task DeleteByRunAndEmployeeAsync(Guid payrollRunId, Guid employeeId, CancellationToken ct = default) =>
+        await db.TdsWorksheets.Where(w => w.PayrollRunId == payrollRunId && w.EmployeeId == employeeId).ExecuteDeleteAsync(ct);
 }

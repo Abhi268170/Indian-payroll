@@ -9,6 +9,7 @@ public record DeletePayrollRunCommand(Guid RunId, Guid ActorId) : IRequest;
 
 public sealed class DeletePayrollRunHandler(
     IPayrollRunRepository runRepo,
+    ITdsWorksheetRepository tdsWorksheetRepo,
     IUnitOfWork uow)
     : IRequestHandler<DeletePayrollRunCommand>
 {
@@ -19,6 +20,8 @@ public sealed class DeletePayrollRunHandler(
 
         if (run.Status != PayrollRunStatus.Draft)
             throw new InvalidOperationException("Only a Draft payroll run can be deleted.");
+
+        await tdsWorksheetRepo.DeleteByRunIdAsync(req.RunId, ct);
 
         run.Delete(req.ActorId);
         runRepo.Update(run);

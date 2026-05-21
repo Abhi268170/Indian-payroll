@@ -29,9 +29,9 @@ public static class PayrollEngine
         LWFResult lwf = LWFCalculator.Compute(emp.WorkStateCode, gross.GrossWage, config, run);
         TDSResult tds = TDSCalculator.Compute(
             gross.AnnualProjectedGross,
-            pt.Amount,
-            pf.EmployeeContribution,
+            emp.PriorEmployerYTDTaxableIncome,
             emp.PriorEmployerYTDTDSDeducted,
+            emp.HasPan,
             config,
             run.MonthsRemainingInFY);
 

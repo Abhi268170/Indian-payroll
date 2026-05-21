@@ -45,6 +45,7 @@ public class VariableInputCommandTests
             Substitute.For<IEmployeeRepository>(),
             Substitute.For<IWorkLocationRepository>(),
             Substitute.For<IPayScheduleRepository>(),
+            Substitute.For<ITdsWorksheetRepository>(),
             Substitute.For<IUnitOfWork>());
 
         Func<Task> act = () => handler.Handle(new SetLopCommand(RunId, EmpId, 2, ActorId), CancellationToken.None);
@@ -79,6 +80,7 @@ public class VariableInputCommandTests
             Substitute.For<IEmployeeRepository>(),
             Substitute.For<IWorkLocationRepository>(),
             scheduleRepo,
+            Substitute.For<ITdsWorksheetRepository>(),
             Substitute.For<IUnitOfWork>());
 
         // lopDays = 26 >= salaryDivisor = 26 (FixedDays/26)
@@ -101,8 +103,8 @@ public class VariableInputCommandTests
             grossPay: 50_000m, netPay: 44_000m,
             taxesAmount: 6_000m, benefitsAmount: 0m, reimbursementsAmount: 0m,
             employeePf: 0m, employerPf: 0m, employeeEsi: 0m, employerEsi: 0m,
-            ptAmount: 0m, tdsAmount: 6_000m, edliAmount: 0m, lwfEmployeeAmount: 0m, lwfEmployerAmount: 0m, gratuityAmount: 0m,
-            monthlyCTC: 0m,
+            ptAmount: 0m, tdsAmount: 6_000m, lwfEmployeeAmount: 0m, lwfEmployerAmount: 0m, gratuityAmount: 0m,
+            epsAmount: 0m, monthlyCTC: 0m,
             actorId: ActorId);
 
         var runRepo = Substitute.For<IPayrollRunRepository>();
@@ -113,7 +115,7 @@ public class VariableInputCommandTests
             .Returns(payrunEmp);
 
         var handler = new OverrideTdsHandler(
-            runRepo, payrunEmpRepo, Substitute.For<IUnitOfWork>());
+            runRepo, payrunEmpRepo, Substitute.For<ITdsWorksheetRepository>(), Substitute.For<IUnitOfWork>());
 
         await handler.Handle(new OverrideTdsCommand(RunId, EmpId, 5_000m, "Employee request", ActorId), CancellationToken.None);
 
@@ -135,6 +137,7 @@ public class VariableInputCommandTests
         var handler = new OverrideTdsHandler(
             runRepo,
             Substitute.For<IPayrunEmployeeRepository>(),
+            Substitute.For<ITdsWorksheetRepository>(),
             Substitute.For<IUnitOfWork>());
 
         Func<Task> act = () => handler.Handle(new OverrideTdsCommand(RunId, EmpId, 5_000m, "reason", ActorId), CancellationToken.None);
@@ -155,8 +158,8 @@ public class VariableInputCommandTests
             grossPay: 50_000m, netPay: 44_000m,
             taxesAmount: 6_000m, benefitsAmount: 0m, reimbursementsAmount: 0m,
             employeePf: 0m, employerPf: 0m, employeeEsi: 0m, employerEsi: 0m,
-            ptAmount: 0m, tdsAmount: 6_000m, edliAmount: 0m, lwfEmployeeAmount: 0m, lwfEmployerAmount: 0m, gratuityAmount: 0m,
-            monthlyCTC: 0m,
+            ptAmount: 0m, tdsAmount: 6_000m, lwfEmployeeAmount: 0m, lwfEmployerAmount: 0m, gratuityAmount: 0m,
+            epsAmount: 0m, monthlyCTC: 0m,
             actorId: ActorId);
 
         var runRepo = Substitute.For<IPayrollRunRepository>();
@@ -204,8 +207,8 @@ public class VariableInputCommandTests
             grossPay: 60_000m, netPay: 54_000m,
             taxesAmount: 6_000m, benefitsAmount: 0m, reimbursementsAmount: 0m,
             employeePf: 0m, employerPf: 0m, employeeEsi: 0m, employerEsi: 0m,
-            ptAmount: 0m, tdsAmount: 6_000m, edliAmount: 0m, lwfEmployeeAmount: 0m, lwfEmployerAmount: 0m, gratuityAmount: 0m,
-            monthlyCTC: 0m,
+            ptAmount: 0m, tdsAmount: 6_000m, lwfEmployeeAmount: 0m, lwfEmployerAmount: 0m, gratuityAmount: 0m,
+            epsAmount: 0m, monthlyCTC: 0m,
             actorId: ActorId);
 
         var bd = PayrunComponentBreakdown.Create(

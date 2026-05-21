@@ -31,6 +31,7 @@ public sealed class SetLopCommandHandler(
     IEmployeeRepository employeeRepo,
     IWorkLocationRepository workLocationRepo,
     IPayScheduleRepository payScheduleRepo,
+    ITdsWorksheetRepository tdsWorksheetRepo,
     IUnitOfWork uow)
     : IRequestHandler<SetLopCommand>
 {
@@ -105,6 +106,27 @@ public sealed class SetLopCommandHandler(
 
         payrunEmployeeRepo.Update(payrunEmp);
 
+        // Upsert TDS worksheet
+        await tdsWorksheetRepo.DeleteByRunAndEmployeeAsync(req.RunId, req.EmployeeId, ct);
+        await tdsWorksheetRepo.AddAsync(Domain.Entities.TdsWorksheet.Create(
+            payrollRunId: req.RunId,
+            employeeId: req.EmployeeId,
+            tenantId: payrunEmp.TenantId,
+            fiscalYear: run.PayPeriod.FiscalYear,
+            annualProjectedIncome: result.TDS.TaxableIncome + staticConfig.StandardDeduction,
+            standardDeduction: staticConfig.StandardDeduction,
+            taxableIncome: result.TDS.TaxableIncome,
+            taxBeforeRebate: result.TDS.TaxBeforeRebate,
+            rebate87A: result.TDS.Rebate87AApplied ? Math.Min(result.TDS.TaxBeforeRebate, staticConfig.Rebate87AAmount) : 0m,
+            surcharge: result.TDS.Surcharge,
+            cess: result.TDS.Cess,
+            annualTaxLiability: result.TDS.AnnualProjectedTax,
+            ytdTdsDeducted: 0m,
+            remainingMonthsInFy: run.PayPeriod.MonthsRemainingInFiscalYear(),
+            tdsThisMonth: result.TDS.MonthlyTDS,
+            hasPanOverride: result.TDS.HasPanOverride,
+            createdBy: req.ActorId), ct);
+
         var allEmployees = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
         var activeEmployees = allEmployees.Where(e => e.Status == PayrunEmployeeStatus.Active).ToList();
         run.UpdateFinancialSummary(
@@ -139,6 +161,7 @@ public sealed class SetLopCommandHandler(
         decimal basicWage = breakdowns
             .FirstOrDefault(b => b.ComponentCode == "BASICSALARY")?.FullAmount ?? 0m;
 
+        bool hasPan = !string.IsNullOrWhiteSpace(employee.EncryptedPAN);
         var (hyIndex, hyTotal) = run.PayPeriod.HalfYearPosition(employee.DateOfJoining);
         var empInput = new EmployeeInput(
             EmployeeId: employee.Id,
@@ -157,7 +180,8 @@ public sealed class SetLopCommandHandler(
             PriorEmployerYTDPF: 0m,
             HalfYearMonthIndex: hyIndex,
             HalfYearTotalMonths: hyTotal,
-            BasicWage: basicWage);
+            BasicWage: basicWage,
+            HasPan: hasPan);
 
         var runInput = new PayrollRunInput(
             Year: run.PayPeriod.Year,
