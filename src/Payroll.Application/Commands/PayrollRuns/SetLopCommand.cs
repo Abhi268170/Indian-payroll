@@ -2,6 +2,7 @@ using FluentValidation;
 using MediatR;
 using Payroll.Application.Services;
 using Payroll.Domain.Common;
+using Payroll.Domain.Entities;
 using Payroll.Domain.Enums;
 using Payroll.Domain.Interfaces;
 using Payroll.Engine;
@@ -31,6 +32,7 @@ public sealed class SetLopCommandHandler(
     IEmployeeRepository employeeRepo,
     IWorkLocationRepository workLocationRepo,
     IPayScheduleRepository payScheduleRepo,
+    IEmployeeFyOpeningRepository fyOpeningRepo,
     ITdsWorksheetRepository tdsWorksheetRepo,
     IUnitOfWork uow)
     : IRequestHandler<SetLopCommand>
@@ -77,6 +79,16 @@ public sealed class SetLopCommandHandler(
 
         Dictionary<Guid, (decimal YtdGross, decimal YtdTds)> currentYtdMap =
             await payrunEmployeeRepo.GetCurrentEmployerYtdAsync([req.EmployeeId], run.PayPeriod.FiscalYear, ct);
+
+        EmployeeFyOpening? fyOpening = await fyOpeningRepo.GetAsync(req.EmployeeId, run.PayPeriod.FiscalYear, ct);
+        if (fyOpening is not null)
+        {
+            currentYtdMap.TryGetValue(req.EmployeeId, out var existing);
+            currentYtdMap[req.EmployeeId] = (
+                existing.YtdGross + fyOpening.GrossSalary,
+                existing.YtdTds + fyOpening.TdsDeducted);
+        }
+
         currentYtdMap.TryGetValue(req.EmployeeId, out (decimal YtdGross, decimal YtdTds) currentYtd);
 
         PayrollResult result = RecomputeEmployee(employee, workStateCode, payrunEmp, breakdowns, run, staticConfig, salaryDivisor, currentYtd.YtdGross, currentYtd.YtdTds);

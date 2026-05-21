@@ -35,6 +35,7 @@ public sealed class PayrollDbContext(
     public DbSet<SalaryRevision> SalaryRevisions => Set<SalaryRevision>();
     public DbSet<EmployeeVehicleDetail> EmployeeVehicleDetails => Set<EmployeeVehicleDetail>();
     public DbSet<PriorEmployerYtd> PriorEmployerYtds => Set<PriorEmployerYtd>();
+    public DbSet<EmployeeFyOpening> EmployeeFyOpenings => Set<EmployeeFyOpening>();
     public DbSet<PayrollRun> PayrollRuns => Set<PayrollRun>();
     public DbSet<PayrunEmployee> PayrunEmployees => Set<PayrunEmployee>();
     public DbSet<PayrunComponentBreakdown> PayrunComponentBreakdowns => Set<PayrunComponentBreakdown>();
@@ -80,6 +81,7 @@ public sealed class PayrollDbContext(
         modelBuilder.ApplyConfiguration(new SalaryRevisionConfiguration());
         modelBuilder.ApplyConfiguration(new EmployeeVehicleDetailConfiguration());
         modelBuilder.ApplyConfiguration(new PriorEmployerYtdConfiguration());
+        modelBuilder.ApplyConfiguration(new EmployeeFyOpeningConfiguration());
         modelBuilder.ApplyConfiguration(new PayrollRunConfiguration());
         modelBuilder.ApplyConfiguration(new PayrunEmployeeConfiguration());
         modelBuilder.ApplyConfiguration(new PayrunComponentBreakdownConfiguration());

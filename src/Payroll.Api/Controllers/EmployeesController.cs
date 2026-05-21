@@ -11,6 +11,8 @@ using Payroll.Domain.Interfaces;
 
 namespace Payroll.Api.Controllers;
 
+public sealed record UpsertFyOpeningRequest(int MonthsCount, decimal GrossSalary, decimal TdsDeducted, decimal PfDeducted);
+
 [ApiController]
 [Route("api/v1/employees")]
 [Authorize]
@@ -189,6 +191,34 @@ public sealed class EmployeesController(ISender sender) : ControllerBase
             return NoContent();
         }
         catch (NotFoundException) { return NotFound(); }
+        catch (ValidationException ex)
+        {
+            return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });
+        }
+    }
+
+    [HttpGet("{id:guid}/fy-opening/{fiscalYear:int}")]
+    public async Task<IActionResult> GetFyOpening(Guid id, int fiscalYear, CancellationToken ct)
+    {
+        EmployeeFyOpeningDto? dto = await sender.Send(new GetEmployeeFyOpeningQuery(id, fiscalYear), ct);
+        if (dto is null) return NotFound();
+        return Ok(dto);
+    }
+
+    [HttpPut("{id:guid}/fy-opening/{fiscalYear:int}")]
+    public async Task<IActionResult> UpsertFyOpening(
+        Guid id,
+        int fiscalYear,
+        [FromBody] UpsertFyOpeningRequest req,
+        CancellationToken ct)
+    {
+        try
+        {
+            await sender.Send(new UpsertEmployeeFyOpeningCommand(
+                id, fiscalYear, req.MonthsCount,
+                req.GrossSalary, req.TdsDeducted, req.PfDeducted, GetActorId()), ct);
+            return NoContent();
+        }
         catch (ValidationException ex)
         {
             return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });

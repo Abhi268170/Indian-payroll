@@ -134,7 +134,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.ToTable("business_units", (string)null);
                 });
 
-
             modelBuilder.Entity("Payroll.Domain.Entities.Department", b =>
                 {
                     b.Property<Guid>("Id")
@@ -564,6 +563,76 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.ToTable("employee_exits", (string)null);
                 });
 
+            modelBuilder.Entity("Payroll.Domain.Entities.EmployeeFyOpening", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("employee_id");
+
+                    b.Property<int>("FiscalYear")
+                        .HasColumnType("integer")
+                        .HasColumnName("fiscal_year");
+
+                    b.Property<decimal>("GrossSalary")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("gross_salary");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<int>("MonthsCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("months_count");
+
+                    b.Property<decimal>("PfDeducted")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("pf_deducted");
+
+                    b.Property<decimal>("TdsDeducted")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("tds_deducted");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_employee_fy_openings");
+
+                    b.HasIndex("EmployeeId", "FiscalYear")
+                        .IsUnique()
+                        .HasDatabaseName("ix_employee_fy_openings_employee_id_fiscal_year")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("employee_fy_openings", (string)null);
+                });
+
             modelBuilder.Entity("Payroll.Domain.Entities.EmployeeSalaryComponentOverride", b =>
                 {
                     b.Property<Guid>("Id")
@@ -767,6 +836,10 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<decimal>("CessRate")
+                        .HasColumnType("numeric(7,4)")
+                        .HasColumnName("cess_rate");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamptz")
                         .HasColumnName("created_at");
@@ -787,6 +860,34 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("numeric(18,4)")
                         .HasColumnName("employer_statutory_cap");
 
+                    b.Property<decimal>("EpfEmployeeRate")
+                        .HasColumnType("numeric(7,4)")
+                        .HasColumnName("epf_employee_rate");
+
+                    b.Property<decimal>("EpsCap")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("eps_cap");
+
+                    b.Property<decimal>("EpsEmployerRate")
+                        .HasColumnType("numeric(7,4)")
+                        .HasColumnName("eps_employer_rate");
+
+                    b.Property<decimal>("EsiEmployeeRate")
+                        .HasColumnType("numeric(7,4)")
+                        .HasColumnName("esi_employee_rate");
+
+                    b.Property<decimal>("EsiEmployerRate")
+                        .HasColumnType("numeric(7,4)")
+                        .HasColumnName("esi_employer_rate");
+
+                    b.Property<decimal>("EsiPwdWageLimit")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("esi_pwd_wage_limit");
+
+                    b.Property<decimal>("EsiWageLimit")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("esi_wage_limit");
+
                     b.Property<string>("FiscalYear")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -801,57 +902,9 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("numeric(7,4)")
                         .HasColumnName("nps_employer_max_rate");
 
-                    b.Property<decimal>("CessRate")
-                        .HasColumnType("numeric(7,4)")
-                        .HasColumnName("cess_rate");
-
                     b.Property<decimal>("PfWageCap")
                         .HasColumnType("numeric(18,4)")
                         .HasColumnName("pf_wage_cap");
-
-                    b.Property<decimal>("EpfEmployeeRate")
-                        .HasColumnType("numeric(7,4)")
-                        .HasColumnName("epf_employee_rate");
-
-                    b.Property<decimal>("EpsEmployerRate")
-                        .HasColumnType("numeric(7,4)")
-                        .HasColumnName("eps_employer_rate");
-
-                    b.Property<decimal>("EpsCap")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("eps_cap");
-
-                    b.Property<decimal>("EdliEmployerRate")
-                        .HasColumnType("numeric(7,4)")
-                        .HasColumnName("edli_employer_rate");
-
-                    b.Property<decimal>("EdliCap")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("edli_cap");
-
-                    b.Property<decimal>("EpfAdminRate")
-                        .HasColumnType("numeric(7,4)")
-                        .HasColumnName("epf_admin_rate");
-
-                    b.Property<decimal>("EpfAdminMinimum")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("epf_admin_minimum");
-
-                    b.Property<decimal>("EsiWageLimit")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("esi_wage_limit");
-
-                    b.Property<decimal>("EsiPwdWageLimit")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("esi_pwd_wage_limit");
-
-                    b.Property<decimal>("EsiEmployeeRate")
-                        .HasColumnType("numeric(7,4)")
-                        .HasColumnName("esi_employee_rate");
-
-                    b.Property<decimal>("EsiEmployerRate")
-                        .HasColumnType("numeric(7,4)")
-                        .HasColumnName("esi_employer_rate");
 
                     b.Property<decimal>("Rebate87AAmount")
                         .HasColumnType("numeric(18,4)")
@@ -1458,10 +1511,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("uuid")
                         .HasColumnName("tenant_id");
 
-                    b.Property<decimal>("TotalEdli")
-                        .HasColumnType("numeric(18,2)")
-                        .HasColumnName("total_edli");
-
                     b.Property<decimal>("TotalEmployerEsi")
                         .HasColumnType("numeric(18,2)")
                         .HasColumnName("total_employer_esi");
@@ -1603,6 +1652,12 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("character varying(200)")
                         .HasColumnName("component_name");
 
+                    b.Property<bool>("ConsiderForEpf")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("consider_for_epf");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamptz")
                         .HasColumnName("created_at");
@@ -1634,11 +1689,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.Property<bool>("IsOneTimeEarning")
                         .HasColumnType("boolean")
                         .HasColumnName("is_one_time_earning");
-
-                    b.Property<bool>("ConsiderForEpf")
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("consider_for_epf");
 
                     b.Property<Guid>("PayrollRunId")
                         .HasColumnType("uuid")
@@ -1708,34 +1758,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("uuid")
                         .HasColumnName("deleted_by");
 
-                    b.Property<decimal>("EdliAmount")
-                        .HasColumnType("numeric(18,2)")
-                        .HasColumnName("edli_amount");
-
-                    b.Property<decimal>("LwfEmployeeAmount")
-                        .HasColumnType("numeric(18,2)")
-                        .HasColumnName("lwf_employee_amount");
-
-                    b.Property<decimal>("LwfEmployerAmount")
-                        .HasColumnType("numeric(18,2)")
-                        .HasColumnName("lwf_employer_amount");
-
-                    b.Property<decimal>("GratuityAmount")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("gratuity_amount");
-
-                    b.Property<decimal>("EpsAmount")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("eps_amount");
-
-                    b.Property<decimal>("AdminAmount")
-                        .HasColumnType("numeric(18,4)")
-                        .HasColumnName("admin_amount");
-
-                    b.Property<decimal>("MonthlyCTC")
-                        .HasColumnType("numeric(18,2)")
-                        .HasColumnName("monthly_ctc");
-
                     b.Property<decimal>("EmployeeEsi")
                         .HasColumnType("numeric(18,2)")
                         .HasColumnName("employee_esi");
@@ -1756,6 +1778,14 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("numeric(18,2)")
                         .HasColumnName("employer_pf");
 
+                    b.Property<decimal>("EpsAmount")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("eps_amount");
+
+                    b.Property<decimal>("GratuityAmount")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("gratuity_amount");
+
                     b.Property<decimal>("GrossPay")
                         .HasColumnType("numeric(18,2)")
                         .HasColumnName("gross_pay");
@@ -1771,6 +1801,18 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.Property<int>("LopDays")
                         .HasColumnType("integer")
                         .HasColumnName("lop_days");
+
+                    b.Property<decimal>("LwfEmployeeAmount")
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("lwf_employee_amount");
+
+                    b.Property<decimal>("LwfEmployerAmount")
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("lwf_employer_amount");
+
+                    b.Property<decimal>("MonthlyCTC")
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("monthly_ctc");
 
                     b.Property<decimal>("NetPay")
                         .HasColumnType("numeric(18,2)")
@@ -2031,6 +2073,11 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("uuid")
                         .HasColumnName("created_by");
 
+                    b.Property<string>("DeductionMonthsCsv")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("deduction_months_csv");
+
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamptz")
                         .HasColumnName("deleted_at");
@@ -2077,11 +2124,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.Property<decimal>("PtAmount")
                         .HasColumnType("numeric(18,4)")
                         .HasColumnName("pt_amount");
-
-                    b.Property<string>("DeductionMonthsCsv")
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)")
-                        .HasColumnName("deduction_months_csv");
 
                     b.Property<string>("StateCode")
                         .IsRequired()
@@ -2158,8 +2200,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
 
                     b.HasIndex("StateCode")
                         .IsUnique()
-                        .HasDatabaseName("ix_pt_state_registrations_state_code")
-                        .HasFilter("is_deleted = false");
+                        .HasDatabaseName("ix_pt_state_registrations_state_code");
 
                     b.ToTable("pt_state_registrations", (string)null);
                 });
@@ -2633,14 +2674,6 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("character varying(30)")
                         .HasColumnName("epf_establishment_code");
 
-                    b.Property<bool>("EpfIncludeAdminInCtc")
-                        .HasColumnType("boolean")
-                        .HasColumnName("epf_include_admin_in_ctc");
-
-                    b.Property<bool>("EpfIncludeEdliInCtc")
-                        .HasColumnType("boolean")
-                        .HasColumnName("epf_include_edli_in_ctc");
-
                     b.Property<bool>("EpfIncludeEmployerInCtc")
                         .HasColumnType("boolean")
                         .HasColumnName("epf_include_employer_in_ctc");
@@ -2667,8 +2700,9 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnName("esi_notified_area");
 
                     b.Property<bool>("GratuityIncludedInCtc")
-                        .HasDefaultValue(true)
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
+                        .HasDefaultValue(true)
                         .HasColumnName("gratuity_included_in_ctc");
 
                     b.Property<bool>("IsDeleted")

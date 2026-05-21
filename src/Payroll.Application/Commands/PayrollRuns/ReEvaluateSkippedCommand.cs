@@ -35,6 +35,7 @@ public sealed class ReEvaluateSkippedHandler(
     IPayScheduleRepository payScheduleRepo,
     IWorkLocationRepository workLocationRepo,
     IPriorEmployerYtdRepository priorYtdRepo,
+    IEmployeeFyOpeningRepository fyOpeningRepo,
     ITdsWorksheetRepository tdsWorksheetRepo,
     IUnitOfWork uow)
     : IRequestHandler<ReEvaluateSkippedCommand, int>
@@ -91,6 +92,16 @@ public sealed class ReEvaluateSkippedHandler(
 
         Dictionary<Guid, (decimal YtdGross, decimal YtdTds)> currentYtdByEmployee =
             await payrunEmployeeRepo.GetCurrentEmployerYtdAsync([.. targetIds], period.FiscalYear, ct);
+
+        IReadOnlyList<EmployeeFyOpening> openings =
+            await fyOpeningRepo.GetByEmployeesAndFiscalYearAsync(targetIds, period.FiscalYear, ct);
+        foreach (EmployeeFyOpening opening in openings)
+        {
+            currentYtdByEmployee.TryGetValue(opening.EmployeeId, out var existing);
+            currentYtdByEmployee[opening.EmployeeId] = (
+                existing.YtdGross + opening.GrossSalary,
+                existing.YtdTds + opening.TdsDeducted);
+        }
 
         var addedComponentIds = new HashSet<Guid>();
         var processedMap = new Dictionary<Guid, (PayrunEmployee PayrunEmp, EmployeeSalaryStructure Structure, SalaryStructureTemplate? Template)>();

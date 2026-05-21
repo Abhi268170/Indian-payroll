@@ -36,6 +36,7 @@ public sealed class InitiatePayrollRunHandler(
     IPayrunComponentBreakdownRepository breakdownRepo,
     IWorkLocationRepository workLocationRepo,
     IPriorEmployerYtdRepository priorYtdRepo,
+    IEmployeeFyOpeningRepository fyOpeningRepo,
     ITdsWorksheetRepository tdsWorksheetRepo,
     ITenantContext tenantContext,
     IUnitOfWork uow)
@@ -131,6 +132,17 @@ public sealed class InitiatePayrollRunHandler(
         // Load current-employer YTD from approved/paid runs this FY in this system
         Dictionary<Guid, (decimal YtdGross, decimal YtdTds)> currentYtdByEmployee =
             await payrunEmployeeRepo.GetCurrentEmployerYtdAsync(employeeIds, period.FiscalYear, ct);
+
+        // Merge opening balances (pre-system months, same employer) into current-employer YTD
+        IReadOnlyList<EmployeeFyOpening> openings =
+            await fyOpeningRepo.GetByEmployeesAndFiscalYearAsync(employeeIds, period.FiscalYear, ct);
+        foreach (EmployeeFyOpening opening in openings)
+        {
+            currentYtdByEmployee.TryGetValue(opening.EmployeeId, out var existing);
+            currentYtdByEmployee[opening.EmployeeId] = (
+                existing.YtdGross + opening.GrossSalary,
+                existing.YtdTds + opening.TdsDeducted);
+        }
 
         // Build engine inputs per employee
         var engineInputs = new List<EmployeeInput>();

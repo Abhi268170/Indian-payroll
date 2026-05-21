@@ -7,12 +7,14 @@ import type { EmployeeDto } from '@/types/api'
 import EmployeeOverviewTab from './tabs/EmployeeOverviewTab'
 import EmployeeSalaryTab from './tabs/EmployeeSalaryTab'
 import EmployeePayslipsTab from './tabs/EmployeePayslipsTab'
+import EmployeeTaxTab from './tabs/EmployeeTaxTab'
 
-type Tab = 'overview' | 'salary' | 'investments' | 'payslips'
+type Tab = 'overview' | 'salary' | 'tax' | 'investments' | 'payslips'
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'overview', label: 'Overview' },
   { key: 'salary', label: 'Salary Details' },
+  { key: 'tax', label: 'Tax' },
   { key: 'investments', label: 'Investments' },
   { key: 'payslips', label: 'Payslips & Forms' },
 ]
@@ -48,7 +50,7 @@ export default function EmployeeDetailPage(): React.ReactElement {
   const [searchParams] = useSearchParams()
   const [tab, setTab] = useState<Tab>(() => {
     const t = searchParams.get('tab')
-    return (t === 'salary' || t === 'investments' || t === 'payslips') ? t : 'overview'
+    return (t === 'salary' || t === 'tax' || t === 'investments' || t === 'payslips') ? t : 'overview'
   })
 
   const { data: employee, isLoading, error, refetch } = useQuery<EmployeeDto>({
@@ -140,6 +142,7 @@ export default function EmployeeDetailPage(): React.ReactElement {
       <div className="bg-white border border-[var(--color-border)] border-t-0 rounded-b-xl p-0">
         {tab === 'overview' && <EmployeeOverviewTab employee={employee} onSaved={() => void refetch()} />}
         {tab === 'salary' && <EmployeeSalaryTab employeeId={employee.id} />}
+        {tab === 'tax' && <EmployeeTaxTab employeeId={employee.id} />}
         {tab === 'investments' && <ComingSoon />}
         {tab === 'payslips' && <EmployeePayslipsTab employeeId={employee.id} />}
       </div>
