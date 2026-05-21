@@ -14,6 +14,7 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
+    allowedHosts: true,
     watch: {
       // polling required for Docker volume mounts on WSL2
       usePolling: true,

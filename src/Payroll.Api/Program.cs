@@ -144,15 +144,26 @@ if (!isWorkerOnly)
     {
         options.AddPolicy("frontend", policy =>
         {
-            policy
-                .WithOrigins(
-                    "http://localhost:5173",
-                    "http://payroll.localhost:5173",
-                    "http://*.payroll.localhost:5173")
-                .SetIsOriginAllowedToAllowWildcardSubdomains()
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
+            if (builder.Environment.IsDevelopment())
+            {
+                policy
+                    .SetIsOriginAllowed(_ => true)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            }
+            else
+            {
+                policy
+                    .WithOrigins(
+                        "http://localhost:5173",
+                        "http://payroll.localhost:5173",
+                        "http://*.payroll.localhost:5173")
+                    .SetIsOriginAllowedToAllowWildcardSubdomains()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            }
         });
     });
 }

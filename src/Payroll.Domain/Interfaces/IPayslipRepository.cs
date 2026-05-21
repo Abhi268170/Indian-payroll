@@ -4,6 +4,7 @@ namespace Payroll.Domain.Interfaces;
 
 public interface IPayslipRepository
 {
+    Task<Payslip?> GetByIdAsync(Guid id, CancellationToken ct = default);
     Task<Payslip?> GetByRunAndEmployeeAsync(Guid payrollRunId, Guid employeeId, CancellationToken ct = default);
     Task<IReadOnlyList<Payslip>> GetByRunIdAsync(Guid payrollRunId, CancellationToken ct = default);
     Task<IReadOnlyList<Payslip>> GetByEmployeeIdAsync(Guid employeeId, CancellationToken ct = default);

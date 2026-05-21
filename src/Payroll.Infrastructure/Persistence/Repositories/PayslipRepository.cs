@@ -6,6 +6,9 @@ namespace Payroll.Infrastructure.Persistence.Repositories;
 
 internal sealed class PayslipRepository(PayrollDbContext db) : IPayslipRepository
 {
+    public Task<Payslip?> GetByIdAsync(Guid id, CancellationToken ct = default) =>
+        db.Payslips.FirstOrDefaultAsync(p => p.Id == id, ct);
+
     public Task<Payslip?> GetByRunAndEmployeeAsync(Guid payrollRunId, Guid employeeId, CancellationToken ct = default) =>
         db.Payslips.FirstOrDefaultAsync(p => p.PayrollRunId == payrollRunId && p.EmployeeId == employeeId, ct);
 

@@ -59,6 +59,9 @@ public sealed class ApprovePayrollRunHandler(
 
         int fiscalYear = run.PayPeriod.FiscalYear;
 
+        // Draft run already inserted worksheets at initiation; delete before re-inserting with final values.
+        await tdsWorksheetRepo.DeleteByRunIdAsync(req.RunId, ct);
+
         foreach (var pe in activeEmployees)
         {
             var employee = await employeeRepo.GetByIdAsync(pe.EmployeeId, ct)

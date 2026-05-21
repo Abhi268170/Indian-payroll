@@ -45,6 +45,7 @@ public class VariableInputCommandTests
             Substitute.For<IEmployeeRepository>(),
             Substitute.For<IWorkLocationRepository>(),
             Substitute.For<IPayScheduleRepository>(),
+            Substitute.For<IEmployeeFyOpeningRepository>(),
             Substitute.For<ITdsWorksheetRepository>(),
             Substitute.For<IUnitOfWork>());
 
@@ -80,6 +81,7 @@ public class VariableInputCommandTests
             Substitute.For<IEmployeeRepository>(),
             Substitute.For<IWorkLocationRepository>(),
             scheduleRepo,
+            Substitute.For<IEmployeeFyOpeningRepository>(),
             Substitute.For<ITdsWorksheetRepository>(),
             Substitute.For<IUnitOfWork>());
 

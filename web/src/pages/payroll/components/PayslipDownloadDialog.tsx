@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { api } from '@/lib/api'
 
 interface PayslipDownloadDialogProps {
   runId: string
@@ -11,11 +12,17 @@ export default function PayslipDownloadDialog({ runId, employeeId, employeeName,
   const [passwordProtected, setPasswordProtected] = useState(true)
 
   function handleDownload(): void {
-    const url = `/api/v1/payroll-runs/${runId}/employees/${employeeId}/payslip/pdf`
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${employeeName}-payslip.pdf`
-    a.click()
+    void api.get<Blob>(
+      `/api/v1/payroll-runs/${runId}/employees/${employeeId}/payslip/pdf`,
+      { responseType: 'blob' },
+    ).then(res => {
+      const url = URL.createObjectURL(res.data)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${employeeName}-payslip.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
+    })
     onClose()
   }
 
