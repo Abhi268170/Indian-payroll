@@ -27,7 +27,7 @@ services:
       dockerfile: src/Payroll.Api/Dockerfile
       target: final
     environment:
-      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: "http://+:8080"
       ConnectionStrings__Payroll: "Host=pgbouncer;Port=5432;Database=payroll;Username=payroll;Password=${DB_PASSWORD};No Reset On Close=true;Max Auto Prepare=0;CommandTimeout=30"
       Redis__ConnectionString: "redis:6379,password=${REDIS_PASSWORD}"
@@ -39,6 +39,10 @@ services:
       Storage__Minio__SecretKey: "${MINIO_PASSWORD}"
       Storage__Minio__BucketName: "payroll"
       Storage__Minio__UseHttps: "false"
+      SUPERADMIN_EMAIL: "${SUPERADMIN_EMAIL}"
+      SUPERADMIN_PASSWORD: "${SUPERADMIN_PASSWORD}"
+      OPENIDDICT_CLIENT_SECRET: "${OPENIDDICT_CLIENT_SECRET}"
+      ENCRYPTION_KEY: "${ENCRYPTION_KEY}"
     secrets:
       - db_password
     depends_on:

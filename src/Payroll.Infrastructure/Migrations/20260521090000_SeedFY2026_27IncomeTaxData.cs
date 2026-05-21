@@ -15,7 +15,6 @@ INSERT INTO income_tax_configs (
     employer_statutory_cap, nps_employer_max_rate,
     cess_rate,
     pf_wage_cap, epf_employee_rate, eps_employer_rate, eps_cap,
-    edli_employer_rate, edli_cap, epf_admin_rate, epf_admin_minimum,
     esi_wage_limit, esi_pwd_wage_limit, esi_employee_rate, esi_employer_rate,
     created_at, created_by, is_deleted
 ) VALUES (
@@ -24,10 +23,9 @@ INSERT INTO income_tax_configs (
     150000, 0.10,
     0.04,
     15000, 0.12, 0.0833, 1250,
-    0.005, 75, 0.01, 500,
     21000, 25000, 0.0075, 0.0325,
     now(), '00000000-0000-0000-0000-000000000001', false
-) ON CONFLICT DO NOTHING;");
+) ON CONFLICT (fiscal_year, regime) DO NOTHING;");
 
         migrationBuilder.Sql($@"
 INSERT INTO income_tax_slabs (id, fiscal_year, regime, bracket_min, bracket_max, rate, created_at, created_by, is_deleted) VALUES
