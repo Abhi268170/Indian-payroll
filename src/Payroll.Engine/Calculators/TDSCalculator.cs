@@ -10,6 +10,7 @@ public static class TDSCalculator
         decimal annualProjectedGross,
         decimal priorEmployerYTDTaxableIncome,
         decimal priorEmployerYTDTDSDeducted,
+        decimal currentEmployerYTDTDSDeducted,
         bool hasPan,
         StatutoryConfig config,
         int monthsRemainingInFY)
@@ -45,7 +46,7 @@ public static class TDSCalculator
         decimal cess = Math.Round((annualTax + surcharge) * config.CessRate, 2, MidpointRounding.AwayFromZero);
         decimal totalAnnualTax = annualTax + surcharge + cess;
 
-        decimal remainingTax = totalAnnualTax - priorEmployerYTDTDSDeducted;
+        decimal remainingTax = totalAnnualTax - currentEmployerYTDTDSDeducted - priorEmployerYTDTDSDeducted;
         decimal monthlyTDS = monthsRemainingInFY > 0
             ? Math.Max(0m, Math.Round(remainingTax / monthsRemainingInFY, 2, MidpointRounding.AwayFromZero))
             : 0m;

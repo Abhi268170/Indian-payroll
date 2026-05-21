@@ -128,6 +128,10 @@ public sealed class InitiatePayrollRunHandler(
         Dictionary<Guid, Domain.Entities.PriorEmployerYtd> priorYtdByEmployee =
             priorYtdList.ToDictionary(p => p.EmployeeId);
 
+        // Load current-employer YTD from approved/paid runs this FY in this system
+        Dictionary<Guid, (decimal YtdGross, decimal YtdTds)> currentYtdByEmployee =
+            await payrunEmployeeRepo.GetCurrentEmployerYtdAsync(employeeIds, period.FiscalYear, ct);
+
         // Build engine inputs per employee
         var engineInputs = new List<EmployeeInput>();
         var eligibleMap = new Dictionary<Guid, (EmployeeSalaryStructure structure, SalaryStructureTemplate? template, string? skipReason)>();
@@ -189,6 +193,7 @@ public sealed class InitiatePayrollRunHandler(
                 bool hasPan = !string.IsNullOrWhiteSpace(emp.EncryptedPAN);
                 string workState = workLocationStateMap.TryGetValue(emp.WorkLocationId, out string? wls) ? wls : "MH";
                 var (hyIndex, hyTotal) = period.HalfYearPosition(emp.DateOfJoining);
+                currentYtdByEmployee.TryGetValue(emp.Id, out var curYtd);
                 engineInputs.Add(new EmployeeInput(
                     EmployeeId: emp.Id,
                     EmployeeCode: emp.EmployeeCode,
@@ -207,7 +212,9 @@ public sealed class InitiatePayrollRunHandler(
                     HalfYearMonthIndex: hyIndex,
                     HalfYearTotalMonths: hyTotal,
                     BasicWage: basicWage,
-                    HasPan: hasPan));
+                    HasPan: hasPan,
+                    CurrentEmployerYTDGross: curYtd.YtdGross,
+                    CurrentEmployerYTDTDSDeducted: curYtd.YtdTds));
             }
         }
 
@@ -282,7 +289,8 @@ public sealed class InitiatePayrollRunHandler(
 
                 // Build TdsWorksheet for this employee
                 priorYtdByEmployee.TryGetValue(emp.Id, out var empYtd);
-                decimal priorYtdTdsDeducted = empYtd?.TdsDeducted ?? 0m;
+                currentYtdByEmployee.TryGetValue(emp.Id, out var wsYtd);
+                decimal ytdTdsDeducted = (empYtd?.TdsDeducted ?? 0m) + wsYtd.YtdTds;
                 tdsWorksheets.Add(TdsWorksheet.Create(
                     payrollRunId: payrollRun.Id,
                     employeeId: emp.Id,
@@ -296,7 +304,7 @@ public sealed class InitiatePayrollRunHandler(
                     surcharge: result.TDS.Surcharge,
                     cess: result.TDS.Cess,
                     annualTaxLiability: result.TDS.AnnualProjectedTax,
-                    ytdTdsDeducted: priorYtdTdsDeducted,
+                    ytdTdsDeducted: ytdTdsDeducted,
                     remainingMonthsInFy: runInput.MonthsRemainingInFY,
                     tdsThisMonth: result.TDS.MonthlyTDS,
                     hasPanOverride: result.TDS.HasPanOverride,

@@ -32,8 +32,7 @@ public static class GrossCalculator
         }
 
         decimal lopDeduction = employee.Components.Sum(c => c.Amount) - grossWage;
-        decimal annualProjected = grossWage * run.MonthsRemainingInFY
-            + employee.PriorEmployerYTDTaxableIncome;
+        decimal annualProjected = employee.CurrentEmployerYTDGross + grossWage * run.MonthsRemainingInFY;
 
         return new GrossResult(
             GrossWage: grossWage,

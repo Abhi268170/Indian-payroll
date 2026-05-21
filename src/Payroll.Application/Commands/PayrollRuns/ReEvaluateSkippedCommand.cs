@@ -89,6 +89,9 @@ public sealed class ReEvaluateSkippedHandler(
             await priorYtdRepo.GetByEmployeesAndFiscalYearAsync([.. targetIds], period.FiscalYear, ct);
         Dictionary<Guid, PriorEmployerYtd> priorYtdByEmployee = priorYtdList.ToDictionary(p => p.EmployeeId);
 
+        Dictionary<Guid, (decimal YtdGross, decimal YtdTds)> currentYtdByEmployee =
+            await payrunEmployeeRepo.GetCurrentEmployerYtdAsync([.. targetIds], period.FiscalYear, ct);
+
         var addedComponentIds = new HashSet<Guid>();
         var processedMap = new Dictionary<Guid, (PayrunEmployee PayrunEmp, EmployeeSalaryStructure Structure, SalaryStructureTemplate? Template)>();
 
@@ -178,7 +181,9 @@ public sealed class ReEvaluateSkippedHandler(
                 HalfYearMonthIndex: hyIndex,
                 HalfYearTotalMonths: hyTotal,
                 BasicWage: basicWage,
-                HasPan: hasPan));
+                HasPan: hasPan,
+                CurrentEmployerYTDGross: currentYtdByEmployee.TryGetValue(emp.Id, out var curYtd) ? curYtd.YtdGross : 0m,
+                CurrentEmployerYTDTDSDeducted: curYtd.YtdTds));
         }
 
         var runInput = new PayrollRunInput(

@@ -75,7 +75,11 @@ public sealed class SetLopCommandHandler(
             throw new InvalidOperationException("Payroll run is missing statutory config snapshot.");
         var staticConfig = JsonSerializer.Deserialize<StatutoryConfig>(run.StatutoryConfigSnapshot)!;
 
-        PayrollResult result = RecomputeEmployee(employee, workStateCode, payrunEmp, breakdowns, run, staticConfig, salaryDivisor);
+        Dictionary<Guid, (decimal YtdGross, decimal YtdTds)> currentYtdMap =
+            await payrunEmployeeRepo.GetCurrentEmployerYtdAsync([req.EmployeeId], run.PayPeriod.FiscalYear, ct);
+        currentYtdMap.TryGetValue(req.EmployeeId, out (decimal YtdGross, decimal YtdTds) currentYtd);
+
+        PayrollResult result = RecomputeEmployee(employee, workStateCode, payrunEmp, breakdowns, run, staticConfig, salaryDivisor, currentYtd.YtdGross, currentYtd.YtdTds);
 
         payrunEmp.UpdateComputedAmounts(
             grossPay: result.Gross.GrossWage,
@@ -150,7 +154,9 @@ public sealed class SetLopCommandHandler(
         IReadOnlyList<Domain.Entities.PayrunComponentBreakdown> breakdowns,
         Domain.Entities.PayrollRun run,
         StatutoryConfig staticConfig,
-        int salaryDivisor)
+        int salaryDivisor,
+        decimal currentEmployerYtdGross = 0m,
+        decimal currentEmployerYtdTds = 0m)
     {
         // Build components from stored full amounts (excludes one-time earnings — handled separately)
         var components = breakdowns
@@ -181,7 +187,9 @@ public sealed class SetLopCommandHandler(
             HalfYearMonthIndex: hyIndex,
             HalfYearTotalMonths: hyTotal,
             BasicWage: basicWage,
-            HasPan: hasPan);
+            HasPan: hasPan,
+            CurrentEmployerYTDGross: currentEmployerYtdGross,
+            CurrentEmployerYTDTDSDeducted: currentEmployerYtdTds);
 
         var runInput = new PayrollRunInput(
             Year: run.PayPeriod.Year,

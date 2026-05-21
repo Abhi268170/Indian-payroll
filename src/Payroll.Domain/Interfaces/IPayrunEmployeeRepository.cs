@@ -12,4 +12,5 @@ public interface IPayrunEmployeeRepository
     void Update(PayrunEmployee employee);
     Task<IReadOnlyList<PayrunEmployee>> GetByRunIdWithStatusAsync(Guid payrollRunId, PayrunEmployeeStatus status, CancellationToken ct = default);
     Task<IReadOnlyList<PayrunEmployee>> GetByEmployeeAndRunIdsAsync(Guid employeeId, IEnumerable<Guid> runIds, CancellationToken ct = default);
+    Task<Dictionary<Guid, (decimal YtdGross, decimal YtdTds)>> GetCurrentEmployerYtdAsync(IEnumerable<Guid> employeeIds, int fiscalYear, CancellationToken ct = default);
 }

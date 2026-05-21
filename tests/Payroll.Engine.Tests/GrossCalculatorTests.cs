@@ -16,7 +16,8 @@ public class GrossCalculatorTests
     private static EmployeeInput MakeEmployee(
         decimal lop = 0,
         decimal calendarDays = 31,
-        IReadOnlyList<SalaryComponentInput>? components = null) =>
+        IReadOnlyList<SalaryComponentInput>? components = null,
+        decimal currentEmployerYTDGross = 0m) =>
         new(
             EmployeeId: Guid.NewGuid(),
             EmployeeCode: "EMP001",
@@ -33,7 +34,8 @@ public class GrossCalculatorTests
             PriorEmployerYTDTDSDeducted: 0,
             PriorEmployerYTDPF: 0,
             HalfYearMonthIndex: 1,
-            HalfYearTotalMonths: 6);
+            HalfYearTotalMonths: 6,
+            CurrentEmployerYTDGross: currentEmployerYTDGross);
 
     private static IReadOnlyList<SalaryComponentInput> DefaultComponents() =>
     [
@@ -156,6 +158,25 @@ public class GrossCalculatorTests
         GrossResult result = GrossCalculator.Compute(MakeEmployee(lop: 0), Run31());
         result.PFWage.Should().Be(28000m);     // BASIC only (ConsiderForEpf=true)
         result.FullPFWage.Should().Be(28000m);
+    }
+
+    // ── AnnualProjectedGross ──────────────────────────────────────────────────
+
+    [Fact]
+    public void AnnualProjectedGross_NoYtd_IsGrossWageTimesMonthsRemaining()
+    {
+        // grossWage = 70,000, monthsRemaining = 10 → annualProjected = 7,00,000
+        GrossResult result = GrossCalculator.Compute(MakeEmployee(), Run31());
+        result.AnnualProjectedGross.Should().Be(7_00_000m);
+    }
+
+    [Fact]
+    public void AnnualProjectedGross_WithCurrentYtd_AddsYtdToProjection()
+    {
+        // currentYTD = 3,50,000 (5 months already paid), grossWage = 70,000, monthsRemaining = 10
+        // annualProjected = 3,50,000 + 70,000 × 10 = 10,50,000
+        GrossResult result = GrossCalculator.Compute(MakeEmployee(currentEmployerYTDGross: 3_50_000m), Run31());
+        result.AnnualProjectedGross.Should().Be(10_50_000m);
     }
 
     // ── ComponentBreakdown structure ──────────────────────────────────────────

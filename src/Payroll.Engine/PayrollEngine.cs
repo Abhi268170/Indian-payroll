@@ -31,6 +31,7 @@ public static class PayrollEngine
             gross.AnnualProjectedGross,
             emp.PriorEmployerYTDTaxableIncome,
             emp.PriorEmployerYTDTDSDeducted,
+            emp.CurrentEmployerYTDTDSDeducted,
             emp.HasPan,
             config,
             run.MonthsRemainingInFY);

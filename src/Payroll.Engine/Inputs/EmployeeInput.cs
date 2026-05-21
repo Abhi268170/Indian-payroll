@@ -22,4 +22,7 @@ public sealed record EmployeeInput(
     int HalfYearTotalMonths,
     decimal BasicWage = 0m,
     bool GratuityEnabled = true,
-    bool HasPan = true);
+    bool HasPan = true,
+    // YTD from current employer (approved runs this FY in this system)
+    decimal CurrentEmployerYTDGross = 0m,
+    decimal CurrentEmployerYTDTDSDeducted = 0m);
