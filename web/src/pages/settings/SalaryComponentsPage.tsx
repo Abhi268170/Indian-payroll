@@ -25,6 +25,7 @@ export interface SalaryComponentSummary {
   isActive: boolean
   isSystemComponent: boolean
   isAssociatedWithEmployee: boolean
+  isOneTime: boolean
   formulaType: string | null
   fixedAmount: number | null
   percentage: number | null
@@ -231,8 +232,13 @@ export default function SalaryComponentsPage(): ReactElement {
                       </div>
                     )}
                     {comp.isSystemComponent && (
-                      <span className="inline-block mt-0.5 text-[10px] font-medium bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
+                      <span className="inline-block mt-0.5 mr-1 text-[10px] font-medium bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded">
                         System
+                      </span>
+                    )}
+                    {comp.isOneTime && (
+                      <span className="inline-block mt-0.5 text-[10px] font-medium bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded">
+                        One-time
                       </span>
                     )}
 

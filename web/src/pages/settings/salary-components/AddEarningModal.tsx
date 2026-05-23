@@ -59,17 +59,29 @@ export default function AddEarningModal({
   const [considerForEsi, setConsiderForEsi] = useState(false)
   const [calculateOnProRata, setCalculateOnProRata] = useState(true)
   const [showInPayslip, setShowInPayslip] = useState(true)
+  const [isOneTime, setIsOneTime] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // One-time components are typed at runtime by an operator inside a payroll
+  // run drawer, so they must be a fixed flat amount and never prorated.
+  const effectivePayType = isOneTime ? 'FlatAmount' : payType
+  const effectiveFormulaType = isOneTime ? 'Fixed' : formulaType
+  const effectiveProRata = !isOneTime && calculateOnProRata
 
   const mutation = useMutation({
     mutationFn: () =>
       api.post('/api/v1/salary-components/earnings', {
         name, nameInPayslip: nameInPayslip || name,
-        earningType, payType, formulaType,
-        fixedAmount: formulaType === 'Fixed' ? parseFloat(fixedAmount) : null,
-        percentage: formulaType !== 'Fixed' ? parseFloat(percentage) : null,
+        earningType,
+        payType: effectivePayType,
+        formulaType: effectiveFormulaType,
+        fixedAmount: isOneTime ? null : (formulaType === 'Fixed' ? parseFloat(fixedAmount) : null),
+        percentage: isOneTime ? null : (formulaType !== 'Fixed' ? parseFloat(percentage) : null),
         isTaxable, considerForEpf, epfInclusionRule,
-        considerForEsi, calculateOnProRata, showInPayslip,
+        considerForEsi,
+        calculateOnProRata: effectiveProRata,
+        showInPayslip,
+        isOneTime,
       }),
     onSuccess: onAdded,
     onError: (err: unknown) => {
@@ -125,34 +137,49 @@ export default function AddEarningModal({
           </select>
         </Field>
 
-        <Field label="Pay Type">
-          <div className="flex gap-4">
-            {(['Monthly', 'FlatAmount'] as const).map(v => (
-              <label key={v} className="flex items-center gap-2 cursor-pointer text-[13px]">
-                <input type="radio" checked={payType === v} onChange={() => { setPayType(v) }} className="accent-[var(--color-primary)]" />
-                {v === 'Monthly' ? 'Monthly' : 'Flat Amount'}
-              </label>
-            ))}
-          </div>
-        </Field>
+        <Toggle
+          label="One-time component (Bonus, Commission, etc.)"
+          checked={isOneTime}
+          onChange={setIsOneTime}
+        />
+        {isOneTime && (
+          <p className="text-[11px] text-[var(--color-text-muted)] -mt-2 ml-6">
+            Excluded from the salary structure builder. Appears in the &ldquo;Add Earning&rdquo; dropdown inside a payroll run drawer.
+          </p>
+        )}
 
-        <Field label="Calculation Type">
-          <select className={inputCls} value={formulaType} onChange={e => { setFormulaType(e.target.value as typeof formulaType) }}>
-            <option value="Fixed">Fixed Amount</option>
-            <option value="PercentOfBasic">% of Basic</option>
-            <option value="PercentOfGross">% of Gross</option>
-            <option value="PercentOfCTC">% of CTC</option>
-          </select>
-        </Field>
+        {!isOneTime && (
+          <>
+            <Field label="Pay Type">
+              <div className="flex gap-4">
+                {(['Monthly', 'FlatAmount'] as const).map(v => (
+                  <label key={v} className="flex items-center gap-2 cursor-pointer text-[13px]">
+                    <input type="radio" checked={payType === v} onChange={() => { setPayType(v) }} className="accent-[var(--color-primary)]" />
+                    {v === 'Monthly' ? 'Monthly' : 'Flat Amount'}
+                  </label>
+                ))}
+              </div>
+            </Field>
 
-        {formulaType === 'Fixed' ? (
-          <Field label="Amount (₹/month)">
-            <input type="number" className={inputCls} value={fixedAmount} onChange={e => { setFixedAmount(e.target.value) }} placeholder="0.00" />
-          </Field>
-        ) : (
-          <Field label="Percentage (%)">
-            <input type="number" className={inputCls} value={percentage} onChange={e => { setPercentage(e.target.value) }} min={0} max={100} placeholder="0.00" />
-          </Field>
+            <Field label="Calculation Type">
+              <select className={inputCls} value={formulaType} onChange={e => { setFormulaType(e.target.value as typeof formulaType) }}>
+                <option value="Fixed">Fixed Amount</option>
+                <option value="PercentOfBasic">% of Basic</option>
+                <option value="PercentOfGross">% of Gross</option>
+                <option value="PercentOfCTC">% of CTC</option>
+              </select>
+            </Field>
+
+            {formulaType === 'Fixed' ? (
+              <Field label="Amount (₹/month)">
+                <input type="number" className={inputCls} value={fixedAmount} onChange={e => { setFixedAmount(e.target.value) }} placeholder="0.00" />
+              </Field>
+            ) : (
+              <Field label="Percentage (%)">
+                <input type="number" className={inputCls} value={percentage} onChange={e => { setPercentage(e.target.value) }} min={0} max={100} placeholder="0.00" />
+              </Field>
+            )}
+          </>
         )}
 
         <div className="space-y-2">
@@ -169,7 +196,9 @@ export default function AddEarningModal({
             </div>
           )}
           <Toggle label="Consider for ESI" checked={considerForEsi} onChange={setConsiderForEsi} />
-          <Toggle label="Pro-rata on attendance" checked={calculateOnProRata} onChange={setCalculateOnProRata} />
+          {!isOneTime && (
+            <Toggle label="Pro-rata on attendance" checked={calculateOnProRata} onChange={setCalculateOnProRata} />
+          )}
           <Toggle label="Show in payslip" checked={showInPayslip} onChange={setShowInPayslip} />
         </div>
       </div>

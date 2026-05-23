@@ -34,7 +34,8 @@ public sealed class CreateEarningHandler(
             req.FixedAmount, req.Percentage,
             req.IsTaxable, req.ConsiderForEpf, epfRule,
             req.ConsiderForEsi, req.CalculateOnProRata, req.ShowInPayslip,
-            tenantContext.TenantId, req.ActorId);
+            tenantContext.TenantId, req.ActorId,
+            isOneTime: req.IsOneTime);
 
         await repo.AddAsync(component, ct);
         await uow.SaveChangesAsync(ct);

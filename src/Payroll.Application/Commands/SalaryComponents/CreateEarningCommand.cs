@@ -17,5 +17,6 @@ public sealed record CreateEarningCommand(
     bool ConsiderForEsi,
     bool CalculateOnProRata,
     bool ShowInPayslip,
-    Guid ActorId
+    Guid ActorId,
+    bool IsOneTime = false
 ) : IRequest<Guid>;

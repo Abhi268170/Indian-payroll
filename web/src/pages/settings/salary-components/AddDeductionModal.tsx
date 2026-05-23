@@ -14,6 +14,7 @@ export default function AddDeductionModal({
   const [name, setName] = useState('')
   const [nameInPayslip, setNameInPayslip] = useState('')
   const [frequency, setFrequency] = useState<'EveryMonth' | 'OnceAYear'>('EveryMonth')
+  const [isOneTime, setIsOneTime] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const mutation = useMutation({
@@ -21,7 +22,10 @@ export default function AddDeductionModal({
       api.post('/api/v1/salary-components/deductions', {
         name,
         nameInPayslip: nameInPayslip || name,
-        deductionFrequency: frequency,
+        // One-time deductions don't recur; backend still requires a frequency
+        // for the column, send EveryMonth as the inert default.
+        deductionFrequency: isOneTime ? 'EveryMonth' : frequency,
+        isOneTime,
       }),
     onSuccess: onAdded,
     onError: (err: unknown) => {
@@ -68,25 +72,44 @@ export default function AddDeductionModal({
           <label className="block text-[12px] text-[var(--color-text-secondary)] mb-1">Name in Payslip</label>
           <input className={inputCls} value={nameInPayslip} onChange={e => { setNameInPayslip(e.target.value) }} />
         </div>
-        <div>
-          <label className="block text-[12px] text-[var(--color-text-secondary)] mb-2">Deduction Frequency</label>
-          <div className="space-y-2">
-            {([
-              { value: 'EveryMonth', label: 'Every month' },
-              { value: 'OnceAYear', label: 'Once a year' },
-            ] as const).map(opt => (
-              <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer">
-                <input
-                  type="radio"
-                  checked={frequency === opt.value}
-                  onChange={() => { setFrequency(opt.value) }}
-                  className="accent-[var(--color-primary)]"
-                />
-                <span className="text-[13px] text-[var(--color-text-primary)]">{opt.label}</span>
-              </label>
-            ))}
+        <label className="flex items-center gap-2.5 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={isOneTime}
+            onChange={e => { setIsOneTime(e.target.checked) }}
+            className="accent-[var(--color-primary)]"
+          />
+          <span className="text-[13px] text-[var(--color-text-primary)]">
+            One-time deduction (Loan Recovery, Advance Repayment, etc.)
+          </span>
+        </label>
+        {isOneTime && (
+          <p className="text-[11px] text-[var(--color-text-muted)] -mt-2 ml-6">
+            Appears in the &ldquo;Add Deduction&rdquo; dropdown inside a payroll run drawer.
+          </p>
+        )}
+
+        {!isOneTime && (
+          <div>
+            <label className="block text-[12px] text-[var(--color-text-secondary)] mb-2">Deduction Frequency</label>
+            <div className="space-y-2">
+              {([
+                { value: 'EveryMonth', label: 'Every month' },
+                { value: 'OnceAYear', label: 'Once a year' },
+              ] as const).map(opt => (
+                <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer">
+                  <input
+                    type="radio"
+                    checked={frequency === opt.value}
+                    onChange={() => { setFrequency(opt.value) }}
+                    className="accent-[var(--color-primary)]"
+                  />
+                  <span className="text-[13px] text-[var(--color-text-primary)]">{opt.label}</span>
+                </label>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </Modal>
   )

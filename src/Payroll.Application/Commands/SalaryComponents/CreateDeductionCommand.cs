@@ -7,5 +7,6 @@ public sealed record CreateDeductionCommand(
     string NameInPayslip,
     string? Code,
     string DeductionFrequency,
-    Guid ActorId
+    Guid ActorId,
+    bool IsOneTime = false
 ) : IRequest<Guid>;

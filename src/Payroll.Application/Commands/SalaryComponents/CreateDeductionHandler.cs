@@ -24,7 +24,8 @@ public sealed class CreateDeductionHandler(
 
         SalaryComponent component = SalaryComponent.CreateDeduction(
             req.Name, req.NameInPayslip, code, frequency,
-            tenantContext.TenantId, req.ActorId);
+            tenantContext.TenantId, req.ActorId,
+            isOneTime: req.IsOneTime);
 
         await repo.AddAsync(component, ct);
         await uow.SaveChangesAsync(ct);

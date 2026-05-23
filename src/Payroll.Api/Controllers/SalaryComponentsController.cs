@@ -76,7 +76,8 @@ public sealed class SalaryComponentsController(ISender sender) : ControllerBase
                 req.FixedAmount, req.Percentage,
                 req.IsTaxable, req.ConsiderForEpf, req.EpfInclusionRule,
                 req.ConsiderForEsi, req.CalculateOnProRata, req.ShowInPayslip,
-                GetActorId()), ct);
+                GetActorId(),
+                IsOneTime: req.IsOneTime), ct);
             return CreatedAtAction(nameof(Get), new { id }, new { id });
         }
         catch (FluentValidation.ValidationException ex)
@@ -97,7 +98,8 @@ public sealed class SalaryComponentsController(ISender sender) : ControllerBase
         {
             Guid id = await sender.Send(new CreateDeductionCommand(
                 req.Name, req.NameInPayslip, req.Code, req.DeductionFrequency,
-                GetActorId()), ct);
+                GetActorId(),
+                IsOneTime: req.IsOneTime), ct);
             return CreatedAtAction(nameof(Get), new { id }, new { id });
         }
         catch (FluentValidation.ValidationException ex)
@@ -229,10 +231,12 @@ public record CreateEarningRequest(
     string EarningType, string PayType, string FormulaType,
     decimal? FixedAmount, decimal? Percentage,
     bool IsTaxable, bool ConsiderForEpf, string EpfInclusionRule,
-    bool ConsiderForEsi, bool CalculateOnProRata, bool ShowInPayslip);
+    bool ConsiderForEsi, bool CalculateOnProRata, bool ShowInPayslip,
+    bool IsOneTime = false);
 
 public record CreateDeductionRequest(
-    string Name, string NameInPayslip, string? Code, string DeductionFrequency);
+    string Name, string NameInPayslip, string? Code, string DeductionFrequency,
+    bool IsOneTime = false);
 
 public record CreateReimbursementRequest(
     string Name, string NameInPayslip, string? Code,
