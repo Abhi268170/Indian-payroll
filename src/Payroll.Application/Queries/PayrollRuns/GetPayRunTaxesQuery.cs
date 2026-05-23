@@ -33,12 +33,14 @@ public sealed class GetPayRunTaxesHandler(
             ?? throw new NotFoundException($"Payroll run {req.RunId} not found.");
 
         IReadOnlyList<Domain.Entities.TdsWorksheet> worksheets = await tdsWorksheetRepo.GetByRunIdAsync(req.RunId, ct);
+        IReadOnlyList<Domain.Entities.Employee> employees = await employeeRepo.GetManyByIdsAsync(
+            worksheets.Select(w => w.EmployeeId), ct);
+        Dictionary<Guid, Domain.Entities.Employee> employeeMap = employees.ToDictionary(e => e.Id);
 
         var result = new List<PayRunTaxLineDto>(worksheets.Count);
         foreach (Domain.Entities.TdsWorksheet ws in worksheets)
         {
-            Domain.Entities.Employee? emp = await employeeRepo.GetByIdAsync(ws.EmployeeId, ct);
-            if (emp is null) continue;
+            if (!employeeMap.TryGetValue(ws.EmployeeId, out Domain.Entities.Employee? emp)) continue;
 
             result.Add(new PayRunTaxLineDto(
                 EmployeeId: ws.EmployeeId,

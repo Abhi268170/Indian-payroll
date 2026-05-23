@@ -27,8 +27,8 @@ public sealed class PayrollExportService(
 
         IReadOnlyList<PayrunEmployee> payrunEmps = await payrunEmployeeRepo.GetByRunIdAsync(runId, ct);
 
-        IReadOnlyList<Employee> allEmployees = await employeeRepo.ListAsync(ct);
-        Dictionary<Guid, Employee> empById = allEmployees.ToDictionary(e => e.Id);
+        IReadOnlyList<Employee> employees = await employeeRepo.GetManyByIdsAsync(payrunEmps.Select(e => e.EmployeeId), ct);
+        Dictionary<Guid, Employee> empById = employees.ToDictionary(e => e.Id);
 
         string periodLabel = new DateTime(run.PayPeriod.Year, run.PayPeriod.Month, 1).ToString("MMM-yyyy");
 

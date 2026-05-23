@@ -20,6 +20,9 @@ public sealed class GetPendingTasksHandler(
             ?? throw new NotFoundException($"Payroll run {req.RunId} not found.");
 
         var payrunEmployees = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
+        IReadOnlyList<Domain.Entities.Employee> employees = await employeeRepo.GetManyByIdsAsync(
+            payrunEmployees.Select(e => e.EmployeeId), ct);
+        Dictionary<Guid, Domain.Entities.Employee> employeeMap = employees.ToDictionary(e => e.Id);
 
         var hardBlocks = new List<PendingTaskItemDto>();
         var softWarnings = new List<PendingTaskItemDto>();
@@ -31,7 +34,7 @@ public sealed class GetPendingTasksHandler(
                 pe.SkipReason is not null &&
                 pe.SkipReason.StartsWith("Onboarding incomplete", StringComparison.OrdinalIgnoreCase))
             {
-                var emp = await employeeRepo.GetByIdAsync(pe.EmployeeId, ct);
+                employeeMap.TryGetValue(pe.EmployeeId, out Domain.Entities.Employee? emp);
                 hardBlocks.Add(new PendingTaskItemDto(pe.EmployeeId, emp?.EmployeeCode ?? pe.EmployeeId.ToString(), pe.SkipReason));
                 continue;
             }
@@ -39,9 +42,11 @@ public sealed class GetPendingTasksHandler(
             // Active employee without PAN = soft warning (TDS at 20% §206AA)
             if (pe.Status == PayrunEmployeeStatus.Active)
             {
-                var emp = await employeeRepo.GetByIdAsync(pe.EmployeeId, ct);
-                if (emp is not null && string.IsNullOrWhiteSpace(emp.EncryptedPAN))
+                if (employeeMap.TryGetValue(pe.EmployeeId, out Domain.Entities.Employee? emp) &&
+                    string.IsNullOrWhiteSpace(emp.EncryptedPAN))
+                {
                     softWarnings.Add(new PendingTaskItemDto(pe.EmployeeId, emp.EmployeeCode, "PAN not provided — TDS deducted at 20% (§206AA)"));
+                }
             }
         }
 

@@ -25,12 +25,14 @@ public sealed class GetBankAdviceHandler(
             throw new InvalidOperationException("Bank advice is only available for Approved or Paid runs.");
 
         var activePayrunEmps = await payrunEmployeeRepo.GetByRunIdWithStatusAsync(req.RunId, PayrunEmployeeStatus.Active, ct);
+        IReadOnlyList<Domain.Entities.Employee> employees = await employeeRepo.GetManyByIdsAsync(
+            activePayrunEmps.Select(e => e.EmployeeId), ct);
+        Dictionary<Guid, Domain.Entities.Employee> employeeMap = employees.ToDictionary(e => e.Id);
 
         var rows = new List<BankAdviceRowDto>();
         foreach (var pe in activePayrunEmps)
         {
-            var employee = await employeeRepo.GetByIdAsync(pe.EmployeeId, ct);
-            if (employee is null) continue;
+            if (!employeeMap.TryGetValue(pe.EmployeeId, out Domain.Entities.Employee? employee)) continue;
 
             if (employee.PaymentMode != PaymentMode.BankTransfer) continue;
 
