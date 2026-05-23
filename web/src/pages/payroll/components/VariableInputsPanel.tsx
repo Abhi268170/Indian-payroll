@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { X, Trash2 } from 'lucide-react'
+import { X, Trash2, Plus } from 'lucide-react'
 import { api } from '@/lib/api'
 import { formatINR } from '@/lib/format'
 import type { EmployeeVariableInputsDto, ComponentBreakdownDto } from '@/types/api'
+import AddOneTimeEntryModal from './AddOneTimeEntryModal'
 
 interface VariableInputsPanelProps {
   runId: string
@@ -43,6 +44,7 @@ export default function VariableInputsPanel({ runId, employeeId, employeeName, o
   const [tdsOverride, setTdsOverride] = useState<string>('')
   const [tdsReason, setTdsReason] = useState('')
   const [editingTds, setEditingTds] = useState(false)
+  const [addModalCategory, setAddModalCategory] = useState<'Earning' | 'Deduction' | null>(null)
   const prevDataRef = useRef<string | null>(null)
 
   const dataKey = data ? `${String(data.tdsOverrideAmount)}-${String(data.lopDays)}` : null
@@ -191,7 +193,16 @@ export default function VariableInputsPanel({ runId, employeeId, employeeName, o
 
               {/* Earnings */}
               <section>
-                <SectionHeader title="Earnings" />
+                <div className="flex items-center justify-between mb-3">
+                  <SectionHeader title="Earnings" />
+                  <button
+                    onClick={() => { setAddModalCategory('Earning') }}
+                    className="text-[12px] text-[var(--color-primary)] hover:underline -mt-3 flex items-center gap-1"
+                  >
+                    <Plus className="w-3 h-3" />
+                    Add Earning
+                  </button>
+                </div>
                 <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
                   <table className="w-full">
                     <tbody className="divide-y divide-[var(--color-border)]">
@@ -250,14 +261,23 @@ export default function VariableInputsPanel({ runId, employeeId, employeeName, o
               <section>
                 <div className="flex items-center justify-between mb-3">
                   <SectionHeader title="Deductions" />
-                  {!editingTds && (
+                  <div className="flex items-center gap-3 -mt-3">
                     <button
-                      onClick={() => { setEditingTds(true) }}
-                      className="text-[12px] text-[var(--color-primary)] hover:underline -mt-3"
+                      onClick={() => { setAddModalCategory('Deduction') }}
+                      className="text-[12px] text-[var(--color-primary)] hover:underline flex items-center gap-1"
                     >
-                      Override TDS
+                      <Plus className="w-3 h-3" />
+                      Add Deduction
                     </button>
-                  )}
+                    {!editingTds && (
+                      <button
+                        onClick={() => { setEditingTds(true) }}
+                        className="text-[12px] text-[var(--color-primary)] hover:underline"
+                      >
+                        Override TDS
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {(() => {
@@ -392,6 +412,14 @@ export default function VariableInputsPanel({ runId, employeeId, employeeName, o
           </>
         )}
       </div>
+      {addModalCategory != null && (
+        <AddOneTimeEntryModal
+          runId={runId}
+          employeeId={employeeId}
+          category={addModalCategory}
+          onClose={() => { setAddModalCategory(null) }}
+        />
+      )}
     </div>
   )
 }
