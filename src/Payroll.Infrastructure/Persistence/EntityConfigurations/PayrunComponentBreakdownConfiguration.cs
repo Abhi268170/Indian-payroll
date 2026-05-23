@@ -17,6 +17,7 @@ internal sealed class PayrunComponentBreakdownConfiguration : IEntityTypeConfigu
         builder.Property(e => e.FullAmount).IsRequired().HasColumnType("numeric(18,2)");
         builder.Property(e => e.ProratedAmount).IsRequired().HasColumnType("numeric(18,2)");
         builder.Property(e => e.ConsiderForEpf).IsRequired().HasDefaultValue(false);
+        builder.Property(e => e.ShowInPayslip).IsRequired().HasDefaultValue(true);
 
         builder.Property(e => e.CreatedAt).HasColumnType("timestamptz").IsRequired();
         builder.Property(e => e.UpdatedAt).HasColumnType("timestamptz");

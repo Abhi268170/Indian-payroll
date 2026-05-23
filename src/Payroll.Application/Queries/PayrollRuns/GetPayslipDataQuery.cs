@@ -53,7 +53,9 @@ public sealed class GetPayslipDataHandler(
             .GroupBy(b => b.ComponentCode)
             .ToDictionary(g => g.Key, g => g.Sum(b => b.ProratedAmount));
 
-        var components = breakdowns.Select(b => new PayslipComponentDto(
+        var components = breakdowns
+            .Where(b => b.ShowInPayslip)
+            .Select(b => new PayslipComponentDto(
             b.ComponentCode,
             b.ComponentName,
             b.ProratedAmount,

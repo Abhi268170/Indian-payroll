@@ -18,6 +18,7 @@ public sealed record UpdateSalaryComponentCommand(
     string? EpfInclusionRule,
     bool? ConsiderForEsi,
     bool? CalculateOnProRata,
+    bool? ShowInPayslip,
 
     // Deduction
     string? DeductionFrequency,

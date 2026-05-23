@@ -141,6 +141,8 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IPayslipPdfGenerator, PayslipPdfGenerator>();
         services.AddScoped<IBankAdviceGenerator, BankAdviceGenerator>();
+        services.AddScoped<IEmployeeImportParser, EmployeeImportParser>();
+        services.AddSingleton<IEmployeeImportTemplateGenerator, EmployeeImportTemplateGenerator>();
 
         if (!isWorkerOnly)
             services.AddHostedService<SeedDataService>();

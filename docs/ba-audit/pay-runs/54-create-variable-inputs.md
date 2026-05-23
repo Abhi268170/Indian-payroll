@@ -71,18 +71,17 @@ One-time earnings do NOT affect LOP proration — they are additive.
 |--------|---------|---------------|----------------|
 | Add LOP | Click in split panel | Draft state | Reveals LOP Days spinbutton + Actual Payable Days |
 | Save (LOP) | Click Save within LOP section | LOP Days entered | API call; all components recalculate; split panel refreshes |
-| Add Earning | Click "Add Earning" | Draft state | Shows listbox: Bonus / Commission / Leave Encashment |
+| Add Earning | Click "Add Earning" | Draft state | Shows searchable listbox of variable earning components |
 | Save (Earning) | Click Save within earning section | Earning type + amount entered | Adds earning line to panel; total recalculates |
 | Edit TDS | Click TDS amount in panel | Draft state | Inline form: Amount spinbutton + Reason* + Calculated Value |
 | Save (TDS) | Click Save within TDS section | Reason filled | Saves override; flagged visually as overridden |
 | Cancel (panel) | Click Cancel/X in split panel | Any unsaved changes | Shows confirmation dialog (see below) |
-| Import > Import LOP | Click Import menu | Draft state | Opens import page with file upload (CSV/XLSX, encoding selector) |
-| Import > Import One Time Earnings | Click Import menu | Draft state | Opens import page for bonus/comm/encashment CSV |
-| Import > Import Reimbursements | Click Import menu | Draft state | Opens import page for reimbursement data |
-| Import > Import Adhoc Deductions | Click Import menu | Draft state | Import for ad-hoc deductions |
-| Import > Import Variable Pay | Click Import menu | Draft state | Import for variable pay components |
-| Export > Export Payroll Data | Click Export menu | Draft state | Downloads current payroll data as CSV/XLSX |
-| Export > Export Comparison Report | Click Export menu | Draft state | Downloads comparison vs prior month |
+| Import > One Time Earnings and Deductions | Click Import/Export menu | Draft state | CSV/XLS upload; sample template downloadable; covers food coupons, ad-hoc bonus, any variable component |
+| Import > LOP Details | Click Import/Export menu | Draft state | Loss-of-pay days per employee |
+| Import > LOP Adjustment Days | Click Import/Export menu | Draft state | Adjust LOP after initial entry |
+| Import > Withhold or Release Salary Details | Click Import/Export menu | Draft state | Hold or release salary for specific employees |
+| Import > Expense Reimbursement Details | Click Import/Export menu | Draft state | Medical, travel, and other reimbursements |
+| Export > Payroll Data | Click Import/Export menu | Draft state | Downloads full payrun data as CSV/XLSX |
 
 ### Cancel Confirmation Dialog
 
@@ -95,9 +94,11 @@ Buttons: **Yes** (discards changes, closes panel) | **No** (returns to panel, pr
 ## Conditional Logic
 
 - LOP Days field only appears after clicking "Add LOP" — not shown by default.
-- "Add Earning" listbox shows only earning types configured in the org's salary components (Bonus, Commission, Leave Encashment observed).
+- "Add Earning" listbox shows only earning types configured in the org's salary components. Regular monthly run: Bonus, Commission, Leave Encashment, food coupons, etc. Termination (final settlement) run: Gratuity, Bonus, Commission, Leave Encashment, Notice Pay.
+- Listbox is searchable — search field appears at top of dropdown.
 - TDS override Reason field is mandatory — cannot save TDS override without it.
-- Import/Export menu is a unified dropdown with 5 import + 2 export options.
+- Import/Export menu is a unified dropdown: 5 import options + 1 export option (verified 2026-05-21).
+- Regular monthly payruns are **auto-created by the pay schedule** — not manually initiated. The "New" button on the Pay Runs list only creates Off-Cycle Payruns or One-Time Payouts.
 - Split panel is read-only once payrun moves out of Draft state (Approved/Paid). Fields become display-only.
 
 ## Cross-Module Links
@@ -111,11 +112,11 @@ Buttons: **Yes** (discards changes, closes panel) | **No** (returns to panel, pr
 
 1. **LOP proration is manual** — admin enters LOP days; system prorates automatically on save. There is no auto-detection of absenteeism from an attendance module (Zoho Payroll does not have built-in attendance; integration with Zoho People required).
 2. **No mid-month joiner auto-proration** — confirmed with EMP002 (joined 16 May). System shows full 31 days / full salary. Admin must manually enter equivalent LOP days (15 days = days before join date). Our build should consider auto-computing LOP from joining date if date of joining falls within the pay period.
-3. **Three earning types hardcoded in listbox** — Bonus, Commission, Leave Encashment. Cannot add arbitrary one-time earning types from this panel; must be pre-configured as salary components.
+3. **Earning types in listbox = configured salary components** — not hardcoded. Regular run shows Bonus, Commission, Leave Encashment, food coupons, etc. Termination run shows Gratuity, Bonus, Commission, Leave Encashment, Notice Pay. Listbox is searchable. Must be pre-configured in Settings → Salary Components to appear here.
 4. **TDS override requires reason** — good compliance design. Our build must replicate: mandatory reason field with audit log entry.
 5. **Cancel confirmation dialog** — good UX pattern, prevents accidental loss of entered data. Replicate in our split panel component.
 6. **Import file encoding selector** — the import page shows an encoding dropdown (UTF-8, ISO-8859-1, etc.) for CSV files. Needed for Indian names with special characters.
-7. **Five import categories** — LOP, One Time Earnings, Reimbursements, Adhoc Deductions, Variable Pay are all importable separately. Each has its own template. Our build should support at minimum LOP and One Time Earnings import from day one.
+7. **Five import categories (verified 2026-05-21)** — One Time Earnings and Deductions, LOP Details, LOP Adjustment Days, Withhold/Release Salary, Expense Reimbursements. Each has its own CSV/XLS template downloadable from the import page. Our build should support at minimum LOP Details and One Time Earnings and Deductions from day one; food coupons flow through "One Time Earnings and Deductions".
 
 ## Screenshots
 

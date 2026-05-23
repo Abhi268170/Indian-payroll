@@ -248,6 +248,10 @@ public sealed class InitiatePayrollRunHandler(
             .SelectMany(e => e.Components)
             .GroupBy(c => c.ComponentId)
             .ToDictionary(g => g.Key, g => g.First().ConsiderForEpf);
+        var showInPayslipByComponent = engineInputs
+            .SelectMany(e => e.Components)
+            .GroupBy(c => c.ComponentId)
+            .ToDictionary(g => g.Key, g => g.First().ShowInPayslip);
 
         // Create PayrollRun
         int employeeCount = activeEmployees.Count;
@@ -340,7 +344,8 @@ public sealed class InitiatePayrollRunHandler(
                         comp.ComponentId, comp.Code, comp.Code,
                         comp.FullAmount, comp.ProratedAmount,
                         isOneTimeEarning: false,
-                        considerForEpf: epfFlagByComponent.GetValueOrDefault(comp.ComponentId, false));
+                        considerForEpf: epfFlagByComponent.GetValueOrDefault(comp.ComponentId, false),
+                        showInPayslip: showInPayslipByComponent.GetValueOrDefault(comp.ComponentId, true));
                     await breakdownRepo.AddAsync(breakdown, ct);
                 }
             }
@@ -396,7 +401,7 @@ public sealed class InitiatePayrollRunHandler(
             structure.ComponentOverrides.ToDictionary(o => o.SalaryComponentId);
 
         decimal monthlyCTC = structure.AnnualCTC / 12m;
-        var raw = new List<(Guid Id, string Code, decimal Amount, bool IsTaxable, bool ConsiderForEpf, EpfInclusionRule EpfRule)>();
+        var raw = new List<(Guid Id, string Code, decimal Amount, bool IsTaxable, bool ConsiderForEpf, EpfInclusionRule EpfRule, bool ConsiderForEsi, bool CalculateOnProRata, bool IsFlat, bool ShowInPayslip)>();
         decimal basicMonthly = 0m;
         decimal nonResidualSum = 0m;
 
@@ -433,7 +438,11 @@ public sealed class InitiatePayrollRunHandler(
             raw.Add((comp.ComponentId, comp.Component.Code, monthly,
                 comp.Component.IsTaxable ?? true,
                 comp.Component.ConsiderForEpf ?? false,
-                comp.Component.EpfInclusionRule ?? EpfInclusionRule.Always));
+                comp.Component.EpfInclusionRule ?? EpfInclusionRule.Always,
+                comp.Component.ConsiderForEsi ?? false,
+                comp.Component.CalculateOnProRata ?? true,
+                comp.Component.PayType == PayType.FlatAmount,
+                comp.Component.ShowInPayslip ?? true));
         }
 
         // Compute employer contributions included in CTC to derive actual Gross
@@ -478,7 +487,11 @@ public sealed class InitiatePayrollRunHandler(
             raw.Add((comp.ComponentId, comp.Component.Code, monthly,
                 comp.Component.IsTaxable ?? true,
                 comp.Component.ConsiderForEpf ?? false,
-                comp.Component.EpfInclusionRule ?? EpfInclusionRule.Always));
+                comp.Component.EpfInclusionRule ?? EpfInclusionRule.Always,
+                comp.Component.ConsiderForEsi ?? false,
+                comp.Component.CalculateOnProRata ?? true,
+                comp.Component.PayType == PayType.FlatAmount,
+                comp.Component.ShowInPayslip ?? true));
         }
 
         // Residual: Special Allowance = Gross − all other components
@@ -489,7 +502,11 @@ public sealed class InitiatePayrollRunHandler(
             raw.Add((residual.ComponentId, residual.Component.Code, residualMonthly,
                 residual.Component.IsTaxable ?? true,
                 residual.Component.ConsiderForEpf ?? false,
-                residual.Component.EpfInclusionRule ?? EpfInclusionRule.Always));
+                residual.Component.EpfInclusionRule ?? EpfInclusionRule.Always,
+                residual.Component.ConsiderForEsi ?? false,
+                residual.Component.CalculateOnProRata ?? true,
+                residual.Component.PayType == PayType.FlatAmount,
+                residual.Component.ShowInPayslip ?? true));
         }
 
         // Pass 3: override-only components (not in template)
@@ -513,7 +530,11 @@ public sealed class InitiatePayrollRunHandler(
             raw.Add((ov.SalaryComponentId, sc.Code, monthly,
                 sc.IsTaxable ?? true,
                 sc.ConsiderForEpf ?? false,
-                sc.EpfInclusionRule ?? EpfInclusionRule.Always));
+                sc.EpfInclusionRule ?? EpfInclusionRule.Always,
+                sc.ConsiderForEsi ?? false,
+                sc.CalculateOnProRata ?? true,
+                sc.PayType == PayType.FlatAmount,
+                sc.ShowInPayslip ?? true));
         }
 
         // Resolve OnlyWhenPfWageBelowLimit using final PF wage (includes all passes)
@@ -527,7 +548,8 @@ public sealed class InitiatePayrollRunHandler(
                 bool considerForEpf = r.EpfRule == EpfInclusionRule.OnlyWhenPfWageBelowLimit
                     ? r.ConsiderForEpf && alwaysPfWage < config.PFWageCap
                     : r.ConsiderForEpf;
-                return new SalaryComponentInput(r.Id, r.Code, r.Amount, r.IsTaxable, considerForEpf);
+                return new SalaryComponentInput(r.Id, r.Code, r.Amount, r.IsTaxable, considerForEpf,
+                    r.ConsiderForEsi, r.CalculateOnProRata, r.IsFlat, r.ShowInPayslip);
             })
             .ToList();
     }

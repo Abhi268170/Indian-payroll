@@ -12,4 +12,8 @@ public interface IEmployeeRepository
     Task<string> NextEmployeeCodeAsync(CancellationToken ct = default);
     Task AddAsync(Employee employee, CancellationToken ct = default);
     void Update(Employee employee);
+    Task<HashSet<string>> GetExistingCodesAsync(IEnumerable<string> codes, CancellationToken ct = default);
+    Task<HashSet<string>> GetExistingEmailsAsync(IEnumerable<string> emails, CancellationToken ct = default);
+    Task<IReadOnlyList<Employee>> GetManyByCodesAsync(IEnumerable<string> codes, CancellationToken ct = default);
+    Task<IReadOnlyList<Employee>> GetManyByEmailsAsync(IEnumerable<string> emails, CancellationToken ct = default);
 }

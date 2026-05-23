@@ -33,7 +33,8 @@ public sealed class UpdateSalaryComponentHandler(
                         req.IsTaxable ?? false,
                         req.ConsiderForEpf ?? false, epfRule,
                         req.ConsiderForEsi ?? false,
-                        req.CalculateOnProRata ?? true);
+                        req.CalculateOnProRata ?? true,
+                        req.ShowInPayslip ?? true);
                 }
                 break;
 

@@ -96,6 +96,7 @@ function EditForm({
   const [considerForEsi, setConsiderForEsi] = useState(detail.considerForEsi ?? false)
   const [calculateOnProRata, setCalculateOnProRata] = useState(detail.calculateOnProRata ?? true)
   const [showInPayslip, setShowInPayslip] = useState(detail.showInPayslip ?? true)
+  const [isActive, setIsActive] = useState(detail.isActive)
 
   // Deduction
   const [deductionFrequency, setDeductionFrequency] = useState<'EveryMonth' | 'OnceAYear' | 'Quarterly' | 'HalfYearly'>(
@@ -114,7 +115,7 @@ function EditForm({
   const [error, setError] = useState<string | null>(null)
 
   const mutation = useMutation({
-    mutationFn: () => {
+    mutationFn: async () => {
       const body: Record<string, unknown> = { name, nameInPayslip }
 
       if (detail.category === 'Earning') {
@@ -149,7 +150,10 @@ function EditForm({
         body.benefitPercentage = parseFloat(benefitPercentage)
       }
 
-      return api.put(`/api/v1/salary-components/${detail.id}`, body)
+      await api.put(`/api/v1/salary-components/${detail.id}`, body)
+      if (isActive !== detail.isActive) {
+        await api.put(`/api/v1/salary-components/${detail.id}/active`, { isActive })
+      }
     },
     onSuccess: onSaved,
     onError: (err: unknown) => {
@@ -261,6 +265,11 @@ function EditForm({
             <Toggle label="Show in payslip" checked={showInPayslip} onChange={setShowInPayslip} disabled={locked} />
           </div>
         </>
+      )}
+
+      {/* ── Active toggle (all categories) ──────────────── */}
+      {!detail.isSystemComponent && (
+        <Toggle label="Active" checked={isActive} onChange={setIsActive} />
       )}
 
       {/* ── Deduction fields ─────────────────────────────── */}

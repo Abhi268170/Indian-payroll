@@ -188,4 +188,123 @@ public class GrossCalculatorTests
         result.ComponentBreakdown.Select(c => c.Code)
             .Should().BeEquivalentTo(["BASIC", "HRA", "FIXED_ALLOWANCE"]);
     }
+
+    // ── IsFlat skips LOP proration ────────────────────────────────────────────
+
+    [Fact]
+    public void WithLop_FlatComponent_NotProrated()
+    {
+        // IsFlat = true → skip pro-rata even when LOP > 0
+        Guid flatId = Guid.NewGuid();
+        IReadOnlyList<SalaryComponentInput> components =
+        [
+            new(BasicId, "BASIC", 20000m, IsTaxable: true, ConsiderForEpf: true),
+            new(flatId,  "MEAL",   5000m, IsTaxable: true, IsFlat: true),
+        ];
+
+        GrossResult result = GrossCalculator.Compute(
+            MakeEmployee(lop: 5, calendarDays: 31, components: components), Run31());
+
+        decimal expectedBasic = Math.Round(20000m * 26m / 31m, 2, MidpointRounding.AwayFromZero);
+        result.ComponentBreakdown.First(c => c.Code == "MEAL").ProratedAmount.Should().Be(5000m);
+        result.ComponentBreakdown.First(c => c.Code == "BASIC").ProratedAmount.Should().Be(expectedBasic);
+        result.GrossWage.Should().Be(expectedBasic + 5000m);
+    }
+
+    // ── CalculateOnProRata=false skips proration ──────────────────────────────
+
+    [Fact]
+    public void WithLop_CalculateOnProRataFalse_NotProrated()
+    {
+        Guid allowanceId = Guid.NewGuid();
+        IReadOnlyList<SalaryComponentInput> components =
+        [
+            new(BasicId,      "BASIC",         20000m, IsTaxable: true, ConsiderForEpf: true),
+            new(allowanceId,  "RETENTION_BONUS", 8000m, IsTaxable: true, CalculateOnProRata: false),
+        ];
+
+        GrossResult result = GrossCalculator.Compute(
+            MakeEmployee(lop: 3, calendarDays: 31, components: components), Run31());
+
+        decimal expectedBasic = Math.Round(20000m * 28m / 31m, 2, MidpointRounding.AwayFromZero);
+        result.ComponentBreakdown.First(c => c.Code == "RETENTION_BONUS").ProratedAmount.Should().Be(8000m);
+        result.ComponentBreakdown.First(c => c.Code == "BASIC").ProratedAmount.Should().Be(expectedBasic);
+    }
+
+    // ── ESIWage sums only ConsiderForEsi components ───────────────────────────
+
+    [Fact]
+    public void ESIWage_NoLop_SumsOnlyEsiComponents()
+    {
+        Guid convId = Guid.NewGuid();
+        IReadOnlyList<SalaryComponentInput> components =
+        [
+            new(BasicId, "BASIC", 10000m, IsTaxable: true,  ConsiderForEsi: true),
+            new(HraId,   "HRA",    5000m, IsTaxable: false, ConsiderForEsi: true),
+            new(convId,  "CONV",   2000m, IsTaxable: true,  ConsiderForEsi: false),
+        ];
+
+        GrossResult result = GrossCalculator.Compute(
+            MakeEmployee(lop: 0, components: components), Run31());
+
+        result.ESIWage.Should().Be(15000m);  // BASIC + HRA only
+        result.GrossWage.Should().Be(17000m); // all three
+    }
+
+    [Fact]
+    public void ESIWage_WithLop_UsesProRatedAmountsForEsiComponents()
+    {
+        IReadOnlyList<SalaryComponentInput> components =
+        [
+            new(BasicId, "BASIC", 10000m, IsTaxable: true, ConsiderForEsi: true),
+            new(HraId,   "HRA",    5000m, IsTaxable: false, ConsiderForEsi: false),
+        ];
+
+        GrossResult result = GrossCalculator.Compute(
+            MakeEmployee(lop: 1, calendarDays: 31, components: components), Run31());
+
+        decimal expectedBasic = Math.Round(10000m * 30m / 31m, 2, MidpointRounding.AwayFromZero);
+        result.ESIWage.Should().Be(expectedBasic);  // pro-rated BASIC only
+    }
+
+    // ── AnnualProjectedTaxableGross uses only IsTaxable components ────────────
+
+    [Fact]
+    public void AnnualProjectedTaxableGross_NoLop_SumsOnlyTaxableComponents()
+    {
+        // BASIC taxable=true, HRA taxable=false, FIXED_ALLOWANCE taxable=true
+        // taxableMonthly = 28000 + 28000 = 56000; monthsRemaining=10
+        // annualProjectedTaxable = 0 + 56000 × 10 = 560000
+        GrossResult result = GrossCalculator.Compute(MakeEmployee(lop: 0), Run31());
+
+        result.TaxableGrossWage.Should().Be(56000m);
+        result.AnnualProjectedTaxableGross.Should().Be(5_60_000m);
+    }
+
+    [Fact]
+    public void AnnualProjectedTaxableGross_AllTaxable_MatchesFullGrossProjection()
+    {
+        IReadOnlyList<SalaryComponentInput> allTaxable =
+        [
+            new(BasicId, "BASIC", 30000m, IsTaxable: true),
+            new(HraId,   "HRA",   20000m, IsTaxable: true),
+        ];
+
+        GrossResult result = GrossCalculator.Compute(
+            MakeEmployee(lop: 0, components: allTaxable), Run31());
+
+        // All taxable — taxable gross = full gross
+        result.AnnualProjectedTaxableGross.Should().Be(result.AnnualProjectedGross);
+    }
+
+    [Fact]
+    public void AnnualProjectedTaxableGross_WithYtd_YtdAddedToTaxableProjection()
+    {
+        // YTD gross = 3,50,000 (shared), taxable monthly = 56,000 (BASIC+FIXED, no HRA)
+        // projected = 350000 + 56000 × 10 = 910000
+        GrossResult result = GrossCalculator.Compute(
+            MakeEmployee(currentEmployerYTDGross: 3_50_000m), Run31());
+
+        result.AnnualProjectedTaxableGross.Should().Be(9_10_000m);
+    }
 }

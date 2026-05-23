@@ -120,7 +120,7 @@ export default function EmployeeSummaryTable({
                 {isDraft && (
                   <>
                     <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-primary)]">{formatINR(emp.grossPay)}</td>
-                    <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">{formatINR(emp.employeePf)}</td>
+                    <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">{formatINR(emp.employeePf + emp.employeeEsi + emp.ptAmount + emp.lwfEmployeeAmount)}</td>
                     <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">{formatINR(emp.tdsOverrideAmount ?? emp.tdsAmount)}</td>
                     <td className="px-4 py-3 text-right text-[13px] font-semibold text-[var(--color-text-primary)]">{formatINR(emp.netPay)}</td>
                     <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">{emp.lopDays > 0 ? `${String(emp.lopDays)}d` : '—'}</td>
@@ -141,9 +141,10 @@ export default function EmployeeSummaryTable({
                       <>
                         <button
                           onClick={() => { onOpenVariableInputs(emp.employeeId, emp.employeeName) }}
-                          className="h-7 px-2.5 rounded-lg border border-[var(--color-border)] text-[12px] text-[var(--color-text-secondary)] hover:bg-[var(--color-page-bg)] transition-colors"
+                          className="h-7 w-7 flex items-center justify-center rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-page-bg)] transition-colors"
+                          title="View details"
                         >
-                          Inputs
+                          <Eye size={13} />
                         </button>
                         <button
                           onClick={() => { onSkipEmployee(emp.employeeId, emp.employeeName) }}

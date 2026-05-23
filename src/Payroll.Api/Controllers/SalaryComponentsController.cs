@@ -174,7 +174,7 @@ public sealed class SalaryComponentsController(ISender sender) : ControllerBase
                 id, req.Name, req.NameInPayslip,
                 req.FormulaType, req.FixedAmount, req.Percentage,
                 req.IsTaxable, req.ConsiderForEpf, req.EpfInclusionRule,
-                req.ConsiderForEsi, req.CalculateOnProRata,
+                req.ConsiderForEsi, req.CalculateOnProRata, req.ShowInPayslip,
                 req.DeductionFrequency,
                 req.ReimbursementAmount, req.UnclaimedHandling,
                 GetActorId()), ct);
@@ -238,7 +238,7 @@ public record UpdateSalaryComponentRequest(
     string Name, string NameInPayslip,
     string? FormulaType, decimal? FixedAmount, decimal? Percentage,
     bool? IsTaxable, bool? ConsiderForEpf, string? EpfInclusionRule,
-    bool? ConsiderForEsi, bool? CalculateOnProRata,
+    bool? ConsiderForEsi, bool? CalculateOnProRata, bool? ShowInPayslip,
     string? DeductionFrequency,
     decimal? ReimbursementAmount, string? UnclaimedHandling);
 

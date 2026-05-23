@@ -5,4 +5,8 @@ public sealed record SalaryComponentInput(
     string Code,
     decimal Amount,
     bool IsTaxable,
-    bool ConsiderForEpf = false);
+    bool ConsiderForEpf = false,
+    bool ConsiderForEsi = false,
+    bool CalculateOnProRata = true,
+    bool IsFlat = false,
+    bool ShowInPayslip = true);

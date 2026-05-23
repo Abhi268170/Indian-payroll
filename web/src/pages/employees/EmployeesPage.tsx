@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { UserPlus, AlertCircle } from 'lucide-react'
+import { UserPlus, AlertCircle, Upload } from 'lucide-react'
 import { api } from '@/lib/api'
 import type { EmployeeListItemDto } from '@/types/api'
 
@@ -80,13 +80,22 @@ export default function EmployeesPage(): React.ReactElement {
             {employees.length} employee{employees.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <button
-          onClick={() => navigate('/employees/new')}
-          className="inline-flex items-center gap-1.5 h-9 px-4 bg-[var(--color-primary)] text-white text-[13px] font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors"
-        >
-          <UserPlus className="w-3.5 h-3.5" />
-          Add Employee
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate('/employees/import')}
+            className="inline-flex items-center gap-1.5 h-9 px-4 bg-white border border-[var(--color-border)] text-[var(--color-text-secondary)] text-[13px] font-medium rounded-lg hover:border-[var(--color-border-strong)] transition-colors"
+          >
+            <Upload className="w-3.5 h-3.5" />
+            Import
+          </button>
+          <button
+            onClick={() => navigate('/employees/new')}
+            className="inline-flex items-center gap-1.5 h-9 px-4 bg-[var(--color-primary)] text-white text-[13px] font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors"
+          >
+            <UserPlus className="w-3.5 h-3.5" />
+            Add Employee
+          </button>
+        </div>
       </div>
 
       {/* Incomplete profiles banner */}

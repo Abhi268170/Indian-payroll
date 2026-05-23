@@ -1658,6 +1658,12 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasDefaultValue(false)
                         .HasColumnName("consider_for_epf");
 
+                    b.Property<bool>("ShowInPayslip")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("show_in_payslip");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamptz")
                         .HasColumnName("created_at");

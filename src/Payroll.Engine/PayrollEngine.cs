@@ -24,11 +24,11 @@ public static class PayrollEngine
     {
         GrossResult gross = GrossCalculator.Compute(emp, run);
         PFResult pf = PFCalculator.Compute(gross.PFWage, gross.FullPFWage, emp.LOPDays, run.SalaryDivisor, config, !emp.EpfEnabled, emp.VPFAmount);
-        ESIResult esi = ESICalculator.Compute(gross.GrossWage, config, emp.IsESIExempt, emp.IsPWD);
+        ESIResult esi = ESICalculator.Compute(gross.ESIWage, config, emp.IsESIExempt, emp.IsPWD);
         PTResult pt = PTCalculator.Compute(gross.GrossWage, emp, config, run);
         LWFResult lwf = LWFCalculator.Compute(emp.WorkStateCode, gross.GrossWage, config, run);
         TDSResult tds = TDSCalculator.Compute(
-            gross.AnnualProjectedGross,
+            gross.AnnualProjectedTaxableGross,
             emp.PriorEmployerYTDTaxableIncome,
             emp.PriorEmployerYTDTDSDeducted,
             emp.CurrentEmployerYTDTDSDeducted,

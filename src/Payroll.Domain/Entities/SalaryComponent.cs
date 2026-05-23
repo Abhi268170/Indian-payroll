@@ -217,7 +217,8 @@ public sealed class SalaryComponent : AuditableEntity
         bool considerForEpf,
         EpfInclusionRule epfInclusionRule,
         bool considerForEsi,
-        bool calculateOnProRata)
+        bool calculateOnProRata,
+        bool showInPayslip)
     {
         if (Category != ComponentCategory.Earning)
             throw new InvalidOperationException("Formula update only valid for earnings.");
@@ -231,6 +232,7 @@ public sealed class SalaryComponent : AuditableEntity
         EpfInclusionRule = epfInclusionRule;
         ConsiderForEsi = considerForEsi;
         CalculateOnProRata = calculateOnProRata;
+        ShowInPayslip = showInPayslip;
     }
 
     // Fixed-amount earnings: amount editable even after association (applies to new employees only).

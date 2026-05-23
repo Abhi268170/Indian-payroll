@@ -82,6 +82,9 @@ public sealed record PayrunEmployeeDto(
     decimal GrossPay,
     decimal NetPay,
     decimal EmployeePf,
+    decimal EmployeeEsi,
+    decimal PtAmount,
+    decimal LwfEmployeeAmount,
     decimal TdsAmount,
     decimal? TdsOverrideAmount,
     string? SkipReason);

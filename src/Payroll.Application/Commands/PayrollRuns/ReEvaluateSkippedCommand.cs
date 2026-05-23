@@ -212,6 +212,10 @@ public sealed class ReEvaluateSkippedHandler(
             .SelectMany(e => e.Components)
             .GroupBy(c => c.ComponentId)
             .ToDictionary(g => g.Key, g => g.First().ConsiderForEpf);
+        Dictionary<Guid, bool> showInPayslipByComponent = engineInputs
+            .SelectMany(e => e.Components)
+            .GroupBy(c => c.ComponentId)
+            .ToDictionary(g => g.Key, g => g.First().ShowInPayslip);
 
         decimal deltaGross = 0m, deltaNet = 0m, deltaEmployerPf = 0m, deltaEmployerEps = 0m;
         decimal deltaEmployerEsi = 0m, deltaTds = 0m;
@@ -274,7 +278,8 @@ public sealed class ReEvaluateSkippedHandler(
                     comp.ComponentId, comp.Code, comp.Code,
                     comp.FullAmount, comp.ProratedAmount,
                     isOneTimeEarning: false,
-                    considerForEpf: epfFlagByComponent.GetValueOrDefault(comp.ComponentId, false));
+                    considerForEpf: epfFlagByComponent.GetValueOrDefault(comp.ComponentId, false),
+                    showInPayslip: showInPayslipByComponent.GetValueOrDefault(comp.ComponentId, true));
                 await breakdownRepo.AddAsync(breakdown, ct);
             }
 

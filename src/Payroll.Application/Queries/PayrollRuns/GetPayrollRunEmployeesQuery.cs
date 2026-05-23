@@ -55,6 +55,9 @@ public sealed class GetPayrollRunEmployeesHandler(
                 GrossPay: pe.GrossPay,
                 NetPay: pe.NetPay,
                 EmployeePf: pe.EmployeePf,
+                EmployeeEsi: pe.EmployeeEsi,
+                PtAmount: pe.PtAmount,
+                LwfEmployeeAmount: pe.LwfEmployeeAmount,
                 TdsAmount: pe.TdsAmount,
                 TdsOverrideAmount: pe.TdsOverrideAmount,
                 SkipReason: pe.SkipReason));

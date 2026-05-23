@@ -32,4 +32,36 @@ internal sealed class EmployeeRepository(PayrollDbContext db) : IEmployeeReposit
 
     public void Update(Employee employee) =>
         db.Employees.Update(employee);
+
+    public async Task<HashSet<string>> GetExistingCodesAsync(IEnumerable<string> codes, CancellationToken ct = default)
+    {
+        List<string> list = codes.Select(c => c.ToUpperInvariant()).ToList();
+        List<string> found = await db.Employees
+            .Where(e => list.Contains(e.EmployeeCode))
+            .Select(e => e.EmployeeCode)
+            .ToListAsync(ct);
+        return found.ToHashSet(StringComparer.OrdinalIgnoreCase);
+    }
+
+    public async Task<HashSet<string>> GetExistingEmailsAsync(IEnumerable<string> emails, CancellationToken ct = default)
+    {
+        List<string> list = emails.Select(e => e.ToLowerInvariant()).Distinct().ToList();
+        List<string> found = await db.Employees
+            .Where(e => list.Contains(e.WorkEmail.ToLower()))
+            .Select(e => e.WorkEmail)
+            .ToListAsync(ct);
+        return found.ToHashSet(StringComparer.OrdinalIgnoreCase);
+    }
+
+    public async Task<IReadOnlyList<Employee>> GetManyByCodesAsync(IEnumerable<string> codes, CancellationToken ct = default)
+    {
+        List<string> list = codes.Select(c => c.ToUpperInvariant()).ToList();
+        return await db.Employees.Where(e => list.Contains(e.EmployeeCode)).ToListAsync(ct);
+    }
+
+    public async Task<IReadOnlyList<Employee>> GetManyByEmailsAsync(IEnumerable<string> emails, CancellationToken ct = default)
+    {
+        List<string> list = emails.Select(e => e.ToLowerInvariant()).Distinct().ToList();
+        return await db.Employees.Where(e => list.Contains(e.WorkEmail.ToLower())).ToListAsync(ct);
+    }
 }

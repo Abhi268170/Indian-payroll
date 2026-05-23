@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Payroll.Application.Commands.Employees;
 using Payroll.Application.DTOs;
+using Payroll.Application.Interfaces;
 using Payroll.Application.Queries.Employees;
 using Payroll.Application.Queries.Payslips;
 using Payroll.Domain.Common;
@@ -16,7 +17,7 @@ public sealed record UpsertFyOpeningRequest(int MonthsCount, decimal GrossSalary
 [ApiController]
 [Route("api/v1/employees")]
 [Authorize]
-public sealed class EmployeesController(ISender sender) : ControllerBase
+public sealed class EmployeesController(ISender sender, IEmployeeImportTemplateGenerator templateGenerator) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> List(CancellationToken ct)
@@ -218,6 +219,74 @@ public sealed class EmployeesController(ISender sender) : ControllerBase
                 id, fiscalYear, req.MonthsCount,
                 req.GrossSalary, req.TdsDeducted, req.PfDeducted, GetActorId()), ct);
             return NoContent();
+        }
+        catch (ValidationException ex)
+        {
+            return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });
+        }
+    }
+
+    [HttpGet("import/template")]
+    [AllowAnonymous] // blank template, no tenant data
+    public IActionResult DownloadTemplate()
+    {
+        byte[] bytes = templateGenerator.Generate();
+        return File(bytes,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "employee-import-template.xlsx");
+    }
+
+    [HttpPost("import/validate")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> ValidateImport(
+        IFormFile file,
+        [FromForm] bool overwriteExisting,
+        CancellationToken ct)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest(new { error = "No file provided." });
+
+        try
+        {
+            using Stream stream = file.OpenReadStream();
+            Application.Interfaces.ImportValidationResult result =
+                await sender.Send(new ValidateEmployeeImportCommand(stream, overwriteExisting, GetActorId()), ct);
+            return Ok(result);
+        }
+        catch (Domain.Common.ImportFormatException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    [HttpPost("import/commit")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> CommitImport(
+        IFormFile file,
+        [FromForm] bool overwriteExisting,
+        CancellationToken ct)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest(new { error = "No file provided." });
+
+        try
+        {
+            using Stream stream = file.OpenReadStream();
+            CommitImportResult result =
+                await sender.Send(new CommitEmployeeImportCommand(stream, overwriteExisting, GetActorId()), ct);
+            return Ok(result);
+        }
+        catch (Domain.Common.ImportFormatException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (DomainException ex)
+        {
+            return BadRequest(new { error = ex.Message });
         }
         catch (ValidationException ex)
         {
