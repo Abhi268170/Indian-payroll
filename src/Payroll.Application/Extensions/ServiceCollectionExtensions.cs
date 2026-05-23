@@ -25,6 +25,7 @@ public static class ServiceCollectionExtensions
             includeInternalTypes: true);
 
         services.AddScoped<IPayrollCostCalculator, PayrollCostCalculator>();
+        services.AddScoped<IPayrollRecomputeService, PayrollRecomputeService>();
 
         return services;
     }

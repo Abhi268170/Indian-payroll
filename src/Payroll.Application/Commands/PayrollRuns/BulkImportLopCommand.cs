@@ -7,8 +7,6 @@ using Payroll.Domain.Entities;
 using Payroll.Domain.Enums;
 using Payroll.Domain.Interfaces;
 using Payroll.Engine;
-using Payroll.Engine.Inputs;
-using System.Text.Json;
 
 namespace Payroll.Application.Commands.PayrollRuns;
 
@@ -17,12 +15,10 @@ public record BulkImportLopCommand(Guid RunId, string CsvContent, Guid ActorId) 
 public sealed class BulkImportLopCommandHandler(
     IPayrollRunRepository runRepo,
     IPayrunEmployeeRepository payrunEmployeeRepo,
-    IPayrunComponentBreakdownRepository breakdownRepo,
     IEmployeeRepository employeeRepo,
-    IWorkLocationRepository workLocationRepo,
     IPayScheduleRepository payScheduleRepo,
-    IEmployeeFyOpeningRepository fyOpeningRepo,
-    ITdsWorksheetRepository tdsWorksheetRepo,
+    IPayrollRecomputeService recomputeService,
+    IPayrollCostCalculator costCalculator,
     IUnitOfWork uow)
     : IRequestHandler<BulkImportLopCommand, ImportResult>
 {
@@ -33,11 +29,6 @@ public sealed class BulkImportLopCommandHandler(
 
         if (run.Status != PayrollRunStatus.Draft)
             throw new InvalidOperationException("Variable inputs can only be changed on a Draft payroll run.");
-
-        if (run.StatutoryConfigSnapshot is null)
-            throw new InvalidOperationException("Payroll run is missing statutory config snapshot.");
-
-        StatutoryConfig staticConfig = JsonSerializer.Deserialize<StatutoryConfig>(run.StatutoryConfigSnapshot)!;
 
         var paySchedule = await payScheduleRepo.GetAsync(ct)
             ?? throw new DomainException("Pay Schedule not configured.");
@@ -63,25 +54,6 @@ public sealed class BulkImportLopCommandHandler(
         // Batch-load all payrun employees
         IReadOnlyList<PayrunEmployee> allPayrunEmployees = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
         Dictionary<Guid, PayrunEmployee> payrunEmpById = allPayrunEmployees.ToDictionary(e => e.EmployeeId);
-
-        // Batch-load work locations
-        IReadOnlyList<WorkLocation> workLocations = await workLocationRepo.ListAsync(ct);
-        Dictionary<Guid, string> stateByLocationId = workLocations.ToDictionary(
-            wl => wl.Id,
-            wl => wl.State.ToString());
-
-        // Batch-load breakdowns for all employees in run
-        IReadOnlyList<PayrunComponentBreakdown> allBreakdowns = await breakdownRepo.GetByRunIdAsync(req.RunId, ct);
-        Dictionary<Guid, IReadOnlyList<PayrunComponentBreakdown>> breakdownsByEmpId = allBreakdowns
-            .GroupBy(b => b.EmployeeId)
-            .ToDictionary(g => g.Key, g => (IReadOnlyList<PayrunComponentBreakdown>)g.ToList());
-
-        // YTD data
-        Dictionary<Guid, (decimal YtdGross, decimal YtdTds)> ytdMap =
-            await payrunEmployeeRepo.GetCurrentEmployerYtdAsync(employees.Select(e => e.Id), run.PayPeriod.FiscalYear, ct);
-        IReadOnlyList<EmployeeFyOpening> fyOpenings =
-            await fyOpeningRepo.GetByEmployeesAndFiscalYearAsync(employees.Select(e => e.Id), run.PayPeriod.FiscalYear, ct);
-        Dictionary<Guid, EmployeeFyOpening> fyOpeningByEmployee = fyOpenings.ToDictionary(o => o.EmployeeId);
 
         int applied = 0;
         List<ImportRowError> errors = [];
@@ -130,29 +102,18 @@ public sealed class BulkImportLopCommandHandler(
                 continue;
             }
 
-            // Apply LOP
+            // Apply LOP, then re-run engine via shared service.
             payrunEmp.SetLop(lopDays, req.ActorId);
 
-            string workStateCode = stateByLocationId.GetValueOrDefault(employee.WorkLocationId, "MH");
-
-            // Incorporate FY opening into YTD
-            ytdMap.TryGetValue(employee.Id, out (decimal YtdGross, decimal YtdTds) ytd);
-            if (fyOpeningByEmployee.TryGetValue(employee.Id, out EmployeeFyOpening? fyOpening))
-            {
-                ytd = (ytd.YtdGross + fyOpening.GrossSalary, ytd.YtdTds + fyOpening.TdsDeducted);
-            }
-
-            IReadOnlyList<PayrunComponentBreakdown> breakdowns = breakdownsByEmpId.GetValueOrDefault(employee.Id, []);
-            var result = SetLopCommandHandler.RecomputeEmployee(
-                employee, workStateCode, payrunEmp, breakdowns, run, staticConfig, salaryDivisor,
-                ytd.YtdGross, ytd.YtdTds);
+            RecomputeResult recompute = await recomputeService.RecomputeEmployeeAsync(req.RunId, employee.Id, ct);
+            var result = recompute.Engine;
 
             payrunEmp.UpdateComputedAmounts(
                 grossPay: result.Gross.GrossWage,
-                netPay: result.NetPay,
+                netPay: recompute.NetPayWithReimbursement,
                 taxesAmount: result.TDS.MonthlyTDS + result.PT.Amount,
                 benefitsAmount: result.PF.EPFEmployerContribution + result.ESI.EmployerContribution,
-                reimbursementsAmount: payrunEmp.ReimbursementsAmount,
+                reimbursementsAmount: recompute.ReimbursementsAmount,
                 employeePf: result.PF.EmployeeContribution,
                 employerPf: result.PF.EPFEmployerContribution,
                 employeeEsi: result.ESI.EmployeeContribution,
@@ -166,49 +127,21 @@ public sealed class BulkImportLopCommandHandler(
                 monthlyCTC: payrunEmp.MonthlyCTC,
                 actorId: req.ActorId);
 
-            foreach (var bd in breakdowns.Where(b => !b.IsOneTimeEarning))
-            {
-                var computed = result.Gross.ComponentBreakdown.FirstOrDefault(c => c.ComponentId == bd.SalaryComponentId);
-                if (computed is not null)
-                    bd.UpdateAmounts(computed.FullAmount, computed.ProratedAmount);
-            }
-
             payrunEmployeeRepo.Update(payrunEmp);
-
-            // Upsert TDS worksheet
-            await tdsWorksheetRepo.DeleteByRunAndEmployeeAsync(req.RunId, employee.Id, ct);
-            await tdsWorksheetRepo.AddAsync(TdsWorksheet.Create(
-                payrollRunId: req.RunId,
-                employeeId: employee.Id,
-                tenantId: payrunEmp.TenantId,
-                fiscalYear: run.PayPeriod.FiscalYear,
-                annualProjectedIncome: result.TDS.TaxableIncome + staticConfig.StandardDeduction,
-                standardDeduction: staticConfig.StandardDeduction,
-                taxableIncome: result.TDS.TaxableIncome,
-                taxBeforeRebate: result.TDS.TaxBeforeRebate,
-                rebate87A: result.TDS.Rebate87AApplied ? Math.Min(result.TDS.TaxBeforeRebate, staticConfig.Rebate87AAmount) : 0m,
-                surcharge: result.TDS.Surcharge,
-                cess: result.TDS.Cess,
-                annualTaxLiability: result.TDS.AnnualProjectedTax,
-                ytdTdsDeducted: 0m,
-                remainingMonthsInFy: run.PayPeriod.MonthsRemainingInFiscalYear(),
-                tdsThisMonth: result.TDS.MonthlyTDS,
-                hasPanOverride: result.TDS.HasPanOverride,
-                createdBy: req.ActorId), ct);
-
             applied++;
         }
 
         // Update run summary once with final state of all active employees
         var activeEmployees = allPayrunEmployees.Where(e => e.Status == PayrunEmployeeStatus.Active).ToList();
+        var snapshot = costCalculator.Calculate(activeEmployees);
         run.UpdateFinancialSummary(
-            payrollCost: activeEmployees.Sum(e => e.GrossPay + e.EmployerPf + e.EmployerEsi),
-            totalNetPay: activeEmployees.Sum(e => e.NetPay),
-            totalEmployerPf: activeEmployees.Sum(e => e.EmployerPf),
-            totalEmployerEsi: activeEmployees.Sum(e => e.EmployerEsi),
-            totalTds: activeEmployees.Sum(e => e.TdsAmount),
-            totalPt: activeEmployees.Sum(e => e.PtAmount),
-            employeeCount: activeEmployees.Count,
+            payrollCost: snapshot.PayrollCost,
+            totalNetPay: snapshot.TotalNet,
+            totalEmployerPf: snapshot.TotalEmployerPf,
+            totalEmployerEsi: snapshot.TotalEmployerEsi,
+            totalTds: snapshot.TotalTds,
+            totalPt: snapshot.TotalPt,
+            employeeCount: snapshot.EmployeeCount,
             actorId: req.ActorId);
         runRepo.Update(run);
 

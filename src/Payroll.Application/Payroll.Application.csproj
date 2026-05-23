@@ -17,4 +17,8 @@
     <ProjectReference Include="..\Payroll.Domain\Payroll.Domain.csproj" />
     <ProjectReference Include="..\Payroll.Engine\Payroll.Engine.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Payroll.Application.Tests" />
+  </ItemGroup>
 </Project>

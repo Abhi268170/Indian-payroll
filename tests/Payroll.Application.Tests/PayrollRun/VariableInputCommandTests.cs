@@ -41,12 +41,8 @@ public class VariableInputCommandTests
         var handler = new SetLopCommandHandler(
             runRepo,
             Substitute.For<IPayrunEmployeeRepository>(),
-            Substitute.For<IPayrunComponentBreakdownRepository>(),
-            Substitute.For<IEmployeeRepository>(),
-            Substitute.For<IWorkLocationRepository>(),
             Substitute.For<IPayScheduleRepository>(),
-            Substitute.For<IEmployeeFyOpeningRepository>(),
-            Substitute.For<ITdsWorksheetRepository>(),
+            Substitute.For<Payroll.Application.Services.IPayrollRecomputeService>(),
             Substitute.For<Payroll.Application.Services.IPayrollCostCalculator>(),
             Substitute.For<IUnitOfWork>());
 
@@ -78,12 +74,8 @@ public class VariableInputCommandTests
 
         var handler = new SetLopCommandHandler(
             runRepo, empRepo,
-            Substitute.For<IPayrunComponentBreakdownRepository>(),
-            Substitute.For<IEmployeeRepository>(),
-            Substitute.For<IWorkLocationRepository>(),
             scheduleRepo,
-            Substitute.For<IEmployeeFyOpeningRepository>(),
-            Substitute.For<ITdsWorksheetRepository>(),
+            Substitute.For<Payroll.Application.Services.IPayrollRecomputeService>(),
             Substitute.For<Payroll.Application.Services.IPayrollCostCalculator>(),
             Substitute.For<IUnitOfWork>());
 
