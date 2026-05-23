@@ -2,6 +2,7 @@ using Payroll.Application.Commands.PayrollRuns;
 using Payroll.Domain.Common;
 using Payroll.Domain.Entities;
 using Payroll.Domain.Enums;
+using Payroll.Domain.Extensions;
 using Payroll.Domain.Interfaces;
 using Payroll.Engine;
 using Payroll.Engine.Inputs;
@@ -44,7 +45,11 @@ public sealed class PayrollRecomputeService(
         StatutoryConfig staticConfig = JsonSerializer.Deserialize<StatutoryConfig>(run.StatutoryConfigSnapshot)!;
 
         WorkLocation? workLocation = await workLocationRepo.GetByIdAsync(employee.WorkLocationId, ct);
-        string workStateCode = workLocation?.State.ToString() ?? "MH";
+        // Engine and statutory snapshot keyed by ISO 2-letter code, not the
+        // enum name. The original SetLopCommand path used .State.ToString()
+        // which was already a long-standing bug — slabs only matched in states
+        // whose enum value happened to equal their ISO code.
+        string workStateCode = workLocation?.State.ToIsoCode() ?? "MH";
 
         PaySchedule paySchedule = await payScheduleRepo.GetAsync(ct)
             ?? throw new DomainException("Pay Schedule not configured.");

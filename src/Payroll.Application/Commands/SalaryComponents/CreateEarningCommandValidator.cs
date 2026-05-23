@@ -35,10 +35,13 @@ public sealed class CreateEarningCommandValidator : AbstractValidator<CreateEarn
             .Must(v => Enum.TryParse<ComponentFormulaType>(v, out var ft) && ft != ComponentFormulaType.ResidualCTC)
             .WithMessage("Invalid formula type.");
 
+        // One-time components carry no preset amount — the operator types it
+        // in the payroll run drawer. For recurring Fixed earnings the amount
+        // is still required up front.
         RuleFor(x => x.FixedAmount)
             .NotNull().WithMessage("Fixed amount is required for Fixed formula.")
             .GreaterThan(0).WithMessage("Fixed amount must be positive.")
-            .When(x => x.FormulaType == ComponentFormulaType.Fixed.ToString());
+            .When(x => x.FormulaType == ComponentFormulaType.Fixed.ToString() && !x.IsOneTime);
 
         RuleFor(x => x.FixedAmount)
             .Null().WithMessage("Fixed amount must be empty for percentage-based formula.")
