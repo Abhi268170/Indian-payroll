@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Download, X } from 'lucide-react'
+import { api } from '@/lib/api'
 
 interface ExportModalProps {
   runId: string
@@ -18,13 +19,23 @@ export default function ExportModal({ runId, periodLabel, onClose }: ExportModal
   const [format, setFormat] = useState<Format>('csv')
   const [downloading, setDownloading] = useState(false)
 
-  function handleDownload(): void {
+  async function handleDownload(): Promise<void> {
     setDownloading(true)
-    const a = document.createElement('a')
-    a.href = `/api/v1/payroll-runs/${runId}/export?format=${format}`
-    a.download = `Payroll_${periodLabel.replace(/\s/g, '-')}.${format}`
-    a.click()
-    setTimeout(() => { setDownloading(false); onClose() }, 500)
+    try {
+      const res = await api.get<Blob>(
+        `/api/v1/payroll-runs/${runId}/export?format=${format}`,
+        { responseType: 'blob' },
+      )
+      const url = URL.createObjectURL(res.data)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `Payroll_${periodLabel.replace(/\s/g, '-')}.${format}`
+      a.click()
+      URL.revokeObjectURL(url)
+      onClose()
+    } finally {
+      setDownloading(false)
+    }
   }
 
   return (
@@ -73,7 +84,7 @@ export default function ExportModal({ runId, periodLabel, onClose }: ExportModal
             Cancel
           </button>
           <button
-            onClick={handleDownload}
+            onClick={() => { void handleDownload() }}
             disabled={downloading}
             className="h-8 px-4 rounded-lg bg-[var(--color-primary)] text-white text-[13px] font-medium hover:bg-[var(--color-primary-hover)] disabled:opacity-60 flex items-center gap-1.5"
           >

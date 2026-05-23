@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Download } from 'lucide-react'
+import { api } from '@/lib/api'
 
 interface BankAdviceModalProps {
   runId: string
@@ -16,13 +17,23 @@ const FORMATS: { value: Format; label: string }[] = [
 export default function BankAdviceModal({ runId, periodLabel, onClose }: BankAdviceModalProps): React.ReactElement {
   const [downloading, setDownloading] = useState(false)
 
-  function handleDownload(): void {
+  async function handleDownload(): Promise<void> {
     setDownloading(true)
-    const a = document.createElement('a')
-    a.href = `/api/v1/payroll-runs/${runId}/bank-advice/download`
-    a.download = `bank-advice-${periodLabel.replace(/\s/g, '-')}.xlsx`
-    a.click()
-    setTimeout(() => { setDownloading(false); onClose() }, 500)
+    try {
+      const res = await api.get<Blob>(
+        `/api/v1/payroll-runs/${runId}/bank-advice/download`,
+        { responseType: 'blob' },
+      )
+      const url = URL.createObjectURL(res.data)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `bank-advice-${periodLabel.replace(/\s/g, '-')}.xlsx`
+      a.click()
+      URL.revokeObjectURL(url)
+      onClose()
+    } finally {
+      setDownloading(false)
+    }
   }
 
   return (
@@ -62,7 +73,7 @@ export default function BankAdviceModal({ runId, periodLabel, onClose }: BankAdv
             Cancel
           </button>
           <button
-            onClick={handleDownload}
+            onClick={() => { void handleDownload() }}
             disabled={downloading}
             className="h-8 px-4 rounded-lg bg-[var(--color-primary)] text-white text-[13px] font-medium hover:bg-[var(--color-primary-hover)] disabled:opacity-60 flex items-center gap-1.5"
           >

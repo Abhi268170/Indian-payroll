@@ -1,6 +1,6 @@
 import { type ReactElement } from 'react'
 import { Outlet, useNavigate, NavLink } from 'react-router-dom'
-import { X, ChevronDown, ArrowLeft } from 'lucide-react'
+import { X, ArrowLeft } from 'lucide-react'
 import { clsx } from 'clsx'
 
 interface NavItem {
@@ -43,12 +43,11 @@ const NAV: NavSection[] = [
 function SidebarSection({ heading, items }: NavSection): ReactElement {
   return (
     <div className="mb-1">
-      <button className="w-full flex items-center justify-between px-4 py-2 group">
+      <div className="px-4 py-2">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
           {heading}
         </span>
-        <ChevronDown className="w-3.5 h-3.5 text-[var(--color-text-muted)] group-hover:text-[var(--color-text-secondary)] transition-colors" />
-      </button>
+      </div>
       <ul>
         {items.map(item => (
           <li key={item.to}>
