@@ -2,6 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Payroll.Application.Behaviours;
+using Payroll.Application.Services;
 
 namespace Payroll.Application.Extensions;
 
@@ -22,6 +23,8 @@ public static class ServiceCollectionExtensions
         services.AddValidatorsFromAssembly(
             typeof(ApplicationAssemblyMarker).Assembly,
             includeInternalTypes: true);
+
+        services.AddScoped<IPayrollCostCalculator, PayrollCostCalculator>();
 
         return services;
     }

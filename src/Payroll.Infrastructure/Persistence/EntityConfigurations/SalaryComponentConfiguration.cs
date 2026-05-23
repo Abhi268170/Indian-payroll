@@ -19,6 +19,7 @@ internal sealed class SalaryComponentConfiguration : IEntityTypeConfiguration<Sa
         builder.Property(s => s.IsSystemComponent).IsRequired();
         builder.Property(s => s.IsActive).IsRequired();
         builder.Property(s => s.IsAssociatedWithEmployee).IsRequired();
+        builder.Property(s => s.IsOneTime).IsRequired().HasDefaultValue(false);
 
         // Earning fields
         builder.Property(s => s.EarningType).HasConversion<string>().HasMaxLength(50);
@@ -52,6 +53,7 @@ internal sealed class SalaryComponentConfiguration : IEntityTypeConfiguration<Sa
         builder.Property(s => s.DeletedAt).HasColumnType("timestamptz");
 
         builder.HasIndex(s => new { s.TenantId, s.Code }).IsUnique();
+        builder.HasIndex(s => new { s.TenantId, s.IsOneTime, s.Category, s.IsActive });
         builder.HasQueryFilter(s => !s.IsDeleted);
     }
 }

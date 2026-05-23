@@ -1,4 +1,5 @@
 using Payroll.Domain.Common;
+using Payroll.Domain.Enums;
 
 namespace Payroll.Domain.Entities;
 
@@ -15,7 +16,14 @@ public sealed class PayrunComponentBreakdown : AuditableEntity
     public decimal FullAmount { get; private set; }
     public decimal ProratedAmount { get; private set; }
     public bool IsOneTimeEarning { get; private set; }
+
+    // Statutory flags frozen at breakdown-creation time so engine recompute is
+    // deterministic even if the linked SalaryComponent is edited mid-period.
+    public bool IsTaxable { get; private set; }
     public bool ConsiderForEpf { get; private set; }
+    public bool ConsiderForEsi { get; private set; }
+    public bool CalculateOnProRata { get; private set; }
+    public EpfInclusionRule EpfInclusionRule { get; private set; }
     public bool ShowInPayslip { get; private set; }
 
     public static PayrunComponentBreakdown Create(
@@ -28,7 +36,11 @@ public sealed class PayrunComponentBreakdown : AuditableEntity
         decimal fullAmount,
         decimal proratedAmount,
         bool isOneTimeEarning,
+        bool isTaxable = true,
         bool considerForEpf = false,
+        bool considerForEsi = false,
+        bool calculateOnProRata = true,
+        EpfInclusionRule epfInclusionRule = EpfInclusionRule.Always,
         bool showInPayslip = true) =>
         new()
         {
@@ -41,7 +53,11 @@ public sealed class PayrunComponentBreakdown : AuditableEntity
             FullAmount = fullAmount,
             ProratedAmount = proratedAmount,
             IsOneTimeEarning = isOneTimeEarning,
+            IsTaxable = isTaxable,
             ConsiderForEpf = considerForEpf,
+            ConsiderForEsi = considerForEsi,
+            CalculateOnProRata = calculateOnProRata,
+            EpfInclusionRule = epfInclusionRule,
             ShowInPayslip = showInPayslip
         };
 

@@ -1640,6 +1640,12 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<bool>("CalculateOnProRata")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("calculate_on_pro_rata");
+
                     b.Property<string>("ComponentCode")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1658,11 +1664,11 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasDefaultValue(false)
                         .HasColumnName("consider_for_epf");
 
-                    b.Property<bool>("ShowInPayslip")
+                    b.Property<bool>("ConsiderForEsi")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("show_in_payslip");
+                        .HasDefaultValue(false)
+                        .HasColumnName("consider_for_esi");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamptz")
@@ -1684,6 +1690,14 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("uuid")
                         .HasColumnName("employee_id");
 
+                    b.Property<string>("EpfInclusionRule")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)")
+                        .HasDefaultValue("Always")
+                        .HasColumnName("epf_inclusion_rule");
+
                     b.Property<decimal>("FullAmount")
                         .HasColumnType("numeric(18,2)")
                         .HasColumnName("full_amount");
@@ -1696,6 +1710,12 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("boolean")
                         .HasColumnName("is_one_time_earning");
 
+                    b.Property<bool>("IsTaxable")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_taxable");
+
                     b.Property<Guid>("PayrollRunId")
                         .HasColumnType("uuid")
                         .HasColumnName("payroll_run_id");
@@ -1707,6 +1727,12 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.Property<Guid?>("SalaryComponentId")
                         .HasColumnType("uuid")
                         .HasColumnName("salary_component_id");
+
+                    b.Property<bool>("ShowInPayslip")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("show_in_payslip");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid")
@@ -2315,6 +2341,12 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("boolean")
                         .HasColumnName("is_nps_government_sector");
 
+                    b.Property<bool>("IsOneTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_one_time");
+
                     b.Property<bool>("IsSystemComponent")
                         .HasColumnType("boolean")
                         .HasColumnName("is_system_component");
@@ -2383,6 +2415,9 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.HasIndex("TenantId", "Code")
                         .IsUnique()
                         .HasDatabaseName("ix_salary_components_tenant_id_code");
+
+                    b.HasIndex("TenantId", "IsOneTime", "Category", "IsActive")
+                        .HasDatabaseName("ix_salary_components_tenant_id_is_one_time_category_is_active");
 
                     b.ToTable("salary_components", (string)null);
                 });

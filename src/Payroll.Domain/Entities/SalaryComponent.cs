@@ -35,6 +35,12 @@ public sealed class SalaryComponent : AuditableEntity
     public bool? CalculateOnProRata { get; private set; }
     public bool? ShowInPayslip { get; private set; }
 
+    // True for components that are added ad-hoc inside a payroll run (e.g. Bonus,
+    // Commission, Loan Recovery). Excluded from the salary structure builder and
+    // surfaced in the "Add Earning"/"Add Deduction" dropdowns. Locked after
+    // employee association.
+    public bool IsOneTime { get; private set; }
+
     // ── Deduction-specific ────────────────────────────────────────────────
     public DeductionFrequency? DeductionFrequency { get; private set; }
 
@@ -74,7 +80,8 @@ public sealed class SalaryComponent : AuditableEntity
         bool calculateOnProRata,
         bool showInPayslip,
         Guid tenantId,
-        Guid createdBy) => new()
+        Guid createdBy,
+        bool isOneTime = false) => new()
         {
             Name = name,
             NameInPayslip = nameInPayslip,
@@ -91,6 +98,7 @@ public sealed class SalaryComponent : AuditableEntity
             ConsiderForEsi = considerForEsi,
             CalculateOnProRata = calculateOnProRata,
             ShowInPayslip = showInPayslip,
+            IsOneTime = isOneTime,
             TenantId = tenantId,
             CreatedBy = createdBy,
         };
@@ -120,13 +128,15 @@ public sealed class SalaryComponent : AuditableEntity
         string code,
         DeductionFrequency frequency,
         Guid tenantId,
-        Guid createdBy) => new()
+        Guid createdBy,
+        bool isOneTime = false) => new()
         {
             Name = name,
             NameInPayslip = nameInPayslip,
             Code = code,
             Category = ComponentCategory.Deduction,
             DeductionFrequency = frequency,
+            IsOneTime = isOneTime,
             TenantId = tenantId,
             CreatedBy = createdBy,
         };
@@ -218,7 +228,8 @@ public sealed class SalaryComponent : AuditableEntity
         EpfInclusionRule epfInclusionRule,
         bool considerForEsi,
         bool calculateOnProRata,
-        bool showInPayslip)
+        bool showInPayslip,
+        bool isOneTime = false)
     {
         if (Category != ComponentCategory.Earning)
             throw new InvalidOperationException("Formula update only valid for earnings.");
@@ -233,6 +244,7 @@ public sealed class SalaryComponent : AuditableEntity
         ConsiderForEsi = considerForEsi;
         CalculateOnProRata = calculateOnProRata;
         ShowInPayslip = showInPayslip;
+        IsOneTime = isOneTime;
     }
 
     // Fixed-amount earnings: amount editable even after association (applies to new employees only).

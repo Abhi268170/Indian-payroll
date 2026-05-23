@@ -16,6 +16,7 @@ public sealed class BulkImportOneTimeEarningsCommandHandler(
     IPayrunComponentBreakdownRepository breakdownRepo,
     IEmployeeRepository employeeRepo,
     ISalaryComponentRepository componentRepo,
+    Payroll.Application.Services.IPayrollCostCalculator costCalculator,
     IUnitOfWork uow)
     : IRequestHandler<BulkImportOneTimeEarningsCommand, ImportResult>
 {
@@ -142,14 +143,15 @@ public sealed class BulkImportOneTimeEarningsCommandHandler(
 
         // Update run summary once
         var activeEmployees = allPayrunEmployees.Where(e => e.Status == PayrunEmployeeStatus.Active).ToList();
+        var snapshot = costCalculator.Calculate(activeEmployees);
         run.UpdateFinancialSummary(
-            payrollCost: activeEmployees.Sum(e => e.GrossPay + e.EmployerPf + e.EmployerEsi),
-            totalNetPay: activeEmployees.Sum(e => e.NetPay),
-            totalEmployerPf: activeEmployees.Sum(e => e.EmployerPf),
-            totalEmployerEsi: activeEmployees.Sum(e => e.EmployerEsi),
-            totalTds: activeEmployees.Sum(e => e.TdsAmount),
-            totalPt: activeEmployees.Sum(e => e.PtAmount),
-            employeeCount: activeEmployees.Count,
+            payrollCost: snapshot.PayrollCost,
+            totalNetPay: snapshot.TotalNet,
+            totalEmployerPf: snapshot.TotalEmployerPf,
+            totalEmployerEsi: snapshot.TotalEmployerEsi,
+            totalTds: snapshot.TotalTds,
+            totalPt: snapshot.TotalPt,
+            employeeCount: snapshot.EmployeeCount,
             actorId: req.ActorId);
         runRepo.Update(run);
 

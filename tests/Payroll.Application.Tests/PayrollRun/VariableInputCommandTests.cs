@@ -47,6 +47,7 @@ public class VariableInputCommandTests
             Substitute.For<IPayScheduleRepository>(),
             Substitute.For<IEmployeeFyOpeningRepository>(),
             Substitute.For<ITdsWorksheetRepository>(),
+            Substitute.For<Payroll.Application.Services.IPayrollCostCalculator>(),
             Substitute.For<IUnitOfWork>());
 
         Func<Task> act = () => handler.Handle(new SetLopCommand(RunId, EmpId, 2, ActorId), CancellationToken.None);
@@ -83,6 +84,7 @@ public class VariableInputCommandTests
             scheduleRepo,
             Substitute.For<IEmployeeFyOpeningRepository>(),
             Substitute.For<ITdsWorksheetRepository>(),
+            Substitute.For<Payroll.Application.Services.IPayrollCostCalculator>(),
             Substitute.For<IUnitOfWork>());
 
         // lopDays = 26 >= salaryDivisor = 26 (FixedDays/26)

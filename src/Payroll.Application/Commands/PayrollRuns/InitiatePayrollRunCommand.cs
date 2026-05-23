@@ -38,6 +38,7 @@ public sealed class InitiatePayrollRunHandler(
     IPriorEmployerYtdRepository priorYtdRepo,
     IEmployeeFyOpeningRepository fyOpeningRepo,
     ITdsWorksheetRepository tdsWorksheetRepo,
+    IPayrollCostCalculator costCalculator,
     ITenantContext tenantContext,
     IUnitOfWork uow)
     : IRequestHandler<InitiatePayrollRunCommand, PayrollRunSummaryDto>
@@ -267,8 +268,7 @@ public sealed class InitiatePayrollRunHandler(
         await payrollRunRepo.AddAsync(payrollRun, ct);
 
         // Create PayrunEmployee + PayrunComponentBreakdown rows
-        decimal totalNetPay = 0m, totalEmployerPf = 0m, totalEmployerEsi = 0m, totalTds = 0m, totalPt = 0m;
-        decimal totalGross = 0m, totalEmployerEps = 0m, totalLwfEmployer = 0m, totalGratuity = 0m;
+        var createdPayrunEmployees = new List<PayrunEmployee>();
         var tdsWorksheets = new List<TdsWorksheet>();
 
         foreach (var emp in activeEmployees)
@@ -326,16 +326,6 @@ public sealed class InitiatePayrollRunHandler(
                     hasPanOverride: result.TDS.HasPanOverride,
                     createdBy: req.ActorId));
 
-                totalGross += result.Gross.GrossWage;
-                totalNetPay += result.NetPay;
-                totalEmployerPf += result.PF.EPFEmployerContribution;
-                totalEmployerEps += result.PF.EPSEmployerContribution;
-                totalEmployerEsi += result.ESI.EmployerContribution;
-                totalTds += result.TDS.MonthlyTDS;
-                totalPt += result.PT.Amount;
-                totalLwfEmployer += result.LWF.EmployerAmount;
-                totalGratuity += result.Gratuity.MonthlyAccrual;
-
                 // Component breakdowns
                 foreach (var comp in result.Gross.ComponentBreakdown)
                 {
@@ -351,18 +341,24 @@ public sealed class InitiatePayrollRunHandler(
             }
 
             await payrunEmployeeRepo.AddAsync(payrunEmp, ct);
+            createdPayrunEmployees.Add(payrunEmp);
         }
 
-        // Update payroll run financial summary
-        // CTC = gross + all employer-side costs
-        decimal payrollCost = totalGross
-            + totalEmployerPf + totalEmployerEps
-            + totalEmployerEsi
-            + totalLwfEmployer
-            + totalGratuity;
+        // Run-level financial summary computed via shared calculator so initiation,
+        // LOP, one-time entries, and reimbursement imports all use the same formula.
+        var activePayrunEmployees = createdPayrunEmployees
+            .Where(p => p.Status == PayrunEmployeeStatus.Active)
+            .ToList();
+        PayrollCostSnapshot snapshot2 = costCalculator.Calculate(activePayrunEmployees);
         payrollRun.UpdateFinancialSummary(
-            payrollCost, totalNetPay, totalEmployerPf, totalEmployerEsi, totalTds, totalPt,
-            employeeCount, req.ActorId);
+            snapshot2.PayrollCost,
+            snapshot2.TotalNet,
+            snapshot2.TotalEmployerPf,
+            snapshot2.TotalEmployerEsi,
+            snapshot2.TotalTds,
+            snapshot2.TotalPt,
+            employeeCount,
+            req.ActorId);
 
         if (tdsWorksheets.Count > 0)
             await tdsWorksheetRepo.AddRangeAsync(tdsWorksheets, ct);
@@ -377,12 +373,12 @@ public sealed class InitiatePayrollRunHandler(
             Status: payrollRun.Status.ToString(),
             Type: payrollRun.Type.ToString(),
             PayDay: payDay,
-            PayrollCost: payrollCost,
-            TotalNetPay: totalNetPay,
-            TotalEmployerPf: totalEmployerPf,
-            TotalEmployerEsi: totalEmployerEsi,
-            TotalTds: totalTds,
-            TotalPt: totalPt,
+            PayrollCost: snapshot2.PayrollCost,
+            TotalNetPay: snapshot2.TotalNet,
+            TotalEmployerPf: snapshot2.TotalEmployerPf,
+            TotalEmployerEsi: snapshot2.TotalEmployerEsi,
+            TotalTds: snapshot2.TotalTds,
+            TotalPt: snapshot2.TotalPt,
             EmployeeCount: employeeCount,
             CreatedAt: payrollRun.CreatedAt,
             ApprovedAt: payrollRun.ApprovedAt,
