@@ -142,21 +142,13 @@ public class VariableInputCommandTests
             .WithMessage("*Draft*");
     }
 
-    // ── AddOneTimeEarning ────────────────────────────────────────────────────
+    // ── AddOneTimeEarning — validation guards ────────────────────────────────
 
     [Fact]
-    public async Task AddOneTimeEarning_ValidAmount_IncreasesGrossAndNetPay()
+    public async Task AddOneTimeEarning_ComponentNotOneTime_ThrowsInvalidOperation()
     {
         var run = CreateDraft();
         var payrunEmp = CreateActiveEmployee();
-
-        payrunEmp.UpdateComputedAmounts(
-            grossPay: 50_000m, netPay: 44_000m,
-            taxesAmount: 6_000m, benefitsAmount: 0m, reimbursementsAmount: 0m,
-            employeePf: 0m, employerPf: 0m, employeeEsi: 0m, employerEsi: 0m,
-            ptAmount: 0m, tdsAmount: 6_000m, lwfEmployeeAmount: 0m, lwfEmployerAmount: 0m, gratuityAmount: 0m,
-            epsAmount: 0m, monthlyCTC: 0m,
-            actorId: ActorId);
 
         var runRepo = Substitute.For<IPayrollRunRepository>();
         runRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(run);
@@ -165,52 +157,125 @@ public class VariableInputCommandTests
         payrunEmpRepo.GetByRunAndEmployeeAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(payrunEmp);
 
-        Guid componentId = Guid.NewGuid();
+        // IsOneTime defaults to false here; handler must reject.
         var component = SalaryComponent.CreateEarning(
-            "Bonus", "Bonus", "BONUS",
-            EarningType.Bonus, PayType.Monthly,
-            ComponentFormulaType.Fixed, null, null,
-            isTaxable: true, considerForEpf: false,
+            "Basic", "Basic", "BASIC",
+            EarningType.Basic, PayType.Monthly,
+            ComponentFormulaType.Fixed, 25_000m, null,
+            isTaxable: true, considerForEpf: true,
             EpfInclusionRule.Always, considerForEsi: false,
-            calculateOnProRata: false, showInPayslip: true,
+            calculateOnProRata: true, showInPayslip: true,
             tenantId: TenantId, createdBy: ActorId);
 
         var componentRepo = Substitute.For<ISalaryComponentRepository>();
-        componentRepo.GetByIdAsync(componentId, Arg.Any<CancellationToken>()).Returns(component);
-
-        var breakdownRepo = Substitute.For<IPayrunComponentBreakdownRepository>();
+        componentRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(component);
 
         var handler = new AddOneTimeEarningHandler(
-            runRepo, payrunEmpRepo, breakdownRepo, componentRepo, Substitute.For<IUnitOfWork>());
+            runRepo, payrunEmpRepo,
+            Substitute.For<IPayrunComponentBreakdownRepository>(),
+            componentRepo,
+            Substitute.For<Payroll.Application.Services.IPayrollRecomputeService>(),
+            Substitute.For<Payroll.Application.Services.IPayrollCostCalculator>(),
+            Substitute.For<IUnitOfWork>());
 
-        await handler.Handle(new AddOneTimeEarningCommand(RunId, EmpId, componentId, 10_000m, ActorId), CancellationToken.None);
+        Func<Task> act = () => handler.Handle(
+            new AddOneTimeEarningCommand(RunId, EmpId, Guid.NewGuid(), 10_000m, ActorId),
+            CancellationToken.None);
 
-        payrunEmp.GrossPay.Should().Be(60_000m);
-        payrunEmp.NetPay.Should().Be(54_000m);
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*not a one-time component*");
     }
 
-    // ── RemoveOneTimeEarning ─────────────────────────────────────────────────
-
     [Fact]
-    public async Task RemoveOneTimeEarning_ValidRow_RevertsGrossAndNetPay()
+    public async Task AddOneTimeEarning_DeductionCategory_ThrowsInvalidOperation()
     {
         var run = CreateDraft();
         var payrunEmp = CreateActiveEmployee();
-        Guid bdId = Guid.NewGuid();
 
-        // Simulate post-add state
-        payrunEmp.UpdateComputedAmounts(
-            grossPay: 60_000m, netPay: 54_000m,
-            taxesAmount: 6_000m, benefitsAmount: 0m, reimbursementsAmount: 0m,
-            employeePf: 0m, employerPf: 0m, employeeEsi: 0m, employerEsi: 0m,
-            ptAmount: 0m, tdsAmount: 6_000m, lwfEmployeeAmount: 0m, lwfEmployerAmount: 0m, gratuityAmount: 0m,
-            epsAmount: 0m, monthlyCTC: 0m,
-            actorId: ActorId);
+        var runRepo = Substitute.For<IPayrollRunRepository>();
+        runRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(run);
+
+        var payrunEmpRepo = Substitute.For<IPayrunEmployeeRepository>();
+        payrunEmpRepo.GetByRunAndEmployeeAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(payrunEmp);
+
+        var component = SalaryComponent.CreateDeduction(
+            "Loan Recovery", "Loan Recovery", "LOANREC",
+            DeductionFrequency.EveryMonth, TenantId, ActorId, isOneTime: true);
+
+        var componentRepo = Substitute.For<ISalaryComponentRepository>();
+        componentRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(component);
+
+        var handler = new AddOneTimeEarningHandler(
+            runRepo, payrunEmpRepo,
+            Substitute.For<IPayrunComponentBreakdownRepository>(),
+            componentRepo,
+            Substitute.For<Payroll.Application.Services.IPayrollRecomputeService>(),
+            Substitute.For<Payroll.Application.Services.IPayrollCostCalculator>(),
+            Substitute.For<IUnitOfWork>());
+
+        Func<Task> act = () => handler.Handle(
+            new AddOneTimeEarningCommand(RunId, EmpId, Guid.NewGuid(), 10_000m, ActorId),
+            CancellationToken.None);
+
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*not an Earning*");
+    }
+
+    [Fact]
+    public async Task AddOneTimeDeduction_EarningCategory_ThrowsInvalidOperation()
+    {
+        var run = CreateDraft();
+        var payrunEmp = CreateActiveEmployee();
+
+        var runRepo = Substitute.For<IPayrollRunRepository>();
+        runRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(run);
+
+        var payrunEmpRepo = Substitute.For<IPayrunEmployeeRepository>();
+        payrunEmpRepo.GetByRunAndEmployeeAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(payrunEmp);
+
+        var component = SalaryComponent.CreateEarning(
+            "Bonus", "Bonus", "BONUS",
+            EarningType.Bonus, PayType.FlatAmount,
+            ComponentFormulaType.Fixed, 10_000m, null,
+            isTaxable: true, considerForEpf: false,
+            EpfInclusionRule.Always, considerForEsi: false,
+            calculateOnProRata: false, showInPayslip: true,
+            tenantId: TenantId, createdBy: ActorId,
+            isOneTime: true);
+
+        var componentRepo = Substitute.For<ISalaryComponentRepository>();
+        componentRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(component);
+
+        var handler = new AddOneTimeDeductionHandler(
+            runRepo, payrunEmpRepo,
+            Substitute.For<IPayrunComponentBreakdownRepository>(),
+            componentRepo,
+            Substitute.For<Payroll.Application.Services.IPayrollRecomputeService>(),
+            Substitute.For<Payroll.Application.Services.IPayrollCostCalculator>(),
+            Substitute.For<IUnitOfWork>());
+
+        Func<Task> act = () => handler.Handle(
+            new AddOneTimeDeductionCommand(RunId, EmpId, Guid.NewGuid(), 5_000m, ActorId),
+            CancellationToken.None);
+
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*not a Deduction*");
+    }
+
+    // ── RemoveOneTimeEarning — validation guards ─────────────────────────────
+
+    [Fact]
+    public async Task RemoveOneTimeEarning_OnNonOneTimeRow_ThrowsInvalidOperation()
+    {
+        var run = CreateDraft();
+        var payrunEmp = CreateActiveEmployee();
 
         var bd = PayrunComponentBreakdown.Create(
             RunId, EmpId, TenantId,
-            Guid.NewGuid(), "BONUS", "Bonus",
-            10_000m, 10_000m, isOneTimeEarning: true);
+            Guid.NewGuid(), "BASIC", "Basic Salary",
+            25_000m, 25_000m, isOneTimeEarning: false);
 
         var runRepo = Substitute.For<IPayrollRunRepository>();
         runRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(run);
@@ -224,11 +289,16 @@ public class VariableInputCommandTests
             .Returns(new List<PayrunComponentBreakdown> { bd });
 
         var handler = new RemoveOneTimeEarningHandler(
-            runRepo, payrunEmpRepo, breakdownRepo, Substitute.For<ISalaryComponentRepository>(), Substitute.For<IUnitOfWork>());
+            runRepo, payrunEmpRepo, breakdownRepo,
+            Substitute.For<Payroll.Application.Services.IPayrollRecomputeService>(),
+            Substitute.For<Payroll.Application.Services.IPayrollCostCalculator>(),
+            Substitute.For<IUnitOfWork>());
 
-        await handler.Handle(new RemoveOneTimeEarningCommand(RunId, EmpId, bd.Id, ActorId), CancellationToken.None);
+        Func<Task> act = () => handler.Handle(
+            new RemoveOneTimeEarningCommand(RunId, EmpId, bd.Id, ActorId),
+            CancellationToken.None);
 
-        payrunEmp.GrossPay.Should().Be(50_000m);
-        payrunEmp.NetPay.Should().Be(44_000m);
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*Only one-time earnings can be removed*");
     }
 }

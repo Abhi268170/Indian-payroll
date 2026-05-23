@@ -110,7 +110,7 @@ public sealed class BulkImportLopCommandHandler(
 
             payrunEmp.UpdateComputedAmounts(
                 grossPay: result.Gross.GrossWage,
-                netPay: recompute.NetPayWithReimbursement,
+                netPay: recompute.NetPayWithAdjustments,
                 taxesAmount: result.TDS.MonthlyTDS + result.PT.Amount,
                 benefitsAmount: result.PF.EPFEmployerContribution + result.ESI.EmployerContribution,
                 reimbursementsAmount: recompute.ReimbursementsAmount,

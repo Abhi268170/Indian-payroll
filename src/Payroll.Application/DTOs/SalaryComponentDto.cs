@@ -11,6 +11,7 @@ public sealed record SalaryComponentSummaryDto(
     bool IsActive,
     bool IsSystemComponent,
     bool IsAssociatedWithEmployee,
+    bool IsOneTime,
     // Calculation display fields
     ComponentFormulaType? FormulaType,
     decimal? FixedAmount,

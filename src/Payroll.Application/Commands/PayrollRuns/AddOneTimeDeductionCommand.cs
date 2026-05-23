@@ -5,34 +5,39 @@ using Payroll.Domain.Common;
 using Payroll.Domain.Entities;
 using Payroll.Domain.Enums;
 using Payroll.Domain.Interfaces;
-using Payroll.Engine;
-using Payroll.Engine.Inputs;
 
 namespace Payroll.Application.Commands.PayrollRuns;
 
-public record SetLopCommand(Guid RunId, Guid EmployeeId, int LopDays, Guid ActorId) : IRequest;
+public record AddOneTimeDeductionCommand(
+    Guid RunId,
+    Guid EmployeeId,
+    Guid ComponentId,
+    decimal Amount,
+    Guid ActorId) : IRequest<Guid>;
 
-public sealed class SetLopCommandValidator : AbstractValidator<SetLopCommand>
+public sealed class AddOneTimeDeductionCommandValidator : AbstractValidator<AddOneTimeDeductionCommand>
 {
-    public SetLopCommandValidator()
+    public AddOneTimeDeductionCommandValidator()
     {
         RuleFor(x => x.RunId).NotEmpty();
         RuleFor(x => x.EmployeeId).NotEmpty();
-        RuleFor(x => x.LopDays).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.ComponentId).NotEmpty();
+        RuleFor(x => x.Amount).GreaterThan(0m).LessThanOrEqualTo(10_000_000m);
         RuleFor(x => x.ActorId).NotEmpty();
     }
 }
 
-public sealed class SetLopCommandHandler(
+public sealed class AddOneTimeDeductionHandler(
     IPayrollRunRepository runRepo,
     IPayrunEmployeeRepository payrunEmployeeRepo,
-    IPayScheduleRepository payScheduleRepo,
+    IPayrunComponentBreakdownRepository breakdownRepo,
+    ISalaryComponentRepository componentRepo,
     IPayrollRecomputeService recomputeService,
     IPayrollCostCalculator costCalculator,
     IUnitOfWork uow)
-    : IRequestHandler<SetLopCommand>
+    : IRequestHandler<AddOneTimeDeductionCommand, Guid>
 {
-    public async Task Handle(SetLopCommand req, CancellationToken ct)
+    public async Task<Guid> Handle(AddOneTimeDeductionCommand req, CancellationToken ct)
     {
         var run = await runRepo.GetByIdAsync(req.RunId, ct)
             ?? throw new NotFoundException($"Payroll run {req.RunId} not found.");
@@ -44,22 +49,43 @@ public sealed class SetLopCommandHandler(
             ?? throw new NotFoundException($"Employee {req.EmployeeId} not in this payroll run.");
 
         if (payrunEmp.Status == PayrunEmployeeStatus.Skipped)
-            throw new InvalidOperationException("Cannot set LOP for a skipped employee.");
+            throw new InvalidOperationException("Cannot add deductions for a skipped employee.");
 
-        var paySchedule = await payScheduleRepo.GetAsync(ct)
-            ?? throw new DomainException("Pay Schedule not configured.");
-        EngineSalaryCalculationMethod engineCalcMethod = paySchedule.SalaryCalculationMethod == SalaryCalculationMethod.ActualDays
-            ? EngineSalaryCalculationMethod.ActualDays
-            : EngineSalaryCalculationMethod.FixedDays;
-        int salaryDivisor = PayScheduleHelpers.GetDivisor(
-            engineCalcMethod, paySchedule.FixedWorkingDaysPerMonth,
-            run.PayPeriod.Year, run.PayPeriod.Month);
+        var component = await componentRepo.GetByIdAsync(req.ComponentId, ct)
+            ?? throw new NotFoundException($"Salary component {req.ComponentId} not found.");
 
-        // Guard — LOP must not exceed the salary divisor to prevent negative net pay
-        if (req.LopDays >= salaryDivisor)
-            throw new InvalidOperationException($"LOP days ({req.LopDays}) must be less than the payable days for this month ({salaryDivisor}).");
+        if (component.TenantId != run.TenantId)
+            throw new InvalidOperationException("Salary component does not belong to this tenant.");
+        if (!component.IsActive)
+            throw new InvalidOperationException($"Salary component '{component.Code}' is inactive.");
+        if (!component.IsOneTime)
+            throw new InvalidOperationException($"Salary component '{component.Code}' is not a one-time component.");
+        if (component.Category != ComponentCategory.Deduction)
+            throw new InvalidOperationException($"Salary component '{component.Code}' is not a Deduction. Use the earnings endpoint for earnings.");
 
-        payrunEmp.SetLop(req.LopDays, req.ActorId);
+        // Deductions reduce net pay only. They never enter gross or statutory
+        // base. The recompute service classifies rows by the linked component's
+        // Category and subtracts deductions from NetPay post-engine — so we
+        // store a positive amount here and let the service handle the sign.
+        var breakdown = PayrunComponentBreakdown.Create(
+            payrollRunId: run.Id,
+            employeeId: req.EmployeeId,
+            tenantId: run.TenantId,
+            salaryComponentId: req.ComponentId,
+            componentCode: component.Code,
+            componentName: component.NameInPayslip,
+            fullAmount: req.Amount,
+            proratedAmount: req.Amount,
+            isOneTimeEarning: true,
+            isTaxable: false,
+            considerForEpf: false,
+            considerForEsi: false,
+            calculateOnProRata: false,
+            epfInclusionRule: EpfInclusionRule.Always,
+            showInPayslip: true);
+
+        await breakdownRepo.AddAsync(breakdown, ct);
+        await uow.SaveChangesAsync(ct);
 
         RecomputeResult recompute = await recomputeService.RecomputeEmployeeAsync(req.RunId, req.EmployeeId, ct);
         var result = recompute.Engine;
@@ -82,7 +108,6 @@ public sealed class SetLopCommandHandler(
             epsAmount: result.PF.EPSEmployerContribution,
             monthlyCTC: payrunEmp.MonthlyCTC,
             actorId: req.ActorId);
-
         payrunEmployeeRepo.Update(payrunEmp);
 
         var allEmployees = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
@@ -100,5 +125,7 @@ public sealed class SetLopCommandHandler(
         runRepo.Update(run);
 
         await uow.SaveChangesAsync(ct);
+
+        return breakdown.Id;
     }
 }

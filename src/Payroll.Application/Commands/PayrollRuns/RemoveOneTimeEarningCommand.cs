@@ -1,9 +1,9 @@
 using FluentValidation;
 using MediatR;
+using Payroll.Application.Services;
 using Payroll.Domain.Common;
 using Payroll.Domain.Enums;
 using Payroll.Domain.Interfaces;
-using Payroll.Domain.Entities;
 
 namespace Payroll.Application.Commands.PayrollRuns;
 
@@ -24,7 +24,8 @@ public sealed class RemoveOneTimeEarningHandler(
     IPayrollRunRepository runRepo,
     IPayrunEmployeeRepository payrunEmployeeRepo,
     IPayrunComponentBreakdownRepository breakdownRepo,
-    ISalaryComponentRepository componentRepo,
+    IPayrollRecomputeService recomputeService,
+    IPayrollCostCalculator costCalculator,
     IUnitOfWork uow)
     : IRequestHandler<RemoveOneTimeEarningCommand>
 {
@@ -46,38 +47,46 @@ public sealed class RemoveOneTimeEarningHandler(
         if (!target.IsOneTimeEarning)
             throw new InvalidOperationException("Only one-time earnings can be removed.");
 
-        decimal removedAmount = target.FullAmount;
-        bool isReimbursement = target.SalaryComponentId is null;
-
-        bool isDeduction = false;
-        if (!isReimbursement && target.SalaryComponentId.HasValue)
-        {
-            SalaryComponent? comp = await componentRepo.GetByIdAsync(target.SalaryComponentId.Value, ct);
-            isDeduction = comp?.Category == ComponentCategory.Deduction;
-        }
-
         breakdownRepo.Remove(target);
+        await uow.SaveChangesAsync(ct);
+
+        RecomputeResult recompute = await recomputeService.RecomputeEmployeeAsync(req.RunId, req.EmployeeId, ct);
+        var result = recompute.Engine;
 
         payrunEmp.UpdateComputedAmounts(
-            grossPay: (isReimbursement || isDeduction) ? payrunEmp.GrossPay : payrunEmp.GrossPay - removedAmount,
-            netPay: isDeduction ? payrunEmp.NetPay + removedAmount : payrunEmp.NetPay - removedAmount,
-            taxesAmount: payrunEmp.TaxesAmount,
-            benefitsAmount: payrunEmp.BenefitsAmount,
-            reimbursementsAmount: isReimbursement ? payrunEmp.ReimbursementsAmount - removedAmount : payrunEmp.ReimbursementsAmount,
-            employeePf: payrunEmp.EmployeePf,
-            employerPf: payrunEmp.EmployerPf,
-            employeeEsi: payrunEmp.EmployeeEsi,
-            employerEsi: payrunEmp.EmployerEsi,
-            ptAmount: payrunEmp.PtAmount,
-            tdsAmount: payrunEmp.TdsAmount,
-            lwfEmployeeAmount: payrunEmp.LwfEmployeeAmount,
-            lwfEmployerAmount: payrunEmp.LwfEmployerAmount,
-            gratuityAmount: payrunEmp.GratuityAmount,
-            epsAmount: payrunEmp.EpsAmount,
+            grossPay: result.Gross.GrossWage,
+            netPay: recompute.NetPayWithAdjustments,
+            taxesAmount: result.TDS.MonthlyTDS + result.PT.Amount,
+            benefitsAmount: result.PF.EPFEmployerContribution + result.ESI.EmployerContribution,
+            reimbursementsAmount: recompute.ReimbursementsAmount,
+            employeePf: result.PF.EmployeeContribution,
+            employerPf: result.PF.EPFEmployerContribution,
+            employeeEsi: result.ESI.EmployeeContribution,
+            employerEsi: result.ESI.EmployerContribution,
+            ptAmount: result.PT.Amount,
+            tdsAmount: result.TDS.MonthlyTDS,
+            lwfEmployeeAmount: result.LWF.EmployeeAmount,
+            lwfEmployerAmount: result.LWF.EmployerAmount,
+            gratuityAmount: result.Gratuity.MonthlyAccrual,
+            epsAmount: result.PF.EPSEmployerContribution,
             monthlyCTC: payrunEmp.MonthlyCTC,
             actorId: req.ActorId);
-
         payrunEmployeeRepo.Update(payrunEmp);
+
+        var allEmployees = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
+        var activeEmployees = allEmployees.Where(e => e.Status == PayrunEmployeeStatus.Active).ToList();
+        var snapshot = costCalculator.Calculate(activeEmployees);
+        run.UpdateFinancialSummary(
+            payrollCost: snapshot.PayrollCost,
+            totalNetPay: snapshot.TotalNet,
+            totalEmployerPf: snapshot.TotalEmployerPf,
+            totalEmployerEsi: snapshot.TotalEmployerEsi,
+            totalTds: snapshot.TotalTds,
+            totalPt: snapshot.TotalPt,
+            employeeCount: snapshot.EmployeeCount,
+            actorId: req.ActorId);
+        runRepo.Update(run);
+
         await uow.SaveChangesAsync(ct);
     }
 }

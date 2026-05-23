@@ -15,6 +15,7 @@ public sealed class BulkImportReimbursementsCommandHandler(
     IPayrunEmployeeRepository payrunEmployeeRepo,
     IEmployeeRepository employeeRepo,
     IPayrunComponentBreakdownRepository breakdownRepo,
+    Payroll.Application.Services.IPayrollRecomputeService recomputeService,
     Payroll.Application.Services.IPayrollCostCalculator costCalculator,
     IUnitOfWork uow)
     : IRequestHandler<BulkImportReimbursementsCommand, ImportResult>
@@ -88,40 +89,57 @@ public sealed class BulkImportReimbursementsCommandHandler(
 
             // Breakdown row — SalaryComponentId=null discriminates reimbursements from earnings
             var breakdown = PayrunComponentBreakdown.Create(
-                run.Id, employee.Id, run.TenantId,
+                payrollRunId: run.Id,
+                employeeId: employee.Id,
+                tenantId: run.TenantId,
                 salaryComponentId: null,
                 componentCode: "REIMBURSEMENT",
                 componentName: reportNumber,
                 fullAmount: amount,
                 proratedAmount: amount,
                 isOneTimeEarning: true,
+                isTaxable: false,
+                considerForEpf: false,
+                considerForEsi: false,
+                calculateOnProRata: false,
+                epfInclusionRule: EpfInclusionRule.Always,
                 showInPayslip: true);
             newBreakdowns.Add(breakdown);
-
-            payrunEmp.UpdateComputedAmounts(
-                grossPay: payrunEmp.GrossPay,
-                netPay: payrunEmp.NetPay + amount,
-                taxesAmount: payrunEmp.TaxesAmount,
-                benefitsAmount: payrunEmp.BenefitsAmount,
-                reimbursementsAmount: payrunEmp.ReimbursementsAmount + amount,
-                employeePf: payrunEmp.EmployeePf,
-                employerPf: payrunEmp.EmployerPf,
-                employeeEsi: payrunEmp.EmployeeEsi,
-                employerEsi: payrunEmp.EmployerEsi,
-                ptAmount: payrunEmp.PtAmount,
-                tdsAmount: payrunEmp.TdsAmount,
-                lwfEmployeeAmount: payrunEmp.LwfEmployeeAmount,
-                lwfEmployerAmount: payrunEmp.LwfEmployerAmount,
-                gratuityAmount: payrunEmp.GratuityAmount,
-                epsAmount: payrunEmp.EpsAmount,
-                monthlyCTC: payrunEmp.MonthlyCTC,
-                actorId: req.ActorId);
-
-            payrunEmployeeRepo.Update(payrunEmp);
             applied++;
         }
 
         await breakdownRepo.AddRangeAsync(newBreakdowns, ct);
+        await uow.SaveChangesAsync(ct);
+
+        // Recompute each affected employee — service handles reimbursement
+        // arithmetic post-engine and refreshes the TDS worksheet.
+        HashSet<Guid> affectedEmployeeIds = newBreakdowns.Select(b => b.EmployeeId).ToHashSet();
+        foreach (Guid empId in affectedEmployeeIds)
+        {
+            Payroll.Application.Services.RecomputeResult recompute =
+                await recomputeService.RecomputeEmployeeAsync(req.RunId, empId, ct);
+            PayrunEmployee payrunEmp = payrunEmpById[empId];
+            var result = recompute.Engine;
+            payrunEmp.UpdateComputedAmounts(
+                grossPay: result.Gross.GrossWage,
+                netPay: recompute.NetPayWithAdjustments,
+                taxesAmount: result.TDS.MonthlyTDS + result.PT.Amount,
+                benefitsAmount: result.PF.EPFEmployerContribution + result.ESI.EmployerContribution,
+                reimbursementsAmount: recompute.ReimbursementsAmount,
+                employeePf: result.PF.EmployeeContribution,
+                employerPf: result.PF.EPFEmployerContribution,
+                employeeEsi: result.ESI.EmployeeContribution,
+                employerEsi: result.ESI.EmployerContribution,
+                ptAmount: result.PT.Amount,
+                tdsAmount: result.TDS.MonthlyTDS,
+                lwfEmployeeAmount: result.LWF.EmployeeAmount,
+                lwfEmployerAmount: result.LWF.EmployerAmount,
+                gratuityAmount: result.Gratuity.MonthlyAccrual,
+                epsAmount: result.PF.EPSEmployerContribution,
+                monthlyCTC: payrunEmp.MonthlyCTC,
+                actorId: req.ActorId);
+            payrunEmployeeRepo.Update(payrunEmp);
+        }
 
         // Update run summary once
         var activeEmployees = allPayrunEmployees.Where(e => e.Status == PayrunEmployeeStatus.Active).ToList();

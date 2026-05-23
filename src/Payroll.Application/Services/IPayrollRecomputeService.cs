@@ -34,4 +34,5 @@ public interface IPayrollRecomputeService
 public sealed record RecomputeResult(
     PayrollResult Engine,
     decimal ReimbursementsAmount,
-    decimal NetPayWithReimbursement);
+    decimal DeductionsAmount,
+    decimal NetPayWithAdjustments);

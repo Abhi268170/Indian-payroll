@@ -91,6 +91,18 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
         catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
     }
 
+    [HttpPost("{id:guid}/employees/{eid:guid}/deductions")]
+    public async Task<IActionResult> AddOneTimeDeduction(Guid id, Guid eid, [FromBody] AddOneTimeEarningRequest req, CancellationToken ct)
+    {
+        try
+        {
+            Guid breakdownId = await sender.Send(new AddOneTimeDeductionCommand(id, eid, req.ComponentId, req.Amount, GetActorId()), ct);
+            return Ok(new { id = breakdownId });
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+    }
+
     [HttpDelete("{id:guid}/employees/{eid:guid}/earnings/{breakdownId:guid}")]
     public async Task<IActionResult> RemoveOneTimeEarning(Guid id, Guid eid, Guid breakdownId, CancellationToken ct)
     {

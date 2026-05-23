@@ -1,5 +1,6 @@
 using MediatR;
 using Payroll.Application.DTOs;
+using Payroll.Application.Services;
 using Payroll.Application.Utilities;
 using Payroll.Domain.Common;
 using Payroll.Domain.Entities;
@@ -16,6 +17,7 @@ public sealed class BulkImportOneTimeEarningsCommandHandler(
     IPayrunComponentBreakdownRepository breakdownRepo,
     IEmployeeRepository employeeRepo,
     ISalaryComponentRepository componentRepo,
+    Payroll.Application.Services.IPayrollRecomputeService recomputeService,
     Payroll.Application.Services.IPayrollCostCalculator costCalculator,
     IUnitOfWork uow)
     : IRequestHandler<BulkImportOneTimeEarningsCommand, ImportResult>
@@ -108,38 +110,65 @@ public sealed class BulkImportOneTimeEarningsCommandHandler(
                 continue;
             }
 
+            if (!component.IsOneTime)
+            {
+                errors.Add(new(displayRow, employeeCode, $"Component '{componentCode}' is not flagged as one-time. Mark it as one-time in Settings or use the salary structure to apply recurring components."));
+                continue;
+            }
+
             bool isDeduction = component.Category == ComponentCategory.Deduction;
 
             var breakdown = PayrunComponentBreakdown.Create(
-                run.Id, employee.Id, run.TenantId,
-                component.Id, component.Code, component.Name ?? component.Code,
-                amount, amount, isOneTimeEarning: true);
+                payrollRunId: run.Id,
+                employeeId: employee.Id,
+                tenantId: run.TenantId,
+                salaryComponentId: component.Id,
+                componentCode: component.Code,
+                componentName: component.NameInPayslip,
+                fullAmount: amount,
+                proratedAmount: amount,
+                isOneTimeEarning: true,
+                isTaxable: !isDeduction && (component.IsTaxable ?? true),
+                considerForEpf: !isDeduction && (component.ConsiderForEpf ?? false),
+                considerForEsi: !isDeduction && (component.ConsiderForEsi ?? false),
+                calculateOnProRata: false,
+                epfInclusionRule: component.EpfInclusionRule ?? EpfInclusionRule.Always,
+                showInPayslip: component.ShowInPayslip ?? true);
             newBreakdowns.Add(breakdown);
-
-            payrunEmp.UpdateComputedAmounts(
-                grossPay: isDeduction ? payrunEmp.GrossPay : payrunEmp.GrossPay + amount,
-                netPay: isDeduction ? payrunEmp.NetPay - amount : payrunEmp.NetPay + amount,
-                taxesAmount: payrunEmp.TaxesAmount,
-                benefitsAmount: payrunEmp.BenefitsAmount,
-                reimbursementsAmount: payrunEmp.ReimbursementsAmount,
-                employeePf: payrunEmp.EmployeePf,
-                employerPf: payrunEmp.EmployerPf,
-                employeeEsi: payrunEmp.EmployeeEsi,
-                employerEsi: payrunEmp.EmployerEsi,
-                ptAmount: payrunEmp.PtAmount,
-                tdsAmount: payrunEmp.TdsAmount,
-                lwfEmployeeAmount: payrunEmp.LwfEmployeeAmount,
-                lwfEmployerAmount: payrunEmp.LwfEmployerAmount,
-                gratuityAmount: payrunEmp.GratuityAmount,
-                epsAmount: payrunEmp.EpsAmount,
-                monthlyCTC: payrunEmp.MonthlyCTC,
-                actorId: req.ActorId);
-
-            payrunEmployeeRepo.Update(payrunEmp);
             applied++;
         }
 
+        // Persist all new breakdowns before recomputing so the service sees them.
         await breakdownRepo.AddRangeAsync(newBreakdowns, ct);
+        await uow.SaveChangesAsync(ct);
+
+        // Recompute every affected employee once, then refresh payrun_employee rows.
+        HashSet<Guid> affectedEmployeeIds = newBreakdowns.Select(b => b.EmployeeId).ToHashSet();
+        foreach (Guid empId in affectedEmployeeIds)
+        {
+            RecomputeResult recompute = await recomputeService.RecomputeEmployeeAsync(req.RunId, empId, ct);
+            PayrunEmployee payrunEmp = payrunEmpById[empId];
+            var result = recompute.Engine;
+            payrunEmp.UpdateComputedAmounts(
+                grossPay: result.Gross.GrossWage,
+                netPay: recompute.NetPayWithAdjustments,
+                taxesAmount: result.TDS.MonthlyTDS + result.PT.Amount,
+                benefitsAmount: result.PF.EPFEmployerContribution + result.ESI.EmployerContribution,
+                reimbursementsAmount: recompute.ReimbursementsAmount,
+                employeePf: result.PF.EmployeeContribution,
+                employerPf: result.PF.EPFEmployerContribution,
+                employeeEsi: result.ESI.EmployeeContribution,
+                employerEsi: result.ESI.EmployerContribution,
+                ptAmount: result.PT.Amount,
+                tdsAmount: result.TDS.MonthlyTDS,
+                lwfEmployeeAmount: result.LWF.EmployeeAmount,
+                lwfEmployerAmount: result.LWF.EmployerAmount,
+                gratuityAmount: result.Gratuity.MonthlyAccrual,
+                epsAmount: result.PF.EPSEmployerContribution,
+                monthlyCTC: payrunEmp.MonthlyCTC,
+                actorId: req.ActorId);
+            payrunEmployeeRepo.Update(payrunEmp);
+        }
 
         // Update run summary once
         var activeEmployees = allPayrunEmployees.Where(e => e.Status == PayrunEmployeeStatus.Active).ToList();

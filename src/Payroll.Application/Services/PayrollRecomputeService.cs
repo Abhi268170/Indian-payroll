@@ -18,7 +18,8 @@ public sealed class PayrollRecomputeService(
     IWorkLocationRepository workLocationRepo,
     IPayScheduleRepository payScheduleRepo,
     IEmployeeFyOpeningRepository fyOpeningRepo,
-    ITdsWorksheetRepository tdsWorksheetRepo)
+    ITdsWorksheetRepository tdsWorksheetRepo,
+    ISalaryComponentRepository salaryComponentRepo)
     : IPayrollRecomputeService
 {
     public async Task<RecomputeResult> RecomputeEmployeeAsync(
@@ -56,16 +57,35 @@ public sealed class PayrollRecomputeService(
 
         (decimal currentYtdGross, decimal currentYtdTds) = await LoadCurrentYtdAsync(employeeId, run.PayPeriod.FiscalYear, ct);
 
-        // Partition breakdowns: reimbursement rows are paid in net only and stay
-        // out of engine input (Zoho parity — reimbursement is not part of gross).
-        List<PayrunComponentBreakdown> reimbursementRows = breakdowns
-            .Where(IsReimbursement)
+        // Partition breakdowns by role. Classification by linked component's
+        // Category avoids depending on a flag column.
+        List<Guid> componentIds = breakdowns
+            .Where(b => b.SalaryComponentId.HasValue)
+            .Select(b => b.SalaryComponentId!.Value)
+            .Distinct()
             .ToList();
-        List<PayrunComponentBreakdown> engineRows = breakdowns
-            .Where(b => !IsReimbursement(b))
-            .ToList();
+        Dictionary<Guid, ComponentCategory> categoryById = componentIds.Count == 0
+            ? new Dictionary<Guid, ComponentCategory>()
+            : (await salaryComponentRepo.GetByIdsAsync(componentIds, ct))
+                .ToDictionary(c => c.Id, c => c.Category);
+
+        var reimbursementRows = new List<PayrunComponentBreakdown>();
+        var deductionRows = new List<PayrunComponentBreakdown>();
+        var engineRows = new List<PayrunComponentBreakdown>();
+        foreach (PayrunComponentBreakdown b in breakdowns)
+        {
+            if (IsReimbursement(b))
+                reimbursementRows.Add(b);
+            else if (b.SalaryComponentId.HasValue
+                && categoryById.TryGetValue(b.SalaryComponentId.Value, out var cat)
+                && cat == ComponentCategory.Deduction)
+                deductionRows.Add(b);
+            else
+                engineRows.Add(b);
+        }
 
         decimal reimbursementsAmount = reimbursementRows.Sum(b => b.FullAmount);
+        decimal deductionsAmount = deductionRows.Sum(b => b.FullAmount);
 
         IReadOnlyList<SalaryComponentInput> components = engineRows
             .Select(MapToEngineInput)
@@ -124,7 +144,8 @@ public sealed class PayrollRecomputeService(
         return new RecomputeResult(
             Engine: result,
             ReimbursementsAmount: reimbursementsAmount,
-            NetPayWithReimbursement: result.NetPay + reimbursementsAmount);
+            DeductionsAmount: deductionsAmount,
+            NetPayWithAdjustments: result.NetPay + reimbursementsAmount - deductionsAmount);
     }
 
     private async Task<(decimal Gross, decimal Tds)> LoadCurrentYtdAsync(

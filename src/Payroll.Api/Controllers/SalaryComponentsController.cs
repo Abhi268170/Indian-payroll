@@ -52,6 +52,18 @@ public sealed class SalaryComponentsController(ISender sender) : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("one-time")]
+    public async Task<IActionResult> ListOneTime(
+        [FromQuery] ComponentCategory category, CancellationToken ct)
+    {
+        if (category != ComponentCategory.Earning && category != ComponentCategory.Deduction)
+            return BadRequest(new { error = "category must be 'Earning' or 'Deduction'." });
+
+        List<SalaryComponentSummaryDto> result =
+            await sender.Send(new ListOneTimeComponentsQuery(category), ct);
+        return Ok(result);
+    }
+
     [HttpPost("earnings")]
     public async Task<IActionResult> CreateEarning(
         [FromBody] CreateEarningRequest req, CancellationToken ct)
