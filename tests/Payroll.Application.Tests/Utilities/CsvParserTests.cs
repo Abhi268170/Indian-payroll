@@ -102,4 +102,53 @@ public class CsvParserTests
         rows[0].Should().Equal("EMP001", "BONUS", "5000");
         rows[1].Should().Equal("EMP002", "COMMISSION", "3000");
     }
+
+    [Fact]
+    public void SplitIntoChunks_RowsExactMultiple_ProducesEvenChunks()
+    {
+        List<string[]> rows = Enumerable.Range(1, 10).Select(i => new[] { $"EMP{i:000}" }).ToList();
+        List<IReadOnlyList<string[]>> chunks = CsvParser.SplitIntoChunks(rows, 5).ToList();
+        chunks.Should().HaveCount(2);
+        chunks[0].Should().HaveCount(5);
+        chunks[1].Should().HaveCount(5);
+    }
+
+    [Fact]
+    public void SplitIntoChunks_RowsNotMultiple_LastChunkSmaller()
+    {
+        List<string[]> rows = Enumerable.Range(1, 7).Select(i => new[] { $"EMP{i:000}" }).ToList();
+        List<IReadOnlyList<string[]>> chunks = CsvParser.SplitIntoChunks(rows, 5).ToList();
+        chunks.Should().HaveCount(2);
+        chunks[0].Should().HaveCount(5);
+        chunks[1].Should().HaveCount(2);
+    }
+
+    [Fact]
+    public void SplitIntoChunks_FewerRowsThanChunkSize_SingleChunk()
+    {
+        List<string[]> rows = Enumerable.Range(1, 3).Select(i => new[] { $"EMP{i:000}" }).ToList();
+        List<IReadOnlyList<string[]>> chunks = CsvParser.SplitIntoChunks(rows, 500).ToList();
+        chunks.Should().HaveCount(1);
+        chunks[0].Should().HaveCount(3);
+    }
+
+    [Fact]
+    public void ReconstructCsv_Roundtrip_ParseProducesOriginalRows()
+    {
+        List<string[]> original = [["EMP001", "BONUS", "5000"], ["EMP002", "LEAVE ENCASHMENT", "3000"]];
+        string csv = CsvParser.ReconstructCsv(original);
+        IReadOnlyList<string[]> parsed = CsvParser.Parse(csv);
+        parsed.Should().HaveCount(2);
+        parsed[0].Should().Equal("EMP001", "BONUS", "5000");
+        parsed[1].Should().Equal("EMP002", "LEAVE ENCASHMENT", "3000");
+    }
+
+    [Fact]
+    public void ReconstructCsv_FieldWithComma_Escaped()
+    {
+        List<string[]> rows = [["EMP001", "Smith, John", "1000"]];
+        string csv = CsvParser.ReconstructCsv(rows);
+        IReadOnlyList<string[]> parsed = CsvParser.Parse(csv);
+        parsed[0][1].Should().Be("Smith, John");
+    }
 }

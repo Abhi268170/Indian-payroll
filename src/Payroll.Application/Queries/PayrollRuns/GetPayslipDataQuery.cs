@@ -3,6 +3,7 @@ using Payroll.Application.DTOs;
 using Payroll.Application.Interfaces;
 using Payroll.Application.Services;
 using Payroll.Domain.Common;
+using Payroll.Domain.Enums;
 using Payroll.Domain.Interfaces;
 
 namespace Payroll.Application.Queries.PayrollRuns;
@@ -17,6 +18,7 @@ public sealed class GetPayslipDataHandler(
     IDesignationRepository designationRepo,
     IDepartmentRepository departmentRepo,
     IOrgProfileRepository orgProfileRepo,
+    ISalaryComponentRepository componentRepo,
     IEncryptionService encryption)
     : IRequestHandler<GetPayslipDataQuery, PayslipData>
 {
@@ -32,6 +34,12 @@ public sealed class GetPayslipDataHandler(
             ?? throw new NotFoundException($"Employee {req.EmployeeId} not found.");
 
         var breakdowns = await breakdownRepo.GetByRunAndEmployeeAsync(req.PayrollRunId, req.EmployeeId, ct);
+
+        var allComponents = await componentRepo.ListByTenantAsync(run.TenantId, ct: ct);
+        var deductionIds = allComponents
+            .Where(c => c.Category == ComponentCategory.Deduction)
+            .Select(c => c.Id)
+            .ToHashSet();
 
         var designation = await designationRepo.GetByIdAsync(employee.DesignationId, ct);
         var department = await departmentRepo.GetByIdAsync(employee.DepartmentId, ct);
@@ -60,7 +68,9 @@ public sealed class GetPayslipDataHandler(
             b.ComponentName,
             b.ProratedAmount,
             ytdByComponent.GetValueOrDefault(b.ComponentCode, 0m),
-            IsEarning: true))
+            IsEarning: b.SalaryComponentId is null
+                ? false  // reimbursement — show in deductions/reimbursements column
+                : !deductionIds.Contains(b.SalaryComponentId.Value)))
             .ToList();
 
         string maskedBankAccount = MaskBankAccount(employee.EncryptedBankAccount, encryption);

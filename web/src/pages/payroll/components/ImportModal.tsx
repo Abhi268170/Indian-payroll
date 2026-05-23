@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react'
-import { Upload, Download, X, AlertCircle, CheckCircle } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { Upload, Download, X, AlertCircle, CheckCircle, Loader2 } from 'lucide-react'
 import { api } from '@/lib/api'
 
 export type ImportType = 'lop' | 'earnings' | 'reimbursements'
@@ -24,8 +24,8 @@ const TYPE_CONFIG: Record<ImportType, {
     endpoint: 'lop',
   },
   earnings: {
-    title: 'Import One-Time Earnings',
-    description: 'Upload a CSV with one-time earnings (tall format: one row per earning).',
+    title: 'Import One-Time Earnings / Deductions',
+    description: 'Upload a CSV with one-time earnings or deductions. Direction is determined by the component type.',
     templateHeaders: 'Employee Code,Component Code,Amount',
     endpoint: 'earnings',
   },
@@ -48,14 +48,43 @@ interface ImportResult {
   errors: ImportError[]
 }
 
+interface JobStatus {
+  jobId: string
+  status: 'queued' | 'running' | 'completed' | 'failed'
+  processed: number
+  total: number
+  resultJson: string | null
+  error: string | null
+}
+
+function uploadErrorMessage(err: unknown): string {
+  const axiosErr = err as { response?: { data?: { error?: string; errors?: string[] }; status?: number } }
+  const data = axiosErr.response?.data
+  if (data?.error) return data.error
+  if (data?.errors && data.errors.length > 0) return data.errors[0] ?? 'Please check the file and try again.'
+  if (axiosErr.response?.status === 404) return 'This payroll run could not be found. Refresh the page and try again.'
+  if (axiosErr.response?.status === 413) return 'The file is too large. Please split it into smaller files and try again.'
+  if (axiosErr.response?.status === 422) return 'The file could not be imported. Please check the skipped rows and try again.'
+  return 'Upload failed. Please check your connection and try again.'
+}
+
 export default function ImportModal({ runId, importType, onClose, onSuccess }: ImportModalProps): React.ReactElement {
   const config = TYPE_CONFIG[importType]
   const inputRef = useRef<HTMLInputElement>(null)
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
+  const [polling, setPolling] = useState(false)
+  const [jobStatus, setJobStatus] = useState<JobStatus | null>(null)
   const [result, setResult] = useState<ImportResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [dragging, setDragging] = useState(false)
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current)
+    }
+  }, [])
 
   function downloadTemplate(): void {
     const content = `${config.templateHeaders}\n`
@@ -79,6 +108,41 @@ export default function ImportModal({ runId, importType, onClose, onSuccess }: I
     setResult(null)
   }
 
+  function startPolling(jobId: string): void {
+    setPolling(true)
+    pollRef.current = setInterval(() => {
+      void (async () => {
+        try {
+          const { data } = await api.get<JobStatus>(`/api/v1/jobs/${jobId}/status`)
+          setJobStatus(data)
+
+          if (data.status === 'completed') {
+            stopPolling()
+            const parsed: ImportResult = data.resultJson
+              ? (JSON.parse(data.resultJson) as ImportResult)
+              : { applied: 0, errors: [] }
+            setResult(parsed)
+            if (parsed.applied > 0) onSuccess()
+          } else if (data.status === 'failed') {
+            stopPolling()
+            setError(data.error ?? 'Import failed. Please try again.')
+          }
+        } catch {
+          stopPolling()
+          setError('Lost connection while tracking import progress.')
+        }
+      })()
+    }, 1500)
+  }
+
+  function stopPolling(): void {
+    if (pollRef.current) {
+      clearInterval(pollRef.current)
+      pollRef.current = null
+    }
+    setPolling(false)
+  }
+
   async function handleUpload(): Promise<void> {
     if (!file) return
     setUploading(true)
@@ -88,18 +152,16 @@ export default function ImportModal({ runId, importType, onClose, onSuccess }: I
     formData.append('file', file)
 
     try {
-      const { data } = await api.post<ImportResult>(
+      const { data } = await api.post<{ jobId: string }>(
         `/api/v1/payroll-runs/${runId}/import/${config.endpoint}`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       )
-      setResult(data)
-      if (data.applied > 0) onSuccess()
-    } catch (err: unknown) {
-      const axiosErr = err as { response?: { data?: { error?: string }; status?: number } }
-      setError(axiosErr.response?.data?.error ?? `Upload failed (${String(axiosErr.response?.status ?? 'network error')})`)
-    } finally {
       setUploading(false)
+      startPolling(data.jobId)
+    } catch (err: unknown) {
+      setUploading(false)
+      setError(uploadErrorMessage(err))
     }
   }
 
@@ -110,9 +172,15 @@ export default function ImportModal({ runId, importType, onClose, onSuccess }: I
     handleFileChange(f)
   }
 
+  const progressPct = jobStatus && jobStatus.total > 0
+    ? Math.round((jobStatus.processed / jobStatus.total) * 100)
+    : null
+
+  const isInFlight = uploading || polling
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/30" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/30" onClick={isInFlight ? undefined : onClose} />
       <div className="relative w-[480px] bg-white rounded-xl shadow-xl flex flex-col overflow-hidden max-h-[90vh]">
 
         {/* Header */}
@@ -122,8 +190,9 @@ export default function ImportModal({ runId, importType, onClose, onSuccess }: I
             <p className="text-[13px] text-[var(--color-text-secondary)] mt-0.5">{config.description}</p>
           </div>
           <button
-            onClick={onClose}
-            className="ml-4 mt-0.5 inline-flex items-center justify-center w-7 h-7 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-gray-100 transition-colors"
+            onClick={isInFlight ? undefined : onClose}
+            disabled={isInFlight}
+            className="ml-4 mt-0.5 inline-flex items-center justify-center w-7 h-7 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-gray-100 transition-colors disabled:opacity-40"
           >
             <X className="w-4 h-4" />
           </button>
@@ -148,7 +217,7 @@ export default function ImportModal({ runId, importType, onClose, onSuccess }: I
           </div>
 
           {/* Drop zone */}
-          {!result && (
+          {!result && !polling && (
             <div
               onDragOver={e => { e.preventDefault(); setDragging(true) }}
               onDragLeave={() => { setDragging(false) }}
@@ -175,6 +244,26 @@ export default function ImportModal({ runId, importType, onClose, onSuccess }: I
                 className="hidden"
                 onChange={e => { handleFileChange(e.target.files?.[0] ?? null) }}
               />
+            </div>
+          )}
+
+          {/* Progress */}
+          {polling && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-blue-50 border border-blue-200">
+                <Loader2 className="w-4 h-4 text-blue-600 shrink-0 animate-spin" />
+                <p className="text-[13px] font-medium text-[var(--color-text-primary)]">
+                  {jobStatus?.status === 'queued' ? 'Queued…' : `Processing… ${progressPct !== null ? `${progressPct}%` : ''}`}
+                </p>
+              </div>
+              {progressPct !== null && (
+                <div className="w-full bg-gray-100 rounded-full h-1.5">
+                  <div
+                    className="bg-[var(--color-primary)] h-1.5 rounded-full transition-all duration-300"
+                    style={{ width: `${progressPct}%` }}
+                  />
+                </div>
+              )}
             </div>
           )}
 
@@ -221,11 +310,12 @@ export default function ImportModal({ runId, importType, onClose, onSuccess }: I
         <div className="px-6 py-4 border-t border-[var(--color-border)] flex justify-end gap-2">
           <button
             onClick={onClose}
-            className="h-8 px-4 rounded-lg border border-[var(--color-border)] text-[13px] text-[var(--color-text-secondary)] hover:bg-[var(--color-page-bg)]"
+            disabled={isInFlight}
+            className="h-8 px-4 rounded-lg border border-[var(--color-border)] text-[13px] text-[var(--color-text-secondary)] hover:bg-[var(--color-page-bg)] disabled:opacity-40"
           >
             {result ? 'Close' : 'Cancel'}
           </button>
-          {!result && (
+          {!result && !polling && (
             <button
               onClick={() => { void handleUpload() }}
               disabled={!file || uploading}

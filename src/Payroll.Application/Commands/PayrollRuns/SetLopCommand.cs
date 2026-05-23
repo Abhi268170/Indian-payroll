@@ -61,7 +61,7 @@ public sealed class SetLopCommandHandler(
 
         // Guard — LOP must not exceed the salary divisor to prevent negative net pay
         if (req.LopDays >= salaryDivisor)
-            throw new InvalidOperationException($"LOP days ({req.LopDays}) must be less than the salary divisor ({salaryDivisor}).");
+            throw new InvalidOperationException($"LOP days ({req.LopDays}) must be less than the payable days for this month ({salaryDivisor}).");
 
         payrunEmp.SetLop(req.LopDays, req.ActorId);
 

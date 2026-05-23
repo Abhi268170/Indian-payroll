@@ -3,6 +3,7 @@ using MediatR;
 using Payroll.Domain.Common;
 using Payroll.Domain.Enums;
 using Payroll.Domain.Interfaces;
+using Payroll.Domain.Entities;
 
 namespace Payroll.Application.Commands.PayrollRuns;
 
@@ -23,6 +24,7 @@ public sealed class RemoveOneTimeEarningHandler(
     IPayrollRunRepository runRepo,
     IPayrunEmployeeRepository payrunEmployeeRepo,
     IPayrunComponentBreakdownRepository breakdownRepo,
+    ISalaryComponentRepository componentRepo,
     IUnitOfWork uow)
     : IRequestHandler<RemoveOneTimeEarningCommand>
 {
@@ -45,14 +47,23 @@ public sealed class RemoveOneTimeEarningHandler(
             throw new InvalidOperationException("Only one-time earnings can be removed.");
 
         decimal removedAmount = target.FullAmount;
+        bool isReimbursement = target.SalaryComponentId is null;
+
+        bool isDeduction = false;
+        if (!isReimbursement && target.SalaryComponentId.HasValue)
+        {
+            SalaryComponent? comp = await componentRepo.GetByIdAsync(target.SalaryComponentId.Value, ct);
+            isDeduction = comp?.Category == ComponentCategory.Deduction;
+        }
+
         breakdownRepo.Remove(target);
 
         payrunEmp.UpdateComputedAmounts(
-            grossPay: payrunEmp.GrossPay - removedAmount,
-            netPay: payrunEmp.NetPay - removedAmount,
+            grossPay: (isReimbursement || isDeduction) ? payrunEmp.GrossPay : payrunEmp.GrossPay - removedAmount,
+            netPay: isDeduction ? payrunEmp.NetPay + removedAmount : payrunEmp.NetPay - removedAmount,
             taxesAmount: payrunEmp.TaxesAmount,
             benefitsAmount: payrunEmp.BenefitsAmount,
-            reimbursementsAmount: payrunEmp.ReimbursementsAmount,
+            reimbursementsAmount: isReimbursement ? payrunEmp.ReimbursementsAmount - removedAmount : payrunEmp.ReimbursementsAmount,
             employeePf: payrunEmp.EmployeePf,
             employerPf: payrunEmp.EmployerPf,
             employeeEsi: payrunEmp.EmployeeEsi,

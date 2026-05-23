@@ -43,10 +43,14 @@ public sealed class BulkImportOneTimeEarningsCommandHandler(
         IReadOnlyList<PayrunEmployee> allPayrunEmployees = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
         Dictionary<Guid, PayrunEmployee> payrunEmpById = allPayrunEmployees.ToDictionary(e => e.EmployeeId);
 
-        // Batch-load all active earnings for tenant — build code → component dict
+        // Load active earnings + deductions — both eligible for one-time import
         IReadOnlyList<SalaryComponent> activeEarnings = await componentRepo.ListActiveEarningsAsync(run.TenantId, ct);
-        Dictionary<string, SalaryComponent> componentByCode = activeEarnings.ToDictionary(
-            c => c.Code, StringComparer.OrdinalIgnoreCase);
+        List<SalaryComponent> activeDeductions = await componentRepo.ListByTenantAsync(run.TenantId, ComponentCategory.Deduction, ct);
+        activeDeductions = activeDeductions.Where(c => c.IsActive && !c.IsSystemComponent).ToList();
+
+        Dictionary<string, SalaryComponent> componentByCode = activeEarnings
+            .Concat(activeDeductions)
+            .ToDictionary(c => c.Code, StringComparer.OrdinalIgnoreCase);
 
         int applied = 0;
         List<ImportRowError> errors = [];
@@ -81,39 +85,39 @@ public sealed class BulkImportOneTimeEarningsCommandHandler(
 
             if (!empByCode.TryGetValue(employeeCode, out Employee? employee))
             {
-                errors.Add(new(displayRow, employeeCode, "Employee not found."));
+                errors.Add(new(displayRow, employeeCode, "No employee was found with this Employee Code."));
                 continue;
             }
 
             if (!payrunEmpById.TryGetValue(employee.Id, out PayrunEmployee? payrunEmp))
             {
-                errors.Add(new(displayRow, employeeCode, "Employee not in this payroll run."));
+                errors.Add(new(displayRow, employeeCode, "This employee is not included in the selected payroll run."));
                 continue;
             }
 
             if (payrunEmp.Status == PayrunEmployeeStatus.Skipped)
             {
-                errors.Add(new(displayRow, employeeCode, "Employee is skipped."));
+                errors.Add(new(displayRow, employeeCode, "This employee is currently skipped in the payroll run."));
                 continue;
             }
 
             if (!componentByCode.TryGetValue(componentCode, out SalaryComponent? component))
             {
-                errors.Add(new(displayRow, employeeCode, $"Component '{componentCode}' not found or not an active earning."));
+                errors.Add(new(displayRow, employeeCode, $"Component '{componentCode}' was not found, is inactive, or cannot be imported here."));
                 continue;
             }
 
-            // Create breakdown row
+            bool isDeduction = component.Category == ComponentCategory.Deduction;
+
             var breakdown = PayrunComponentBreakdown.Create(
                 run.Id, employee.Id, run.TenantId,
                 component.Id, component.Code, component.Name ?? component.Code,
                 amount, amount, isOneTimeEarning: true);
             newBreakdowns.Add(breakdown);
 
-            // Update payrun employee aggregates
             payrunEmp.UpdateComputedAmounts(
-                grossPay: payrunEmp.GrossPay + amount,
-                netPay: payrunEmp.NetPay + amount,
+                grossPay: isDeduction ? payrunEmp.GrossPay : payrunEmp.GrossPay + amount,
+                netPay: isDeduction ? payrunEmp.NetPay - amount : payrunEmp.NetPay + amount,
                 taxesAmount: payrunEmp.TaxesAmount,
                 benefitsAmount: payrunEmp.BenefitsAmount,
                 reimbursementsAmount: payrunEmp.ReimbursementsAmount,
@@ -134,9 +138,7 @@ public sealed class BulkImportOneTimeEarningsCommandHandler(
             applied++;
         }
 
-        // Batch add all new breakdowns
-        foreach (var bd in newBreakdowns)
-            await breakdownRepo.AddAsync(bd, ct);
+        await breakdownRepo.AddRangeAsync(newBreakdowns, ct);
 
         // Update run summary once
         var activeEmployees = allPayrunEmployees.Where(e => e.Status == PayrunEmployeeStatus.Active).ToList();

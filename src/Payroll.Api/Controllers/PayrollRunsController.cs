@@ -1,3 +1,4 @@
+using Hangfire;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,13 +7,15 @@ using Payroll.Application.DTOs;
 using Payroll.Application.Interfaces;
 using Payroll.Application.Queries.PayrollRuns;
 using Payroll.Domain.Common;
+using Payroll.Domain.Interfaces;
+using Payroll.Infrastructure.Jobs;
 
 namespace Payroll.Api.Controllers;
 
 [ApiController]
 [Route("api/v1/payroll-runs")]
 [Authorize]
-public sealed class PayrollRunsController(ISender sender) : ControllerBase
+public sealed class PayrollRunsController(ISender sender, ITenantContext tenantContext) : ControllerBase
 {
     [HttpGet("current-period")]
     public async Task<IActionResult> GetCurrentPeriod(CancellationToken ct)
@@ -23,14 +26,12 @@ public sealed class PayrollRunsController(ISender sender) : ControllerBase
     }
 
     [HttpPost("initiate")]
-    public async Task<IActionResult> Initiate(CancellationToken ct)
+    public IActionResult Initiate()
     {
-        try
-        {
-            PayrollRunSummaryDto dto = await sender.Send(new InitiatePayrollRunCommand(GetActorId()), ct);
-            return CreatedAtAction(nameof(GetSummary), new { id = dto.Id }, dto);
-        }
-        catch (DomainException ex) { return BadRequest(new { error = ex.Message }); }
+        string jobId = Guid.NewGuid().ToString();
+        Guid tenantId = tenantContext.TenantId;
+        BackgroundJob.Enqueue<InitiatePayrollRunBackgroundJob>(j => j.Execute(tenantId, jobId, GetActorId()));
+        return Accepted(new { jobId });
     }
 
     [HttpGet("{id:guid}")]
@@ -316,42 +317,17 @@ public sealed class PayrollRunsController(ISender sender) : ControllerBase
 
     [HttpPost("{id:guid}/import/lop")]
     public async Task<IActionResult> ImportLop(Guid id, IFormFile file, CancellationToken ct)
-    {
-        if (file is null || file.Length == 0)
-            return BadRequest(new { error = "File is required." });
-
-        using StreamReader reader = new(file.OpenReadStream(), System.Text.Encoding.UTF8);
-        string csvContent = await reader.ReadToEndAsync(ct);
-
-        try
-        {
-            Application.DTOs.ImportResult result = await sender.Send(new BulkImportLopCommand(id, csvContent, GetActorId()), ct);
-            return Ok(result);
-        }
-        catch (NotFoundException) { return NotFound(); }
-        catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
-    }
+        => await EnqueueImport(id, file, "lop", ct);
 
     [HttpPost("{id:guid}/import/earnings")]
     public async Task<IActionResult> ImportEarnings(Guid id, IFormFile file, CancellationToken ct)
-    {
-        if (file is null || file.Length == 0)
-            return BadRequest(new { error = "File is required." });
-
-        using StreamReader reader = new(file.OpenReadStream(), System.Text.Encoding.UTF8);
-        string csvContent = await reader.ReadToEndAsync(ct);
-
-        try
-        {
-            Application.DTOs.ImportResult result = await sender.Send(new BulkImportOneTimeEarningsCommand(id, csvContent, GetActorId()), ct);
-            return Ok(result);
-        }
-        catch (NotFoundException) { return NotFound(); }
-        catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
-    }
+        => await EnqueueImport(id, file, "earnings", ct);
 
     [HttpPost("{id:guid}/import/reimbursements")]
     public async Task<IActionResult> ImportReimbursements(Guid id, IFormFile file, CancellationToken ct)
+        => await EnqueueImport(id, file, "reimbursements", ct);
+
+    private async Task<IActionResult> EnqueueImport(Guid runId, IFormFile? file, string importType, CancellationToken ct)
     {
         if (file is null || file.Length == 0)
             return BadRequest(new { error = "File is required." });
@@ -359,13 +335,12 @@ public sealed class PayrollRunsController(ISender sender) : ControllerBase
         using StreamReader reader = new(file.OpenReadStream(), System.Text.Encoding.UTF8);
         string csvContent = await reader.ReadToEndAsync(ct);
 
-        try
-        {
-            Application.DTOs.ImportResult result = await sender.Send(new BulkImportReimbursementsCommand(id, csvContent, GetActorId()), ct);
-            return Ok(result);
-        }
-        catch (NotFoundException) { return NotFound(); }
-        catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+        string jobId = Guid.NewGuid().ToString();
+        Guid tenantId = tenantContext.TenantId;
+        Guid actorId = GetActorId();
+        BackgroundJob.Enqueue<BulkImportBackgroundJob>(j => j.Execute(tenantId, jobId, runId, csvContent, importType, actorId));
+
+        return Accepted(new { jobId });
     }
 
     [HttpGet("{id:guid}/export")]

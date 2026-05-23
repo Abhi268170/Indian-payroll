@@ -1,13 +1,22 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { useNavigate, Link } from 'react-router-dom'
-import { AlertCircle, ChevronRight } from 'lucide-react'
+import { AlertCircle, ChevronRight, Loader2 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { formatINR } from '@/lib/format'
 import type { CurrentPayPeriodDto, PayrollHistoryItemDto } from '@/types/api'
 import PeriodCard from './components/PeriodCard'
 
 type Tab = 'run' | 'history'
+
+interface JobStatus {
+  jobId: string
+  status: 'queued' | 'running' | 'completed' | 'failed'
+  processed: number
+  total: number
+  resultJson: string | null
+  error: string | null
+}
 
 function statusBadge(status: string): React.ReactElement {
   return (
@@ -20,6 +29,15 @@ function statusBadge(status: string): React.ReactElement {
 export default function PayRunsPage(): React.ReactElement {
   const navigate = useNavigate()
   const [tab, setTab] = useState<Tab>('run')
+  const [initiating, setInitiating] = useState(false)
+  const [initiateError, setInitiateError] = useState<string | null>(null)
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current)
+    }
+  }, [])
 
   const { data: period, isLoading, error } = useQuery<CurrentPayPeriodDto | null>({
     queryKey: ['current-period'],
@@ -36,10 +54,44 @@ export default function PayRunsPage(): React.ReactElement {
     enabled: tab === 'history',
   })
 
+  function startPolling(jobId: string): void {
+    pollRef.current = setInterval(() => {
+      void (async () => {
+        try {
+          const { data } = await api.get<JobStatus>(`/api/v1/jobs/${jobId}/status`)
+          if (data.status === 'completed') {
+            clearInterval(pollRef.current!)
+            pollRef.current = null
+            setInitiating(false)
+            if (data.resultJson) {
+              const dto = JSON.parse(data.resultJson) as { id: string }
+              void navigate(`/pay-runs/${dto.id}`)
+            }
+          } else if (data.status === 'failed') {
+            clearInterval(pollRef.current!)
+            pollRef.current = null
+            setInitiating(false)
+            setInitiateError(data.error ?? 'Payroll initiation failed. Please try again.')
+          }
+        } catch {
+          clearInterval(pollRef.current!)
+          pollRef.current = null
+          setInitiating(false)
+          setInitiateError('Lost connection during payroll initiation. Please refresh and check status.')
+        }
+      })()
+    }, 1500)
+  }
+
   const initiateMutation = useMutation({
-    mutationFn: () => api.post<{ id: string }>('/api/v1/payroll-runs/initiate', {}),
+    mutationFn: () => api.post<{ jobId: string }>('/api/v1/payroll-runs/initiate', {}),
     onSuccess: (res) => {
-      void navigate(`/pay-runs/${res.data.id}`)
+      setInitiating(true)
+      setInitiateError(null)
+      startPolling(res.data.jobId)
+    },
+    onError: () => {
+      setInitiateError('Failed to initiate payroll run. Please try again.')
     },
   })
 
@@ -105,7 +157,17 @@ export default function PayRunsPage(): React.ReactElement {
             </div>
           )}
 
-          {!isLoading && period != null && !period.hasOutstandingRun && (
+          {initiating && (
+            <div className="flex items-center gap-3 rounded-lg bg-blue-50 border border-blue-200 px-4 py-4">
+              <Loader2 className="w-5 h-5 text-blue-600 animate-spin shrink-0" />
+              <div>
+                <p className="text-[13px] font-medium text-[var(--color-text-primary)]">Calculating payroll…</p>
+                <p className="text-[12px] text-[var(--color-text-secondary)] mt-0.5">This may take a minute. Please wait.</p>
+              </div>
+            </div>
+          )}
+
+          {!isLoading && period != null && !period.hasOutstandingRun && !initiating && (
             <PeriodCard
               period={period}
               onProcess={() => { initiateMutation.mutate() }}
@@ -113,10 +175,10 @@ export default function PayRunsPage(): React.ReactElement {
             />
           )}
 
-          {initiateMutation.isError && (
+          {initiateError && (
             <div className="mt-3 flex items-center gap-2.5 rounded-lg bg-red-50 border border-red-200 px-4 py-3">
               <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
-              <p className="text-[13px] text-red-700">Failed to initiate payroll run. Please try again.</p>
+              <p className="text-[13px] text-red-700">{initiateError}</p>
             </div>
           )}
         </>

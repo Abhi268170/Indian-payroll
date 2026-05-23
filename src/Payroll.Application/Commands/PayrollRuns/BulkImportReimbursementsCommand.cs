@@ -14,6 +14,7 @@ public sealed class BulkImportReimbursementsCommandHandler(
     IPayrollRunRepository runRepo,
     IPayrunEmployeeRepository payrunEmployeeRepo,
     IEmployeeRepository employeeRepo,
+    IPayrunComponentBreakdownRepository breakdownRepo,
     IUnitOfWork uow)
     : IRequestHandler<BulkImportReimbursementsCommand, ImportResult>
 {
@@ -43,6 +44,7 @@ public sealed class BulkImportReimbursementsCommandHandler(
 
         int applied = 0;
         List<ImportRowError> errors = [];
+        List<PayrunComponentBreakdown> newBreakdowns = [];
 
         for (int rowIndex = 0; rowIndex < rows.Count; rowIndex++)
         {
@@ -67,23 +69,34 @@ public sealed class BulkImportReimbursementsCommandHandler(
 
             if (!empByCode.TryGetValue(employeeCode, out Employee? employee))
             {
-                errors.Add(new(displayRow, employeeCode, "Employee not found."));
+                errors.Add(new(displayRow, employeeCode, "No employee was found with this Employee Code."));
                 continue;
             }
 
             if (!payrunEmpById.TryGetValue(employee.Id, out PayrunEmployee? payrunEmp))
             {
-                errors.Add(new(displayRow, employeeCode, "Employee not in this payroll run."));
+                errors.Add(new(displayRow, employeeCode, "This employee is not included in the selected payroll run."));
                 continue;
             }
 
             if (payrunEmp.Status == PayrunEmployeeStatus.Skipped)
             {
-                errors.Add(new(displayRow, employeeCode, "Employee is skipped."));
+                errors.Add(new(displayRow, employeeCode, "This employee is currently skipped in the payroll run."));
                 continue;
             }
 
-            // Update reimbursements aggregate + net pay
+            // Breakdown row — SalaryComponentId=null discriminates reimbursements from earnings
+            var breakdown = PayrunComponentBreakdown.Create(
+                run.Id, employee.Id, run.TenantId,
+                salaryComponentId: null,
+                componentCode: "REIMBURSEMENT",
+                componentName: reportNumber,
+                fullAmount: amount,
+                proratedAmount: amount,
+                isOneTimeEarning: true,
+                showInPayslip: true);
+            newBreakdowns.Add(breakdown);
+
             payrunEmp.UpdateComputedAmounts(
                 grossPay: payrunEmp.GrossPay,
                 netPay: payrunEmp.NetPay + amount,
@@ -106,6 +119,8 @@ public sealed class BulkImportReimbursementsCommandHandler(
             payrunEmployeeRepo.Update(payrunEmp);
             applied++;
         }
+
+        await breakdownRepo.AddRangeAsync(newBreakdowns, ct);
 
         // Update run summary once
         var activeEmployees = allPayrunEmployees.Where(e => e.Status == PayrunEmployeeStatus.Active).ToList();

@@ -270,6 +270,7 @@ export interface ComponentBreakdownDto {
   fullAmount: number
   proratedAmount: number
   isOneTimeEarning: boolean
+  isDeduction: boolean
 }
 
 export interface EmployeeVariableInputsDto {

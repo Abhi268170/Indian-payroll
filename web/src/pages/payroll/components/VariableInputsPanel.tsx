@@ -85,8 +85,11 @@ export default function VariableInputsPanel({ runId, employeeId, employeeName, o
     }
   }
 
+  const EMPTY_GUID = '00000000-0000-0000-0000-000000000000'
   const salaryComponents = data?.components.filter(c => !c.isOneTimeEarning) ?? []
-  const oneTimeEarnings = data?.components.filter(c => c.isOneTimeEarning) ?? []
+  const oneTimeEarnings = data?.components.filter(c => c.isOneTimeEarning && c.salaryComponentId !== EMPTY_GUID && !c.isDeduction) ?? []
+  const oneTimeDeductions = data?.components.filter(c => c.isOneTimeEarning && c.salaryComponentId !== EMPTY_GUID && c.isDeduction) ?? []
+  const reimbursements = data?.components.filter(c => c.isOneTimeEarning && c.salaryComponentId === EMPTY_GUID) ?? []
   const effectiveTds = data ? (data.tdsOverrideAmount ?? data.tdsAmount) : 0
 
   function buildDeductions(d: EmployeeVariableInputsDto): DeductionRow[] {
@@ -221,6 +224,23 @@ export default function VariableInputsPanel({ runId, employeeId, employeeName, o
                         <td className="px-3 py-2 text-[13px] text-right font-bold text-[var(--color-text-primary)]">{formatINR(data.grossPay)}</td>
                         <td className="w-8" />
                       </tr>
+                      {reimbursements.map((c: ComponentBreakdownDto) => (
+                        <tr key={c.id} className="bg-green-50/30">
+                          <td className="px-3 py-2">
+                            <span className="text-[13px] text-[var(--color-text-primary)]">{c.componentName}</span>
+                            <span className="ml-1.5 text-[11px] text-green-700 bg-green-50 px-1.5 py-0.5 rounded">Reimbursement</span>
+                          </td>
+                          <td className="px-3 py-2 text-[13px] text-right font-medium text-[var(--color-text-primary)]">{formatINR(c.fullAmount)}</td>
+                          <td className="px-3 py-2 text-right">
+                            <button
+                              onClick={() => { removeEarningMutation.mutate(c.id) }}
+                              className="w-6 h-6 flex items-center justify-center rounded hover:bg-red-50 text-[var(--color-text-secondary)] hover:text-red-600"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -252,11 +272,30 @@ export default function VariableInputsPanel({ runId, employeeId, employeeName, o
                               <tr key={i}>
                                 <td className="px-3 py-2 text-[13px] text-[var(--color-text-primary)]">{r.label}</td>
                                 <td className="px-3 py-2 text-[13px] text-right font-medium text-red-600">{formatINR(r.amount)}</td>
+                                <td className="w-8" />
+                              </tr>
+                            ))}
+                            {oneTimeDeductions.map((c: ComponentBreakdownDto) => (
+                              <tr key={c.id} className="bg-orange-50/30">
+                                <td className="px-3 py-2">
+                                  <span className="text-[13px] text-[var(--color-text-primary)]">{c.componentName}</span>
+                                  <span className="ml-1.5 text-[11px] text-orange-700 bg-orange-50 px-1.5 py-0.5 rounded">One-time</span>
+                                </td>
+                                <td className="px-3 py-2 text-[13px] text-right font-medium text-red-600">{formatINR(c.fullAmount)}</td>
+                                <td className="px-3 py-2 text-right">
+                                  <button
+                                    onClick={() => { removeEarningMutation.mutate(c.id) }}
+                                    className="w-6 h-6 flex items-center justify-center rounded hover:bg-red-50 text-[var(--color-text-secondary)] hover:text-red-600"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </td>
                               </tr>
                             ))}
                             <tr className="bg-[var(--color-page-bg)] border-t-2 border-[var(--color-border)]">
                               <td className="px-3 py-2 text-[12px] font-semibold text-[var(--color-text-secondary)]">Total Deductions</td>
-                              <td className="px-3 py-2 text-[13px] text-right font-bold text-red-600">{formatINR(total)}</td>
+                              <td className="px-3 py-2 text-[13px] text-right font-bold text-red-600">{formatINR(total + oneTimeDeductions.reduce((s, c) => s + c.fullAmount, 0))}</td>
+                              <td className="w-8" />
                             </tr>
                           </tbody>
                         </table>

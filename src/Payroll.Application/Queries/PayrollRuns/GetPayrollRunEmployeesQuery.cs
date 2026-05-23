@@ -37,11 +37,14 @@ public sealed class GetPayrollRunEmployeesHandler(
         var designationMap = designations.ToDictionary(d => d.Id, d => d.Name);
         var departmentMap = departments.ToDictionary(d => d.Id, d => d.Name);
 
+        IReadOnlyList<Domain.Entities.Employee> employees = await employeeRepo.GetManyByIdsAsync(
+            filteredEmps.Select(e => e.EmployeeId), ct);
+        Dictionary<Guid, Domain.Entities.Employee> employeeMap = employees.ToDictionary(e => e.Id);
+
         var result = new List<PayrunEmployeeDto>(filteredEmps.Count);
         foreach (var pe in filteredEmps)
         {
-            var emp = await employeeRepo.GetByIdAsync(pe.EmployeeId, ct);
-            if (emp is null) continue;
+            if (!employeeMap.TryGetValue(pe.EmployeeId, out Domain.Entities.Employee? emp)) continue;
 
             result.Add(new PayrunEmployeeDto(
                 EmployeeId: emp.Id,
@@ -63,6 +66,6 @@ public sealed class GetPayrollRunEmployeesHandler(
                 SkipReason: pe.SkipReason));
         }
 
-        return result;
+        return result.OrderBy(r => r.EmployeeCode).ToList();
     }
 }

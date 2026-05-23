@@ -53,6 +53,12 @@ internal sealed class EmployeeRepository(PayrollDbContext db) : IEmployeeReposit
         return found.ToHashSet(StringComparer.OrdinalIgnoreCase);
     }
 
+    public async Task<IReadOnlyList<Employee>> GetManyByIdsAsync(IEnumerable<Guid> ids, CancellationToken ct = default)
+    {
+        List<Guid> list = ids.Distinct().ToList();
+        return await db.Employees.Where(e => list.Contains(e.Id)).ToListAsync(ct);
+    }
+
     public async Task<IReadOnlyList<Employee>> GetManyByCodesAsync(IEnumerable<string> codes, CancellationToken ct = default)
     {
         List<string> list = codes.Select(c => c.ToUpperInvariant()).ToList();

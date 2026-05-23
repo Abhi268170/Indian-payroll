@@ -89,7 +89,7 @@ public class VariableInputCommandTests
         Func<Task> act = () => handler.Handle(new SetLopCommand(RunId, EmpId, 26, ActorId), CancellationToken.None);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*salary divisor*");
+            .WithMessage("LOP days*");
     }
 
     // ── OverrideTds ──────────────────────────────────────────────────────────
@@ -230,7 +230,7 @@ public class VariableInputCommandTests
             .Returns(new List<PayrunComponentBreakdown> { bd });
 
         var handler = new RemoveOneTimeEarningHandler(
-            runRepo, payrunEmpRepo, breakdownRepo, Substitute.For<IUnitOfWork>());
+            runRepo, payrunEmpRepo, breakdownRepo, Substitute.For<ISalaryComponentRepository>(), Substitute.For<IUnitOfWork>());
 
         await handler.Handle(new RemoveOneTimeEarningCommand(RunId, EmpId, bd.Id, ActorId), CancellationToken.None);
 

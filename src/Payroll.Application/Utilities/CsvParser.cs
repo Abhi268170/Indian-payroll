@@ -30,6 +30,29 @@ public static class CsvParser
         return rows;
     }
 
+    public static IEnumerable<IReadOnlyList<string[]>> SplitIntoChunks(IReadOnlyList<string[]> rows, int chunkSize = 500)
+    {
+        for (int i = 0; i < rows.Count; i += chunkSize)
+            yield return rows.Skip(i).Take(chunkSize).ToList();
+    }
+
+    public static string ReconstructCsv(IReadOnlyList<string[]> rows)
+    {
+        var sb = new System.Text.StringBuilder();
+        // Emit a dummy header row so Parse() can skip it
+        sb.AppendLine("__header__");
+        foreach (string[] row in rows)
+            sb.AppendLine(string.Join(',', row.Select(EscapeField)));
+        return sb.ToString();
+    }
+
+    private static string EscapeField(string field)
+    {
+        if (field.Contains(',') || field.Contains('"') || field.Contains('\n'))
+            return $"\"{field.Replace("\"", "\"\"")}\"";
+        return field;
+    }
+
     private static IEnumerable<string> SplitLines(string text) =>
         text.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
 

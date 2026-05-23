@@ -27,7 +27,7 @@ public sealed class ListEmployeesHandler(
         Dictionary<Guid, string> desigNames = desigs.ToDictionary(d => d.Id, d => d.Name);
         Dictionary<Guid, string> wlNames = wls.ToDictionary(w => w.Id, w => w.Name);
 
-        return employees.Select(e => new EmployeeListItemDto(
+        return employees.OrderBy(e => e.EmployeeCode).Select(e => new EmployeeListItemDto(
             e.Id,
             e.EmployeeCode,
             e.FullName,

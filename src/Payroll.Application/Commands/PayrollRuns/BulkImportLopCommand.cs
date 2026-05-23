@@ -71,15 +71,17 @@ public sealed class BulkImportLopCommandHandler(
             wl => wl.State.ToString());
 
         // Batch-load breakdowns for all employees in run
-        Dictionary<Guid, IReadOnlyList<PayrunComponentBreakdown>> breakdownsByEmpId = [];
-        foreach (PayrunEmployee pe in allPayrunEmployees)
-        {
-            breakdownsByEmpId[pe.EmployeeId] = await breakdownRepo.GetByRunAndEmployeeAsync(req.RunId, pe.EmployeeId, ct);
-        }
+        IReadOnlyList<PayrunComponentBreakdown> allBreakdowns = await breakdownRepo.GetByRunIdAsync(req.RunId, ct);
+        Dictionary<Guid, IReadOnlyList<PayrunComponentBreakdown>> breakdownsByEmpId = allBreakdowns
+            .GroupBy(b => b.EmployeeId)
+            .ToDictionary(g => g.Key, g => (IReadOnlyList<PayrunComponentBreakdown>)g.ToList());
 
         // YTD data
         Dictionary<Guid, (decimal YtdGross, decimal YtdTds)> ytdMap =
             await payrunEmployeeRepo.GetCurrentEmployerYtdAsync(employees.Select(e => e.Id), run.PayPeriod.FiscalYear, ct);
+        IReadOnlyList<EmployeeFyOpening> fyOpenings =
+            await fyOpeningRepo.GetByEmployeesAndFiscalYearAsync(employees.Select(e => e.Id), run.PayPeriod.FiscalYear, ct);
+        Dictionary<Guid, EmployeeFyOpening> fyOpeningByEmployee = fyOpenings.ToDictionary(o => o.EmployeeId);
 
         int applied = 0;
         List<ImportRowError> errors = [];
@@ -106,25 +108,25 @@ public sealed class BulkImportLopCommandHandler(
 
             if (!empByCode.TryGetValue(employeeCode, out Employee? employee))
             {
-                errors.Add(new(displayRow, employeeCode, "Employee not found."));
+                errors.Add(new(displayRow, employeeCode, "No employee was found with this Employee Code."));
                 continue;
             }
 
             if (!payrunEmpById.TryGetValue(employee.Id, out PayrunEmployee? payrunEmp))
             {
-                errors.Add(new(displayRow, employeeCode, "Employee not in this payroll run."));
+                errors.Add(new(displayRow, employeeCode, "This employee is not included in the selected payroll run."));
                 continue;
             }
 
             if (payrunEmp.Status == PayrunEmployeeStatus.Skipped)
             {
-                errors.Add(new(displayRow, employeeCode, "Employee is skipped."));
+                errors.Add(new(displayRow, employeeCode, "This employee is currently skipped in the payroll run."));
                 continue;
             }
 
             if (lopDays >= salaryDivisor)
             {
-                errors.Add(new(displayRow, employeeCode, $"LOP days ({lopDays}) must be less than the salary divisor ({salaryDivisor})."));
+                errors.Add(new(displayRow, employeeCode, $"LOP days ({lopDays}) must be less than the payable days for this month ({salaryDivisor})."));
                 continue;
             }
 
@@ -135,13 +137,12 @@ public sealed class BulkImportLopCommandHandler(
 
             // Incorporate FY opening into YTD
             ytdMap.TryGetValue(employee.Id, out (decimal YtdGross, decimal YtdTds) ytd);
-            EmployeeFyOpening? fyOpening = await fyOpeningRepo.GetAsync(employee.Id, run.PayPeriod.FiscalYear, ct);
-            if (fyOpening is not null)
+            if (fyOpeningByEmployee.TryGetValue(employee.Id, out EmployeeFyOpening? fyOpening))
             {
                 ytd = (ytd.YtdGross + fyOpening.GrossSalary, ytd.YtdTds + fyOpening.TdsDeducted);
             }
 
-            var breakdowns = breakdownsByEmpId[employee.Id];
+            IReadOnlyList<PayrunComponentBreakdown> breakdowns = breakdownsByEmpId.GetValueOrDefault(employee.Id, []);
             var result = SetLopCommandHandler.RecomputeEmployee(
                 employee, workStateCode, payrunEmp, breakdowns, run, staticConfig, salaryDivisor,
                 ytd.YtdGross, ytd.YtdTds);

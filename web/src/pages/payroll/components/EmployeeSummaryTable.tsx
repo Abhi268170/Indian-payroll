@@ -114,7 +114,7 @@ export default function EmployeeSummaryTable({
                     className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-[var(--color-text-primary)] hover:bg-[var(--color-page-bg)]"
                   >
                     <Upload className="w-3.5 h-3.5 text-[var(--color-text-muted)]" />
-                    One-Time Earnings
+                    One-Time Earnings / Deductions
                   </button>
                   <button
                     onClick={() => { setShowImportExport(false); onShowImport('reimbursements') }}
