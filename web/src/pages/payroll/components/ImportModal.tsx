@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { Upload, Download, X, AlertCircle, CheckCircle } from 'lucide-react'
+import { api } from '@/lib/api'
 
 export type ImportType = 'lop' | 'earnings' | 'reimbursements'
 
@@ -87,22 +88,16 @@ export default function ImportModal({ runId, importType, onClose, onSuccess }: I
     formData.append('file', file)
 
     try {
-      const res = await fetch(`/api/v1/payroll-runs/${runId}/import/${config.endpoint}`, {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({})) as Record<string, string>
-        setError(body.error ?? `Upload failed (${String(res.status)})`)
-        return
-      }
-
-      const data = await res.json() as ImportResult
+      const { data } = await api.post<ImportResult>(
+        `/api/v1/payroll-runs/${runId}/import/${config.endpoint}`,
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      )
       setResult(data)
       if (data.applied > 0) onSuccess()
-    } catch {
-      setError('Network error — please try again.')
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { error?: string }; status?: number } }
+      setError(axiosErr.response?.data?.error ?? `Upload failed (${String(axiosErr.response?.status ?? 'network error')})`)
     } finally {
       setUploading(false)
     }
