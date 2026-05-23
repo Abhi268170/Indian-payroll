@@ -1,7 +1,8 @@
-import { useState } from 'react'
-import { Download, Eye } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { ChevronDown, Download, Eye, Upload } from 'lucide-react'
 import { formatINR } from '@/lib/format'
 import type { PayrunEmployeeDto } from '@/types/api'
+import type { ImportType } from './ImportModal'
 
 interface EmployeeSummaryTableProps {
   employees: PayrunEmployeeDto[]
@@ -12,6 +13,8 @@ interface EmployeeSummaryTableProps {
   onDownloadPayslip: (employeeId: string, employeeName: string) => void
   onReEvaluate: () => void
   isReEvaluating: boolean
+  onShowImport: (type: ImportType) => void
+  onShowExport: () => void
 }
 
 type FilterMode = 'All' | 'Active' | 'Skipped'
@@ -24,8 +27,23 @@ export default function EmployeeSummaryTable({
   onDownloadPayslip,
   onReEvaluate,
   isReEvaluating,
+  onShowImport,
+  onShowExport,
 }: EmployeeSummaryTableProps): React.ReactElement {
   const [filter, setFilter] = useState<FilterMode>('All')
+  const [showImportExport, setShowImportExport] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!showImportExport) return
+    function handleClick(e: MouseEvent): void {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShowImportExport(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => { document.removeEventListener('mousedown', handleClick) }
+  }, [showImportExport])
 
   const visible = employees.filter(e => {
     if (filter === 'Active') return e.status === 'Active'
@@ -63,11 +81,62 @@ export default function EmployeeSummaryTable({
           <button
             onClick={onReEvaluate}
             disabled={isReEvaluating}
-            className="ml-auto h-7 px-3 rounded-lg text-[12px] font-medium border border-amber-400 text-amber-700 bg-amber-50 hover:bg-amber-100 disabled:opacity-50 transition-colors"
+            className="h-7 px-3 rounded-lg text-[12px] font-medium border border-amber-400 text-amber-700 bg-amber-50 hover:bg-amber-100 disabled:opacity-50 transition-colors"
           >
             {isReEvaluating ? 'Re-evaluating…' : 'Re-evaluate Skipped'}
           </button>
         )}
+
+        {/* Import / Export dropdown */}
+        <div ref={dropdownRef} className="ml-auto relative">
+          <button
+            onClick={() => { setShowImportExport(v => !v) }}
+            className="inline-flex items-center gap-1.5 h-7 px-3 rounded-lg border border-[var(--color-border)] text-[12px] font-medium text-[var(--color-text-secondary)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors"
+          >
+            Import / Export
+            <ChevronDown className="w-3.5 h-3.5" />
+          </button>
+
+          {showImportExport && (
+            <div className="absolute right-0 top-full mt-1 w-52 bg-white rounded-xl shadow-lg border border-[var(--color-border)] py-1 z-20">
+              {isDraft && (
+                <>
+                  <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-[var(--color-text-muted)]">Import</p>
+                  <button
+                    onClick={() => { setShowImportExport(false); onShowImport('lop') }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-[var(--color-text-primary)] hover:bg-[var(--color-page-bg)]"
+                  >
+                    <Upload className="w-3.5 h-3.5 text-[var(--color-text-muted)]" />
+                    LOP Details
+                  </button>
+                  <button
+                    onClick={() => { setShowImportExport(false); onShowImport('earnings') }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-[var(--color-text-primary)] hover:bg-[var(--color-page-bg)]"
+                  >
+                    <Upload className="w-3.5 h-3.5 text-[var(--color-text-muted)]" />
+                    One-Time Earnings
+                  </button>
+                  <button
+                    onClick={() => { setShowImportExport(false); onShowImport('reimbursements') }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-[var(--color-text-primary)] hover:bg-[var(--color-page-bg)]"
+                  >
+                    <Upload className="w-3.5 h-3.5 text-[var(--color-text-muted)]" />
+                    Expense Reimbursements
+                  </button>
+                  <div className="border-t border-[var(--color-border)] my-1" />
+                </>
+              )}
+              <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-[var(--color-text-muted)]">Export</p>
+              <button
+                onClick={() => { setShowImportExport(false); onShowExport() }}
+                className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-[var(--color-text-primary)] hover:bg-[var(--color-page-bg)]"
+              >
+                <Download className="w-3.5 h-3.5 text-[var(--color-text-muted)]" />
+                Export Payroll Data
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="rounded-xl border border-[var(--color-border)] overflow-hidden">

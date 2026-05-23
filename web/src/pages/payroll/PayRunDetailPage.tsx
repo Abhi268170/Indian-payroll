@@ -14,6 +14,8 @@ import DeletePaymentDialog from './components/DeletePaymentDialog'
 import SkipEmployeeDialog from './components/SkipEmployeeDialog'
 import PayslipPanel from './components/PayslipPanel'
 import BankAdviceModal from './components/BankAdviceModal'
+import ImportModal, { type ImportType } from './components/ImportModal'
+import ExportModal from './components/ExportModal'
 import PayRunTaxesTab from './tabs/PayRunTaxesTab'
 
 type Tab = 'employees' | 'taxes' | 'insights'
@@ -54,6 +56,8 @@ export default function PayRunDetailPage(): React.ReactElement {
   const [showDeletePayment, setShowDeletePayment] = useState(false)
   const [showBankAdvice, setShowBankAdvice] = useState(false)
   const [skipState, setSkipState] = useState<SkipState | null>(null)
+  const [importType, setImportType] = useState<ImportType | null>(null)
+  const [showExport, setShowExport] = useState(false)
 
   const runId = id ?? ''
 
@@ -147,6 +151,8 @@ export default function PayRunDetailPage(): React.ReactElement {
           onDownloadPayslip={handleDownloadPayslip}
           onReEvaluate={() => { reEvaluateMutation.mutate() }}
           isReEvaluating={reEvaluateMutation.isPending}
+          onShowImport={type => { setImportType(type) }}
+          onShowExport={() => { setShowExport(true) }}
         />
       )}
 
@@ -203,6 +209,26 @@ export default function PayRunDetailPage(): React.ReactElement {
           employeeName={skipState.employeeName}
           periodLabel={run.periodLabel}
           onClose={() => { setSkipState(null) }}
+        />
+      )}
+
+      {importType && (
+        <ImportModal
+          runId={runId}
+          importType={importType}
+          onClose={() => { setImportType(null) }}
+          onSuccess={() => {
+            void queryClient.invalidateQueries({ queryKey: ['run-employees', runId] })
+            void queryClient.invalidateQueries({ queryKey: ['payroll-run', runId] })
+          }}
+        />
+      )}
+
+      {showExport && (
+        <ExportModal
+          runId={runId}
+          periodLabel={run.periodLabel}
+          onClose={() => { setShowExport(false) }}
         />
       )}
     </div>

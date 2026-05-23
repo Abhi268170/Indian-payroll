@@ -226,6 +226,9 @@ export interface PayrunEmployeeDto {
   grossPay: number
   netPay: number
   employeePf: number
+  employeeEsi: number
+  ptAmount: number
+  lwfEmployeeAmount: number
   tdsAmount: number
   tdsOverrideAmount: number | null
   skipReason: string | null
