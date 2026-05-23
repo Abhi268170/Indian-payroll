@@ -314,6 +314,72 @@ public sealed class PayrollRunsController(ISender sender) : ControllerBase
         catch (DomainException ex) { return BadRequest(new { error = ex.Message }); }
     }
 
+    [HttpPost("{id:guid}/import/lop")]
+    public async Task<IActionResult> ImportLop(Guid id, IFormFile file, CancellationToken ct)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest(new { error = "File is required." });
+
+        using StreamReader reader = new(file.OpenReadStream(), System.Text.Encoding.UTF8);
+        string csvContent = await reader.ReadToEndAsync(ct);
+
+        try
+        {
+            Application.DTOs.ImportResult result = await sender.Send(new BulkImportLopCommand(id, csvContent, GetActorId()), ct);
+            return Ok(result);
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+    }
+
+    [HttpPost("{id:guid}/import/earnings")]
+    public async Task<IActionResult> ImportEarnings(Guid id, IFormFile file, CancellationToken ct)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest(new { error = "File is required." });
+
+        using StreamReader reader = new(file.OpenReadStream(), System.Text.Encoding.UTF8);
+        string csvContent = await reader.ReadToEndAsync(ct);
+
+        try
+        {
+            Application.DTOs.ImportResult result = await sender.Send(new BulkImportOneTimeEarningsCommand(id, csvContent, GetActorId()), ct);
+            return Ok(result);
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+    }
+
+    [HttpPost("{id:guid}/import/reimbursements")]
+    public async Task<IActionResult> ImportReimbursements(Guid id, IFormFile file, CancellationToken ct)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest(new { error = "File is required." });
+
+        using StreamReader reader = new(file.OpenReadStream(), System.Text.Encoding.UTF8);
+        string csvContent = await reader.ReadToEndAsync(ct);
+
+        try
+        {
+            Application.DTOs.ImportResult result = await sender.Send(new BulkImportReimbursementsCommand(id, csvContent, GetActorId()), ct);
+            return Ok(result);
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+    }
+
+    [HttpGet("{id:guid}/export")]
+    public async Task<IActionResult> Export(Guid id, [FromQuery] string format = "csv", CancellationToken ct = default)
+    {
+        try
+        {
+            Application.Interfaces.ExportFileResult result =
+                await sender.Send(new Application.Queries.PayrollRuns.ExportPayrollRunQuery(id, format), ct);
+            return File(result.Data, result.ContentType, result.FileName);
+        }
+        catch (NotFoundException) { return NotFound(); }
+    }
+
     private Guid GetActorId()
     {
         string? sub = User.FindFirst("sub")?.Value;
