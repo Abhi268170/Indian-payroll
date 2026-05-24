@@ -1,7 +1,9 @@
 import { type ReactElement, useEffect } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
-import { Check, Circle, AlertTriangle, ArrowLeft, ArrowRight, ExternalLink } from 'lucide-react'
-import { useOnboardingStatus, stepLabel, type OnboardingStepId, type OnboardingStepDto } from '@/hooks/useOnboardingStatus'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { Check, Circle, AlertTriangle, ArrowLeft, ArrowRight, ExternalLink, Sparkles } from 'lucide-react'
+import { api } from '@/lib/api'
+import { useOnboardingStatus, stepLabel, type OnboardingStatusDto, type OnboardingStepId, type OnboardingStepDto } from '@/hooks/useOnboardingStatus'
 
 interface StepRouteEntry {
   id: OnboardingStepId
@@ -202,11 +204,39 @@ interface StepPanelProps {
   stepStatus: OnboardingStepDto | undefined
 }
 
+// Whether the step has a one-click "Apply suggested defaults" backend action.
+const STEPS_WITH_DEFAULTS: ReadonlySet<OnboardingStepId> = new Set<OnboardingStepId>([
+  'work-locations', 'org-structure', 'salary-structure',
+])
+
+function suggestedDefaultsDescription(stepId: OnboardingStepId): string {
+  switch (stepId) {
+    case 'work-locations': return 'Creates a "Head Office" location using the state from your Organisation Profile (or Karnataka if not set). Edit later in Settings → Work Locations.'
+    case 'org-structure': return 'Creates default Engineering + Operations departments and Software Engineer + Manager designations. Edit or add more in Settings.'
+    case 'salary-structure': return 'Creates a "Standard" template: Basic 40% of CTC, HRA 40% of Basic, Special Allowance as residual. Edit in Settings → Salary Structures.'
+    default: return ''
+  }
+}
+
 function StepPanel({ stepId, stepMeta, stepStatus }: StepPanelProps): ReactElement {
-  // Phase B: each step deep-links the user to the existing settings page in a new tab and
-  // shows a status pill. Phase C will inline the form components directly.
   const complete = stepStatus?.complete ?? false
   const required = stepStatus?.required ?? true
+  const qc = useQueryClient()
+
+  const seedMutation = useMutation({
+    mutationFn: async () => {
+      const res = await api.post<OnboardingStatusDto>(`/api/v1/onboarding/seed-defaults/${stepId}`)
+      return res.data
+    },
+    onSuccess: async () => {
+      // Refresh both the wizard status and the dashboard preflight so the user
+      // sees the green tick + any downstream side-effects (e.g. People nav
+      // unlocking once salary-structure + org-structure are both seeded).
+      await qc.invalidateQueries({ queryKey: ['onboarding-status'] })
+      await qc.invalidateQueries({ queryKey: ['payroll-run-preflight'] })
+    },
+  })
+
   return (
     <div className="bg-white rounded-xl border border-[var(--color-border)] p-6">
       <div className="flex items-start justify-between gap-4 mb-4">
@@ -247,17 +277,43 @@ function StepPanel({ stepId, stepMeta, stepStatus }: StepPanelProps): ReactEleme
         </div>
       )}
 
+      {/* Apply suggested defaults — one-click idempotent seed for org-structure / work-location / salary-structure. */}
+      {!complete && STEPS_WITH_DEFAULTS.has(stepId) && (
+        <div className="mb-4 rounded-lg border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/5 p-4">
+          <div className="flex items-start gap-2 mb-2">
+            <Sparkles className="w-4 h-4 text-[var(--color-primary)] flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-[13px] font-medium text-[var(--color-text-primary)]">Apply suggested defaults</p>
+              <p className="text-[12px] text-[var(--color-text-secondary)] mt-0.5">{suggestedDefaultsDescription(stepId)}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 ml-6">
+            <button
+              type="button"
+              onClick={() => { seedMutation.mutate() }}
+              disabled={seedMutation.isPending}
+              className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-[var(--color-primary)] text-white text-[13px] font-medium hover:bg-[var(--color-primary-hover)] disabled:opacity-60"
+            >
+              {seedMutation.isPending ? 'Applying…' : 'Apply suggested defaults'}
+            </button>
+            {seedMutation.isError && (
+              <span className="text-[12px] text-red-600">Could not apply defaults. Try the manual form.</span>
+            )}
+          </div>
+        </div>
+      )}
+
       <p className="text-[13px] text-[var(--color-text-secondary)] mb-4">
-        Open the configuration form, fill in the required fields, then come back to this checklist. Status refreshes automatically.
+        {complete
+          ? 'This step is complete. You can adjust values in Settings whenever you need to.'
+          : 'Configure manually for full control over every field.'}
       </p>
 
       <Link
-        to={stepMeta?.settingsUrl ?? '/settings'}
-        target="_blank"
-        rel="noopener"
-        className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg bg-[var(--color-primary)] text-white text-[13px] font-medium hover:bg-[var(--color-primary-hover)]"
+        to={`${stepMeta?.settingsUrl ?? '/settings'}?return=onboarding&step=${stepId}`}
+        className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg border border-[var(--color-border)] text-[var(--color-text-primary)] text-[13px] font-medium hover:bg-[var(--color-page-bg)]"
       >
-        Open {stepLabel(stepId)} <ExternalLink className="w-3.5 h-3.5" />
+        Open {stepLabel(stepId)} settings <ExternalLink className="w-3.5 h-3.5" />
       </Link>
     </div>
   )

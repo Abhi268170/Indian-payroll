@@ -1,5 +1,5 @@
 import { type ReactElement } from 'react'
-import { Outlet, useNavigate, NavLink } from 'react-router-dom'
+import { Outlet, useNavigate, useSearchParams, NavLink, Link } from 'react-router-dom'
 import { X, ArrowLeft } from 'lucide-react'
 import { clsx } from 'clsx'
 
@@ -74,9 +74,17 @@ function SidebarSection({ heading, items }: NavSection): ReactElement {
 
 export default function SettingsLayout(): ReactElement {
   const navigate = useNavigate()
+  const [search] = useSearchParams()
+  // When ?return=onboarding is present (set by the onboarding wizard when it deep-links
+  // into a settings page), surface a banner that takes the user back to the wizard step
+  // instead of leaving them stranded in Settings.
+  const returnTo = search.get('return')
+  const wizardStep = search.get('step')
+  const fromOnboarding = returnTo === 'onboarding'
+  const onboardingHref = wizardStep ? `/onboarding/${wizardStep}` : '/onboarding'
 
   function handleClose(): void {
-    void navigate('/dashboard')
+    void navigate(fromOnboarding ? onboardingHref : '/dashboard')
   }
 
   return (
@@ -102,9 +110,20 @@ export default function SettingsLayout(): ReactElement {
           className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] text-[var(--color-text-secondary)] hover:bg-gray-100 transition-colors"
         >
           <X className="w-4 h-4" />
-          Close Settings
+          {fromOnboarding ? 'Back to setup' : 'Close Settings'}
         </button>
       </header>
+
+      {fromOnboarding && (
+        <div className="flex-shrink-0 bg-[var(--color-primary)]/5 border-b border-[var(--color-primary)]/20 px-6 py-2 flex items-center justify-between">
+          <p className="text-[12px] text-[var(--color-text-primary)]">
+            Configuring this from the setup wizard. Save here, then return to continue.
+          </p>
+          <Link to={onboardingHref} className="text-[12px] font-medium text-[var(--color-primary)] hover:underline">
+            Return to setup →
+          </Link>
+        </div>
+      )}
 
       <div className="flex flex-1 overflow-hidden">
         <nav className="w-52 flex-shrink-0 bg-white border-r border-[var(--color-border)] overflow-y-auto py-3">

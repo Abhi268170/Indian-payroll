@@ -47,8 +47,29 @@ async function doRefresh(): Promise<string> {
   }
 }
 
+// Side-effect interceptor: after any successful write under /api/v1/*, invalidate the
+// onboarding-status + payroll-run-preflight caches so the wizard rail and Pay Runs
+// preflight reflect new state without each page needing to opt-in. GET requests, auth
+// endpoints, and /api/v1/onboarding writes themselves are excluded.
 api.interceptors.response.use(
-  r => r,
+  async r => {
+    try {
+      const method = (r.config.method ?? 'get').toLowerCase()
+      const url = r.config.url ?? ''
+      const isWrite = method !== 'get' && method !== 'head'
+      const isV1 = url.startsWith('/api/v1/') || url.includes('/api/v1/')
+      const isOnboardingWrite = url.includes('/api/v1/onboarding')
+      const isJobs = url.includes('/api/v1/jobs/')
+      if (isWrite && isV1 && !isOnboardingWrite && !isJobs) {
+        const { queryClient } = await import('./queryClient')
+        queryClient.invalidateQueries({ queryKey: ['onboarding-status'] })
+        queryClient.invalidateQueries({ queryKey: ['payroll-run-preflight'] })
+      }
+    } catch {
+      // Never let cache-invalidation failures break the original response.
+    }
+    return r
+  },
   async error => {
     if (!axios.isAxiosError(error) || error.response?.status !== 401) {
       return Promise.reject(error)
