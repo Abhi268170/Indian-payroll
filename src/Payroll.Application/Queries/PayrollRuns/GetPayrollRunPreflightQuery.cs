@@ -40,24 +40,24 @@ internal sealed class GetPayrollRunPreflightHandler(
                 FixUrl: "/settings/statutory"));
         }
 
+        // One ListAsync + one batched structure lookup avoids per-employee N+1.
         var employees = await employeeRepo.ListAsync(ct);
-        int payrollReadyCount = 0;
-        foreach (EmployeeEntity emp in employees.Where(e => e.Status == EmployeeStatus.Active))
-        {
-            if (emp.DateOfBirth == default) continue;
-            if (string.IsNullOrWhiteSpace(emp.FathersName)) continue;
-            if (string.IsNullOrWhiteSpace(emp.EncryptedBankAccount)) continue;
-            var structure = await salaryStructureRepo.GetActiveAsync(emp.Id, ct);
-            if (structure is null) continue;
-            payrollReadyCount++;
-        }
+        List<EmployeeEntity> activeEmployees = employees.Where(e => e.Status == EmployeeStatus.Active).ToList();
+        List<EmployeeEntity> fieldReady = activeEmployees
+            .Where(e => e.DateOfBirth != default
+                     && !string.IsNullOrWhiteSpace(e.FathersName)
+                     && !string.IsNullOrWhiteSpace(e.EncryptedBankAccount))
+            .ToList();
+        HashSet<Guid> withStructure = await salaryStructureRepo
+            .GetEmployeesWithActiveStructureAsync(fieldReady.Select(e => e.Id), ct);
+        int payrollReadyCount = fieldReady.Count(e => withStructure.Contains(e.Id));
         if (payrollReadyCount == 0)
         {
             blockers.Add(new PreflightBlockerDto(
                 Code: "NO_PAYABLE_EMPLOYEES",
-                Message: "No employees with payroll-ready profile (need Date of Birth, Father's Name, bank account, and active salary structure).",
+                Message: $"No employees with payroll-ready profile (need Date of Birth, Father's Name, bank account, and active salary structure). Active employees: {activeEmployees.Count}, field-complete: {fieldReady.Count}.",
                 FixUrl: "/employees",
-                Count: 0));
+                Count: activeEmployees.Count));
         }
 
         OrgProfileEntity? org = await orgProfileRepo.GetAsync(ct);

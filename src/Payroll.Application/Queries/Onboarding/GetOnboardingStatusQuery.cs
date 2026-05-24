@@ -54,20 +54,18 @@ internal sealed class GetOnboardingStatusHandler(
         // First-employee check uses concrete field presence (DateOfBirth, FathersName,
         // EncryptedBankAccount, active salary structure) per the plan §5.4 — does NOT depend
         // on Employee.ProfileComplete because that flag is not wired in production today.
+        // One ListAsync + one batched lookup for active structures avoids per-employee N+1.
         var employees = await employeeRepo.ListAsync(ct);
-        int activeCount = employees.Count(e => e.Status == EmployeeStatus.Active);
-        int payrollReadyCount = 0;
-        Guid? firstDeductorCandidateId = null;
-        foreach (EmployeeEntity emp in employees.Where(e => e.Status == EmployeeStatus.Active))
-        {
-            if (emp.DateOfBirth == default) continue;
-            if (string.IsNullOrWhiteSpace(emp.FathersName)) continue;
-            if (string.IsNullOrWhiteSpace(emp.EncryptedBankAccount)) continue;
-            var structure = await salaryStructureRepo.GetActiveAsync(emp.Id, ct);
-            if (structure is null) continue;
-            payrollReadyCount++;
-            firstDeductorCandidateId ??= emp.Id;
-        }
+        List<EmployeeEntity> activeEmployees = employees.Where(e => e.Status == EmployeeStatus.Active).ToList();
+        int activeCount = activeEmployees.Count;
+        List<EmployeeEntity> fieldReady = activeEmployees
+            .Where(e => e.DateOfBirth != default
+                     && !string.IsNullOrWhiteSpace(e.FathersName)
+                     && !string.IsNullOrWhiteSpace(e.EncryptedBankAccount))
+            .ToList();
+        HashSet<Guid> withStructure = await salaryStructureRepo
+            .GetEmployeesWithActiveStructureAsync(fieldReady.Select(e => e.Id), ct);
+        int payrollReadyCount = fieldReady.Count(e => withStructure.Contains(e.Id));
         bool firstEmployeeComplete = payrollReadyCount > 0;
 
         bool deductorComplete = org?.DeductorEmployeeId is not null

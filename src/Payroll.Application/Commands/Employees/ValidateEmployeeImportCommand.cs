@@ -144,24 +144,33 @@ public sealed class ValidateEmployeeImportHandler(
         if (row.AnnualCTC is not null && (!decimal.TryParse(row.AnnualCTC, out decimal ctc) || ctc <= 0))
             errs.Add("AnnualCTC must be a positive number.");
 
-        if (row.PaymentMode is not null && !Enum.TryParse<PaymentMode>(row.PaymentMode, ignoreCase: true, out _))
+        // PaymentMode is mandatory in the import. Without it, CommitEmployeeImportCommand
+        // short-circuits ApplyPaymentInfo and leaves the row with no bank account, which the
+        // engine then silently skips at payroll time (InitiatePayrollRunCommand:195). Force
+        // a choice at validation time.
+        if (string.IsNullOrWhiteSpace(row.PaymentMode))
+            errs.Add("PaymentMode is required.");
+        else if (!Enum.TryParse<PaymentMode>(row.PaymentMode, ignoreCase: true, out _))
             errs.Add($"PaymentMode '{row.PaymentMode}' is invalid.");
 
-        // Bank-field conditional requirement — mirrors UpdatePaymentInfoCommand.cs:29 and the
-        // engine's per-employee skip in InitiatePayrollRunCommand:195 ("Bank account missing").
+        // Bank-field conditional requirement — mirrors UpdatePaymentInfoCommand.cs:21 which
+        // treats BOTH BankTransfer AND DirectDeposit as bank-mandatory modes. Aligned with
+        // the engine's per-employee skip in InitiatePayrollRunCommand:195 ("Bank account
+        // missing").
         if (Enum.TryParse<PaymentMode>(row.PaymentMode, ignoreCase: true, out PaymentMode mode)
-            && mode == PaymentMode.BankTransfer)
+            && (mode == PaymentMode.BankTransfer || mode == PaymentMode.DirectDeposit))
         {
+            string modeName = mode.ToString();
             if (string.IsNullOrWhiteSpace(row.BankAccountNumber))
-                errs.Add("BankAccountNumber is required when PaymentMode is BankTransfer.");
+                errs.Add($"BankAccountNumber is required when PaymentMode is {modeName}.");
             if (string.IsNullOrWhiteSpace(row.BankAccountHolderName))
-                errs.Add("BankAccountHolderName is required when PaymentMode is BankTransfer.");
+                errs.Add($"BankAccountHolderName is required when PaymentMode is {modeName}.");
             if (string.IsNullOrWhiteSpace(row.BankName))
-                errs.Add("BankName is required when PaymentMode is BankTransfer.");
+                errs.Add($"BankName is required when PaymentMode is {modeName}.");
             if (string.IsNullOrWhiteSpace(row.IFSCCode))
-                errs.Add("IFSCCode is required when PaymentMode is BankTransfer.");
+                errs.Add($"IFSCCode is required when PaymentMode is {modeName}.");
             if (string.IsNullOrWhiteSpace(row.BankAccountType))
-                errs.Add("BankAccountType is required when PaymentMode is BankTransfer.");
+                errs.Add($"BankAccountType is required when PaymentMode is {modeName}.");
         }
 
         if (row.State is not null && !Enum.TryParse<IndianState>(row.State, ignoreCase: true, out _))
