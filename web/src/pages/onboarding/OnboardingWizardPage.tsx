@@ -23,6 +23,8 @@ const STEPS: StepRouteEntry[] = [
   { id: 'first-employee',    settingsUrl: '/employees/new',              ordinal: 9 },
 ]
 
+const KNOWN_STEP_IDS: ReadonlySet<string> = new Set(STEPS.map(s => s.id))
+
 function pickActiveStepId(steps: OnboardingStepDto[]): OnboardingStepId {
   // First incomplete required step, else first incomplete optional step, else first step.
   const requiredOpen = steps.find(s => s.required && !s.complete)
@@ -37,9 +39,14 @@ export default function OnboardingWizardPage(): ReactElement {
   const navigate = useNavigate()
   const { data: status, isLoading, error } = useOnboardingStatus()
 
-  // Redirect to the active step if the URL has no stepId.
+  // Redirect to the active step if the URL has no stepId, or if the stepId is unknown.
   useEffect(() => {
-    if (!stepId && status) {
+    if (!status) return
+    if (!stepId) {
+      void navigate(`/onboarding/${pickActiveStepId(status.steps)}`, { replace: true })
+      return
+    }
+    if (!KNOWN_STEP_IDS.has(stepId)) {
       void navigate(`/onboarding/${pickActiveStepId(status.steps)}`, { replace: true })
     }
   }, [stepId, status, navigate])
@@ -59,9 +66,17 @@ export default function OnboardingWizardPage(): ReactElement {
     )
   }
 
-  // If setup is complete and the user landed here by mistake, send them to the dashboard.
-  if (status.setupComplete && !stepId) {
+  // If setup is complete the wizard has no more purpose — send the user to the dashboard
+  // regardless of which step URL they landed on. (Bookmarked /onboarding/org-profile after
+  // completion would otherwise keep rendering the wizard.)
+  if (status.setupComplete) {
     return <Navigate to="/dashboard" replace />
+  }
+
+  // Defensive: if the URL still has an unknown stepId on the first render before the
+  // effect above kicks in, render nothing while the redirect resolves.
+  if (stepId && !KNOWN_STEP_IDS.has(stepId)) {
+    return <></>
   }
 
   const activeStepId: OnboardingStepId = stepId ?? pickActiveStepId(status.steps)
@@ -257,7 +272,7 @@ function stepHelp(id: OnboardingStepId): string {
     case 'pay-schedule': return 'Work week, salary calculation method, pay date, and first pay period.'
     case 'statutory': return 'Toggle EPF, ESI, Professional Tax, LWF, and Statutory Bonus. Defaults match Indian compliance.'
     case 'salary-structure': return 'At least one salary structure template (CTC breakdown).'
-    case 'deductor-employee': return 'Pick the employee who signs Form 16. Required before initiating an employee exit.'
+    case 'deductor-employee': return 'Pick the employee who signs Form 16 and Form 24Q. Recommended for tax filings. Exits are only blocked when the exiting employee is the current deductor — reassign first in that case.'
     case 'first-employee': return 'Add at least one fully onboarded employee with date of birth, father’s name, bank account, and salary structure.'
   }
 }

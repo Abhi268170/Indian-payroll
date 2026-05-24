@@ -64,23 +64,32 @@ function RootRedirect(): React.ReactElement {
 // For non-SuperAdmin tenant users: query setup status and route to /onboarding while
 // the tenant is incomplete, otherwise to /dashboard. While the status request is in
 // flight we render nothing — fast, no flicker, no flash of dashboard.
+//
+// Fail-closed on error: if the status request fails (transient API outage, network
+// blip), assume incomplete and route to /onboarding rather than leaking access to
+// the dashboard. The wizard itself surfaces a retry path.
 function OnboardingAwareRedirect(): React.ReactElement {
-  const { data, isLoading } = useOnboardingStatus()
+  const { data, isLoading, isError } = useOnboardingStatus()
   if (isLoading) return <></>
-  if (data && !data.setupComplete) return <Navigate to="/onboarding" replace />
+  if (isError || !data) return <Navigate to="/onboarding" replace />
+  if (!data.setupComplete) return <Navigate to="/onboarding" replace />
   return <Navigate to="/dashboard" replace />
 }
 
 // Guard for People / Pay Runs deep links so direct navigation respects the
 // navGate that the sidebar enforces. Settings remains reachable so the user
 // can still edit existing values.
+//
+// Fail-closed on error: missing data means we cannot confirm the gate is open, so
+// we send the user to /onboarding instead of allowing through. This matches the
+// "hard redirect while incomplete" intent.
 function RequireNavGate({
   gate,
   children,
 }: { gate: 'people' | 'payRuns'; children: React.ReactElement }): React.ReactElement {
-  const { data, isLoading } = useOnboardingStatus()
+  const { data, isLoading, isError } = useOnboardingStatus()
   if (isLoading) return <></>
-  if (!data) return children
+  if (isError || !data) return <Navigate to="/onboarding" replace />
   if (data.navGates[gate].enabled) return children
   return <Navigate to="/onboarding" replace />
 }
