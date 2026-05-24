@@ -1,10 +1,11 @@
 import { type ReactElement } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
-import { Users, Calendar, CheckCircle2, AlertCircle, ChevronRight } from 'lucide-react'
+import { Users, Calendar, CheckCircle2, AlertCircle, ChevronRight, AlertTriangle } from 'lucide-react'
 import { api } from '@/lib/api'
 import { formatINR } from '@/lib/format'
 import type { CurrentPayPeriodDto, EmployeeListItemDto, PayrollHistoryItemDto } from '@/types/api'
+import { usePayrollRunPreflight } from '@/hooks/useOnboardingStatus'
 
 interface PagedResult<T> {
   items: T[]
@@ -35,6 +36,8 @@ function Kpi({
 }
 
 export default function DashboardPage(): ReactElement {
+  const { data: preflight } = usePayrollRunPreflight()
+
   const { data: period } = useQuery<CurrentPayPeriodDto | null>({
     queryKey: ['current-period'],
     queryFn: async () => {
@@ -67,6 +70,21 @@ export default function DashboardPage(): ReactElement {
         <h1 className="text-[20px] font-semibold text-[var(--color-text-primary)]">Dashboard</h1>
         <p className="mt-0.5 text-[13px] text-[var(--color-text-secondary)]">Current payroll state at a glance.</p>
       </div>
+
+      {/* Non-blocking warnings from preflight (e.g. Tax Details / Deductor incomplete).
+          Hard blockers gate the Pay Runs nav item and the Process Payroll button — they
+          don't appear here. */}
+      {preflight && preflight.warnings.length > 0 && (
+        <div className="space-y-2">
+          {preflight.warnings.map(w => (
+            <div key={w.code} className="flex items-start gap-2.5 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3">
+              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+              <p className="text-[13px] text-amber-800 flex-1">{w.message}</p>
+              <Link to={w.fixUrl} className="text-[12px] font-medium text-amber-900 hover:underline">Configure</Link>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         <Kpi

@@ -1,6 +1,6 @@
 import { type ReactElement } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useSearchParams } from 'react-router-dom'
+import { Navigate, useSearchParams } from 'react-router-dom'
 import { clsx } from 'clsx'
 import { api } from '@/lib/api'
 import { Spinner } from '@/components/ui/Spinner'
@@ -40,10 +40,20 @@ export default function StatutoryComponentsPage(): ReactElement {
   const [params, setParams] = useSearchParams()
   const tab = params.get('tab') ?? 'epf'
 
-  const { data: config, isLoading } = useQuery<StatutoryConfig>({
+  const { data: config, isLoading, error } = useQuery<StatutoryConfig>({
     queryKey: ['statutory-config'],
     queryFn: () => api.get<StatutoryConfig>('/api/v1/statutory/config').then(r => r.data),
+    retry: false,
   })
+
+  // Phase A made GET /api/v1/statutory/config return 404 when the row is missing
+  // (instead of the old fallback DTO that lied about EPF being disabled). If we land
+  // here without a config, route the user to the wizard so they can resolve it
+  // instead of showing a hard error.
+  const status = (error as { response?: { status?: number } } | null)?.response?.status
+  if (status === 404) {
+    return <Navigate to="/onboarding/statutory" replace />
+  }
 
   function setTab(id: string): void {
     setParams({ tab: id })

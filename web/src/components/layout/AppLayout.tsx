@@ -1,8 +1,9 @@
 import { type ReactElement } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
-import { LogOut, Settings, Users, CreditCard } from 'lucide-react'
+import { LogOut, Settings, Users, CreditCard, Lock } from 'lucide-react'
 import { clsx } from 'clsx'
+import { useOnboardingStatus, navMissingLabel } from '@/hooks/useOnboardingStatus'
 
 function navItemCls(isActive: boolean): string {
   return clsx(
@@ -13,9 +14,48 @@ function navItemCls(isActive: boolean): string {
   )
 }
 
+interface GatedNavLinkProps {
+  to: string
+  icon: ReactElement
+  label: string
+  enabled: boolean
+  missing: string[]
+}
+
+// Renders a nav item that is either active (NavLink) or disabled with a tooltip
+// listing the missing prerequisites. Clicking a disabled item routes to /onboarding
+// where the user can complete setup.
+function GatedNavLink({ to, icon, label, enabled, missing }: GatedNavLinkProps): ReactElement {
+  if (enabled) {
+    return (
+      <NavLink to={to} className={({ isActive }) => navItemCls(isActive)}>
+        {icon}
+        {label}
+      </NavLink>
+    )
+  }
+  const tooltip = `Complete: ${missing.map(navMissingLabel).join(', ')}`
+  return (
+    <NavLink
+      to="/onboarding"
+      title={tooltip}
+      className="flex items-center justify-between gap-2 h-9 px-3 rounded-lg text-[13px] w-full text-[var(--color-sidebar-text)]/60 hover:bg-[var(--color-sidebar-hover)] cursor-pointer"
+    >
+      <span className="flex items-center gap-2">
+        {icon}
+        {label}
+      </span>
+      <Lock className="w-3.5 h-3.5 flex-shrink-0" />
+    </NavLink>
+  )
+}
+
 export default function AppLayout(): ReactElement {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
+  const { data: status } = useOnboardingStatus()
+  const peopleGate = status?.navGates.people
+  const payRunsGate = status?.navGates.payRuns
 
   function handleLogout(): void {
     logout()
@@ -39,14 +79,20 @@ export default function AppLayout(): ReactElement {
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
-          <NavLink to="/employees" className={({ isActive }) => navItemCls(isActive)}>
-            <Users className="w-4 h-4 flex-shrink-0" />
-            People
-          </NavLink>
-          <NavLink to="/pay-runs" className={({ isActive }) => navItemCls(isActive)}>
-            <CreditCard className="w-4 h-4 flex-shrink-0" />
-            Pay Runs
-          </NavLink>
+          <GatedNavLink
+            to="/employees"
+            icon={<Users className="w-4 h-4 flex-shrink-0" />}
+            label="People"
+            enabled={peopleGate?.enabled ?? true}
+            missing={peopleGate?.missing ?? []}
+          />
+          <GatedNavLink
+            to="/pay-runs"
+            icon={<CreditCard className="w-4 h-4 flex-shrink-0" />}
+            label="Pay Runs"
+            enabled={payRunsGate?.enabled ?? true}
+            missing={payRunsGate?.missing ?? []}
+          />
           <NavLink to="/settings" className={({ isActive }) => navItemCls(isActive)}>
             <Settings className="w-4 h-4 flex-shrink-0" />
             Settings
