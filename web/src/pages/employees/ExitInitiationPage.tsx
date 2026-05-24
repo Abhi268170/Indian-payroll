@@ -54,7 +54,13 @@ export default function ExitInitiationPage(): ReactElement {
       notes: notes || null,
     }).then(r => r.data),
     onSuccess: (data) => {
-      navigate(`/pay-runs/${data.fnfPayrollRunId}/fnf`)
+      // Bulk uses the regular pay-run drawer (PayRunDetailPage). Single FnF
+      // uses the dedicated Step-2 form because its layout differs from a
+      // multi-employee run.
+      const route = data.fnfPayrollRunType === 'BulkFinalSettlement'
+        ? `/pay-runs/${data.fnfPayrollRunId}`
+        : `/pay-runs/${data.fnfPayrollRunId}/fnf`
+      navigate(route)
     },
     onError: (err: unknown) => {
       setError(extractError(err) ?? 'Failed to initiate exit')
