@@ -9,9 +9,10 @@
 **/coverage/
 *.DotSettings.user
 
-# EF Core migrations — tracked separately, don't ignore committed ones
-# but ignore generated snapshot diffs during review
-**/Migrations/*.Designer.cs
+# EF Core migrations — Designer.cs files must be committed. Without them
+# EF Core cannot discover the migration (the [Migration] attribute + the
+# BuildTargetModel snapshot live in Designer.cs). Ignoring this file
+# silently turns committed migrations into no-ops.
 
 # Secrets — NEVER commit
 secrets/

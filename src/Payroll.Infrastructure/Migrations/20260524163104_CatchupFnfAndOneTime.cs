@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Payroll.Infrastructure.Migrations
+namespace Payroll.Infrastructure.Migrations.PayrollDb
 {
     /// <inheritdoc />
-    public partial class AddIsOneTimeToSalaryComponent : Migration
+    public partial class CatchupFnfAndOneTime : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,6 +17,12 @@ namespace Payroll.Infrastructure.Migrations
                 type: "boolean",
                 nullable: false,
                 defaultValue: false);
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "employee_exit_id",
+                table: "payrun_employees",
+                type: "uuid",
+                nullable: true);
 
             migrationBuilder.AddColumn<bool>(
                 name: "calculate_on_pro_rata",
@@ -46,36 +53,40 @@ namespace Payroll.Infrastructure.Migrations
                 nullable: false,
                 defaultValue: true);
 
+            migrationBuilder.AddColumn<bool>(
+                name: "show_in_payslip",
+                table: "payrun_component_breakdowns",
+                type: "boolean",
+                nullable: false,
+                defaultValue: true);
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "employee_exit_id",
+                table: "payroll_runs",
+                type: "uuid",
+                nullable: true);
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "deductor_employee_id",
+                table: "org_profiles",
+                type: "uuid",
+                nullable: true);
+
+            migrationBuilder.AddColumn<Guid>(
+                name: "fnf_payroll_run_id",
+                table: "employee_exits",
+                type: "uuid",
+                nullable: true);
+
             migrationBuilder.CreateIndex(
                 name: "ix_salary_components_tenant_id_is_one_time_category_is_active",
                 table: "salary_components",
                 columns: new[] { "tenant_id", "is_one_time", "category", "is_active" });
 
-            // Backfill: existing earnings whose EarningType matches Zoho's one-time
-            // catalogue (Bonus, Commission, LeaveEncashment, ArrearsEarning) are
-            // flagged so they appear in the Add Earning dropdown without manual
-            // toggling. Admins can adjust via Edit Component later.
-            migrationBuilder.Sql(@"
-                UPDATE salary_components
-                SET is_one_time = true
-                WHERE category = 'Earning'
-                  AND earning_type IN ('Bonus', 'Commission', 'LeaveEncashment', 'ArrearsEarning');
-            ");
-
-            // Backfill: existing breakdown rows inherit statutory flags from their
-            // linked SalaryComponent so engine recompute (Phase 2) produces the
-            // same numbers as the original run. Reimbursement rows
-            // (salary_component_id IS NULL) keep defaults — they are filtered out
-            // of engine input regardless.
-            migrationBuilder.Sql(@"
-                UPDATE payrun_component_breakdowns b
-                SET is_taxable           = COALESCE(c.is_taxable, true),
-                    consider_for_esi     = COALESCE(c.consider_for_esi, false),
-                    calculate_on_pro_rata = COALESCE(c.calculate_on_pro_rata, true),
-                    epf_inclusion_rule   = COALESCE(c.epf_inclusion_rule, 'Always')
-                FROM salary_components c
-                WHERE b.salary_component_id = c.id;
-            ");
+            migrationBuilder.CreateIndex(
+                name: "ix_payroll_runs_tenant_id_type_status_pay_day",
+                table: "payroll_runs",
+                columns: new[] { "tenant_id", "type", "status", "pay_day" });
         }
 
         /// <inheritdoc />
@@ -85,9 +96,17 @@ namespace Payroll.Infrastructure.Migrations
                 name: "ix_salary_components_tenant_id_is_one_time_category_is_active",
                 table: "salary_components");
 
+            migrationBuilder.DropIndex(
+                name: "ix_payroll_runs_tenant_id_type_status_pay_day",
+                table: "payroll_runs");
+
             migrationBuilder.DropColumn(
                 name: "is_one_time",
                 table: "salary_components");
+
+            migrationBuilder.DropColumn(
+                name: "employee_exit_id",
+                table: "payrun_employees");
 
             migrationBuilder.DropColumn(
                 name: "calculate_on_pro_rata",
@@ -104,6 +123,22 @@ namespace Payroll.Infrastructure.Migrations
             migrationBuilder.DropColumn(
                 name: "is_taxable",
                 table: "payrun_component_breakdowns");
+
+            migrationBuilder.DropColumn(
+                name: "show_in_payslip",
+                table: "payrun_component_breakdowns");
+
+            migrationBuilder.DropColumn(
+                name: "employee_exit_id",
+                table: "payroll_runs");
+
+            migrationBuilder.DropColumn(
+                name: "deductor_employee_id",
+                table: "org_profiles");
+
+            migrationBuilder.DropColumn(
+                name: "fnf_payroll_run_id",
+                table: "employee_exits");
         }
     }
 }
