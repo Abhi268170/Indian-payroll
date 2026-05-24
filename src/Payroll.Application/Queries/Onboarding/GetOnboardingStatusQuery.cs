@@ -49,7 +49,10 @@ internal sealed class GetOnboardingStatusHandler(
         bool statutoryComplete = statutory is not null;
 
         var templates = await templateRepo.ListByTenantAsync(tenantContext.TenantId, ct);
-        bool salaryStructureComplete = templates.Count > 0;
+        // Completeness requires at least one template that ACTUALLY has component rows —
+        // a bare row without components is engine-unusable and would silently break payroll.
+        int usableTemplateCount = templates.Count(t => t.Components.Count > 0);
+        bool salaryStructureComplete = usableTemplateCount > 0;
 
         // First-employee check uses concrete field presence (DateOfBirth, FathersName,
         // EncryptedBankAccount, active salary structure) per the plan §5.4 — does NOT depend
@@ -92,7 +95,11 @@ internal sealed class GetOnboardingStatusHandler(
                 Details: new Dictionary<string, object> { ["locked"] = payScheduleLocked }),
             new("statutory",         statutoryComplete,     Required: true,  Skippable: false),
             new("salary-structure",  salaryStructureComplete, Required: true, Skippable: false,
-                Details: new Dictionary<string, object> { ["templateCount"] = templates.Count }),
+                Details: new Dictionary<string, object>
+                {
+                    ["templateCount"] = templates.Count,
+                    ["usableTemplateCount"] = usableTemplateCount,
+                }),
             new("deductor-employee", deductorComplete,      Required: false, Skippable: true,
                 Details: new Dictionary<string, object>
                 {

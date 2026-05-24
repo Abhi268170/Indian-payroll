@@ -84,8 +84,11 @@ internal sealed class SeedOnboardingDefaultsHandler(
 
     private async Task SeedSalaryStructureAsync(Guid actorId, CancellationToken ct)
     {
+        // Strong idempotency: only skip if there is a template that ALREADY has at least
+        // one component. A previous run that crashed between the template save and the
+        // component save would have left an empty template — repair it rather than skip.
         var existing = await templateRepo.ListByTenantAsync(tenantContext.TenantId, ct);
-        if (existing.Count > 0) return;
+        if (existing.Any(t => t.Components.Count > 0)) return;
 
         var components = await salaryComponentRepo.ListByTenantAsync(tenantContext.TenantId, null, ct);
         SalaryComponent? basic = components.FirstOrDefault(c => c.Code.Equals("BASICSALARY", StringComparison.OrdinalIgnoreCase));
@@ -98,21 +101,45 @@ internal sealed class SeedOnboardingDefaultsHandler(
             throw new DomainException("Default salary components are missing. Re-run tenant provisioning.");
         }
 
-        var template = SalaryStructureTemplate.Create("Standard", "Default structure created by onboarding wizard.", tenantContext.TenantId, actorId);
-        await templateRepo.AddAsync(template, ct);
-        await uow.SaveChangesAsync(ct);
+        // Repair path: existing empty template — top up its components in place.
+        SalaryStructureTemplate? emptyTemplate = existing.FirstOrDefault(t => t.Components.Count == 0);
+        if (emptyTemplate is not null)
+        {
+            var repairRows = BuildDefaultComponents(emptyTemplate.Id, basic, hra, residual);
+            emptyTemplate.SetComponents(repairRows);
+            // Single SaveChanges in the outer handler commits parent + children together.
+            return;
+        }
 
-        // SetComponents replaces the list; order matters for display.
+        // Fresh path: build template + components, attach via the HasMany navigation, then
+        // a single SaveChanges (in the outer handler) commits both in one transaction.
+        // Id is assigned at construction (AuditableEntity), so children can reference it
+        // before the row is persisted.
+        var template = SalaryStructureTemplate.Create(
+            "Standard",
+            "Default structure created by onboarding wizard.",
+            tenantContext.TenantId,
+            actorId);
+        template.SetComponents(BuildDefaultComponents(template.Id, basic, hra, residual));
+        await templateRepo.AddAsync(template, ct);
+    }
+
+    private static List<SalaryStructureComponent> BuildDefaultComponents(
+        Guid templateId,
+        SalaryComponent basic,
+        SalaryComponent? hra,
+        SalaryComponent residual)
+    {
         var rows = new List<SalaryStructureComponent>
         {
-            SalaryStructureComponent.Create(template.Id, basic.Id, ComponentFormulaType.PercentOfCTC, fixedAmount: null, percentage: 40m, displayOrder: 1),
+            SalaryStructureComponent.Create(templateId, basic.Id, ComponentFormulaType.PercentOfCTC, fixedAmount: null, percentage: 40m, displayOrder: 1),
         };
         int order = 2;
         if (hra is not null)
         {
-            rows.Add(SalaryStructureComponent.Create(template.Id, hra.Id, ComponentFormulaType.PercentOfBasic, fixedAmount: null, percentage: 40m, displayOrder: order++));
+            rows.Add(SalaryStructureComponent.Create(templateId, hra.Id, ComponentFormulaType.PercentOfBasic, fixedAmount: null, percentage: 40m, displayOrder: order++));
         }
-        rows.Add(SalaryStructureComponent.Create(template.Id, residual.Id, ComponentFormulaType.ResidualCTC, fixedAmount: null, percentage: null, displayOrder: order));
-        template.SetComponents(rows);
+        rows.Add(SalaryStructureComponent.Create(templateId, residual.Id, ComponentFormulaType.ResidualCTC, fixedAmount: null, percentage: null, displayOrder: order));
+        return rows;
     }
 }

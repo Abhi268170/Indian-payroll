@@ -40,7 +40,7 @@ const NAV: NavSection[] = [
   },
 ]
 
-function SidebarSection({ heading, items }: NavSection): ReactElement {
+function SidebarSection({ heading, items, query }: NavSection & { query: string }): ReactElement {
   return (
     <div className="mb-1">
       <div className="px-4 py-2">
@@ -52,7 +52,7 @@ function SidebarSection({ heading, items }: NavSection): ReactElement {
         {items.map(item => (
           <li key={item.to}>
             <NavLink
-              to={item.to}
+              to={`${item.to}${query}`}
               end={false}
               className={({ isActive }) =>
                 clsx(
@@ -82,6 +82,12 @@ export default function SettingsLayout(): ReactElement {
   const wizardStep = search.get('step')
   const fromOnboarding = returnTo === 'onboarding'
   const onboardingHref = wizardStep ? `/onboarding/${wizardStep}` : '/onboarding'
+  // Preserve ?return=onboarding (and the originating step) when navigating between
+  // settings pages so the return banner stays sticky after a sidebar click. Without
+  // this the user loses the "Back to setup" context after one navigation.
+  const sidebarQuery = fromOnboarding
+    ? `?return=onboarding${wizardStep ? `&step=${encodeURIComponent(wizardStep)}` : ''}`
+    : ''
 
   function handleClose(): void {
     void navigate(fromOnboarding ? onboardingHref : '/dashboard')
@@ -128,7 +134,7 @@ export default function SettingsLayout(): ReactElement {
       <div className="flex flex-1 overflow-hidden">
         <nav className="w-52 flex-shrink-0 bg-white border-r border-[var(--color-border)] overflow-y-auto py-3">
           {NAV.map(section => (
-            <SidebarSection key={section.heading} {...section} />
+            <SidebarSection key={section.heading} {...section} query={sidebarQuery} />
           ))}
         </nav>
         <div className="flex-1 overflow-y-auto">
