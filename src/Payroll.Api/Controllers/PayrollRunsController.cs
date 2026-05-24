@@ -46,12 +46,18 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
     }
 
     [HttpGet("{id:guid}/employees")]
-    public async Task<IActionResult> GetEmployees(Guid id, [FromQuery] string? filter, CancellationToken ct)
+    public async Task<IActionResult> GetEmployees(
+        Guid id,
+        [FromQuery] string? filter,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 25,
+        CancellationToken ct = default)
     {
         try
         {
-            IReadOnlyList<PayrunEmployeeDto> list = await sender.Send(new GetPayrollRunEmployeesQuery(id, filter), ct);
-            return Ok(list);
+            var result = await sender.Send(
+                new GetPayrollRunEmployeesQuery(id, filter, new PaginationParams(page, pageSize)), ct);
+            return Ok(result);
         }
         catch (NotFoundException) { return NotFound(); }
     }
@@ -310,10 +316,10 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
     }
 
     [HttpGet("history")]
-    public async Task<IActionResult> GetHistory([FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
+    public async Task<IActionResult> GetHistory([FromQuery] int page = 1, [FromQuery] int pageSize = 25, CancellationToken ct = default)
     {
-        IReadOnlyList<PayrollHistoryItemDto> list = await sender.Send(new GetPayrollHistoryQuery(page, pageSize), ct);
-        return Ok(list);
+        var result = await sender.Send(new GetPayrollHistoryQuery(page, pageSize), ct);
+        return Ok(result);
     }
 
     [HttpDelete("{id:guid}")]

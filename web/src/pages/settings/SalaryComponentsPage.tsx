@@ -1,5 +1,13 @@
 import { useState, type ReactElement } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
+import { Pagination, usePersistedPageSize } from '@/components/ui/Pagination'
+
+interface PagedResult<T> {
+  items: T[]
+  total: number
+  page: number
+  pageSize: number
+}
 import { Plus, ChevronDown } from 'lucide-react'
 import { api } from '@/lib/api'
 import { formatINR } from '@/lib/format'
@@ -106,15 +114,21 @@ export default function SalaryComponentsPage(): ReactElement {
   const qc = useQueryClient()
   const { success: toastSuccess, error: toastError } = useToast()
 
-  const queryKey = ['salary-components', activeTab]
-  const { data: components = [], isLoading } = useQuery<SalaryComponentSummary[]>({
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = usePersistedPageSize('salary-components', 25)
+  const queryKey = ['salary-components', activeTab, page, pageSize]
+  const { data: paged, isLoading } = useQuery<PagedResult<SalaryComponentSummary>>({
     queryKey,
     queryFn: async () => {
-      const params = activeTab ? `?category=${activeTab}` : ''
-      const res = await api.get<SalaryComponentSummary[]>(`/api/v1/salary-components${params}`)
+      const res = await api.get<PagedResult<SalaryComponentSummary>>('/api/v1/salary-components', {
+        params: { category: activeTab ?? undefined, page, pageSize },
+      })
       return res.data
     },
+    placeholderData: keepPreviousData,
   })
+  const components = paged?.items ?? []
+  const total = paged?.total ?? 0
 
   const toggleActiveMutation = useMutation({
     mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
@@ -179,7 +193,7 @@ export default function SalaryComponentsPage(): ReactElement {
           <button
             key={tab.label}
             type="button"
-            onClick={() => { setActiveTab(tab.category) }}
+            onClick={() => { setActiveTab(tab.category); setPage(1) }}
             className={[
               'px-4 py-2 text-[13px] font-medium border-b-2 -mb-px transition-colors',
               activeTab === tab.category
@@ -279,6 +293,13 @@ export default function SalaryComponentsPage(): ReactElement {
               ))}
             </tbody>
           </table>
+          <Pagination
+            page={page}
+            pageSize={pageSize}
+            total={total}
+            onPageChange={setPage}
+            onPageSizeChange={s => { setPageSize(s); setPage(1) }}
+          />
         </div>
       )}
 

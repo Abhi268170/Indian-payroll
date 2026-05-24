@@ -6,7 +6,10 @@ using Payroll.Domain.Interfaces;
 
 namespace Payroll.Application.Queries.PayrollRuns;
 
-public record GetPayrollRunEmployeesQuery(Guid RunId, string? Filter = null) : IRequest<IReadOnlyList<PayrunEmployeeDto>>;
+public record GetPayrollRunEmployeesQuery(
+    Guid RunId,
+    string? Filter = null,
+    PaginationParams? Pagination = null) : IRequest<PagedResult<PayrunEmployeeDto>>;
 
 public sealed class GetPayrollRunEmployeesHandler(
     IPayrollRunRepository runRepo,
@@ -14,14 +17,16 @@ public sealed class GetPayrollRunEmployeesHandler(
     IEmployeeRepository employeeRepo,
     IDesignationRepository designationRepo,
     IDepartmentRepository departmentRepo)
-    : IRequestHandler<GetPayrollRunEmployeesQuery, IReadOnlyList<PayrunEmployeeDto>>
+    : IRequestHandler<GetPayrollRunEmployeesQuery, PagedResult<PayrunEmployeeDto>>
 {
-    public async Task<IReadOnlyList<PayrunEmployeeDto>> Handle(GetPayrollRunEmployeesQuery req, CancellationToken ct)
+    public async Task<PagedResult<PayrunEmployeeDto>> Handle(GetPayrollRunEmployeesQuery req, CancellationToken ct)
     {
         var run = await runRepo.GetByIdAsync(req.RunId, ct)
             ?? throw new NotFoundException($"Payroll run {req.RunId} not found.");
 
         _ = run; // accessed for existence check
+
+        var pagination = req.Pagination ?? new PaginationParams();
 
         var payrunEmps = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
 
@@ -41,31 +46,39 @@ public sealed class GetPayrollRunEmployeesHandler(
             filteredEmps.Select(e => e.EmployeeId), ct);
         Dictionary<Guid, Domain.Entities.Employee> employeeMap = employees.ToDictionary(e => e.Id);
 
-        var result = new List<PayrunEmployeeDto>(filteredEmps.Count);
-        foreach (var pe in filteredEmps)
-        {
-            if (!employeeMap.TryGetValue(pe.EmployeeId, out Domain.Entities.Employee? emp)) continue;
+        var ordered = filteredEmps
+            .Where(pe => employeeMap.ContainsKey(pe.EmployeeId))
+            .OrderBy(pe => employeeMap[pe.EmployeeId].EmployeeCode)
+            .ToList();
 
-            result.Add(new PayrunEmployeeDto(
-                EmployeeId: emp.Id,
-                EmployeeCode: emp.EmployeeCode,
-                EmployeeName: emp.FullName,
-                Department: departmentMap.GetValueOrDefault(emp.DepartmentId, string.Empty),
-                Designation: designationMap.GetValueOrDefault(emp.DesignationId, string.Empty),
-                Status: pe.Status.ToString(),
-                LopDays: pe.LopDays,
-                BaseDays: pe.BaseDays,
-                GrossPay: pe.GrossPay,
-                NetPay: pe.NetPay,
-                EmployeePf: pe.EmployeePf,
-                EmployeeEsi: pe.EmployeeEsi,
-                PtAmount: pe.PtAmount,
-                LwfEmployeeAmount: pe.LwfEmployeeAmount,
-                TdsAmount: pe.TdsAmount,
-                TdsOverrideAmount: pe.TdsOverrideAmount,
-                SkipReason: pe.SkipReason));
-        }
+        var pageRows = ordered
+            .Skip(pagination.SkipCount)
+            .Take(pagination.TakeCount)
+            .Select(pe =>
+            {
+                var emp = employeeMap[pe.EmployeeId];
+                return new PayrunEmployeeDto(
+                    EmployeeId: emp.Id,
+                    EmployeeCode: emp.EmployeeCode,
+                    EmployeeName: emp.FullName,
+                    Department: departmentMap.GetValueOrDefault(emp.DepartmentId, string.Empty),
+                    Designation: designationMap.GetValueOrDefault(emp.DesignationId, string.Empty),
+                    Status: pe.Status.ToString(),
+                    LopDays: pe.LopDays,
+                    BaseDays: pe.BaseDays,
+                    GrossPay: pe.GrossPay,
+                    NetPay: pe.NetPay,
+                    EmployeePf: pe.EmployeePf,
+                    EmployeeEsi: pe.EmployeeEsi,
+                    PtAmount: pe.PtAmount,
+                    LwfEmployeeAmount: pe.LwfEmployeeAmount,
+                    TdsAmount: pe.TdsAmount,
+                    TdsOverrideAmount: pe.TdsOverrideAmount,
+                    SkipReason: pe.SkipReason);
+            })
+            .ToList();
 
-        return result.OrderBy(r => r.EmployeeCode).ToList();
+        return new PagedResult<PayrunEmployeeDto>(
+            pageRows, ordered.Count, pagination.NormalizedPage, pagination.NormalizedSize);
     }
 }

@@ -28,11 +28,16 @@ public sealed record InitiateExitRequest(
 public sealed class EmployeesController(ISender sender, IEmployeeImportTemplateGenerator templateGenerator) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> List(CancellationToken ct)
+    public async Task<IActionResult> List(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 25,
+        [FromQuery] string? status = null,
+        [FromQuery] string? search = null,
+        CancellationToken ct = default)
     {
-        IReadOnlyList<EmployeeListItemDto> items =
-            await sender.Send(new ListEmployeesQuery(), ct);
-        return Ok(items);
+        var result = await sender.Send(
+            new ListEmployeesQuery(new PaginationParams(page, pageSize), status, search), ct);
+        return Ok(result);
     }
 
     [HttpGet("{id:guid}")]

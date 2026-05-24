@@ -1,9 +1,17 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { UserPlus, AlertCircle, Upload } from 'lucide-react'
 import { api } from '@/lib/api'
 import type { EmployeeListItemDto } from '@/types/api'
+import { Pagination, usePersistedPageSize } from '@/components/ui/Pagination'
+
+interface PagedResult<T> {
+  items: T[]
+  total: number
+  page: number
+  pageSize: number
+}
 
 type StatusFilter = 'All' | 'Active' | 'Inactive' | 'Exited'
 
@@ -50,25 +58,24 @@ export default function EmployeesPage(): React.ReactElement {
   const navigate = useNavigate()
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('All')
   const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = usePersistedPageSize('employees', 25)
 
-  const { data: employees = [], isLoading } = useQuery<EmployeeListItemDto[]>({
-    queryKey: ['employees'],
-    queryFn: () => api.get<EmployeeListItemDto[]>('/api/v1/employees').then(r => r.data),
+  const { data, isLoading } = useQuery<PagedResult<EmployeeListItemDto>>({
+    queryKey: ['employees', page, pageSize, statusFilter, search],
+    queryFn: () => api.get<PagedResult<EmployeeListItemDto>>('/api/v1/employees', {
+      params: { page, pageSize, status: statusFilter === 'All' ? undefined : statusFilter, search: search || undefined },
+    }).then(r => r.data),
+    placeholderData: keepPreviousData,
   })
 
+  const employees = data?.items ?? []
+  const total = data?.total ?? 0
+  const filtered = employees // server already filtered + paginated
   const incomplete = employees.filter(e => !e.profileComplete && e.status === 'Active')
 
-  const filtered = employees.filter(e => {
-    const matchStatus = statusFilter === 'All' || e.status === statusFilter
-    const q = search.toLowerCase()
-    const matchSearch =
-      !q ||
-      e.fullName.toLowerCase().includes(q) ||
-      e.workEmail.toLowerCase().includes(q) ||
-      e.employeeCode.toLowerCase().includes(q) ||
-      (e.departmentName ?? '').toLowerCase().includes(q)
-    return matchStatus && matchSearch
-  })
+  // Any state change that affects the result set jumps back to page 1.
+  function resetToFirstPage(): void { setPage(1) }
 
   return (
     <div className="space-y-4">
@@ -77,7 +84,7 @@ export default function EmployeesPage(): React.ReactElement {
         <div>
           <h1 className="text-[18px] font-semibold text-[var(--color-text-primary)]">Employees</h1>
           <p className="text-[13px] text-[var(--color-text-secondary)] mt-0.5">
-            {employees.length} employee{employees.length !== 1 ? 's' : ''}
+            {total} employee{total !== 1 ? 's' : ''}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -116,7 +123,7 @@ export default function EmployeesPage(): React.ReactElement {
           {STATUS_TABS.map(tab => (
             <button
               key={tab}
-              onClick={() => setStatusFilter(tab)}
+              onClick={() => { setStatusFilter(tab); resetToFirstPage() }}
               className={`h-7 px-3 rounded-md text-[12px] font-medium transition-colors ${
                 statusFilter === tab
                   ? 'bg-[var(--color-primary)] text-white'
@@ -133,7 +140,7 @@ export default function EmployeesPage(): React.ReactElement {
           type="text"
           placeholder="Search by name, email, code, department…"
           value={search}
-          onChange={e => setSearch(e.target.value)}
+          onChange={e => { setSearch(e.target.value); resetToFirstPage() }}
           className="flex-1 h-9 px-3 text-[13px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
         />
       </div>
@@ -201,6 +208,13 @@ export default function EmployeesPage(): React.ReactElement {
             </tbody>
           </table>
         )}
+        <Pagination
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onPageChange={setPage}
+          onPageSizeChange={s => { setPageSize(s); setPage(1) }}
+        />
       </div>
     </div>
   )

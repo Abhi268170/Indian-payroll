@@ -29,6 +29,9 @@ internal sealed class PayrollRunRepository(PayrollDbContext db) : IPayrollRunRep
             .ToListAsync(ct)
             .ContinueWith<IReadOnlyList<PayrollRun>>(t => t.Result, ct);
 
+    public Task<int> GetHistoryCountAsync(CancellationToken ct = default) =>
+        db.PayrollRuns.CountAsync(ct);
+
     public async Task AddAsync(PayrollRun run, CancellationToken ct = default) =>
         await db.PayrollRuns.AddAsync(run, ct);
 

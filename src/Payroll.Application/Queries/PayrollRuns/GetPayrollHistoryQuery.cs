@@ -4,17 +4,18 @@ using Payroll.Domain.Interfaces;
 
 namespace Payroll.Application.Queries.PayrollRuns;
 
-public record GetPayrollHistoryQuery(int Page = 1, int PageSize = 20) : IRequest<IReadOnlyList<PayrollHistoryItemDto>>;
+public record GetPayrollHistoryQuery(int Page = 1, int PageSize = 25) : IRequest<PagedResult<PayrollHistoryItemDto>>;
 
 public sealed class GetPayrollHistoryHandler(IPayrollRunRepository runRepo)
-    : IRequestHandler<GetPayrollHistoryQuery, IReadOnlyList<PayrollHistoryItemDto>>
+    : IRequestHandler<GetPayrollHistoryQuery, PagedResult<PayrollHistoryItemDto>>
 {
-    public async Task<IReadOnlyList<PayrollHistoryItemDto>> Handle(GetPayrollHistoryQuery req, CancellationToken ct)
+    public async Task<PagedResult<PayrollHistoryItemDto>> Handle(GetPayrollHistoryQuery req, CancellationToken ct)
     {
-        int skip = (req.Page - 1) * req.PageSize;
-        var runs = await runRepo.GetHistoryAsync(skip, req.PageSize, ct);
+        var pagination = new PaginationParams(req.Page, req.PageSize);
+        int total = await runRepo.GetHistoryCountAsync(ct);
+        var runs = await runRepo.GetHistoryAsync(pagination.SkipCount, pagination.TakeCount, ct);
 
-        return runs.Select(r => new PayrollHistoryItemDto(
+        var items = runs.Select(r => new PayrollHistoryItemDto(
             Id: r.Id,
             Year: r.PayPeriod.Year,
             Month: r.PayPeriod.Month,
@@ -23,5 +24,8 @@ public sealed class GetPayrollHistoryHandler(IPayrollRunRepository runRepo)
             EmployeeCount: r.EmployeeCount,
             PaidAt: r.PaidAt))
             .ToList();
+
+        return new PagedResult<PayrollHistoryItemDto>(
+            items, total, pagination.NormalizedPage, pagination.NormalizedSize);
     }
 }

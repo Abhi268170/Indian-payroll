@@ -5,25 +5,35 @@ using Payroll.Domain.Interfaces;
 
 namespace Payroll.Application.Queries.SalaryComponents;
 
-public sealed record ListSalaryComponentsQuery(ComponentCategory? Category = null)
-    : IRequest<List<SalaryComponentSummaryDto>>;
+public sealed record ListSalaryComponentsQuery(
+    ComponentCategory? Category = null,
+    PaginationParams? Pagination = null)
+    : IRequest<PagedResult<SalaryComponentSummaryDto>>;
 
 public sealed class ListSalaryComponentsHandler(
     ISalaryComponentRepository repo,
     ITenantContext tenantContext)
-    : IRequestHandler<ListSalaryComponentsQuery, List<SalaryComponentSummaryDto>>
+    : IRequestHandler<ListSalaryComponentsQuery, PagedResult<SalaryComponentSummaryDto>>
 {
-    public async Task<List<SalaryComponentSummaryDto>> Handle(
+    public async Task<PagedResult<SalaryComponentSummaryDto>> Handle(
         ListSalaryComponentsQuery req, CancellationToken ct)
     {
-        List<Domain.Entities.SalaryComponent> components =
+        var pagination = req.Pagination ?? new PaginationParams();
+        List<Domain.Entities.SalaryComponent> all =
             await repo.ListByTenantAsync(tenantContext.TenantId, req.Category, ct);
 
-        return components.Select(c => new SalaryComponentSummaryDto(
-            c.Id, c.Name, c.NameInPayslip, c.Code, c.Category,
-            c.IsActive, c.IsSystemComponent, c.IsAssociatedWithEmployee, c.IsOneTime,
-            c.FormulaType, c.FixedAmount, c.Percentage,
-            c.DeductionFrequency, c.ReimbursementAmount, c.BenefitPercentage))
+        var pageRows = all
+            .OrderBy(c => c.Name)
+            .Skip(pagination.SkipCount)
+            .Take(pagination.TakeCount)
+            .Select(c => new SalaryComponentSummaryDto(
+                c.Id, c.Name, c.NameInPayslip, c.Code, c.Category,
+                c.IsActive, c.IsSystemComponent, c.IsAssociatedWithEmployee, c.IsOneTime,
+                c.FormulaType, c.FixedAmount, c.Percentage,
+                c.DeductionFrequency, c.ReimbursementAmount, c.BenefitPercentage))
             .ToList();
+
+        return new PagedResult<SalaryComponentSummaryDto>(
+            pageRows, all.Count, pagination.NormalizedPage, pagination.NormalizedSize);
     }
 }

@@ -1,8 +1,16 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import type { PayrollRunSummaryDto, PayrunEmployeeDto, PendingTasksDto } from '@/types/api'
+import { Pagination, usePersistedPageSize } from '@/components/ui/Pagination'
+
+interface PagedResult<T> {
+  items: T[]
+  total: number
+  page: number
+  pageSize: number
+}
 import PayRunHeader from './components/PayRunHeader'
 import PendingTasksBanner from './components/PendingTasksBanner'
 import EmployeeSummaryTable from './components/EmployeeSummaryTable'
@@ -67,11 +75,19 @@ export default function PayRunDetailPage(): React.ReactElement {
     enabled: runId !== '',
   })
 
-  const { data: employees = [] } = useQuery<PayrunEmployeeDto[]>({
-    queryKey: ['run-employees', runId],
-    queryFn: () => api.get<PayrunEmployeeDto[]>(`/api/v1/payroll-runs/${runId}/employees`).then(r => r.data),
+  const [empPage, setEmpPage] = useState(1)
+  const [empPageSize, setEmpPageSize] = usePersistedPageSize('payrun-employees', 25)
+
+  const { data: employeesData } = useQuery<PagedResult<PayrunEmployeeDto>>({
+    queryKey: ['run-employees', runId, empPage, empPageSize],
+    queryFn: () => api.get<PagedResult<PayrunEmployeeDto>>(`/api/v1/payroll-runs/${runId}/employees`, {
+      params: { page: empPage, pageSize: empPageSize },
+    }).then(r => r.data),
     enabled: !!run,
+    placeholderData: keepPreviousData,
   })
+  const employees = employeesData?.items ?? []
+  const employeesTotal = employeesData?.total ?? 0
 
   const { data: pendingTasks } = useQuery<PendingTasksDto>({
     queryKey: ['pending-tasks', runId],
@@ -142,18 +158,27 @@ export default function PayRunDetailPage(): React.ReactElement {
       </div>
 
       {activeTab === 'employees' && (
-        <EmployeeSummaryTable
-          employees={employees}
-          runStatus={run.status}
-          runId={runId}
-          onOpenVariableInputs={(empId, empName) => { setVariableInputs({ employeeId: empId, employeeName: empName }) }}
-          onSkipEmployee={(empId, empName) => { setSkipState({ employeeId: empId, employeeName: empName }) }}
-          onDownloadPayslip={handleDownloadPayslip}
-          onReEvaluate={() => { reEvaluateMutation.mutate() }}
-          isReEvaluating={reEvaluateMutation.isPending}
-          onShowImport={type => { setImportType(type) }}
-          onShowExport={() => { setShowExport(true) }}
-        />
+        <>
+          <EmployeeSummaryTable
+            employees={employees}
+            runStatus={run.status}
+            runId={runId}
+            onOpenVariableInputs={(empId, empName) => { setVariableInputs({ employeeId: empId, employeeName: empName }) }}
+            onSkipEmployee={(empId, empName) => { setSkipState({ employeeId: empId, employeeName: empName }) }}
+            onDownloadPayslip={handleDownloadPayslip}
+            onReEvaluate={() => { reEvaluateMutation.mutate() }}
+            isReEvaluating={reEvaluateMutation.isPending}
+            onShowImport={type => { setImportType(type) }}
+            onShowExport={() => { setShowExport(true) }}
+          />
+          <Pagination
+            page={empPage}
+            pageSize={empPageSize}
+            total={employeesTotal}
+            onPageChange={setEmpPage}
+            onPageSizeChange={s => { setEmpPageSize(s); setEmpPage(1) }}
+          />
+        </>
       )}
 
       {activeTab === 'taxes' && <PayRunTaxesTab runId={runId} />}

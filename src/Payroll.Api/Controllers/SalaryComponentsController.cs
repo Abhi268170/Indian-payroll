@@ -17,7 +17,9 @@ public sealed class SalaryComponentsController(ISender sender) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> List(
         [FromQuery] string? category,
-        CancellationToken ct)
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 25,
+        CancellationToken ct = default)
     {
         ComponentCategory? cat = null;
         if (!string.IsNullOrEmpty(category) && !Enum.TryParse(category, out ComponentCategory parsed))
@@ -25,8 +27,8 @@ public sealed class SalaryComponentsController(ISender sender) : ControllerBase
         else if (!string.IsNullOrEmpty(category))
             cat = Enum.Parse<ComponentCategory>(category);
 
-        List<SalaryComponentSummaryDto> result =
-            await sender.Send(new ListSalaryComponentsQuery(cat), ct);
+        var result = await sender.Send(
+            new ListSalaryComponentsQuery(cat, new PaginationParams(page, pageSize)), ct);
         return Ok(result);
     }
 

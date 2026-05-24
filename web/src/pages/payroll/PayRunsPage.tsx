@@ -1,11 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation, keepPreviousData } from '@tanstack/react-query'
 import { useNavigate, Link } from 'react-router-dom'
 import { AlertCircle, ChevronRight, Loader2 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { formatINR } from '@/lib/format'
 import type { CurrentPayPeriodDto, PayrollHistoryItemDto } from '@/types/api'
 import PeriodCard from './components/PeriodCard'
+import { Pagination, usePersistedPageSize } from '@/components/ui/Pagination'
+
+interface PagedResult<T> {
+  items: T[]
+  total: number
+  page: number
+  pageSize: number
+}
 
 type Tab = 'run' | 'history'
 
@@ -48,11 +56,18 @@ export default function PayRunsPage(): React.ReactElement {
     },
   })
 
-  const { data: history = [] } = useQuery<PayrollHistoryItemDto[]>({
-    queryKey: ['payroll-history'],
-    queryFn: () => api.get<PayrollHistoryItemDto[]>('/api/v1/payroll-runs/history').then(r => r.data),
+  const [historyPage, setHistoryPage] = useState(1)
+  const [historyPageSize, setHistoryPageSize] = usePersistedPageSize('payroll-history', 25)
+  const { data: historyData } = useQuery<PagedResult<PayrollHistoryItemDto>>({
+    queryKey: ['payroll-history', historyPage, historyPageSize],
+    queryFn: () => api.get<PagedResult<PayrollHistoryItemDto>>('/api/v1/payroll-runs/history', {
+      params: { page: historyPage, pageSize: historyPageSize },
+    }).then(r => r.data),
     enabled: tab === 'history',
+    placeholderData: keepPreviousData,
   })
+  const history = historyData?.items ?? []
+  const historyTotal = historyData?.total ?? 0
 
   function startPolling(jobId: string): void {
     pollRef.current = setInterval(() => {
@@ -224,6 +239,13 @@ export default function PayRunsPage(): React.ReactElement {
               </tbody>
             </table>
           )}
+          <Pagination
+            page={historyPage}
+            pageSize={historyPageSize}
+            total={historyTotal}
+            onPageChange={setHistoryPage}
+            onPageSizeChange={s => { setHistoryPageSize(s); setHistoryPage(1) }}
+          />
         </div>
       )}
     </div>

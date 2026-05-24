@@ -10,6 +10,7 @@ public interface IPayrollRunRepository
     Task<PayrollRun?> GetByPeriodAsync(PayPeriod period, CancellationToken ct = default);
     Task<PayrollRun?> GetLatestPaidAsync(CancellationToken ct = default);
     Task<IReadOnlyList<PayrollRun>> GetHistoryAsync(int skip, int take, CancellationToken ct = default);
+    Task<int> GetHistoryCountAsync(CancellationToken ct = default);
     Task AddAsync(PayrollRun run, CancellationToken ct = default);
     void Update(PayrollRun run);
     Task<bool> ExistsForPeriodAsync(PayPeriod period, CancellationToken ct = default);
