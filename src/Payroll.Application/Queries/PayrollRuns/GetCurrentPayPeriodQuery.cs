@@ -22,7 +22,7 @@ internal sealed class GetCurrentPayPeriodHandler(
 
         // Determine next payable period
         PayPeriod period;
-        var latestPaid = await payrollRunRepo.GetLatestPaidAsync(ct);
+        var latestPaid = await payrollRunRepo.GetLatestPaidAsync(PayrollRunType.Regular, ct);
         if (latestPaid is not null)
         {
             var next = latestPaid.PayPeriod.StartDate.AddMonths(1);
@@ -47,7 +47,7 @@ internal sealed class GetCurrentPayPeriodHandler(
             period.Year, period.Month, workWeek);
 
         // Check for outstanding run
-        var activeRun = await payrollRunRepo.GetActiveForPeriodAsync(period, ct);
+        var activeRun = await payrollRunRepo.GetActiveForPeriodAsync(period, PayrollRunType.Regular, ct);
         var employees = await employeeRepo.ListAsync(ct);
         DateOnly periodEnd = period.EndDate;
         int activeCount = employees.Count(e =>

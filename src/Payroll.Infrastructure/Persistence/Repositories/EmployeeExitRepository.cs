@@ -12,6 +12,15 @@ internal sealed class EmployeeExitRepository(PayrollDbContext db) : IEmployeeExi
     public Task<EmployeeExit?> GetActiveByEmployeeAsync(Guid employeeId, CancellationToken ct = default) =>
         db.EmployeeExits.FirstOrDefaultAsync(e => e.EmployeeId == employeeId, ct);
 
+    public async Task<IReadOnlyList<EmployeeExit>> GetByFnfRunIdsAsync(IEnumerable<Guid> runIds, CancellationToken ct = default)
+    {
+        var ids = runIds.Distinct().ToList();
+        if (ids.Count == 0) return Array.Empty<EmployeeExit>();
+        return await db.EmployeeExits
+            .Where(e => e.FnfPayrollRunId != null && ids.Contains(e.FnfPayrollRunId!.Value))
+            .ToListAsync(ct);
+    }
+
     public Task AddAsync(EmployeeExit exit, CancellationToken ct = default) =>
         db.EmployeeExits.AddAsync(exit, ct).AsTask();
 

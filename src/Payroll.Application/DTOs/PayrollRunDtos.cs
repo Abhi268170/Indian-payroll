@@ -90,11 +90,25 @@ public sealed record PayrunEmployeeDto(
     decimal? TdsOverrideAmount,
     string? SkipReason);
 
+public sealed record PendingRunCardDto(
+    Guid Id,
+    string Type,
+    string Status,
+    int Year,
+    int Month,
+    string PeriodLabel,
+    DateOnly? PayDay,
+    decimal TotalNetPay,
+    int EmployeeCount,
+    string? PrimaryEmployeeLabel);
+
 public sealed record PayrollHistoryItemDto(
     Guid Id,
     int Year,
     int Month,
     string PeriodLabel,
+    string Type,
     decimal TotalNetPay,
     int EmployeeCount,
+    DateOnly? PaymentDate,
     DateTimeOffset? PaidAt);

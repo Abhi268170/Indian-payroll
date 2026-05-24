@@ -209,9 +209,24 @@ export interface PayrollHistoryItemDto {
   year: number
   month: number
   periodLabel: string
+  type: string
   totalNetPay: number
   employeeCount: number
+  paymentDate: string | null
   paidAt: string | null
+}
+
+export interface PendingRunCardDto {
+  id: string
+  type: string
+  status: string
+  year: number
+  month: number
+  periodLabel: string
+  payDay: string | null
+  totalNetPay: number
+  employeeCount: number
+  primaryEmployeeLabel: string | null
 }
 
 export interface PayrunEmployeeDto {

@@ -13,24 +13,34 @@ internal sealed class PayrollRunRepository(PayrollDbContext db) : IPayrollRunRep
     public Task<PayrollRun?> GetByPeriodAsync(PayPeriod period, CancellationToken ct = default) =>
         db.PayrollRuns.FirstOrDefaultAsync(r => r.PayPeriod.Year == period.Year && r.PayPeriod.Month == period.Month, ct);
 
-    public Task<PayrollRun?> GetLatestPaidAsync(CancellationToken ct = default) =>
-        db.PayrollRuns
-            .Where(r => r.Status == Domain.Enums.PayrollRunStatus.Paid)
-            .OrderByDescending(r => r.PayPeriod.Year)
+    public Task<PayrollRun?> GetLatestPaidAsync(Domain.Enums.PayrollRunType? type = null, CancellationToken ct = default)
+    {
+        var q = db.PayrollRuns.Where(r => r.Status == Domain.Enums.PayrollRunStatus.Paid);
+        if (type.HasValue) q = q.Where(r => r.Type == type.Value);
+        return q.OrderByDescending(r => r.PayPeriod.Year)
             .ThenByDescending(r => r.PayPeriod.Month)
             .FirstOrDefaultAsync(ct);
+    }
 
-    public Task<IReadOnlyList<PayrollRun>> GetHistoryAsync(int skip, int take, CancellationToken ct = default) =>
-        db.PayrollRuns
-            .OrderByDescending(r => r.PayPeriod.Year)
+    public async Task<IReadOnlyList<PayrollRun>> GetHistoryAsync(int skip, int take, Domain.Enums.PayrollRunType? type = null, CancellationToken ct = default)
+    {
+        var q = db.PayrollRuns.Where(r => r.Status == Domain.Enums.PayrollRunStatus.Paid);
+        if (type.HasValue) q = q.Where(r => r.Type == type.Value);
+        return await q
+            .OrderByDescending(r => r.PaymentDate)
+            .ThenByDescending(r => r.PayPeriod.Year)
             .ThenByDescending(r => r.PayPeriod.Month)
             .Skip(skip)
             .Take(take)
-            .ToListAsync(ct)
-            .ContinueWith<IReadOnlyList<PayrollRun>>(t => t.Result, ct);
+            .ToListAsync(ct);
+    }
 
-    public Task<int> GetHistoryCountAsync(CancellationToken ct = default) =>
-        db.PayrollRuns.CountAsync(ct);
+    public Task<int> GetHistoryCountAsync(Domain.Enums.PayrollRunType? type = null, CancellationToken ct = default)
+    {
+        var q = db.PayrollRuns.Where(r => r.Status == Domain.Enums.PayrollRunStatus.Paid);
+        if (type.HasValue) q = q.Where(r => r.Type == type.Value);
+        return q.CountAsync(ct);
+    }
 
     public async Task AddAsync(PayrollRun run, CancellationToken ct = default) =>
         await db.PayrollRuns.AddAsync(run, ct);
@@ -38,15 +48,32 @@ internal sealed class PayrollRunRepository(PayrollDbContext db) : IPayrollRunRep
     public void Update(PayrollRun run) =>
         db.PayrollRuns.Update(run);
 
-    public Task<bool> ExistsForPeriodAsync(PayPeriod period, CancellationToken ct = default) =>
-        db.PayrollRuns.AnyAsync(r => r.PayPeriod.Year == period.Year && r.PayPeriod.Month == period.Month, ct);
+    public Task<bool> ExistsForPeriodAsync(PayPeriod period, Domain.Enums.PayrollRunType? type = null, CancellationToken ct = default)
+    {
+        var q = db.PayrollRuns.Where(r => r.PayPeriod.Year == period.Year && r.PayPeriod.Month == period.Month);
+        if (type.HasValue) q = q.Where(r => r.Type == type.Value);
+        return q.AnyAsync(ct);
+    }
 
-    public Task<PayrollRun?> GetActiveForPeriodAsync(PayPeriod period, CancellationToken ct = default) =>
-        db.PayrollRuns.FirstOrDefaultAsync(
-            r => r.PayPeriod.Year == period.Year &&
-                 r.PayPeriod.Month == period.Month &&
-                 r.Status != Domain.Enums.PayrollRunStatus.Deleted,
-            ct);
+    public Task<PayrollRun?> GetActiveForPeriodAsync(PayPeriod period, Domain.Enums.PayrollRunType? type = null, CancellationToken ct = default)
+    {
+        var q = db.PayrollRuns.Where(r =>
+            r.PayPeriod.Year == period.Year &&
+            r.PayPeriod.Month == period.Month &&
+            r.Status != Domain.Enums.PayrollRunStatus.Deleted);
+        if (type.HasValue) q = q.Where(r => r.Type == type.Value);
+        return q.FirstOrDefaultAsync(ct);
+    }
+
+    public async Task<IReadOnlyList<PayrollRun>> ListPendingAsync(CancellationToken ct = default)
+    {
+        return await db.PayrollRuns
+            .Where(r => r.Status == Domain.Enums.PayrollRunStatus.Draft
+                     || r.Status == Domain.Enums.PayrollRunStatus.Approved)
+            .OrderBy(r => r.PayDay)
+            .ThenBy(r => r.CreatedAt)
+            .ToListAsync(ct);
+    }
 
     public async Task<IReadOnlyList<Guid>> GetPaidIdsForFiscalYearAsync(int fiscalYear, CancellationToken ct = default)
     {

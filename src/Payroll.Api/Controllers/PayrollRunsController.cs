@@ -315,10 +315,21 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
         catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
     }
 
-    [HttpGet("history")]
-    public async Task<IActionResult> GetHistory([FromQuery] int page = 1, [FromQuery] int pageSize = 25, CancellationToken ct = default)
+    [HttpGet("pending")]
+    public async Task<IActionResult> GetPending(CancellationToken ct = default)
     {
-        var result = await sender.Send(new GetPayrollHistoryQuery(page, pageSize), ct);
+        var result = await sender.Send(new GetPendingPayrollRunsQuery(), ct);
+        return Ok(result);
+    }
+
+    [HttpGet("history")]
+    public async Task<IActionResult> GetHistory(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 25,
+        [FromQuery] Domain.Enums.PayrollRunType? type = null,
+        CancellationToken ct = default)
+    {
+        var result = await sender.Send(new GetPayrollHistoryQuery(page, pageSize, type), ct);
         return Ok(result);
     }
 

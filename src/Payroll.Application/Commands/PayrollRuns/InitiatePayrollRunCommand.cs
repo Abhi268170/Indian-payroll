@@ -49,7 +49,7 @@ public sealed class InitiatePayrollRunHandler(
             ?? throw new DomainException("Pay Schedule not configured. Configure Pay Schedule before initiating a payroll run.");
 
         // Determine next payable period
-        var latestPaid = await payrollRunRepo.GetLatestPaidAsync(ct);
+        var latestPaid = await payrollRunRepo.GetLatestPaidAsync(PayrollRunType.Regular, ct);
         PayPeriod period;
         if (latestPaid is not null)
         {
@@ -67,7 +67,7 @@ public sealed class InitiatePayrollRunHandler(
         }
 
         // Guard: no run already exists for period
-        bool exists = await payrollRunRepo.ExistsForPeriodAsync(period, ct);
+        bool exists = await payrollRunRepo.ExistsForPeriodAsync(period, PayrollRunType.Regular, ct);
         if (exists)
             throw new DomainException($"A payroll run already exists for {period}. Delete or complete it before initiating a new one.");
 
