@@ -8,7 +8,9 @@ interface PayrollRunDto {
   id: string
   type: string
   status: string
-  payPeriod: { year: number; month: number }
+  year: number
+  month: number
+  periodLabel: string
   payDay: string | null
   totalNetPay: number
   employeeCount: number
@@ -87,7 +89,7 @@ export default function FnfSettlementPage(): ReactElement {
   if (!runId) return <div>Missing run id</div>
 
   const isBulk = run?.type === 'BulkFinalSettlement'
-  const monthLabel = run ? new Date(run.payPeriod.year, run.payPeriod.month - 1, 1).toLocaleString('en-IN', { month: 'long', year: 'numeric' }) : ''
+  const monthLabel = run?.periodLabel ?? ''
 
   return (
     <div className="px-8 py-8">

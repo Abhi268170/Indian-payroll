@@ -1248,6 +1248,10 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("character varying(200)")
                         .HasColumnName("deductor_designation");
 
+                    b.Property<Guid?>("DeductorEmployeeId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deductor_employee_id");
+
                     b.Property<string>("DeductorFathersName")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
