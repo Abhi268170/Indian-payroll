@@ -132,6 +132,7 @@ public sealed class CommitEmployeeImportHandler(
 
             await employeeRepo.AddAsync(emp, ct);
 
+            bool addedStructure = false;
             if (row.AnnualCTC is not null && decimal.TryParse(row.AnnualCTC, out decimal ctc))
             {
                 Guid? templateId = row.SalaryStructureTemplate is not null && templates.TryGetValue(row.SalaryStructureTemplate, out Guid tid)
@@ -141,7 +142,11 @@ public sealed class CommitEmployeeImportHandler(
                     emp.Id, tenantContext.TenantId, templateId, ctc,
                     DateOnly.FromDateTime(DateTime.UtcNow), req.ActorId);
                 await salaryRepo.AddAsync(structure, ct);
+                addedStructure = true;
             }
+            // Keep ProfileComplete consistent with the engine's per-employee skip rules.
+            // For a brand-new row, structure presence is whatever this import attached.
+            emp.RecomputeProfileComplete(hasActiveSalaryStructure: addedStructure, req.ActorId);
         }
 
         // Update existing employees (merge semantics: blank CSV cell = keep DB value)
@@ -158,6 +163,7 @@ public sealed class CommitEmployeeImportHandler(
             ApplyStatutoryDetails(existing, row, req.ActorId);
             employeeRepo.Update(existing);
 
+            bool hasActiveStructure;
             if (row.AnnualCTC is not null && decimal.TryParse(row.AnnualCTC, out decimal ctc))
             {
                 EmployeeSalaryStructure? current = await salaryRepo.GetActiveAsync(existing.Id, ct);
@@ -173,7 +179,17 @@ public sealed class CommitEmployeeImportHandler(
                     existing.Id, tenantContext.TenantId, templateId, ctc,
                     DateOnly.FromDateTime(DateTime.UtcNow), req.ActorId);
                 await salaryRepo.AddAsync(structure, ct);
+                hasActiveStructure = true;
             }
+            else
+            {
+                // No new structure in this row; consult the repo to learn whether the
+                // employee still has an active structure from a prior assignment.
+                EmployeeSalaryStructure? current = await salaryRepo.GetActiveAsync(existing.Id, ct);
+                hasActiveStructure = current is not null;
+            }
+            // Keep ProfileComplete consistent with the engine's per-employee skip rules.
+            existing.RecomputeProfileComplete(hasActiveSalaryStructure: hasActiveStructure, req.ActorId);
         }
 
         await uow.SaveChangesAsync(ct);
