@@ -168,8 +168,7 @@ public sealed class PayrollFnfOrchestrator(
     }
 
     private static bool IsReimbursement(PayrunComponentBreakdown b) =>
-        b.SalaryComponentId is null
-        || string.Equals(b.ComponentCode, "REIMBURSEMENT", StringComparison.OrdinalIgnoreCase);
+        string.Equals(b.ComponentCode, "REIMBURSEMENT", StringComparison.OrdinalIgnoreCase);
 
     private static SalaryComponentInput MapBreakdownToEngineInput(PayrunComponentBreakdown b) =>
         new(

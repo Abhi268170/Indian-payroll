@@ -1,12 +1,15 @@
 using FluentValidation;
 using MediatR;
 using Payroll.Application.DTOs;
+using Payroll.Application.Services;
 using Payroll.Domain.Common;
 using Payroll.Domain.Entities;
 using Payroll.Domain.Enums;
+using Payroll.Domain.Extensions;
 using Payroll.Domain.Interfaces;
 using Payroll.Domain.ValueObjects;
 using Payroll.Engine;
+using Payroll.Engine.Inputs;
 using System.Text.Json;
 
 namespace Payroll.Application.Commands.Employees;
@@ -54,6 +57,7 @@ public sealed class InitiateExitHandler(
     IPayrunEmployeeRepository payrunEmpRepo,
     IPayScheduleRepository payScheduleRepo,
     IStatutoryConfigRepository statutoryRepo,
+    IWorkLocationRepository workLocationRepo,
     ITenantContext tenantContext,
     IUnitOfWork uow)
     : IRequestHandler<InitiateExitCommand, EmployeeExitDto>
@@ -112,7 +116,7 @@ public sealed class InitiateExitHandler(
         }
 
         // Create or append to the FnF run.
-        string snapshot = await BuildStatutoryConfigSnapshotAsync(ct);
+        string snapshot = await BuildStatutoryConfigSnapshotAsync(ct, employee, new DateOnly(req.LastWorkingDay.Year, req.LastWorkingDay.Month, 1));
         PayrollRun fnfRun = req.SettlementMode == ExitSettlementMode.CustomDate
             ? PayrollRun.CreateFinalSettlement(
                 tenantId: tenantContext.TenantId,
@@ -174,13 +178,24 @@ public sealed class InitiateExitHandler(
             type, paySchedule.PayDateDay, req.LastWorkingDay, workWeek);
     }
 
-    private async Task<string> BuildStatutoryConfigSnapshotAsync(CancellationToken ct)
+    private async Task<string> BuildStatutoryConfigSnapshotAsync(CancellationToken ct, Employee employee, DateOnly periodStart)
     {
-        // Lightweight snapshot for FnF runs: store the minimal JSON needed for the
-        // orchestrator to compute. Full snapshot building is mirrored from
-        // InitiatePayrollRunCommand and will be filled out by Phase 3.
-        var orgConfig = await statutoryRepo.GetByTenantAsync(ct);
-        return JsonSerializer.Serialize(new { OrgConfigId = orgConfig?.Id });
+        var orgConfig = await statutoryRepo.GetByTenantAsync(ct)
+            ?? throw new DomainException("Statutory configuration not found. Configure EPF/ESI settings first.");
+
+        int fiscalYear = periodStart.Month >= 4 ? periodStart.Year : periodStart.Year - 1;
+        string fyLabel = $"{fiscalYear}-{(fiscalYear + 1) % 100:D2}";
+        var taxConfig = await statutoryRepo.GetIncomeTaxConfigAsync(fyLabel, "New", ct);
+        var taxSlabs = await statutoryRepo.GetIncomeTaxSlabsAsync(fyLabel, "New", ct);
+        var surchargeSlabs = await statutoryRepo.GetSurchargeSlabsAsync(fyLabel, "New", ct);
+
+        var workLocation = await workLocationRepo.GetByIdAsync(employee.WorkLocationId, ct);
+        string stateCode = workLocation?.State.ToIsoCode() ?? "MH";
+        var ptSlabs = await statutoryRepo.GetPtSlabsAsync(stateCode, periodStart, ct);
+        var lwfConfigs = await statutoryRepo.GetLwfConfigsAsync(new[] { stateCode }, ct);
+
+        var staticConfig = StatutoryConfigBuilder.Build(orgConfig, taxConfig, taxSlabs, surchargeSlabs, ptSlabs, lwfConfigs);
+        return JsonSerializer.Serialize(staticConfig);
     }
 
     private static EmployeeExitDto Map(EmployeeExit e, PayrollRun fnfRun) =>
