@@ -20,6 +20,11 @@ public sealed class OrgProfile : AuditableEntity
     public string? DeductorName { get; private set; }
     public string? DeductorFathersName { get; private set; }
     public string? DeductorDesignation { get; private set; }
+    // Optional FK to the Employee record acting as Tax Deductor. Set when the
+    // deductor is an internal employee (Zoho's "Employee" deductor type). Null
+    // for "Non-Employee" deductors. Drives the exit gate: an employee whose id
+    // matches this column cannot be exited until the deductor is reassigned.
+    public Guid? DeductorEmployeeId { get; private set; }
     public string? Website { get; private set; }
     public string? Industry { get; private set; }
     public DateOnly? IncorporationDate { get; private set; }
@@ -90,7 +95,8 @@ public sealed class OrgProfile : AuditableEntity
         string? deductorName,
         string? deductorFathersName,
         string? deductorDesignation,
-        Guid updatedBy)
+        Guid updatedBy,
+        Guid? deductorEmployeeId = null)
     {
         Tan = tan;
         AoAreaCode = aoAreaCode;
@@ -101,6 +107,7 @@ public sealed class OrgProfile : AuditableEntity
         DeductorName = deductorName;
         DeductorFathersName = deductorFathersName;
         DeductorDesignation = deductorDesignation;
+        DeductorEmployeeId = deductorEmployeeId;
         SetUpdated(updatedBy);
     }
 

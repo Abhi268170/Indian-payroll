@@ -56,4 +56,25 @@ internal sealed class PayrollRunRepository(PayrollDbContext db) : IPayrollRunRep
             .ToListAsync(ct);
         return result;
     }
+
+    public Task<PayrollRun?> FindDraftBulkFnfByPayDateAsync(DateOnly payDate, CancellationToken ct = default) =>
+        db.PayrollRuns.FirstOrDefaultAsync(r =>
+            r.Type == Domain.Enums.PayrollRunType.BulkFinalSettlement &&
+            r.Status == Domain.Enums.PayrollRunStatus.Draft &&
+            r.PayDay == payDate, ct);
+
+    public async Task<IReadOnlyList<PayrollRun>> FindDraftRegularRunsCoveringDateAsync(DateOnly date, CancellationToken ct = default)
+    {
+        // A regular Draft run "covers" a date when its PayPeriod (year, month) wraps
+        // around it. We match on (year, month) for simplicity since PayPeriod is
+        // monthly.
+        var rows = await db.PayrollRuns
+            .Where(r =>
+                r.Type == Domain.Enums.PayrollRunType.Regular &&
+                r.Status == Domain.Enums.PayrollRunStatus.Draft &&
+                r.PayPeriod.Year == date.Year &&
+                r.PayPeriod.Month == date.Month)
+            .ToListAsync(ct);
+        return rows;
+    }
 }

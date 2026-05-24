@@ -10,6 +10,7 @@ public interface IPayrunEmployeeRepository
     Task AddRangeAsync(IEnumerable<PayrunEmployee> employees, CancellationToken ct = default);
     Task AddAsync(PayrunEmployee employee, CancellationToken ct = default);
     void Update(PayrunEmployee employee);
+    void Remove(PayrunEmployee employee);
     Task<IReadOnlyList<PayrunEmployee>> GetByRunIdWithStatusAsync(Guid payrollRunId, PayrunEmployeeStatus status, CancellationToken ct = default);
     Task<IReadOnlyList<PayrunEmployee>> GetByEmployeeAndRunIdsAsync(Guid employeeId, IEnumerable<Guid> runIds, CancellationToken ct = default);
     Task<Dictionary<Guid, (decimal YtdGross, decimal YtdTds)>> GetCurrentEmployerYtdAsync(IEnumerable<Guid> employeeIds, int fiscalYear, CancellationToken ct = default);

@@ -73,6 +73,27 @@ public static class PayScheduleHelpers
     /// non-working day fallback rule: if the resolved date falls on a non-working
     /// day, walk back day by day until a working day is found.
     /// </summary>
+    // Used by the FnF "Pay as per regular pay schedule" path: walk forward from LWD
+    // through monthly candidates until we find a regular pay date that lands on or
+    // after the LWD. Caller bounds the walk to avoid pathological infinite loops.
+    public static DateOnly FirstRegularPayDateOnOrAfter(
+        EnginePayDateType type,
+        int? specificDay,
+        DateOnly fromDate,
+        EngineWorkWeekDay workWeek)
+    {
+        int year = fromDate.Year;
+        int month = fromDate.Month;
+        for (int i = 0; i < 12; i++)
+        {
+            DateOnly candidate = ResolveActualPayDate(type, specificDay, year, month, workWeek);
+            if (candidate >= fromDate) return candidate;
+            if (++month > 12) { month = 1; year++; }
+        }
+        throw new InvalidOperationException(
+            $"Could not resolve a regular pay date on or after {fromDate} within 12 months.");
+    }
+
     public static DateOnly ResolveActualPayDate(
         EnginePayDateType type,
         int? specificDay,

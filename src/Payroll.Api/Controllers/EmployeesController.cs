@@ -14,6 +14,14 @@ namespace Payroll.Api.Controllers;
 
 public sealed record UpsertFyOpeningRequest(int MonthsCount, decimal GrossSalary, decimal TdsDeducted, decimal PfDeducted);
 
+public sealed record InitiateExitRequest(
+    DateOnly LastWorkingDay,
+    string Reason,
+    string SettlementMode,
+    DateOnly? SettlementDate,
+    string? PersonalEmail,
+    string? Notes);
+
 [ApiController]
 [Route("api/v1/employees")]
 [Authorize]
@@ -220,6 +228,30 @@ public sealed class EmployeesController(ISender sender, IEmployeeImportTemplateG
                 req.GrossSalary, req.TdsDeducted, req.PfDeducted, GetActorId()), ct);
             return NoContent();
         }
+        catch (ValidationException ex)
+        {
+            return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });
+        }
+    }
+
+    [HttpPost("{id:guid}/exit")]
+    public async Task<IActionResult> InitiateExit(Guid id, [FromBody] InitiateExitRequest req, CancellationToken ct)
+    {
+        try
+        {
+            EmployeeExitDto dto = await sender.Send(new InitiateExitCommand(
+                EmployeeId: id,
+                LastWorkingDay: req.LastWorkingDay,
+                Reason: Enum.Parse<Payroll.Domain.Enums.ExitReason>(req.Reason),
+                SettlementMode: Enum.Parse<Payroll.Domain.Enums.ExitSettlementMode>(req.SettlementMode),
+                SettlementDate: req.SettlementDate,
+                PersonalEmail: req.PersonalEmail,
+                Notes: req.Notes,
+                ActorId: GetActorId()), ct);
+            return Ok(dto);
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (DomainException ex) { return UnprocessableEntity(new { error = ex.Message }); }
         catch (ValidationException ex)
         {
             return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });

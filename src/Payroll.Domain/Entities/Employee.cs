@@ -232,6 +232,12 @@ public sealed class Employee : AuditableEntity
         SetUpdated(updatedBy);
     }
 
+    public void SetPersonalEmail(string personalEmail, Guid updatedBy)
+    {
+        PersonalEmail = personalEmail;
+        SetUpdated(updatedBy);
+    }
+
     public Payroll.Domain.ValueObjects.Tenure TenureAt(DateOnly date)
     {
         if (DateOfJoining == default) return new(0, 0);

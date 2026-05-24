@@ -25,6 +25,9 @@ internal sealed class PayrunEmployeeRepository(PayrollDbContext db) : IPayrunEmp
     public void Update(PayrunEmployee employee) =>
         db.PayrunEmployees.Update(employee);
 
+    public void Remove(PayrunEmployee employee) =>
+        db.PayrunEmployees.Remove(employee);
+
     public Task<IReadOnlyList<PayrunEmployee>> GetByRunIdWithStatusAsync(Guid payrollRunId, PayrunEmployeeStatus status, CancellationToken ct = default) =>
         db.PayrunEmployees
             .Where(e => e.PayrollRunId == payrollRunId && e.Status == status)

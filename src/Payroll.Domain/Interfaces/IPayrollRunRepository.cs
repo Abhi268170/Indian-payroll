@@ -15,4 +15,6 @@ public interface IPayrollRunRepository
     Task<bool> ExistsForPeriodAsync(PayPeriod period, CancellationToken ct = default);
     Task<PayrollRun?> GetActiveForPeriodAsync(PayPeriod period, CancellationToken ct = default);
     Task<IReadOnlyList<Guid>> GetPaidIdsForFiscalYearAsync(int fiscalYear, CancellationToken ct = default);
+    Task<PayrollRun?> FindDraftBulkFnfByPayDateAsync(DateOnly payDate, CancellationToken ct = default);
+    Task<IReadOnlyList<PayrollRun>> FindDraftRegularRunsCoveringDateAsync(DateOnly date, CancellationToken ct = default);
 }
