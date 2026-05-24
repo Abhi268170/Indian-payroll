@@ -49,7 +49,10 @@ internal sealed class GetCurrentPayPeriodHandler(
         // Check for outstanding run
         var activeRun = await payrollRunRepo.GetActiveForPeriodAsync(period, ct);
         var employees = await employeeRepo.ListAsync(ct);
-        int activeCount = employees.Count(e => e.Status == EmployeeStatus.Active);
+        DateOnly periodEnd = period.EndDate;
+        int activeCount = employees.Count(e =>
+            e.Status == EmployeeStatus.Active
+            && (e.DateOfLeaving == null || e.DateOfLeaving > periodEnd));
 
         return new CurrentPayPeriodDto(
             Year: period.Year,

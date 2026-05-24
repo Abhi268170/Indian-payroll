@@ -47,7 +47,10 @@ internal sealed class PayrollRunConfiguration : IEntityTypeConfiguration<Payroll
             pp.Property(x => x.Month).HasColumnName("pay_period_month").IsRequired();
         });
 
+        builder.Property(p => p.EmployeeExitId);
+
         builder.HasIndex(p => new { p.TenantId, p.Status });
+        builder.HasIndex(p => new { p.TenantId, p.Type, p.Status, p.PayDay });
 
         // Unique constraint on (tenant, period) excluding deleted rows is enforced via raw SQL
         // migration 20260519110000_AddUniquePayrollRunPeriodConstraint — not modelled here

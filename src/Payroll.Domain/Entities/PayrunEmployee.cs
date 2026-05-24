@@ -48,12 +48,17 @@ public sealed class PayrunEmployee : AuditableEntity
     // Payment
     public PaymentMode? PaymentModeOverride { get; private set; }
 
+    // Set when this row sits in a FinalSettlement or BulkFinalSettlement run.
+    // Links back to the EmployeeExit that scheduled this employee for the FnF.
+    public Guid? EmployeeExitId { get; private set; }
+
     public static PayrunEmployee Create(
         Guid payrollRunId,
         Guid employeeId,
         Guid tenantId,
         int baseDays,
-        Guid createdBy) =>
+        Guid createdBy,
+        Guid? employeeExitId = null) =>
         new()
         {
             PayrollRunId = payrollRunId,
@@ -63,6 +68,7 @@ public sealed class PayrunEmployee : AuditableEntity
             BaseDays = baseDays,
             LopDays = 0,
             ActualPayableDays = baseDays,
+            EmployeeExitId = employeeExitId,
             CreatedBy = createdBy
         };
 

@@ -81,7 +81,16 @@ public sealed class InitiatePayrollRunHandler(
         var surchargeSlabs = await statutoryRepo.GetSurchargeSlabsAsync(fiscalYear, "New", ct);
 
         var employees = await employeeRepo.ListAsync(ct);
-        var activeEmployees = employees.Where(e => e.Status == EmployeeStatus.Active).ToList();
+        // Exclude employees whose last working day already falls in or before this
+        // pay period — their pay flows through a Final Settlement / Bulk Final
+        // Settlement run, never through the regular run. Status==Active alone is
+        // insufficient because the Exited flip happens overnight (MarkExitedOnLwdJob),
+        // leaving a window where DateOfLeaving is set but status is still Active.
+        DateOnly periodEnd = period.EndDate;
+        var activeEmployees = employees
+            .Where(e => e.Status == EmployeeStatus.Active
+                && (e.DateOfLeaving == null || e.DateOfLeaving > periodEnd))
+            .ToList();
 
         var workLocations = await workLocationRepo.ListAsync(ct);
         var workLocationStateMap = workLocations.ToDictionary(wl => wl.Id, wl => wl.State.ToIsoCode());

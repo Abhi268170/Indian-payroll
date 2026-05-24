@@ -14,6 +14,7 @@ internal sealed class EmployeeExitConfiguration : IEntityTypeConfiguration<Emplo
         builder.Property(e => e.SettlementMode).IsRequired().HasConversion<string>();
         builder.Property(e => e.PersonalEmail).HasMaxLength(255);
         builder.Property(e => e.Notes).HasMaxLength(2000);
+        builder.Property(e => e.FnfPayrollRunId);
         builder.Property(e => e.CreatedAt).HasColumnType("timestamptz").IsRequired();
         builder.Property(e => e.UpdatedAt).HasColumnType("timestamptz");
         builder.Property(e => e.DeletedAt).HasColumnType("timestamptz");

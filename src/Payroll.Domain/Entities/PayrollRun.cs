@@ -46,6 +46,10 @@ public sealed class PayrollRun : AuditableEntity
     // Legacy/failure tracking
     public string? FailureReason { get; private set; }
 
+    // Set on FinalSettlement runs (single-employee). For BulkFinalSettlement
+    // the linkage lives on each PayrunEmployee row; the run itself stays NULL.
+    public Guid? EmployeeExitId { get; private set; }
+
     public static PayrollRun Create(
         Guid tenantId,
         PayPeriod payPeriod,
@@ -53,7 +57,8 @@ public sealed class PayrollRun : AuditableEntity
         DateOnly? payDay,
         string? statutoryConfigSnapshot,
         int employeeCount,
-        Guid createdBy) =>
+        Guid createdBy,
+        Guid? employeeExitId = null) =>
         new()
         {
             TenantId = tenantId,
@@ -63,8 +68,35 @@ public sealed class PayrollRun : AuditableEntity
             PayDay = payDay,
             StatutoryConfigSnapshot = statutoryConfigSnapshot,
             EmployeeCount = employeeCount,
+            EmployeeExitId = employeeExitId,
             CreatedBy = createdBy
         };
+
+    public static PayrollRun CreateFinalSettlement(
+        Guid tenantId,
+        PayPeriod payPeriod,
+        DateOnly payDay,
+        Guid employeeExitId,
+        string? statutoryConfigSnapshot,
+        Guid createdBy) =>
+        Create(tenantId, payPeriod, PayrollRunType.FinalSettlement, payDay,
+            statutoryConfigSnapshot, employeeCount: 1, createdBy, employeeExitId);
+
+    public static PayrollRun CreateBulkFinalSettlement(
+        Guid tenantId,
+        PayPeriod payPeriod,
+        DateOnly payDay,
+        string? statutoryConfigSnapshot,
+        Guid createdBy) =>
+        Create(tenantId, payPeriod, PayrollRunType.BulkFinalSettlement, payDay,
+            statutoryConfigSnapshot, employeeCount: 0, createdBy);
+
+    public void SetEmployeeCount(int count, Guid actorId)
+    {
+        if (count < 0) throw new InvalidOperationException("Employee count cannot be negative.");
+        EmployeeCount = count;
+        SetUpdated(actorId);
+    }
 
     public void UpdateFinancialSummary(
         decimal payrollCost,

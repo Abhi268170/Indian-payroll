@@ -34,6 +34,7 @@ internal sealed class PayrunEmployeeConfiguration : IEntityTypeConfiguration<Pay
         builder.Property(e => e.TdsOverrideReason).HasMaxLength(2000);
         builder.Property(e => e.SkipReason).HasMaxLength(2000);
         builder.Property(e => e.PaymentModeOverride).HasConversion<string>();
+        builder.Property(e => e.EmployeeExitId);
 
         builder.Property(e => e.CreatedAt).HasColumnType("timestamptz").IsRequired();
         builder.Property(e => e.UpdatedAt).HasColumnType("timestamptz");

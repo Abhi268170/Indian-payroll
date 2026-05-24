@@ -512,6 +512,10 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("uuid")
                         .HasColumnName("employee_id");
 
+                    b.Property<Guid?>("FnfPayrollRunId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("fnf_payroll_run_id");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean")
                         .HasColumnName("is_deleted");
@@ -1463,6 +1467,10 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("integer")
                         .HasColumnName("employee_count");
 
+                    b.Property<Guid?>("EmployeeExitId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("employee_exit_id");
+
                     b.Property<string>("FailureReason")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)")
@@ -1554,6 +1562,9 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
 
                     b.HasIndex("TenantId", "Status")
                         .HasDatabaseName("ix_payroll_runs_tenant_id_status");
+
+                    b.HasIndex("TenantId", "Type", "Status", "PayDay")
+                        .HasDatabaseName("ix_payroll_runs_tenant_id_type_status_pay_day");
 
                     b.ToTable("payroll_runs", (string)null);
                 });
@@ -1793,6 +1804,10 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.Property<decimal>("EmployeeEsi")
                         .HasColumnType("numeric(18,2)")
                         .HasColumnName("employee_esi");
+
+                    b.Property<Guid?>("EmployeeExitId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("employee_exit_id");
 
                     b.Property<Guid>("EmployeeId")
                         .HasColumnType("uuid")

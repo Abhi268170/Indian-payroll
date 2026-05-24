@@ -223,4 +223,23 @@ public sealed class Employee : AuditableEntity
         DateOfLeaving = null;
         SetUpdated(updatedBy);
     }
+
+    // Scheduled exit: LWD known, status stays Active until the day after LWD
+    // (job MarkExitedOnLwdJob flips it later). Idempotent.
+    public void ScheduleExit(DateOnly lastWorkingDay, Guid updatedBy)
+    {
+        DateOfLeaving = lastWorkingDay;
+        SetUpdated(updatedBy);
+    }
+
+    public Payroll.Domain.ValueObjects.Tenure TenureAt(DateOnly date)
+    {
+        if (DateOfJoining == default) return new(0, 0);
+        int years = date.Year - DateOfJoining.Year;
+        int months = date.Month - DateOfJoining.Month;
+        if (date.Day < DateOfJoining.Day) months--;
+        if (months < 0) { years--; months += 12; }
+        if (years < 0) return new(0, 0);
+        return new(years, months);
+    }
 }

@@ -231,6 +231,12 @@ if (!isWorkerOnly)
 
     app.MapControllers();
     app.MapHangfireDashboard("/hangfire").RequireAuthorization("SuperAdmin");
+
+    // Daily sweep: flip Employee.Status = Exited the day after LWD passes.
+    RecurringJob.AddOrUpdate<Payroll.Infrastructure.Jobs.MarkExitedOnLwdJob>(
+        "mark-exited-on-lwd",
+        job => job.Execute(),
+        "0 1 * * *"); // 01:00 UTC daily
 }
 
 app.MapHealthChecks("/health");

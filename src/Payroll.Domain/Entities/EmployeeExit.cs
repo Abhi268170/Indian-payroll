@@ -15,6 +15,12 @@ public sealed class EmployeeExit : AuditableEntity
     public string? PersonalEmail { get; private set; }
     public string? Notes { get; private set; }
 
+    // Set when the FnF payroll run is created or appended for this exit.
+    // For SettlementMode = CustomDate this points at a FinalSettlement run;
+    // for RegularSchedule it points at the shared BulkFinalSettlement run for
+    // the matched pay date. May be re-linked if the exit moves runs.
+    public Guid? FnfPayrollRunId { get; private set; }
+
     public static EmployeeExit Create(
         Guid employeeId,
         DateOnly lastWorkingDay,
@@ -50,6 +56,18 @@ public sealed class EmployeeExit : AuditableEntity
         SettlementDate = settlementDate;
         PersonalEmail = personalEmail;
         Notes = notes;
+        SetUpdated(updatedBy);
+    }
+
+    public void LinkFnfRun(Guid fnfPayrollRunId, Guid updatedBy)
+    {
+        FnfPayrollRunId = fnfPayrollRunId;
+        SetUpdated(updatedBy);
+    }
+
+    public void UnlinkFnfRun(Guid updatedBy)
+    {
+        FnfPayrollRunId = null;
         SetUpdated(updatedBy);
     }
 }
