@@ -17,6 +17,21 @@ interface TaxDetails {
   deductorName: string | null
   deductorFathersName: string | null
   deductorDesignation: string | null
+  deductorEmployeeId: string | null
+}
+
+interface EmployeePickerItem {
+  id: string
+  employeeCode: string
+  fullName: string
+  workEmail: string
+}
+
+interface PagedResult<T> {
+  items: T[]
+  total: number
+  page: number
+  pageSize: number
 }
 
 const DEDUCTOR_TYPES = [
@@ -115,9 +130,38 @@ export default function TaxDetailsPage(): ReactElement {
                 <ViewRow label="Designation of Deductor" value={data?.deductorDesignation ?? null} />
               </>
             )}
+            <div className="col-span-2">
+              <DeductorEmployeeView employeeId={data?.deductorEmployeeId ?? null} />
+            </div>
           </div>
         </section>
       </div>
+    </div>
+  )
+}
+
+function DeductorEmployeeView({ employeeId }: { employeeId: string | null }): ReactElement {
+  const { data } = useQuery<EmployeePickerItem | null>({
+    queryKey: ['employee-summary', employeeId],
+    queryFn: async () => {
+      if (!employeeId) return null
+      const res = await api.get<EmployeePickerItem>(`/api/v1/employees/${employeeId}`)
+      return res.data
+    },
+    enabled: !!employeeId,
+  })
+  const label = !employeeId
+    ? '— (required for exit initiation)'
+    : data
+      ? `${data.fullName} (${data.employeeCode})`
+      : 'Loading…'
+  return (
+    <div>
+      <dt className="text-[12px] text-[var(--color-text-muted)] mb-0.5">Tax Deductor Employee</dt>
+      <dd className="text-[13px] text-[var(--color-text-primary)]">{label}</dd>
+      <p className="text-[11px] text-[var(--color-text-muted)] mt-1">
+        Used as the responsible signatory for Form 16 / Form 24Q. Required before initiating any employee exit.
+      </p>
     </div>
   )
 }
@@ -144,6 +188,7 @@ function TaxDetailsForm({
     deductorName: data.deductorName ?? '',
     deductorFathersName: data.deductorFathersName ?? '',
     deductorDesignation: data.deductorDesignation ?? '',
+    deductorEmployeeId: data.deductorEmployeeId ?? '',
   })
 
   const save = useMutation({
@@ -158,6 +203,7 @@ function TaxDetailsForm({
         deductorName: form.deductorName || null,
         deductorFathersName: form.deductorFathersName || null,
         deductorDesignation: form.deductorDesignation || null,
+        deductorEmployeeId: form.deductorEmployeeId || null,
       }),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['tax-details'] })
@@ -293,9 +339,52 @@ function TaxDetailsForm({
                 </Field>
               </>
             )}
+            <Field label="Tax Deductor Employee">
+              <DeductorEmployeePicker
+                value={form.deductorEmployeeId}
+                onChange={id => { setForm(f => ({ ...f, deductorEmployeeId: id })) }}
+              />
+              <p className="text-[11px] text-[var(--color-text-muted)] mt-1">
+                Required signatory for Form 16 / Form 24Q. Must be assigned before initiating any employee exit.
+              </p>
+            </Field>
           </div>
         </section>
       </div>
+    </div>
+  )
+}
+
+function DeductorEmployeePicker({
+  value, onChange,
+}: { value: string; onChange: (id: string) => void }): ReactElement {
+  const [search, setSearch] = useState('')
+  const { data } = useQuery<PagedResult<EmployeePickerItem>>({
+    queryKey: ['employees', 'deductor-picker', search],
+    queryFn: () => api.get<PagedResult<EmployeePickerItem>>('/api/v1/employees', {
+      params: { page: 1, pageSize: 25, status: 'Active', search: search || undefined },
+    }).then(r => r.data),
+  })
+  const items = data?.items ?? []
+  return (
+    <div className="space-y-2">
+      <input
+        type="text"
+        className="form-input w-full"
+        placeholder="Search by name, email or code…"
+        value={search}
+        onChange={e => { setSearch(e.target.value) }}
+      />
+      <select
+        className="form-input w-full"
+        value={value}
+        onChange={e => { onChange(e.target.value) }}
+      >
+        <option value="">— No employee assigned —</option>
+        {items.map(emp => (
+          <option key={emp.id} value={emp.id}>{emp.fullName} ({emp.employeeCode})</option>
+        ))}
+      </select>
     </div>
   )
 }

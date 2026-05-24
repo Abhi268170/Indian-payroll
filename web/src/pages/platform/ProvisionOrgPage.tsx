@@ -40,12 +40,29 @@ export default function ProvisionOrgPage(): React.ReactElement {
       navigate('/platform/orgs')
     },
     onError: (err: unknown) => {
-      const status = (err as { response?: { status?: number } }).response?.status
+      const response = (err as { response?: { status?: number; data?: unknown } }).response
+      const status = response?.status
       if (status === 409) {
         setApiError('That slug is already taken. Choose a different one.')
-      } else {
-        setApiError('Provisioning failed. Please try again.')
+        return
       }
+      // Surface a server-provided message when present so operators have something to act on.
+      let serverMessage: string | null = null
+      const data = response?.data
+      if (typeof data === 'string') {
+        // Strip stack traces — first line only.
+        const firstLine = data.split('\n')[0] ?? ''
+        serverMessage = firstLine.slice(0, 240) || null
+      } else if (data && typeof data === 'object') {
+        const obj = data as { error?: string; message?: string; title?: string; detail?: string }
+        serverMessage = obj.error || obj.message || obj.detail || obj.title || null
+      }
+      const statusHint = status ? ` (HTTP ${status})` : ''
+      setApiError(
+        serverMessage
+          ? `Provisioning failed${statusHint}: ${serverMessage}`
+          : `Provisioning failed${statusHint}. Please try again or contact support.`,
+      )
     },
   })
 

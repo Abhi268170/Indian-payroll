@@ -10,5 +10,6 @@ public record TaxDetailsDto(
     string? DeductorType,
     string? DeductorName,
     string? DeductorFathersName,
-    string? DeductorDesignation
+    string? DeductorDesignation,
+    Guid? DeductorEmployeeId
 );

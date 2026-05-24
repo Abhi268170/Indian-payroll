@@ -94,7 +94,7 @@ export default function FnfSettlementPage(): ReactElement {
   return (
     <div className="px-8 py-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-[20px] font-semibold text-red-600">
+        <h1 className="text-[20px] font-semibold text-[var(--color-text-primary)]">
           {isBulk ? 'Bulk Final Settlement Payroll' : 'Final Settlement Payroll'}
         </h1>
         <button onClick={() => { navigate('/pay-runs') }} className="text-[13px] text-[var(--color-text-secondary)]">

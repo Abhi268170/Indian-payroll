@@ -26,7 +26,9 @@ public sealed class InitiatePayrollRunBackgroundJob(
         try
         {
             PayrollRunSummaryDto dto = await sender.Send(new InitiatePayrollRunCommand(actorId));
-            string resultJson = JsonSerializer.Serialize(dto);
+            // Use Web defaults so the camelCase keys match what the API exposes elsewhere;
+            // the frontend reads dto.id from this payload.
+            string resultJson = JsonSerializer.Serialize(dto, new JsonSerializerOptions(JsonSerializerDefaults.Web));
             await jobProgress.UpdateAsync(tenantId, jobId, processed: 1);
             await jobProgress.CompleteAsync(tenantId, jobId, resultJson);
         }

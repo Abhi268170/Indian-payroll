@@ -53,7 +53,9 @@ public sealed class BulkImportBackgroundJob(
                 await jobProgress.UpdateAsync(tenantId, jobId, processed);
             }
 
-            string resultJson = JsonSerializer.Serialize(new ImportResult(totalApplied, allErrors.AsReadOnly()));
+            string resultJson = JsonSerializer.Serialize(
+                new ImportResult(totalApplied, allErrors.AsReadOnly()),
+                new JsonSerializerOptions(JsonSerializerDefaults.Web));
             await jobProgress.CompleteAsync(tenantId, jobId, resultJson);
         }
         catch (Exception ex)

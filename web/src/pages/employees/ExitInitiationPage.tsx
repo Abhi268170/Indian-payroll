@@ -2,6 +2,7 @@ import { useState, type ReactElement } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/api'
+import { DateInput } from '@/components/ui/DateInput'
 
 interface EmployeeOverview {
   id: string
@@ -82,11 +83,10 @@ export default function ExitInitiationPage(): ReactElement {
           )}
 
           <Field label="Last Working Day *">
-            <input
-              type="date"
-              className={inputCls}
+            <DateInput
               value={lastWorkingDay}
-              onChange={e => { setLastWorkingDay(e.target.value) }}
+              onChange={setLastWorkingDay}
+              ariaLabel="Last Working Day"
             />
           </Field>
 
@@ -117,11 +117,10 @@ export default function ExitInitiationPage(): ReactElement {
 
           {mode === 'CustomDate' && (
             <Field label="Final Settlement Date *">
-              <input
-                type="date"
-                className={inputCls}
+              <DateInput
                 value={settlementDate}
-                onChange={e => { setSettlementDate(e.target.value) }}
+                onChange={setSettlementDate}
+                ariaLabel="Final Settlement Date"
               />
             </Field>
           )}

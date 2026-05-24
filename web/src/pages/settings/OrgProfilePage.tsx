@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactElement } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -8,6 +8,7 @@ import { api } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
+import { DateInput } from '@/components/ui/DateInput'
 import { Spinner } from '@/components/ui/Spinner'
 import { useToast } from '@/components/ui/useToast'
 
@@ -90,7 +91,7 @@ export default function OrgProfilePage(): ReactElement {
     queryFn: () => api.get<OrgProfileDto>('/api/v1/org-profile').then(r => r.data),
   })
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       companyName: '', legalName: '', pan: '', gstin: '', website: '',
@@ -297,12 +298,19 @@ export default function OrgProfilePage(): ReactElement {
               placeholder="Select industry"
               {...register('industry')}
             />
-            <Input
-              label="Date of Incorporation"
-              type="date"
-              error={errors.incorporationDate?.message}
-              {...register('incorporationDate')}
-            />
+            <div>
+              <label className="block text-[13px] font-medium text-[var(--color-text-primary)] mb-1.5">Date of Incorporation</label>
+              <Controller
+                control={control}
+                name="incorporationDate"
+                render={({ field }) => (
+                  <DateInput value={field.value ?? ''} onChange={field.onChange} ariaLabel="Date of Incorporation" />
+                )}
+              />
+              {errors.incorporationDate?.message && (
+                <p className="mt-1 text-[12px] text-red-600">{errors.incorporationDate.message}</p>
+              )}
+            </div>
           </div>
         </Section>
 

@@ -126,6 +126,7 @@ public sealed class OrgProfileController(ISender sender) : ControllerBase
                 request.DeductorName,
                 request.DeductorFathersName,
                 request.DeductorDesignation,
+                request.DeductorEmployeeId,
                 GetActorId()),
                 cancellationToken);
             return NoContent();
@@ -152,7 +153,8 @@ public record UpdateTaxDetailsRequest(
     string? DeductorType,
     string? DeductorName,
     string? DeductorFathersName,
-    string? DeductorDesignation);
+    string? DeductorDesignation,
+    Guid? DeductorEmployeeId);
 
 public record UpdateOrgProfileRequest(
     string CompanyName,

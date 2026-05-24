@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { formatINR } from '@/lib/format'
 import type { PayrollRunSummaryDto } from '@/types/api'
+import { DateInput } from '@/components/ui/DateInput'
 
 interface RecordPaymentDialogProps {
   run: PayrollRunSummaryDto
@@ -63,12 +64,7 @@ export default function RecordPaymentDialog({ run, onClose }: RecordPaymentDialo
 
           <div>
             <label className="block text-[12px] font-medium text-[var(--color-text-secondary)] mb-1.5">Payment Date</label>
-            <input
-              type="date"
-              value={paymentDate}
-              onChange={e => { setPaymentDate(e.target.value) }}
-              className="w-full h-8 px-3 rounded-lg border border-[var(--color-border)] text-[13px] focus:outline-none focus:border-[var(--color-primary)]"
-            />
+            <DateInput value={paymentDate} onChange={setPaymentDate} ariaLabel="Payment Date" />
           </div>
 
           <div>

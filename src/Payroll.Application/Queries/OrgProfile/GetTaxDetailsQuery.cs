@@ -23,6 +23,7 @@ public sealed class GetTaxDetailsHandler(IOrgProfileRepository repo)
             profile?.DeductorType,
             profile?.DeductorName,
             profile?.DeductorFathersName,
-            profile?.DeductorDesignation);
+            profile?.DeductorDesignation,
+            profile?.DeductorEmployeeId);
     }
 }

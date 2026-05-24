@@ -15,6 +15,7 @@ public sealed record UpdateTaxDetailsCommand(
     string? DeductorName,
     string? DeductorFathersName,
     string? DeductorDesignation,
+    Guid? DeductorEmployeeId,
     Guid ActorId) : IRequest;
 
 internal sealed class UpdateTaxDetailsHandler(IOrgProfileRepository repo, IUnitOfWork uow)
@@ -36,7 +37,8 @@ internal sealed class UpdateTaxDetailsHandler(IOrgProfileRepository repo, IUnitO
             cmd.DeductorName,
             cmd.DeductorFathersName,
             cmd.DeductorDesignation,
-            cmd.ActorId);
+            cmd.ActorId,
+            cmd.DeductorEmployeeId);
 
         repo.Update(profile);
         await uow.SaveChangesAsync(ct);
