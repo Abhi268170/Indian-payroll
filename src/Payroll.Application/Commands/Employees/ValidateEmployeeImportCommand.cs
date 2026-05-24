@@ -95,6 +95,9 @@ public sealed class ValidateEmployeeImportHandler(
 
         if (string.IsNullOrWhiteSpace(row.FirstName)) errs.Add("FirstName is required.");
         if (string.IsNullOrWhiteSpace(row.LastName)) errs.Add("LastName is required.");
+        // FathersName is required because InitiatePayrollRunCommand:194 skips any employee
+        // whose father's name is blank. Same rule as UpdatePersonalDetailsValidator.
+        if (string.IsNullOrWhiteSpace(row.FathersName)) errs.Add("FathersName is required.");
 
         if (string.IsNullOrWhiteSpace(row.WorkEmail))
             errs.Add("WorkEmail is required.");
@@ -143,6 +146,23 @@ public sealed class ValidateEmployeeImportHandler(
 
         if (row.PaymentMode is not null && !Enum.TryParse<PaymentMode>(row.PaymentMode, ignoreCase: true, out _))
             errs.Add($"PaymentMode '{row.PaymentMode}' is invalid.");
+
+        // Bank-field conditional requirement — mirrors UpdatePaymentInfoCommand.cs:29 and the
+        // engine's per-employee skip in InitiatePayrollRunCommand:195 ("Bank account missing").
+        if (Enum.TryParse<PaymentMode>(row.PaymentMode, ignoreCase: true, out PaymentMode mode)
+            && mode == PaymentMode.BankTransfer)
+        {
+            if (string.IsNullOrWhiteSpace(row.BankAccountNumber))
+                errs.Add("BankAccountNumber is required when PaymentMode is BankTransfer.");
+            if (string.IsNullOrWhiteSpace(row.BankAccountHolderName))
+                errs.Add("BankAccountHolderName is required when PaymentMode is BankTransfer.");
+            if (string.IsNullOrWhiteSpace(row.BankName))
+                errs.Add("BankName is required when PaymentMode is BankTransfer.");
+            if (string.IsNullOrWhiteSpace(row.IFSCCode))
+                errs.Add("IFSCCode is required when PaymentMode is BankTransfer.");
+            if (string.IsNullOrWhiteSpace(row.BankAccountType))
+                errs.Add("BankAccountType is required when PaymentMode is BankTransfer.");
+        }
 
         if (row.State is not null && !Enum.TryParse<IndianState>(row.State, ignoreCase: true, out _))
             errs.Add($"State '{row.State}' is not a recognised Indian state code.");

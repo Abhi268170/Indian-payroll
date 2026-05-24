@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bulk Employee Import — Plan</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #1e293b;
+      background: #f8fafc;
+    }
+
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 48px 32px 80px;
+    }
+
+    /* Header */
+    .doc-header {
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 24px;
+      margin-bottom: 40px;
+    }
+
+    .doc-header h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .doc-header .meta {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .doc-header .meta span + span::before {
+      content: " · ";
+    }
+
+    /* Sections */
+    section {
+      margin-bottom: 48px;
+    }
+
+    section h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    section h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #334155;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+      margin-top: 24px;
+    }
+
+    p {
+      color: #334155;
+      margin-bottom: 12px;
+    }
+
+    /* Card grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .card .card-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #334155;
+      margin: 0;
+    }
+
+    /* Steps */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .step {
+      display: flex;
+      gap: 20px;
+      position: relative;
+    }
+
+    .step:not(:last-child)::before {
+      content: "";
+      position: absolute;
+      left: 15px;
+      top: 36px;
+      bottom: 0;
+      width: 2px;
+      background: #e2e8f0;
+    }
+
+    .step-number {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #1e293b;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .step-body {
+      padding-bottom: 28px;
+      flex: 1;
+    }
+
+    .step-body strong {
+      display: block;
+      font-size: 15px;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .step-body p {
+      font-size: 14px;
+      margin: 0;
+      color: #475569;
+    }
+
+    /* UX mockup */
+    .mockup-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .mockup-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+
+    .mockup {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 24px;
+    }
+
+    .mockup-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mockup-title .btn-ghost {
+      font-size: 13px;
+      color: #2563eb;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .drop-zone {
+      border: 2px dashed #cbd5e1;
+      border-radius: 8px;
+      padding: 32px;
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .drop-zone .hint {
+      font-size: 12px;
+      margin-top: 4px;
+      color: #94a3b8;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      font-size: 14px;
+      color: #334155;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+    }
+
+    .summary-bar {
+      display: flex;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .pill {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .pill.ok {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .pill.err {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .error-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .error-table th {
+      text-align: left;
+      padding: 8px 10px;
+      background: #f1f5f9;
+      color: #64748b;
+      font-weight: 600;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .error-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: #1e293b;
+      color: #fff;
+    }
+
+    .btn-primary:disabled,
+    .btn-disabled {
+      background: #cbd5e1;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: #fff;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 12px;
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 600;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 13px;
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .tag.required { background: #fee2e2; color: #991b1b; }
+    .tag.optional { background: #f1f5f9; color: #475569; }
+    .tag.encrypted { background: #fef3c7; color: #92400e; }
+
+    /* Code */
+    .columns-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .col-chip {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      color: #334155;
+    }
+
+    .col-chip.required {
+      background: #fff1f2;
+      border-color: #fecdd3;
+      color: #be123c;
+    }
+
+    .col-chip.encrypted {
+      background: #fffbeb;
+      border-color: #fde68a;
+      color: #92400e;
+    }
+
+    /* File list */
+    .file-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .file-item:last-child { border-bottom: none; }
+
+    .file-badge {
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-top: 2px;
+    }
+
+    .file-badge.new { background: #dcfce7; color: #166534; }
+    .file-badge.mod { background: #dbeafe; color: #1e40af; }
+
+    .file-path {
+      font-family: "SF Mono", "Fira Code", Consolas, monospace;
+      font-size: 13px;
+      color: #0f172a;
+    }
+
+    .file-desc {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* Decision box */
+    .decision-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .decision-row {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px 18px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .decision-q {
+      font-weight: 600;
+      font-size: 14px;
+      color: #0f172a;
+      min-width: 220px;
+      flex-shrink: 0;
+    }
+
+    .decision-a {
+      font-size: 14px;
+      color: #334155;
+    }
+
+    /* Execution order */
+    .exec-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      counter-reset: exec;
+    }
+
+    .exec-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .exec-item:last-child { border-bottom: none; }
+
+    .exec-num {
+      flex-shrink: 0;
+      width: 24px;
+      height: 24px;
+      background: #f1f5f9;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+
+    .exec-text {
+      font-size: 14px;
+      color: #334155;
+    }
+
+    .exec-text strong {
+      color: #0f172a;
+    }
+
+    .exec-verify {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <h1>Bulk Employee Import</h1>
+    <div class="meta">
+      <span>Plan 007</span>
+      <span>2026-05-22</span>
+      <span>Branch: feat/bulk-employee-import</span>
+      <span>Status: Ready to build</span>
+    </div>
+  </div>
+
+  <!-- What -->
+  <section>
+    <h2>What</h2>
+    <p>
+      A way to add many employees at once by uploading a single CSV file — instead of entering each employee one by one through the add wizard.
+    </p>
+    <p>
+      The user uploads a file. The system checks it immediately and shows exactly which rows have problems. Once all problems are fixed, the user clicks one button to import everyone.
+    </p>
+  </section>
+
+  <!-- Why -->
+  <section>
+    <h2>Why</h2>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-label">New customer onboarding</div>
+        <p>A company switching to this system may have 50, 200, or 500 existing employees. Adding them one by one through the wizard would take hours. Bulk import reduces this to minutes.</p>
+      </div>
+      <div class="card">
+        <div class="card-label">Accuracy</div>
+        <p>Payroll teams already have employee data in spreadsheets. Uploading a CSV from that spreadsheet avoids re-typing errors.</p>
+      </div>
+      <div class="card">
+        <div class="card-label">Speed</div>
+        <p>HR teams need to be live on payroll by month-end. A manual wizard is a bottleneck. Bulk import unblocks day-one setup.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Decisions -->
+  <section>
+    <h2>Key Decisions</h2>
+    <div class="decision-grid">
+      <div class="decision-row">
+        <div class="decision-q">One file or many?</div>
+        <div class="decision-a">One flat CSV with all data — basic info, work details, bank, statutory flags, and salary. No separate templates per module. The user fills in what they have; optional fields can be left blank.</div>
+      </div>
+      <div class="decision-row">
+        <div class="decision-q">All errors up front or partial import?</div>
+        <div class="decision-a">All errors shown up front. The Import button stays disabled until every row is clean. This prevents partial data — half-imported employees cause payroll run problems.</div>
+      </div>
+      <div class="decision-row">
+        <div class="decision-q">What if an employee already exists?</div>
+        <div class="decision-a">A checkbox on the upload screen: "Update existing employees". Unchecked means skip duplicates silently. Checked means overwrite. Default is unchecked (safe).</div>
+      </div>
+      <div class="decision-row">
+        <div class="decision-q">What if a Department or Location doesn't exist yet?</div>
+        <div class="decision-a">Row marked as an error with the message "Department 'Marketing' not found — create it in Settings first." The user creates the reference, then re-uploads. This avoids orphaned data.</div>
+      </div>
+      <div class="decision-row">
+        <div class="decision-q">How fast is the import?</div>
+        <div class="decision-a">Up to 500 rows: runs immediately, result shown on screen. Over 500 rows: runs in the background (Hangfire job), employees appear in the list as they are created. Threshold can be tuned.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works in the app -->
+  <section>
+    <h2>How It Works in the App</h2>
+
+    <div class="mockup-wrap">
+
+      <!-- State 1 -->
+      <div>
+        <div class="mockup-label">Screen 1 — Upload your file</div>
+        <div class="mockup">
+          <div class="mockup-title">
+            Import Employees
+            <span class="btn-ghost">Download Template</span>
+          </div>
+          <div class="drop-zone">
+            Drag and drop your CSV file here, or click to browse
+            <div class="hint">Only .csv files. Download the template above to see the correct column format.</div>
+          </div>
+          <div class="checkbox-row">
+            <input type="checkbox" />
+            Update existing employees (unchecked = skip duplicates)
+          </div>
+        </div>
+      </div>
+
+      <!-- State 2a: errors -->
+      <div>
+        <div class="mockup-label">Screen 2A — File uploaded, errors found</div>
+        <div class="mockup">
+          <div class="mockup-title">
+            Import Employees
+            <span class="btn-ghost">Download Template</span>
+          </div>
+          <div style="font-size:13px; color:#475569; margin-bottom:12px;">employees-may-2026.csv &nbsp;&nbsp; <span style="color:#2563eb; cursor:pointer;">Remove</span></div>
+          <div class="checkbox-row" style="margin-top:0; margin-bottom:16px;">
+            <input type="checkbox" />
+            Update existing employees
+          </div>
+          <div class="summary-bar">
+            <span class="pill ok">47 rows ready</span>
+            <span class="pill err">3 rows have errors</span>
+          </div>
+          <table class="error-table">
+            <thead>
+              <tr>
+                <th>Row</th>
+                <th>Employee Number</th>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>5</td>
+                <td>EMP-005</td>
+                <td>Department "Marketing" not found — create it in Settings first</td>
+              </tr>
+              <tr>
+                <td>12</td>
+                <td>EMP-012</td>
+                <td>PAN must be in format AAAAA9999A</td>
+              </tr>
+              <tr>
+                <td>23</td>
+                <td>—</td>
+                <td>WorkEmail is required</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="actions">
+            <button class="btn btn-secondary">Download Error Report</button>
+            <button class="btn btn-disabled" disabled>Import 47 Employees</button>
+            <span style="font-size:12px; color:#94a3b8;">Fix all errors to enable import</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- State 2b: all clear -->
+      <div>
+        <div class="mockup-label">Screen 2B — File uploaded, all rows clean</div>
+        <div class="mockup">
+          <div class="mockup-title">
+            Import Employees
+            <span class="btn-ghost">Download Template</span>
+          </div>
+          <div style="font-size:13px; color:#475569; margin-bottom:12px;">employees-may-2026.csv &nbsp;&nbsp; <span style="color:#2563eb; cursor:pointer;">Remove</span></div>
+          <div class="checkbox-row" style="margin-top:0; margin-bottom:16px;">
+            <input type="checkbox" />
+            Update existing employees
+          </div>
+          <div class="summary-bar">
+            <span class="pill ok">50 rows ready</span>
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary">Import 50 Employees</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- State 3: done -->
+      <div>
+        <div class="mockup-label">Screen 3 — Import complete</div>
+        <div class="mockup" style="text-align:center; padding: 40px 24px;">
+          <div style="font-size:18px; font-weight:700; color:#166534; margin-bottom:8px;">Import Complete</div>
+          <div style="font-size:14px; color:#475569; margin-bottom:24px;">50 employees were added to the system.</div>
+          <div class="actions" style="justify-content:center;">
+            <button class="btn btn-primary">View Employees</button>
+            <button class="btn btn-secondary">Import More</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- The Template -->
+  <section>
+    <h2>The CSV Template</h2>
+    <p>One file with 36 columns. Red columns are required — leaving them blank will flag the row as an error. Everything else is optional.</p>
+
+    <h3>Identity and Work</h3>
+    <div class="columns-list">
+      <span class="col-chip optional">EmployeeNumber</span>
+      <span class="col-chip required">FirstName</span>
+      <span class="col-chip optional">MiddleName</span>
+      <span class="col-chip required">LastName</span>
+      <span class="col-chip required">Gender</span>
+      <span class="col-chip required">DateOfJoining</span>
+      <span class="col-chip required">DateOfBirth</span>
+      <span class="col-chip required">WorkEmail</span>
+      <span class="col-chip optional">PersonalEmail</span>
+      <span class="col-chip optional">MobileNumber</span>
+      <span class="col-chip optional">FathersName</span>
+      <span class="col-chip required">Department</span>
+      <span class="col-chip required">Designation</span>
+      <span class="col-chip required">WorkLocation</span>
+      <span class="col-chip required">EmploymentType</span>
+    </div>
+
+    <h3>Address</h3>
+    <div class="columns-list">
+      <span class="col-chip optional">AddressLine1</span>
+      <span class="col-chip optional">AddressLine2</span>
+      <span class="col-chip optional">City</span>
+      <span class="col-chip optional">State</span>
+      <span class="col-chip optional">PinCode</span>
+    </div>
+
+    <h3>Sensitive (stored encrypted)</h3>
+    <div class="columns-list">
+      <span class="col-chip encrypted">PAN</span>
+      <span class="col-chip encrypted">Aadhaar</span>
+    </div>
+
+    <h3>Bank and Payment</h3>
+    <div class="columns-list">
+      <span class="col-chip optional">PaymentMode</span>
+      <span class="col-chip optional">BankAccountHolderName</span>
+      <span class="col-chip optional">BankName</span>
+      <span class="col-chip encrypted">BankAccountNumber</span>
+      <span class="col-chip encrypted">IFSCCode</span>
+      <span class="col-chip optional">BankAccountType</span>
+    </div>
+
+    <h3>Statutory</h3>
+    <div class="columns-list">
+      <span class="col-chip optional">EpfEnabled</span>
+      <span class="col-chip optional">EsiEnabled</span>
+      <span class="col-chip optional">PtEnabled</span>
+      <span class="col-chip optional">LwfEnabled</span>
+      <span class="col-chip optional">UAN</span>
+      <span class="col-chip optional">ESICNumber</span>
+    </div>
+
+    <h3>Salary</h3>
+    <div class="columns-list">
+      <span class="col-chip optional">AnnualCTC</span>
+      <span class="col-chip optional">SalaryStructureTemplate</span>
+    </div>
+
+    <p style="margin-top: 16px; font-size: 13px; color: #64748b;">
+      Department, Designation, and WorkLocation are matched by name (case-insensitive). They must already exist in Settings before importing. AnnualCTC is optional — if left blank the employee is created without a salary assignment, which can be done later.
+    </p>
+
+    <div style="margin-top: 8px; display:flex; gap: 16px; font-size: 12px; align-items:center;">
+      <span style="display:flex; gap:6px; align-items:center;"><span class="tag required">required</span> leave blank = row error</span>
+      <span style="display:flex; gap:6px; align-items:center;"><span class="tag optional">optional</span> leave blank = field skipped</span>
+      <span style="display:flex; gap:6px; align-items:center;"><span class="tag encrypted">encrypted</span> stored encrypted at rest</span>
+    </div>
+  </section>
+
+  <!-- Validation -->
+  <section>
+    <h2>Validation Rules</h2>
+    <p>These checks run instantly when the file is dropped. All errors are collected and shown together — not one at a time.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Check</th>
+          <th>Error shown to user</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Required field is blank</td><td>WorkEmail is required</td></tr>
+        <tr><td>Invalid date format</td><td>DateOfJoining must be YYYY-MM-DD</td></tr>
+        <tr><td>Invalid Gender value</td><td>Gender must be Male, Female, or Other</td></tr>
+        <tr><td>Invalid EmploymentType value</td><td>EmploymentType must be Permanent, Contract, or Probation</td></tr>
+        <tr><td>PAN format wrong (if provided)</td><td>PAN must be in format AAAAA9999A</td></tr>
+        <tr><td>Aadhaar not 12 digits (if provided)</td><td>Aadhaar must be 12 digits</td></tr>
+        <tr><td>IFSC not 11 characters (if provided)</td><td>IFSC must be 11 characters</td></tr>
+        <tr><td>Department name not in system</td><td>Department "Marketing" not found — create it in Settings first</td></tr>
+        <tr><td>Designation name not in system</td><td>Designation "Senior Engineer" not found — create it in Settings first</td></tr>
+        <tr><td>WorkLocation name not in system</td><td>WorkLocation "Hyderabad Office" not found — create it in Settings first</td></tr>
+        <tr><td>SalaryStructureTemplate not in system (if provided)</td><td>Salary structure template "Standard" not found</td></tr>
+        <tr><td>Work email already used by another employee</td><td>Email already in use by employee EMP-003</td></tr>
+        <tr><td>AnnualCTC is negative (if provided)</td><td>AnnualCTC must be greater than zero</td></tr>
+        <tr><td>CSV headers do not match template</td><td>File format does not match the template. Download the template and try again.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- What gets built -->
+  <section>
+    <h2>What Gets Built</h2>
+
+    <h3>Backend — New files</h3>
+    <div class="file-list">
+      <div class="file-item">
+        <span class="file-badge new">new</span>
+        <div>
+          <div class="file-path">Application/Services/IEmployeeImportParser.cs</div>
+          <div class="file-desc">Interface that takes a CSV stream and returns a list of parsed rows. Kept in Application so it can be used by command handlers without depending on Infrastructure.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-badge new">new</span>
+        <div>
+          <div class="file-path">Application/Commands/Employees/ValidateEmployeeImportCommand.cs</div>
+          <div class="file-desc">Dry-run handler. Parses the file, checks every row against the rules above, and returns a report. Does not write anything to the database.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-badge new">new</span>
+        <div>
+          <div class="file-path">Application/Commands/Employees/CommitEmployeeImportCommand.cs</div>
+          <div class="file-desc">Re-validates then writes all employees in one database transaction. Encrypts PAN, Aadhaar, account number, and IFSC before saving. Single SaveChanges at the end — no per-row commits.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-badge new">new</span>
+        <div>
+          <div class="file-path">Infrastructure/Services/EmployeeImportParser.cs</div>
+          <div class="file-desc">CsvHelper-based CSV parser. Validates that headers match the template exactly. Returns parsed rows as plain records for the command handlers to use.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-badge new">new</span>
+        <div>
+          <div class="file-path">web/public/templates/employee-import.csv</div>
+          <div class="file-desc">Downloadable template file with all 36 column headers and one example row. Linked from the import page.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-badge new">new</span>
+        <div>
+          <div class="file-path">web/src/pages/employees/ImportEmployeesPage.tsx</div>
+          <div class="file-desc">The import UI. Handles drag-drop, auto-validation on file drop, error table display, and the import action. Manages state internally: idle, validating, ready, importing, done.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-badge new">new</span>
+        <div>
+          <div class="file-path">tests/.../ValidateEmployeeImportCommandTests.cs</div>
+          <div class="file-desc">Tests for missing refs, bad PAN, duplicate email, missing required fields, and the all-clear case.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-badge new">new</span>
+        <div>
+          <div class="file-path">tests/.../CommitEmployeeImportCommandTests.cs</div>
+          <div class="file-desc">Tests for happy path, overwrite=true vs skip, and CTC optional behaviour.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Backend — Modified files</h3>
+    <div class="file-list">
+      <div class="file-item">
+        <span class="file-badge mod">mod</span>
+        <div>
+          <div class="file-path">Infrastructure/Payroll.Infrastructure.csproj</div>
+          <div class="file-desc">Add CsvHelper NuGet package (not currently referenced).</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-badge mod">mod</span>
+        <div>
+          <div class="file-path">Infrastructure/DependencyInjection.cs</div>
+          <div class="file-desc">Register IEmployeeImportParser pointing to EmployeeImportParser.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-badge mod">mod</span>
+        <div>
+          <div class="file-path">Api/Controllers/EmployeesController.cs</div>
+          <div class="file-desc">Add two endpoints: POST /api/v1/employees/import/validate and POST /api/v1/employees/import/commit. Both accept multipart/form-data (CSV file + overwriteExisting flag).</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Frontend — Modified files</h3>
+    <div class="file-list">
+      <div class="file-item">
+        <span class="file-badge mod">mod</span>
+        <div>
+          <div class="file-path">web/src/router.tsx</div>
+          <div class="file-desc">Add route /employees/import pointing to ImportEmployeesPage.</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-badge mod">mod</span>
+        <div>
+          <div class="file-path">web/src/pages/employees/EmployeesPage.tsx</div>
+          <div class="file-desc">Add "Import" button next to the existing "Add Employee" button. Links to /employees/import.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Execution order -->
+  <section>
+    <h2>Build Order</h2>
+    <div class="exec-list">
+      <div class="exec-item">
+        <div class="exec-num">1</div>
+        <div>
+          <div class="exec-text"><strong>Add CsvHelper to Infrastructure project</strong></div>
+          <div class="exec-verify">Verify: dotnet build — zero warnings</div>
+        </div>
+      </div>
+      <div class="exec-item">
+        <div class="exec-num">2</div>
+        <div>
+          <div class="exec-text"><strong>Define EmployeeImportRow record and IEmployeeImportParser interface</strong> in Application layer</div>
+          <div class="exec-verify">Verify: builds, no logic yet</div>
+        </div>
+      </div>
+      <div class="exec-item">
+        <div class="exec-num">3</div>
+        <div>
+          <div class="exec-text"><strong>Implement EmployeeImportParser</strong> using CsvHelper — header check, row mapping</div>
+          <div class="exec-verify">Verify: unit test with a known CSV string</div>
+        </div>
+      </div>
+      <div class="exec-item">
+        <div class="exec-num">4</div>
+        <div>
+          <div class="exec-text"><strong>Register IEmployeeImportParser in DI</strong></div>
+          <div class="exec-verify">Verify: app starts</div>
+        </div>
+      </div>
+      <div class="exec-item">
+        <div class="exec-num">5</div>
+        <div>
+          <div class="exec-text"><strong>Write ValidateEmployeeImportCommand + tests</strong></div>
+          <div class="exec-verify">Verify: all test cases green (missing ref, bad PAN, duplicate email, all-clear)</div>
+        </div>
+      </div>
+      <div class="exec-item">
+        <div class="exec-num">6</div>
+        <div>
+          <div class="exec-text"><strong>Write CommitEmployeeImportCommand + tests</strong></div>
+          <div class="exec-verify">Verify: employees inserted in DB, PAN encrypted, single transaction</div>
+        </div>
+      </div>
+      <div class="exec-item">
+        <div class="exec-num">7</div>
+        <div>
+          <div class="exec-text"><strong>Add validate and commit endpoints to EmployeesController</strong></div>
+          <div class="exec-verify">Verify: curl smoke test with a sample CSV</div>
+        </div>
+      </div>
+      <div class="exec-item">
+        <div class="exec-num">8</div>
+        <div>
+          <div class="exec-text"><strong>Create the downloadable template CSV</strong></div>
+          <div class="exec-verify">Verify: file served at /templates/employee-import.csv</div>
+        </div>
+      </div>
+      <div class="exec-item">
+        <div class="exec-num">9</div>
+        <div>
+          <div class="exec-text"><strong>Build ImportEmployeesPage.tsx</strong> — drag-drop, auto-validate, error table, import button</div>
+          <div class="exec-verify">Verify: browser test — upload clean file, upload file with errors, import 5 employees end-to-end</div>
+        </div>
+      </div>
+      <div class="exec-item">
+        <div class="exec-num">10</div>
+        <div>
+          <div class="exec-text"><strong>Wire route and Import button</strong> in router.tsx and EmployeesPage.tsx</div>
+          <div class="exec-verify">Verify: button visible on employees list, navigates to import page</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

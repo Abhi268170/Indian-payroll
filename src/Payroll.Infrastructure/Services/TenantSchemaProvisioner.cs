@@ -14,7 +14,7 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
     // but we assert the format here since this executes raw SQL.
     private static readonly Regex SafeSchemaName = new(@"^tenant_[a-z0-9_]+$", RegexOptions.Compiled);
 
-    public async Task ProvisionAsync(string schemaName, Guid tenantId, CancellationToken cancellationToken = default)
+    public async Task ProvisionAsync(string schemaName, Guid tenantId, string displayName, CancellationToken cancellationToken = default)
     {
         AssertSafeSchemaName(schemaName);
 
@@ -49,6 +49,58 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
         await db.Database.MigrateAsync(cancellationToken);
         await SeedSystemComponentsAsync(db, tenantId, cancellationToken);
         await SeedStatutorySlabsAsync(db, cancellationToken);
+        await SeedOrgDefaultsAsync(db, tenantId, displayName, cancellationToken);
+    }
+
+    // Seeds the OrgProfile + StatutoryOrgConfig rows so a freshly provisioned tenant has the
+    // compliance baseline (EPF on with the ₹15k wage cap, ESI on, Statutory Bonus on, Gratuity
+    // in CTC). Idempotent — checks for existing rows so the backfill path can call this too.
+    public static async Task SeedOrgDefaultsAsync(
+        PayrollDbContext db,
+        Guid tenantId,
+        string displayName,
+        CancellationToken cancellationToken)
+    {
+        // OrgProfile has no TenantId — schema-per-tenant means the schema scopes the row.
+        bool hasOrgProfile = await db.OrgProfiles.IgnoreQueryFilters().AnyAsync(cancellationToken);
+        if (!hasOrgProfile)
+        {
+            var orgProfile = Domain.Entities.OrgProfile.Create(displayName, Guid.Empty);
+            db.OrgProfiles.Add(orgProfile);
+        }
+
+        bool hasStatutoryConfig = await db.StatutoryOrgConfigs.IgnoreQueryFilters()
+            .AnyAsync(s => s.TenantId == tenantId, cancellationToken);
+        if (!hasStatutoryConfig)
+        {
+            var statutory = Domain.Entities.StatutoryOrgConfig.CreateDefault(tenantId, Guid.Empty);
+            // Compliance defaults: EPF on with restricted (₹15k cap) wage, ESI on, Statutory
+            // Bonus on, Gratuity in CTC. CreateDefault() leaves these off — override here.
+            statutory.ConfigureEpf(
+                enabled: true,
+                establishmentCode: null,
+                employeeContributionRate: "RestrictedWage12",
+                employerContributionRate: "RestrictedWage12",
+                includeEmployerInCtc: true,
+                overrideAtEmployeeLevel: false,
+                proRateRestrictedPfWage: false,
+                considerSalaryOnLop: true,
+                updatedBy: Guid.Empty);
+            statutory.ConfigureEsi(
+                enabled: true,
+                establishmentCode: null,
+                notifiedArea: true,
+                updatedBy: Guid.Empty);
+            statutory.ConfigureStatutoryBonus(
+                enabled: true,
+                bonusRate: 8.33m,
+                bonusMode: "Yearly",
+                bonusPayoutMonth: null,
+                updatedBy: Guid.Empty);
+            db.StatutoryOrgConfigs.Add(statutory);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
     }
 
     private static async Task SeedSystemComponentsAsync(

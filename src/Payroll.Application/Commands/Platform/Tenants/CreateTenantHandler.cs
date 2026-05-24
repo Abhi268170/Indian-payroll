@@ -29,7 +29,7 @@ internal sealed class CreateTenantHandler(
 
         try
         {
-            await provisioner.ProvisionAsync(tenant.Schema, tenant.Id, cancellationToken);
+            await provisioner.ProvisionAsync(tenant.Schema, tenant.Id, tenant.DisplayName, cancellationToken);
         }
         catch (Exception ex)
         {

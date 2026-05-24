@@ -322,6 +322,13 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
         return Ok(result);
     }
 
+    [HttpGet("preflight")]
+    public async Task<IActionResult> GetPreflight(CancellationToken ct = default)
+    {
+        var result = await sender.Send(new GetPayrollRunPreflightQuery(), ct);
+        return Ok(result);
+    }
+
     [HttpGet("history")]
     public async Task<IActionResult> GetHistory(
         [FromQuery] int page = 1,

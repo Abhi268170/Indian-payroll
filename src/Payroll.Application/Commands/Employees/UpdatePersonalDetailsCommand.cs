@@ -30,6 +30,11 @@ internal sealed class UpdatePersonalDetailsValidator : AbstractValidator<UpdateP
             .NotEmpty()
             .When(x => x.DateOfBirth is not null)
             .WithMessage("Date of birth cannot be empty if provided.");
+        // FathersName is required because InitiatePayrollRunCommand:194 skips any employee
+        // whose father's name is blank. Tightening here so the gap closes at the API layer.
+        RuleFor(x => x.FathersName)
+            .NotEmpty().WithMessage("Father's name is required.")
+            .MaximumLength(150).WithMessage("Father's name must be 150 characters or fewer.");
         RuleFor(x => x.PAN).Matches(@"^[A-Z]{5}[0-9]{4}[A-Z]$")
             .When(x => !string.IsNullOrEmpty(x.PAN)).WithMessage("PAN must be in format AAAAA9999A.");
         RuleFor(x => x.Aadhaar).Matches(@"^\d{12}$")

@@ -18,12 +18,10 @@ public sealed class StatutoryComponentsController(ISender sender) : ControllerBa
     public async Task<IActionResult> GetConfig(CancellationToken ct)
     {
         StatutoryConfigDto? config = await sender.Send(new GetStatutoryConfigQuery(), ct);
+        // After Phase A every tenant — new and backfilled — has a real StatutoryOrgConfig row.
+        // Returning the old 200 fallback DTO would mask a genuine misconfiguration; surface as 404.
         if (config is null)
-            return Ok(new StatutoryConfigDto(
-                false, null, "ActualPfWage12", "ActualPfWage12",
-                true, false, false, true,
-                false, null, true,
-                false, 8.33m, "Yearly", null));
+            return NotFound(new { error = "Statutory configuration not found for this tenant. Re-run tenant provisioning or contact support." });
         return Ok(config);
     }
 

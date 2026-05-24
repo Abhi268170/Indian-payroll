@@ -21,11 +21,26 @@ const schema = z.object({
 }).superRefine((v, ctx) => {
   const needsBank = v.paymentMode === 'BankTransfer' || v.paymentMode === 'DirectDeposit'
   if (needsBank) {
+    // Mirrors UpdatePaymentInfoCommand.cs:29 — all bank fields are required when paying via bank.
     if (!v.accountNumber) {
       ctx.addIssue({ code: 'custom', path: ['accountNumber'], message: 'Account number required' })
     }
     if (v.accountNumber && v.confirmAccountNumber && v.accountNumber !== v.confirmAccountNumber) {
       ctx.addIssue({ code: 'custom', path: ['confirmAccountNumber'], message: 'Account numbers do not match' })
+    }
+    if (!v.accountHolderName) {
+      ctx.addIssue({ code: 'custom', path: ['accountHolderName'], message: 'Account holder name required' })
+    }
+    if (!v.bankName) {
+      ctx.addIssue({ code: 'custom', path: ['bankName'], message: 'Bank name required' })
+    }
+    if (!v.accountType) {
+      ctx.addIssue({ code: 'custom', path: ['accountType'], message: 'Account type required' })
+    }
+    if (!v.ifscCode) {
+      ctx.addIssue({ code: 'custom', path: ['ifscCode'], message: 'IFSC code required' })
+    } else if (v.ifscCode.length !== 11) {
+      ctx.addIssue({ code: 'custom', path: ['ifscCode'], message: 'IFSC code must be 11 characters' })
     }
   }
 })
