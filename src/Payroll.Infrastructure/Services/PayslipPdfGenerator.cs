@@ -33,6 +33,11 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
                     col.Item().Element(c => ComposeHeader(c, data));
                     col.Item().Height(8);
                     col.Item().Element(c => ComposeEmployeeDetails(c, data));
+                    if (data.IsFinalSettlement)
+                    {
+                        col.Item().Height(8);
+                        col.Item().Element(c => ComposeFnfDetails(c, data));
+                    }
                     col.Item().Height(8);
                     col.Item().Element(c => ComposeEarningsDeductions(c, data));
                     if (data.MonthlyCTC > data.GrossPay)
@@ -61,11 +66,45 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
                 if (data.CompanyAddress is not null)
                     col.Item().Text(data.CompanyAddress).FontColor(Colors.White).FontSize(8);
             });
-            row.ConstantItem(120).AlignRight().Column(col =>
+            row.ConstantItem(160).AlignRight().Column(col =>
             {
-                col.Item().Text("PAYSLIP").FontColor(Colors.White).FontSize(16).Bold();
+                col.Item().Text(data.IsFinalSettlement ? "FINAL SETTLEMENT PAYSLIP" : "PAYSLIP")
+                    .FontColor(Colors.White).FontSize(data.IsFinalSettlement ? 13 : 16).Bold();
                 col.Item().Text(data.PeriodLabel).FontColor(Colors.White).FontSize(9);
             });
+        });
+    }
+
+    private static void ComposeFnfDetails(IContainer container, PayslipData data)
+    {
+        container.Border(1).BorderColor(BorderColor).Table(table =>
+        {
+            table.ColumnsDefinition(cols =>
+            {
+                cols.RelativeColumn(2);
+                cols.RelativeColumn(3);
+                cols.RelativeColumn(2);
+                cols.RelativeColumn(3);
+            });
+
+            table.Cell().ColumnSpan(4).Background(Color.FromHex("#fef3c7")).Padding(5)
+                .Text("Exit Details").Bold().FontSize(9);
+
+            AddDetailRow(table,
+                "Last Working Day", data.LastWorkingDay?.ToString("dd/MM/yyyy") ?? "—",
+                "Reason for Exit", data.ExitReason ?? "—");
+            AddDetailRow(table,
+                "Tenure", data.TenureLabel ?? "—",
+                "Settlement Date", data.PayDay?.ToString("dd/MM/yyyy") ?? "—");
+            if (!string.IsNullOrWhiteSpace(data.ExitNotes))
+            {
+                table.Cell().ColumnSpan(4).BorderBottom(1).BorderColor(BorderColor).Padding(4)
+                    .Text(text =>
+                    {
+                        text.Span("Notes: ").Bold().FontSize(8);
+                        text.Span(data.ExitNotes).FontSize(8);
+                    });
+            }
         });
     }
 

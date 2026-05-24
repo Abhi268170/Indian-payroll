@@ -19,6 +19,7 @@ public sealed class GetPayslipDataHandler(
     IDepartmentRepository departmentRepo,
     IOrgProfileRepository orgProfileRepo,
     ISalaryComponentRepository componentRepo,
+    IEmployeeExitRepository exitRepo,
     IEncryptionService encryption)
     : IRequestHandler<GetPayslipDataQuery, PayslipData>
 {
@@ -73,6 +74,11 @@ public sealed class GetPayslipDataHandler(
                 : !deductionIds.Contains(b.SalaryComponentId.Value)))
             .ToList();
 
+        // FnF context: an exit may exist for this employee. PayslipPdfGenerator
+        // branches on IsFinalSettlement to render the Exit Details block.
+        bool isFnf = run.Type == PayrollRunType.FinalSettlement || run.Type == PayrollRunType.BulkFinalSettlement;
+        var exit = isFnf ? await exitRepo.GetActiveByEmployeeAsync(req.EmployeeId, ct) : null;
+
         string maskedBankAccount = MaskBankAccount(employee.EncryptedBankAccount, encryption);
         string? ifscCode = employee.EncryptedIFSC is not null
             ? encryption.Decrypt(employee.EncryptedIFSC)
@@ -115,7 +121,12 @@ public sealed class GetPayslipDataHandler(
             MaskedBankAccount: maskedBankAccount,
             BankName: employee.BankName,
             IfscCode: ifscCode,
-            Components: components);
+            Components: components,
+            IsFinalSettlement: isFnf,
+            LastWorkingDay: exit?.LastWorkingDay,
+            ExitReason: exit?.Reason.ToString(),
+            TenureLabel: exit is null ? null : employee.TenureAt(exit.LastWorkingDay).ToString(),
+            ExitNotes: exit?.Notes);
     }
 
     private static string MaskBankAccount(string? encryptedBankAccount, IEncryptionService encryption)

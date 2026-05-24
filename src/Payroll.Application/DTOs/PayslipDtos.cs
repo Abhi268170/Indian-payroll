@@ -39,7 +39,13 @@ public sealed record PayslipData(
     string MaskedBankAccount,
     string? BankName,
     string? IfscCode,
-    IReadOnlyList<PayslipComponentDto> Components);
+    IReadOnlyList<PayslipComponentDto> Components,
+    // Final-settlement extras: null/false for regular monthly payslips.
+    bool IsFinalSettlement = false,
+    DateOnly? LastWorkingDay = null,
+    string? ExitReason = null,
+    string? TenureLabel = null,
+    string? ExitNotes = null);
 
 public sealed record PayslipSummaryDto(
     Guid Id,
