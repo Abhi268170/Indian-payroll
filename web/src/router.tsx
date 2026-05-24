@@ -23,6 +23,8 @@ import EmployeeDetailPage from '@/pages/employees/EmployeeDetailPage'
 import ImportEmployeesPage from '@/pages/employees/ImportEmployeesPage'
 import PayRunsPage from '@/pages/payroll/PayRunsPage'
 import PayRunDetailPage from '@/pages/payroll/PayRunDetailPage'
+import ExitInitiationPage from '@/pages/employees/ExitInitiationPage'
+import FnfSettlementPage from '@/pages/payroll/FnfSettlementPage'
 import TenantsPage from '@/pages/platform/TenantsPage'
 import ProvisionOrgPage from '@/pages/platform/ProvisionOrgPage'
 import OrgDetailPage from '@/pages/platform/OrgDetailPage'
@@ -82,8 +84,10 @@ export const router = createBrowserRouter([
       { path: 'employees/new', element: <AddEmployeeWizard /> },
       { path: 'employees/:id/wizard/:step', element: <AddEmployeeWizard /> },
       { path: 'employees/:id', element: <EmployeeDetailPage /> },
+      { path: 'employees/:id/exit/initiate', element: <ExitInitiationPage /> },
       { path: 'pay-runs', element: <PayRunsPage /> },
       { path: 'pay-runs/:id', element: <PayRunDetailPage /> },
+      { path: 'pay-runs/:id/fnf', element: <FnfSettlementPage /> },
       {
         path: 'settings',
         element: <SettingsLayout />,

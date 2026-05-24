@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, AlertCircle } from 'lucide-react'
+import { ArrowLeft, AlertCircle, MoreHorizontal } from 'lucide-react'
 import { api } from '@/lib/api'
 import type { EmployeeDto } from '@/types/api'
 import EmployeeOverviewTab from './tabs/EmployeeOverviewTab'
@@ -52,6 +52,7 @@ export default function EmployeeDetailPage(): React.ReactElement {
     const t = searchParams.get('tab')
     return (t === 'salary' || t === 'tax' || t === 'investments' || t === 'payslips') ? t : 'overview'
   })
+  const [kebabOpen, setKebabOpen] = useState(false)
 
   const { data: employee, isLoading, error, refetch } = useQuery<EmployeeDto>({
     queryKey: ['employee', id],
@@ -118,6 +119,30 @@ export default function EmployeeDetailPage(): React.ReactElement {
               {employee.departmentName && <span>{employee.departmentName}</span>}
             </div>
           </div>
+          {employee.status === 'Active' && (
+            <div className="relative">
+              <button
+                onClick={() => { setKebabOpen(v => !v) }}
+                className="w-8 h-8 rounded hover:bg-gray-100 flex items-center justify-center text-[var(--color-text-secondary)]"
+                aria-label="More actions"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+              {kebabOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => { setKebabOpen(false) }} />
+                  <div className="absolute right-0 top-9 z-20 w-52 bg-white border border-[var(--color-border)] rounded-lg shadow-lg py-1">
+                    <button
+                      onClick={() => { setKebabOpen(false); navigate(`/employees/${id}/exit/initiate`) }}
+                      className="w-full text-left px-4 py-2 text-[13px] text-[var(--color-text-primary)] hover:bg-gray-50"
+                    >
+                      Initiate Exit Process
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
