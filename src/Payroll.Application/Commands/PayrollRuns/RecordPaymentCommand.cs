@@ -32,6 +32,8 @@ public sealed class RecordPaymentHandler(
     IPayrollRunAuditLogRepository auditLogRepo,
     IPayScheduleRepository payScheduleRepo,
     IPayrollJobDispatcher jobDispatcher,
+    IPayrunEmployeeRepository payrunEmpRepo,
+    IEmployeeRepository employeeRepo,
     IUnitOfWork uow)
     : IRequestHandler<RecordPaymentCommand>
 {
@@ -59,6 +61,20 @@ public sealed class RecordPaymentHandler(
         var auditEntry = PayrollRunAuditLog.Create(
             req.RunId, run.TenantId, PayrollRunStatus.Approved, PayrollRunStatus.Paid, req.ActorId, null);
         await auditLogRepo.AddAsync(auditEntry, ct);
+
+        // FnF settlement payment also flips each linked employee to Exited.
+        // Iterates all PayrunEmployees because Bulk runs can carry many exits
+        // on the same pay date — must not hardcode for single-employee.
+        if (run.Type == PayrollRunType.FinalSettlement || run.Type == PayrollRunType.BulkFinalSettlement)
+        {
+            var rows = await payrunEmpRepo.GetByRunIdAsync(req.RunId, ct);
+            foreach (var pe in rows.Where(r => r.EmployeeExitId != null))
+            {
+                var emp = await employeeRepo.GetByIdAsync(pe.EmployeeId, ct);
+                if (emp != null && emp.Status == EmployeeStatus.Active && emp.DateOfLeaving != null)
+                    emp.MarkExited(emp.DateOfLeaving.Value, req.ActorId);
+            }
+        }
 
         await uow.SaveChangesAsync(ct);
 

@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IPayrollCostCalculator, PayrollCostCalculator>();
         services.AddScoped<IPayrollRecomputeService, PayrollRecomputeService>();
+        services.AddScoped<IPayrollFnfOrchestrator, PayrollFnfOrchestrator>();
 
         return services;
     }

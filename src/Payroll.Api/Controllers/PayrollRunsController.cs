@@ -115,6 +115,31 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
         catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
     }
 
+    [HttpPut("{id:guid}/employees/{eid:guid}/fnf-settlement")]
+    public async Task<IActionResult> UpdateFnf(Guid id, Guid eid, [FromBody] UpdateFnfRunRequest req, CancellationToken ct)
+    {
+        try
+        {
+            await sender.Send(new UpdateFnfRunCommand(
+                RunId: id,
+                EmployeeId: eid,
+                LopDays: req.LopDays,
+                Bonus: req.Bonus,
+                Commission: req.Commission,
+                LeaveEncashment: req.LeaveEncashment,
+                Gratuity: req.Gratuity,
+                HasNoticePay: req.HasNoticePay,
+                NoticePayDirection: req.NoticePayDirection,
+                NoticePayAmount: req.NoticePayAmount,
+                PayslipNotes: req.PayslipNotes,
+                Deductions: req.Deductions ?? new List<FnfAdhocDeductionDto>(),
+                ActorId: GetActorId()), ct);
+            return NoContent();
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+    }
+
     [HttpPut("{id:guid}/employees/{eid:guid}/tds-override")]
     public async Task<IActionResult> OverrideTds(Guid id, Guid eid, [FromBody] OverrideTdsRequest req, CancellationToken ct)
     {
@@ -381,3 +406,15 @@ public record OverrideTdsRequest(decimal OverrideAmount, string? Reason);
 public record SkipEmployeeRequest(string Reason);
 public record RejectApprovalRequest(string? Reason);
 public record RecordPaymentRequest(DateOnly PaymentDate, string PaymentMode, string? Reference, bool NotifyEmployees);
+
+public record UpdateFnfRunRequest(
+    int LopDays,
+    decimal Bonus,
+    decimal Commission,
+    decimal LeaveEncashment,
+    decimal Gratuity,
+    bool HasNoticePay,
+    string? NoticePayDirection,
+    decimal NoticePayAmount,
+    string? PayslipNotes,
+    IReadOnlyList<Payroll.Application.Commands.PayrollRuns.FnfAdhocDeductionDto>? Deductions);
