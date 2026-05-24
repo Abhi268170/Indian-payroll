@@ -210,6 +210,28 @@ public sealed class Employee : AuditableEntity
         SetUpdated(updatedBy);
     }
 
+    /// Recomputes the ProfileComplete flag from the persisted fields the engine requires
+    /// to actually process an employee in a payroll run. Mirrors the per-employee skip
+    /// reasons in InitiatePayrollRunCommand.cs:193-195:
+    ///   - DateOfBirth missing
+    ///   - FathersName missing
+    ///   - EncryptedBankAccount missing
+    /// Plus the orthogonal "no active salary structure" skip — that lookup lives on a
+    /// different repository, so the caller passes the result in.
+    /// Idempotent: re-evaluating with the same inputs produces the same flag value, and
+    /// SetUpdated only fires when the flag actually flipped (avoids audit churn).
+    public void RecomputeProfileComplete(bool hasActiveSalaryStructure, Guid updatedBy)
+    {
+        bool computed =
+            DateOfBirth != default
+            && !string.IsNullOrWhiteSpace(FathersName)
+            && !string.IsNullOrWhiteSpace(EncryptedBankAccount)
+            && hasActiveSalaryStructure;
+        if (computed == ProfileComplete) return;
+        ProfileComplete = computed;
+        SetUpdated(updatedBy);
+    }
+
     public void MarkExited(DateOnly lastWorkingDay, Guid updatedBy)
     {
         Status = EmployeeStatus.Exited;

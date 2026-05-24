@@ -41,6 +41,7 @@ internal sealed class UpdatePaymentInfoValidator : AbstractValidator<UpdatePayme
 
 public sealed class UpdatePaymentInfoHandler(
     IEmployeeRepository repo,
+    IEmployeeSalaryStructureRepository salaryStructureRepo,
     IEncryptionService enc,
     IUnitOfWork uow)
     : IRequestHandler<UpdatePaymentInfoCommand>
@@ -62,6 +63,9 @@ public sealed class UpdatePaymentInfoHandler(
             encAcct,
             encIfsc,
             req.ActorId);
+
+        var structure = await salaryStructureRepo.GetActiveAsync(employee.Id, ct);
+        employee.RecomputeProfileComplete(hasActiveSalaryStructure: structure is not null, req.ActorId);
 
         repo.Update(employee);
         await uow.SaveChangesAsync(ct);

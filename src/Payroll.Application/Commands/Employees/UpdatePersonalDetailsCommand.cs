@@ -53,6 +53,7 @@ internal sealed class UpdatePersonalDetailsValidator : AbstractValidator<UpdateP
 
 public sealed class UpdatePersonalDetailsHandler(
     IEmployeeRepository repo,
+    IEmployeeSalaryStructureRepository salaryStructureRepo,
     IEncryptionService enc,
     IUnitOfWork uow)
     : IRequestHandler<UpdatePersonalDetailsCommand>
@@ -86,6 +87,9 @@ public sealed class UpdatePersonalDetailsHandler(
             state,
             req.PinCode,
             req.ActorId);
+
+        var structure = await salaryStructureRepo.GetActiveAsync(employee.Id, ct);
+        employee.RecomputeProfileComplete(hasActiveSalaryStructure: structure is not null, req.ActorId);
 
         repo.Update(employee);
         await uow.SaveChangesAsync(ct);

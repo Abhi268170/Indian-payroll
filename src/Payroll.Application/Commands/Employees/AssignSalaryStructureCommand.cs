@@ -73,6 +73,10 @@ public sealed class AssignSalaryStructureHandler(
             req.EpfEnabled, req.EsiEnabled, req.PtEnabled, req.LwfEnabled,
             employee.UAN, employee.ESICIPNumber, req.ActorId);
 
+        // We just added an active structure in this transaction, so the flag inputs
+        // include it explicitly — no need to round-trip the repo for the lookup.
+        employee.RecomputeProfileComplete(hasActiveSalaryStructure: true, req.ActorId);
+
         employeeRepo.Update(employee);
         await uow.SaveChangesAsync(ct);
     }

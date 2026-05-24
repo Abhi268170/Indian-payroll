@@ -19,7 +19,6 @@ internal sealed class GetOnboardingStatusHandler(
     IDesignationRepository designationRepo,
     ISalaryStructureTemplateRepository templateRepo,
     IEmployeeRepository employeeRepo,
-    IEmployeeSalaryStructureRepository salaryStructureRepo,
     ITenantContext tenantContext)
     : IRequestHandler<GetOnboardingStatusQuery, OnboardingStatusDto>
 {
@@ -54,21 +53,14 @@ internal sealed class GetOnboardingStatusHandler(
         int usableTemplateCount = templates.Count(t => t.Components.Count > 0);
         bool salaryStructureComplete = usableTemplateCount > 0;
 
-        // First-employee check uses concrete field presence (DateOfBirth, FathersName,
-        // EncryptedBankAccount, active salary structure) per the plan §5.4 — does NOT depend
-        // on Employee.ProfileComplete because that flag is not wired in production today.
-        // One ListAsync + one batched lookup for active structures avoids per-employee N+1.
+        // First-employee check now uses Employee.ProfileComplete (Phase D wired up the
+        // RecomputeProfileComplete call sites). The flag is the single source of truth for
+        // "this employee will not be silently skipped by the engine". We still expose the
+        // raw counts in the step details for the wizard UI.
         var employees = await employeeRepo.ListAsync(ct);
         List<EmployeeEntity> activeEmployees = employees.Where(e => e.Status == EmployeeStatus.Active).ToList();
         int activeCount = activeEmployees.Count;
-        List<EmployeeEntity> fieldReady = activeEmployees
-            .Where(e => e.DateOfBirth != default
-                     && !string.IsNullOrWhiteSpace(e.FathersName)
-                     && !string.IsNullOrWhiteSpace(e.EncryptedBankAccount))
-            .ToList();
-        HashSet<Guid> withStructure = await salaryStructureRepo
-            .GetEmployeesWithActiveStructureAsync(fieldReady.Select(e => e.Id), ct);
-        int payrollReadyCount = fieldReady.Count(e => withStructure.Contains(e.Id));
+        int payrollReadyCount = activeEmployees.Count(e => e.ProfileComplete);
         bool firstEmployeeComplete = payrollReadyCount > 0;
 
         bool deductorComplete = org?.DeductorEmployeeId is not null
