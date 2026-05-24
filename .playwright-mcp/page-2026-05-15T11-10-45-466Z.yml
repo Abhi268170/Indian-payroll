@@ -1,0 +1,123 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e5]:
+      - navigation:
+        - generic [ref=e7]:
+          - img "Zoho Payroll" [ref=e8]
+          - generic [ref=e9]: Payroll
+        - generic [ref=e13]:
+          - button "Advanced Search" [ref=e14] [cursor=pointer]:
+            - img [ref=e15]
+          - textbox "Search in Employee" [ref=e19]
+        - generic [ref=e21]:
+          - generic [ref=e24] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e26] [cursor=pointer]
+          - button "lerno" [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]: lerno
+            - img [ref=e32]
+          - button "Refer and Earn" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+          - button "Notifications" [ref=e41] [cursor=pointer]:
+            - generic [ref=e42]:
+              - generic [ref=e43]: "4"
+              - img [ref=e44]
+          - button "Settings" [ref=e47] [cursor=pointer]:
+            - img [ref=e48]
+          - button "A" [ref=e53] [cursor=pointer]:
+            - generic [ref=e54]: A
+          - img [ref=e71] [cursor=pointer]
+    - generic [ref=e74]:
+      - complementary [ref=e75]:
+        - navigation [ref=e76]:
+          - generic [ref=e77]:
+            - list [ref=e78]:
+              - link "Getting Started" [ref=e79] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e3330]:
+                  - generic [ref=e3331]:
+                    - img [ref=e3333]
+                    - text: Getting Started
+                  - img [ref=e3337]
+              - listitem [ref=e90]:
+                - link "Dashboard" [ref=e91] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e3339]
+                  - generic [ref=e95]: Dashboard
+              - listitem [ref=e96]:
+                - link "Employees" [ref=e97] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e3342]
+                  - generic [ref=e100]: Employees
+              - listitem [ref=e101]:
+                - link "Pay Runs" [ref=e102] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e3344]
+                  - generic [ref=e106]: Pay Runs
+              - listitem [ref=e107]:
+                - list [ref=e108]:
+                  - listitem [ref=e109]:
+                    - button "Approvals" [ref=e111] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e112]:
+                        - button "Approvals" [ref=e113]:
+                          - img [ref=e3347]
+                          - img [ref=e3349]
+                          - generic [ref=e119]: Approvals
+                          - img [ref=e120]
+              - listitem [ref=e122]:
+                - list [ref=e123]:
+                  - listitem [ref=e124]:
+                    - button "Taxes & Forms" [ref=e126] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e127]:
+                        - button "Taxes & Forms" [ref=e128]:
+                          - img [ref=e3352]
+                          - img [ref=e3354]
+                          - generic [ref=e136]: Taxes & Forms
+                          - img [ref=e137]
+              - listitem [ref=e139]:
+                - link "Loans" [ref=e140] [cursor=pointer]:
+                  - /url: "#/loans?sort_column=&sort_order="
+                  - img [ref=e3359]
+                  - generic [ref=e144]: Loans
+              - listitem [ref=e145]:
+                - link "Giving" [ref=e146] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e3362]
+                  - generic [ref=e149]: Giving
+              - listitem
+              - listitem [ref=e150]:
+                - link "Documents" [ref=e151] [cursor=pointer]:
+                  - /url: "#/documents/folder?folder_id=3848927000000034270&folder_name=Offer%20Letters"
+                  - img [ref=e3364]
+                  - generic [ref=e154]: Documents
+              - listitem [ref=e155]:
+                - link "Reports" [ref=e156] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e3366]
+                  - generic [ref=e160]: Reports
+              - listitem [ref=e161]:
+                - link "Settings" [ref=e162] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e3369]
+                  - generic [ref=e166]: Settings
+            - link "Contact Support" [ref=e3375] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e3376]
+          - button "Collapse/Expand" [ref=e173] [cursor=pointer]:
+            - img [ref=e3378]
+      - main [ref=e177]:
+        - alert [ref=e3542]:
+          - generic [ref=e3543]: Loading...
+  - generic [ref=e201] [cursor=pointer]:
+    - generic [ref=e202]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e203]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e205]: Don't show again
+  - status [ref=e206]: Loans page loaded.
+  - text:       Chats  Contacts   

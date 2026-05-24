@@ -1,0 +1,251 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e5]:
+      - navigation:
+        - generic [ref=e7]:
+          - img "Zoho Payroll" [ref=e8]
+          - generic [ref=e9]: Payroll
+        - generic [ref=e13]:
+          - button "Advanced Search" [ref=e14] [cursor=pointer]:
+            - img [ref=e15]
+          - textbox "Search in Employee" [ref=e19]
+        - generic [ref=e21]:
+          - generic [ref=e24] [cursor=pointer]: Your trial expires in 12 day(s).
+          - button "Upgrade" [ref=e26] [cursor=pointer]
+          - button "lerno" [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]: lerno
+            - img [ref=e32]
+          - button "Refer and Earn" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+          - button "Notifications" [ref=e41] [cursor=pointer]:
+            - generic [ref=e42]:
+              - generic [ref=e43]: "5"
+              - img [ref=e44]
+          - button "Settings" [ref=e47] [cursor=pointer]:
+            - img [ref=e48]
+          - button "A" [ref=e53] [cursor=pointer]:
+            - generic [ref=e54]: A
+          - img [ref=e71] [cursor=pointer]
+    - generic [ref=e74]:
+      - complementary [ref=e75]:
+        - navigation [ref=e76]:
+          - generic [ref=e77]:
+            - list [ref=e78]:
+              - listitem [ref=e79]:
+                - link "Dashboard" [ref=e80] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e81]
+                  - generic [ref=e84]: Dashboard
+              - listitem [ref=e85]:
+                - link "Employees" [ref=e86] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e87]
+                  - generic [ref=e89]: Employees
+              - listitem [ref=e90]:
+                - link "Pay Runs" [ref=e91] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e92]
+                  - generic [ref=e95]: Pay Runs
+              - listitem [ref=e96]:
+                - list [ref=e97]:
+                  - listitem [ref=e98]:
+                    - button "Approvals" [ref=e100] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e101]:
+                        - button "Approvals" [ref=e102]:
+                          - img [ref=e103]
+                          - img [ref=e105]
+                          - generic [ref=e108]: Approvals
+                          - img [ref=e109]
+              - listitem [ref=e111]:
+                - list [ref=e112]:
+                  - listitem [ref=e113]:
+                    - button "Taxes & Forms" [ref=e115] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e116]:
+                        - button "Taxes & Forms" [ref=e117]:
+                          - img [ref=e118]
+                          - img [ref=e120]
+                          - generic [ref=e125]: Taxes & Forms
+                          - img [ref=e126]
+              - listitem [ref=e128]:
+                - link "Loans" [ref=e129] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e130]
+                  - generic [ref=e133]: Loans
+              - listitem [ref=e134]:
+                - link "Giving" [ref=e135] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e136]
+                  - generic [ref=e138]: Giving
+              - listitem
+              - listitem [ref=e139]:
+                - link "Documents" [ref=e140] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e141]
+                  - generic [ref=e143]: Documents
+              - listitem [ref=e144]:
+                - link "Reports" [ref=e145] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e146]
+                  - generic [ref=e149]: Reports
+              - listitem [ref=e150]:
+                - link "Settings" [ref=e151] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e152]
+                  - generic [ref=e155]: Settings
+            - link "Contact Support" [ref=e159] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e160]
+          - button "Collapse/Expand" [ref=e162] [cursor=pointer]:
+            - img [ref=e163]
+      - main [ref=e166]:
+        - generic [ref=e1851]:
+          - heading "Arjun's IT Declaration" [level=3] [ref=e1853]
+          - generic [ref=e1855]:
+            - generic [ref=e1856]:
+              - img [ref=e1858]
+              - generic [ref=e1860]: Enter your planned investment declarations here and choose the desired regime in the following page.
+            - table [ref=e1861]:
+              - rowgroup [ref=e1862]:
+                - row "Particulars Declared amount" [ref=e1863]:
+                  - columnheader "Particulars" [ref=e1864]
+                  - columnheader "Declared amount" [ref=e1865]
+              - rowgroup [ref=e1866]:
+                - row [ref=e1867]:
+                  - cell [ref=e1868]
+                - row "No Is the employee staying in a rented house?" [ref=e1869]:
+                  - cell "No Is the employee staying in a rented house?" [ref=e1870]:
+                    - generic [ref=e1871]:
+                      - generic [ref=e1872]:
+                        - button [ref=e1873] [cursor=pointer]
+                        - text: "No"
+                      - generic [ref=e1875]: Is the employee staying in a rented house?
+                - row [ref=e1876]:
+                  - cell [ref=e1877]
+                - row "No Is the employee repaying home loan for a self occupied house property?" [ref=e1878]:
+                  - cell "No Is the employee repaying home loan for a self occupied house property?" [ref=e1879]:
+                    - generic [ref=e1880]:
+                      - generic [ref=e1881]:
+                        - button [ref=e1882] [cursor=pointer]
+                        - text: "No"
+                      - generic [ref=e1884]: Is the employee repaying home loan for a self occupied house property?
+                - row [ref=e1885]:
+                  - cell [ref=e1886]
+                - row "No Is the employee receiving rental income from let out property?" [ref=e1887]:
+                  - cell "No Is the employee receiving rental income from let out property?" [ref=e1888]:
+                    - generic [ref=e1889]:
+                      - generic [ref=e1890]:
+                        - button [ref=e1891] [cursor=pointer]
+                        - text: "No"
+                      - generic [ref=e1893]: Is the employee receiving rental income from let out property?
+                - row [ref=e1894]:
+                  - cell [ref=e1895]
+                - row "Other Sources of Income" [ref=e1896]:
+                  - cell "Other Sources of Income" [ref=e1897]:
+                    - list [ref=e1898]:
+                      - listitem [ref=e1899]:
+                        - heading "Other Sources of Income" [level=3] [ref=e1900]:
+                          - button "Other Sources of Income" [ref=e1901] [cursor=pointer]:
+                            - generic [ref=e1903]:
+                              - generic [ref=e1904]:
+                                - img [ref=e1906]
+                                - generic [ref=e1908]: Other Sources of Income
+                              - img [ref=e1910]
+                - row [ref=e1912]:
+                  - cell [ref=e1913]
+                - 'row "Section 123 Investments (Earlier: 80C Investments) Note: This section contains the list of investments including LIC schemes, mutual funds and PPF. The maximum limit for this section is ₹1,50,000.00 ₹ Add an Investment" [ref=e1914]':
+                  - 'cell "Section 123 Investments (Earlier: 80C Investments) Note: This section contains the list of investments including LIC schemes, mutual funds and PPF. The maximum limit for this section is ₹1,50,000.00 ₹ Add an Investment" [ref=e1915]':
+                    - generic [ref=e1917]:
+                      - img [ref=e1919]
+                      - generic [ref=e1922]:
+                        - text: Section 123 Investments
+                        - generic [ref=e1923]: "(Earlier: 80C Investments)"
+                    - generic [ref=e1924]:
+                      - generic [ref=e1925]:
+                        - paragraph [ref=e1926]: "Note: This section contains the list of investments including LIC schemes, mutual funds and PPF. The maximum limit for this section is ₹1,50,000.00"
+                        - table [ref=e1927]:
+                          - rowgroup [ref=e1928]:
+                            - row "₹" [ref=e1929]:
+                              - cell [ref=e1930]:
+                                - generic [ref=e1932]:
+                                  - combobox [ref=e1934]:
+                                    - generic [ref=e1935] [cursor=pointer]:
+                                      - generic [ref=e1936]: Select an Investment
+                                      - img [ref=e1939]
+                                  - status [ref=e1941]
+                              - cell "₹" [ref=e1942]:
+                                - generic [ref=e1943]:
+                                  - generic [ref=e1945]: ₹
+                                  - spinbutton [ref=e1946]: "0"
+                      - button "Add an Investment" [ref=e1948] [cursor=pointer]:
+                        - img [ref=e1949]
+                        - text: Add an Investment
+                - row [ref=e1951]:
+                  - cell [ref=e1952]
+                - 'row "Section 126 Exemptions (Earlier: 80D Exemptions) Note: This section contains Mediclaim policies for yourself, your children, spouse and parents. The maximum limit for this section is ₹1,00,000.00 ₹ Add an Investment" [ref=e1953]':
+                  - 'cell "Section 126 Exemptions (Earlier: 80D Exemptions) Note: This section contains Mediclaim policies for yourself, your children, spouse and parents. The maximum limit for this section is ₹1,00,000.00 ₹ Add an Investment" [ref=e1954]':
+                    - generic [ref=e1956]:
+                      - img [ref=e1958]
+                      - generic [ref=e1961]:
+                        - text: Section 126 Exemptions
+                        - generic [ref=e1962]: "(Earlier: 80D Exemptions)"
+                    - generic [ref=e1963]:
+                      - generic [ref=e1964]:
+                        - paragraph [ref=e1965]: "Note: This section contains Mediclaim policies for yourself, your children, spouse and parents. The maximum limit for this section is ₹1,00,000.00"
+                        - table [ref=e1966]:
+                          - rowgroup [ref=e1967]:
+                            - row "₹" [ref=e1968]:
+                              - cell [ref=e1969]:
+                                - generic [ref=e1971]:
+                                  - combobox [ref=e1973]:
+                                    - generic [ref=e1974] [cursor=pointer]:
+                                      - generic [ref=e1975]: Select an Investment
+                                      - img [ref=e1978]
+                                  - status [ref=e1980]
+                              - cell "₹" [ref=e1981]:
+                                - generic [ref=e1982]:
+                                  - generic [ref=e1984]: ₹
+                                  - spinbutton [ref=e1985]: "0"
+                      - button "Add an Investment" [ref=e1987] [cursor=pointer]:
+                        - img [ref=e1988]
+                        - text: Add an Investment
+                - row [ref=e1990]:
+                  - cell [ref=e1991]
+                - 'row "Other Investments & Exemptions Note: Declare other investments & exemptions such as Voluntary NPS, Interest Paid on Education Loan and Medical Expenditures under this section ₹ Add an Investment" [ref=e1992]':
+                  - 'cell "Other Investments & Exemptions Note: Declare other investments & exemptions such as Voluntary NPS, Interest Paid on Education Loan and Medical Expenditures under this section ₹ Add an Investment" [ref=e1993]':
+                    - generic [ref=e1995]:
+                      - img [ref=e1997]
+                      - generic [ref=e2000]: Other Investments & Exemptions
+                    - generic [ref=e2001]:
+                      - generic [ref=e2002]:
+                        - paragraph [ref=e2003]: "Note: Declare other investments & exemptions such as Voluntary NPS, Interest Paid on Education Loan and Medical Expenditures under this section"
+                        - table [ref=e2004]:
+                          - rowgroup [ref=e2005]:
+                            - row "₹" [ref=e2006]:
+                              - cell [ref=e2007]:
+                                - generic [ref=e2009]:
+                                  - combobox [ref=e2011]:
+                                    - generic [ref=e2012] [cursor=pointer]:
+                                      - generic [ref=e2013]: Select an Investment
+                                      - img [ref=e2016]
+                                  - status [ref=e2018]
+                              - cell "₹" [ref=e2020]:
+                                - generic [ref=e2021]:
+                                  - generic [ref=e2023]: ₹
+                                  - spinbutton [ref=e2024]: "0"
+                      - button "Add an Investment" [ref=e2026] [cursor=pointer]:
+                        - img [ref=e2027]
+                        - text: Add an Investment
+            - list
+            - generic [ref=e2029]:
+              - button "Submit and Compare" [ref=e2030] [cursor=pointer]
+              - link "Cancel" [ref=e2031] [cursor=pointer]:
+                - /url: "#/people/employees/3848927000000032948/investments-and-proofs"
+    - dialog [ref=e2032]
+  - status [ref=e301]: Employees | Investment Declaration page loaded.
+  - text:       Chats  Contacts   

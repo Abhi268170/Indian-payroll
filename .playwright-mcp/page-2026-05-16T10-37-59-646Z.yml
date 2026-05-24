@@ -1,0 +1,181 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e533]:
+      - generic [ref=e535]:
+        - generic [ref=e536]:
+          - button "All Settings" [ref=e537] [cursor=pointer]:
+            - img [ref=e538]
+          - button [ref=e543] [cursor=pointer]:
+            - img [ref=e544]
+          - generic [ref=e546]:
+            - generic [ref=e547]: All Settings
+            - generic [ref=e548]: lerno
+        - generic [ref=e550]:
+          - combobox "Search" [ref=e554]
+          - img [ref=e555]
+        - button "Close Settings" [ref=e559] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e560]
+      - generic [ref=e562]:
+        - navigation [ref=e563]:
+          - generic [ref=e565]:
+            - group [ref=e566]:
+              - heading "Organisation Settings" [level=2] [ref=e567]
+              - generic [ref=e568]:
+                - region "Organisation" [ref=e570]:
+                  - generic [ref=e571]:
+                    - heading "Organisation" [level=3] [ref=e572] [cursor=pointer]:
+                      - button "Organisation" [ref=e573]:
+                        - img [ref=e574]
+                        - generic [ref=e576]: Organisation
+                    - text:      
+                - generic [ref=e590]:
+                  - region "Users and Roles" [ref=e591]:
+                    - generic [ref=e592]:
+                      - heading "Users and Roles" [level=3] [ref=e593] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e594]:
+                          - img [ref=e595]
+                          - generic [ref=e597]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e603]:
+                    - generic [ref=e604]:
+                      - heading "Taxes" [level=3] [ref=e605] [cursor=pointer]:
+                        - button "Taxes" [ref=e606]:
+                          - img [ref=e607]
+                          - generic [ref=e609]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e614]:
+                  - generic [ref=e615]:
+                    - heading "Setup & Configurations" [level=3] [ref=e616] [cursor=pointer]:
+                      - button "Setup & Configurations" [expanded] [ref=e617]:
+                        - img [ref=e618]
+                        - generic [ref=e620]: Setup & Configurations
+                    - region "Setup & Configurations" [ref=e774]:
+                      - generic [ref=e621]:
+                        - link "Pay Schedule" [ref=e622] [cursor=pointer]:
+                          - /url: "#/settings/pay-schedules"
+                          - generic [ref=e623]: Pay Schedule
+                          - text: 
+                        - link "Statutory Components" [ref=e624] [cursor=pointer]:
+                          - /url: "#/settings/statutory-details/list"
+                          - generic [ref=e625]: Statutory Components
+                          - text: 
+                        - link "Salary Components" [ref=e626] [cursor=pointer]:
+                          - /url: "#/settings/salary-components/earnings"
+                          - generic [ref=e627]: Salary Components
+                          - text: 
+                        - link "Employee Portal" [ref=e628] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences"
+                          - generic [ref=e629]: Employee Portal
+                          - text: 
+                        - link "Claims and Declarations" [ref=e630] [cursor=pointer]:
+                          - /url: "#/settings/preferences/fbp"
+                          - generic [ref=e631]: Claims and Declarations
+                          - text: 
+                - region "Customisations" [ref=e633]:
+                  - generic [ref=e634]:
+                    - heading "Customisations" [level=3] [ref=e635] [cursor=pointer]:
+                      - button "Customisations" [ref=e636]:
+                        - img [ref=e637]
+                        - generic [ref=e639]: Customisations
+                    - text:     
+                - region "Automations" [ref=e652]:
+                  - generic [ref=e653]:
+                    - heading "Automations" [level=3] [ref=e654] [cursor=pointer]:
+                      - button "Automations" [ref=e655]:
+                        - img [ref=e656]
+                        - generic [ref=e658]: Automations
+                    - text:    
+            - group [ref=e668]:
+              - heading "Module Settings" [level=2] [ref=e669]
+              - generic [ref=e670]:
+                - region "General" [ref=e672]:
+                  - generic [ref=e673]:
+                    - heading "General" [level=3] [ref=e674] [cursor=pointer]:
+                      - button "General" [ref=e675]:
+                        - img [ref=e676]
+                        - generic [ref=e678]: General
+                    - text:     
+                - region "Payments" [ref=e691]:
+                  - generic [ref=e692]:
+                    - heading "Payments" [level=3] [ref=e693] [cursor=pointer]:
+                      - button "Payments" [ref=e694]:
+                        - img [ref=e695]
+                        - generic [ref=e697]: Payments
+                    - text: 
+            - group [ref=e701]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e702]
+              - generic [ref=e703]:
+                - region "Integrations" [ref=e705]:
+                  - generic [ref=e706]:
+                    - heading "Integrations" [level=3] [ref=e707] [cursor=pointer]:
+                      - button "Integrations" [ref=e708]:
+                        - img [ref=e709]
+                        - generic [ref=e711]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e716]:
+                  - generic [ref=e717]:
+                    - heading "Developer Data" [level=3] [ref=e718] [cursor=pointer]:
+                      - button "Developer Data" [ref=e719]:
+                        - img [ref=e720]
+                        - generic [ref=e722]: Developer Data
+                    - text:   
+        - main [ref=e1106]:
+          - generic [ref=e1107]:
+            - heading "Statutory Components" [level=3] [ref=e1108]
+            - button "Instant Helper" [ref=e1109] [cursor=pointer]:
+              - img [ref=e1110]
+            - navigation [ref=e1114]:
+              - list [ref=e1115]:
+                - listitem [ref=e1116]:
+                  - link "EPF" [ref=e1117] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list"
+                - listitem [ref=e1118]:
+                  - link "ESI" [ref=e1119] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/esi"
+                - listitem [ref=e1120]:
+                  - link "Professional Tax" [ref=e1121] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/pt"
+                - listitem [ref=e1122]:
+                  - link "Labour Welfare Fund" [ref=e1123] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/lwf"
+                - listitem [ref=e1124]:
+                  - link "Statutory Bonus" [ref=e1125] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/statutory-bonus"
+          - generic [ref=e1223]:
+            - generic [ref=e1225]:
+              - generic [ref=e1226]: Labour Welfare Fund
+              - generic [ref=e1227]: Labour Welfare Fund act ensures social security and improves working conditions for employees.
+            - generic [ref=e1229]:
+              - generic [ref=e1230]: Kerala
+              - generic [ref=e1231]:
+                - generic [ref=e1232]:
+                  - generic [ref=e1233]: Employees' Contribution
+                  - generic [ref=e1234]: ₹ 50.00
+                - generic [ref=e1235]:
+                  - generic [ref=e1236]: Employer's Contribution
+                  - generic [ref=e1237]: ₹ 50.00
+                - generic [ref=e1238]:
+                  - generic [ref=e1239]: Deduction Cycle
+                  - generic [ref=e1240]: Monthly
+                - generic [ref=e1241]:
+                  - generic [ref=e1242]: Status
+                  - generic [ref=e1243]:
+                    - text: Disabled
+                    - button "(Enable)" [ref=e1244] [cursor=pointer]
+    - generic [ref=e1246]:
+      - dialog:
+        - generic [ref=e1249]:
+          - img [ref=e1251]
+          - generic [ref=e1253]:
+            - paragraph [ref=e1254]: You are about to enable LWF for your work location(s) at Kerala. Are you sure you want to proceed?
+            - generic [ref=e1255]:
+              - button "Yes, Proceed" [active] [ref=e1256] [cursor=pointer]
+              - button "Cancel" [ref=e1257] [cursor=pointer]
+  - status [ref=e531]: Settings LWF page loaded.
+  - text:       Chats  Contacts   

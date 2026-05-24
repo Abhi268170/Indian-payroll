@@ -1,0 +1,157 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e7569]:
+      - generic [ref=e7571]:
+        - generic [ref=e7572]:
+          - button "All Settings" [ref=e7573] [cursor=pointer]:
+            - img [ref=e7574]
+          - button [ref=e7579] [cursor=pointer]:
+            - img [ref=e7580]
+          - generic [ref=e7582]:
+            - generic [ref=e7583]: All Settings
+            - generic [ref=e7584]: lerno
+        - generic [ref=e7586]:
+          - combobox "Search" [expanded] [ref=e7590]
+          - img [ref=e7591]
+        - button "Close Settings" [ref=e7595] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e7596]
+      - generic [ref=e7598]:
+        - navigation [ref=e7599]:
+          - generic [ref=e7601]:
+            - group [ref=e7602]:
+              - heading "Organisation Settings" [level=2] [ref=e7603]
+              - generic [ref=e7604]:
+                - region "Organisation" [ref=e7606]:
+                  - generic [ref=e7607]:
+                    - heading "Organisation" [level=3] [ref=e7608] [cursor=pointer]:
+                      - button "Organisation" [ref=e7609]:
+                        - img [ref=e7610]
+                        - generic [ref=e7612]: Organisation
+                    - text:      
+                - generic [ref=e7626]:
+                  - region "Users and Roles" [ref=e7627]:
+                    - generic [ref=e7628]:
+                      - heading "Users and Roles" [level=3] [ref=e7629] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e7630]:
+                          - img [ref=e7631]
+                          - generic [ref=e7633]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e7639]:
+                    - generic [ref=e7640]:
+                      - heading "Taxes" [level=3] [ref=e7641] [cursor=pointer]:
+                        - button "Taxes" [ref=e7642]:
+                          - img [ref=e7643]
+                          - generic [ref=e7645]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e7650]:
+                  - generic [ref=e7651]:
+                    - heading "Setup & Configurations" [level=3] [ref=e7652] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e7653]:
+                        - img [ref=e7654]
+                        - generic [ref=e7656]: Setup & Configurations
+                    - text:     
+                - region "Customisations" [ref=e7669]:
+                  - generic [ref=e7670]:
+                    - heading "Customisations" [level=3] [ref=e7671] [cursor=pointer]:
+                      - button "Customisations" [ref=e7672]:
+                        - img [ref=e8098]
+                        - generic [ref=e7675]: Customisations
+                    - text:     
+                - region "Automations" [ref=e7688]:
+                  - generic [ref=e7689]:
+                    - heading "Automations" [level=3] [ref=e7690] [cursor=pointer]:
+                      - button "Automations" [ref=e7691]:
+                        - img [ref=e8399]
+                        - generic [ref=e7694]: Automations
+                    - text:    
+            - group [ref=e7704]:
+              - heading "Module Settings" [level=2] [ref=e7705]
+              - generic [ref=e7706]:
+                - region "General" [ref=e7708]:
+                  - generic [ref=e7709]:
+                    - heading "General" [level=3] [ref=e7710] [cursor=pointer]:
+                      - button "General" [ref=e7711]:
+                        - img [ref=e8885]
+                        - generic [ref=e7714]: General
+                    - text:     
+                - region "Payments" [ref=e7727]:
+                  - generic [ref=e7728]:
+                    - heading "Payments" [level=3] [ref=e7729] [cursor=pointer]:
+                      - button "Payments" [ref=e7730]:
+                        - img [ref=e8976]
+                        - generic [ref=e7733]: Payments
+                    - text: 
+            - group [ref=e7737]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e7738]
+              - generic [ref=e7739]:
+                - region "Integrations" [ref=e7741]:
+                  - generic [ref=e7742]:
+                    - heading "Integrations" [level=3] [ref=e7743] [cursor=pointer]:
+                      - button "Integrations" [ref=e7744]:
+                        - img [ref=e9060]
+                        - generic [ref=e7747]: Integrations
+                    - region "Integrations" [ref=e9006]:
+                      - link "Zoho Apps" [ref=e7749] [cursor=pointer]:
+                        - /url: "#/settings/integrations/zoho"
+                        - generic [ref=e7750]: Zoho Apps
+                        - text: 
+                - region "Developer Data" [ref=e7752]:
+                  - generic [ref=e7753]:
+                    - heading "Developer Data" [level=3] [ref=e7754] [cursor=pointer]:
+                      - button "Developer Data" [expanded] [ref=e7755]:
+                        - img [ref=e9062]
+                        - generic [ref=e7758]: Developer Data
+                    - region "Developer Data":
+                      - generic [ref=e7759]:
+                        - link "Connections" [ref=e7760] [cursor=pointer]:
+                          - /url: "#/settings/developer-space/connections"
+                          - generic [ref=e7761]: Connections
+                          - text: 
+                        - link "Incoming Webhooks" [ref=e7762] [cursor=pointer]:
+                          - /url: "#/settings/developer-space/incomingwebhooks"
+                          - generic [ref=e7763]: Incoming Webhooks
+                          - text: 
+                        - link "Data Backup" [ref=e7764] [cursor=pointer]:
+                          - /url: "#/settings/data-backup"
+                          - generic [ref=e7765]: Data Backup
+                          - text: 
+        - main [ref=e9064]:
+          - generic [ref=e9066]:
+            - heading "Connections" [level=3] [ref=e9067]
+            - button "New Connection" [ref=e9069] [cursor=pointer]:
+              - img [ref=e9070]
+              - text: New Connection
+          - generic [ref=e9072]:
+            - generic [ref=e9074]:
+              - generic [ref=e9075]:
+                - img [ref=e9076]
+                - text: Page Tips
+              - heading "Connect with any application" [level=4] [ref=e9079]
+              - generic [ref=e9080]: Use connections to connect Zoho Payroll with other applications, even ones without a direct integration. Connections can be used to invoke REST APIs of any application and get access to authenticated data from your custom buttons, schedules, and custom functions.
+            - separator [ref=e9081]
+            - table [ref=e9082]:
+              - rowgroup [ref=e9083]:
+                - row "Connections Description" [ref=e9084]:
+                  - columnheader "Connections" [ref=e9085]
+                  - columnheader "Description" [ref=e9086]
+              - rowgroup [ref=e9087]:
+                - row "My Connections Connections that you've created will be listed here." [ref=e9088]:
+                  - cell "My Connections" [ref=e9089] [cursor=pointer]
+                  - cell "Connections that you've created will be listed here." [ref=e9090]
+                - row "Internal Connections Connections that are created with other Zoho products by built-in integration tasks in a deluge script, will be listed here." [ref=e9091]:
+                  - cell "Internal Connections" [ref=e9092] [cursor=pointer]
+                  - cell "Connections that are created with other Zoho products by built-in integration tasks in a deluge script, will be listed here." [ref=e9093]
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Settings Developer Data Connections page loaded.
+  - text:       Chats  Contacts   

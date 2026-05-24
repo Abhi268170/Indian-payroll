@@ -1,0 +1,190 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e533]:
+      - generic [ref=e535]:
+        - generic [ref=e536]:
+          - button "All Settings" [ref=e537] [cursor=pointer]:
+            - img [ref=e538]
+          - button [ref=e543] [cursor=pointer]:
+            - img [ref=e544]
+          - generic [ref=e546]:
+            - generic [ref=e547]: All Settings
+            - generic [ref=e548]: lerno
+        - generic [ref=e550]:
+          - combobox "Search" [ref=e554]
+          - img [ref=e555]
+        - button "Close Settings" [ref=e559] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e560]
+      - generic [ref=e562]:
+        - navigation [ref=e563]:
+          - generic [ref=e565]:
+            - group [ref=e566]:
+              - heading "Organisation Settings" [level=2] [ref=e567]
+              - generic [ref=e568]:
+                - region "Organisation" [ref=e570]:
+                  - generic [ref=e571]:
+                    - heading "Organisation" [level=3] [ref=e572] [cursor=pointer]:
+                      - button "Organisation" [ref=e573]:
+                        - img [ref=e574]
+                        - generic [ref=e576]: Organisation
+                    - text:      
+                - generic [ref=e590]:
+                  - region "Users and Roles" [ref=e591]:
+                    - generic [ref=e592]:
+                      - heading "Users and Roles" [level=3] [ref=e593] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e594]:
+                          - img [ref=e595]
+                          - generic [ref=e597]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e603]:
+                    - generic [ref=e604]:
+                      - heading "Taxes" [level=3] [ref=e605] [cursor=pointer]:
+                        - button "Taxes" [ref=e606]:
+                          - img [ref=e607]
+                          - generic [ref=e609]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e614]:
+                  - generic [ref=e615]:
+                    - heading "Setup & Configurations" [level=3] [ref=e616] [cursor=pointer]:
+                      - button "Setup & Configurations" [expanded] [ref=e617]:
+                        - img [ref=e618]
+                        - generic [ref=e620]: Setup & Configurations
+                    - region "Setup & Configurations" [ref=e774]:
+                      - generic [ref=e621]:
+                        - link "Pay Schedule" [ref=e622] [cursor=pointer]:
+                          - /url: "#/settings/pay-schedules"
+                          - generic [ref=e623]: Pay Schedule
+                          - text: 
+                        - link "Statutory Components" [ref=e624] [cursor=pointer]:
+                          - /url: "#/settings/statutory-details/list"
+                          - generic [ref=e625]: Statutory Components
+                          - text: 
+                        - link "Salary Components" [ref=e626] [cursor=pointer]:
+                          - /url: "#/settings/salary-components/earnings"
+                          - generic [ref=e627]: Salary Components
+                          - text: 
+                        - link "Employee Portal" [ref=e628] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences"
+                          - generic [ref=e629]: Employee Portal
+                          - text: 
+                        - link "Claims and Declarations" [ref=e630] [cursor=pointer]:
+                          - /url: "#/settings/preferences/fbp"
+                          - generic [ref=e631]: Claims and Declarations
+                          - text: 
+                - region "Customisations" [ref=e633]:
+                  - generic [ref=e634]:
+                    - heading "Customisations" [level=3] [ref=e635] [cursor=pointer]:
+                      - button "Customisations" [ref=e636]:
+                        - img [ref=e637]
+                        - generic [ref=e639]: Customisations
+                    - text:     
+                - region "Automations" [ref=e652]:
+                  - generic [ref=e653]:
+                    - heading "Automations" [level=3] [ref=e654] [cursor=pointer]:
+                      - button "Automations" [ref=e655]:
+                        - img [ref=e656]
+                        - generic [ref=e658]: Automations
+                    - text:    
+            - group [ref=e668]:
+              - heading "Module Settings" [level=2] [ref=e669]
+              - generic [ref=e670]:
+                - region "General" [ref=e672]:
+                  - generic [ref=e673]:
+                    - heading "General" [level=3] [ref=e674] [cursor=pointer]:
+                      - button "General" [ref=e675]:
+                        - img [ref=e676]
+                        - generic [ref=e678]: General
+                    - text:     
+                - region "Payments" [ref=e691]:
+                  - generic [ref=e692]:
+                    - heading "Payments" [level=3] [ref=e693] [cursor=pointer]:
+                      - button "Payments" [ref=e694]:
+                        - img [ref=e695]
+                        - generic [ref=e697]: Payments
+                    - text: 
+            - group [ref=e701]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e702]
+              - generic [ref=e703]:
+                - region "Integrations" [ref=e705]:
+                  - generic [ref=e706]:
+                    - heading "Integrations" [level=3] [ref=e707] [cursor=pointer]:
+                      - button "Integrations" [ref=e708]:
+                        - img [ref=e709]
+                        - generic [ref=e711]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e716]:
+                  - generic [ref=e717]:
+                    - heading "Developer Data" [level=3] [ref=e718] [cursor=pointer]:
+                      - button "Developer Data" [ref=e719]:
+                        - img [ref=e720]
+                        - generic [ref=e722]: Developer Data
+                    - text:   
+        - main [ref=e1284]:
+          - generic [ref=e2182]:
+            - generic [ref=e2183]:
+              - heading "Salary Components" [level=3] [ref=e2184]
+              - button "Add Component" [ref=e2187] [cursor=pointer]
+            - button "Instant Helper" [ref=e2188] [cursor=pointer]:
+              - img [ref=e2189]
+            - navigation [ref=e2192]:
+              - list [ref=e2193]:
+                - listitem [ref=e2194]:
+                  - link "Earnings" [ref=e2195] [cursor=pointer]:
+                    - /url: "#/settings/salary-components/earnings"
+                - listitem [ref=e2196]:
+                  - link "Deductions" [ref=e2197] [cursor=pointer]:
+                    - /url: "#/settings/salary-components/deductions"
+                - listitem [ref=e2198]:
+                  - link "Benefits" [ref=e2199] [cursor=pointer]:
+                    - /url: "#/settings/salary-components/benefits"
+                - listitem [ref=e2200]:
+                  - link "Reimbursements" [ref=e2201] [cursor=pointer]:
+                    - /url: "#/settings/salary-components/reimbursements"
+          - table [ref=e2203]:
+            - rowgroup [ref=e2204]:
+              - row "Name Deduction Type Deduction Frequency Status More Actions" [ref=e2205]:
+                - columnheader "Name" [ref=e2206]
+                - columnheader "Deduction Type" [ref=e2207]
+                - columnheader "Deduction Frequency" [ref=e2208]
+                - columnheader "Status" [ref=e2209]
+                - columnheader "More Actions" [ref=e2210]:
+                  - generic [ref=e2211]: More Actions
+            - rowgroup [ref=e2212]:
+              - row "Meal Card Other Deductions Recurring Active Show dropdown menu" [ref=e2213]:
+                - cell "Meal Card" [ref=e2214]:
+                  - link "Meal Card" [ref=e2215] [cursor=pointer]:
+                    - /url: "#/settings/salary-components/deductions/3848927000000034358"
+                - cell "Other Deductions" [ref=e2216]
+                - cell "Recurring" [ref=e2217]
+                - cell "Active" [ref=e2218]
+                - cell "Show dropdown menu" [ref=e2219]:
+                  - button "Show dropdown menu" [ref=e2221] [cursor=pointer]:
+                    - img [ref=e2222]
+              - row "Withheld Salary Withheld Salary One Time Active Show dropdown menu" [ref=e2225]:
+                - cell "Withheld Salary" [ref=e2226]:
+                  - link "Withheld Salary" [ref=e2227] [cursor=pointer]:
+                    - /url: "#/settings/salary-components/deductions/3848927000000032500"
+                - cell "Withheld Salary" [ref=e2228]
+                - cell "One Time" [ref=e2229]
+                - cell "Active" [ref=e2230]
+                - cell "Show dropdown menu" [ref=e2231]:
+                  - button "Show dropdown menu" [ref=e2233] [cursor=pointer]:
+                    - img [ref=e2234]
+              - row "Notice Pay Deduction Notice Pay Deduction One Time Active Show dropdown menu" [ref=e2237]:
+                - cell "Notice Pay Deduction" [ref=e2238]:
+                  - link "Notice Pay Deduction" [ref=e2239] [cursor=pointer]:
+                    - /url: "#/settings/salary-components/deductions/3848927000000032499"
+                - cell "Notice Pay Deduction" [ref=e2240]
+                - cell "One Time" [ref=e2241]
+                - cell "Active" [ref=e2242]
+                - cell "Show dropdown menu" [ref=e2243]:
+                  - button "Show dropdown menu" [ref=e2245] [cursor=pointer]:
+                    - img [ref=e2246]
+  - status [ref=e531]: Settings Deductions page loaded.
+  - text:       Chats  Contacts   

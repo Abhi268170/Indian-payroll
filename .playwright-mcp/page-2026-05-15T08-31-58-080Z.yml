@@ -1,0 +1,161 @@
+- generic:
+  - iframe
+  - generic [ref=e934]:
+    - img [ref=e1047]
+    - generic [ref=e938]: Arjun Mehta details saved successfully.
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e5]:
+      - navigation:
+        - generic [ref=e7]:
+          - img "Zoho Payroll" [ref=e8]
+          - generic [ref=e9]: Payroll
+        - generic [ref=e13]:
+          - button "Advanced Search" [ref=e14] [cursor=pointer]:
+            - img [ref=e15]
+          - textbox "Search in Employee" [ref=e19]
+        - generic [ref=e21]:
+          - generic [ref=e24] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e26] [cursor=pointer]
+          - button "lerno" [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]: lerno
+            - img [ref=e32]
+          - button "Refer and Earn" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+          - button "Notifications" [ref=e41] [cursor=pointer]:
+            - img [ref=e43]
+          - button "Settings" [ref=e46] [cursor=pointer]:
+            - img [ref=e47]
+          - button "A" [ref=e52] [cursor=pointer]:
+            - generic [ref=e53]: A
+          - img [ref=e70] [cursor=pointer]
+    - generic [ref=e73]:
+      - complementary [ref=e74]:
+        - navigation [ref=e75]:
+          - generic [ref=e76]:
+            - list [ref=e77]:
+              - link "Getting Started" [ref=e78] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e80]:
+                  - generic [ref=e81]:
+                    - img [ref=e83]
+                    - text: Getting Started
+                  - img [ref=e87]
+              - listitem [ref=e89]:
+                - link "Dashboard" [ref=e90] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e91]
+                  - generic [ref=e94]: Dashboard
+              - listitem [ref=e95]:
+                - link "Employees" [ref=e96] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e97]
+                  - generic [ref=e99]: Employees
+              - listitem [ref=e100]:
+                - link "Pay Runs" [ref=e101] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e102]
+                  - generic [ref=e105]: Pay Runs
+              - listitem [ref=e106]:
+                - list [ref=e107]:
+                  - listitem [ref=e108]:
+                    - button "Approvals" [ref=e110] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e111]:
+                        - button "Approvals" [ref=e112]:
+                          - img [ref=e113]
+                          - img [ref=e115]
+                          - generic [ref=e118]: Approvals
+                          - img [ref=e119]
+              - listitem [ref=e121]:
+                - link "Form 16" [ref=e122] [cursor=pointer]:
+                  - /url: "#/taxes-and-forms/form16"
+                  - img [ref=e123]
+                  - generic [ref=e127]: Form 16
+              - listitem [ref=e128]:
+                - link "Loans" [ref=e129] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e130]
+                  - generic [ref=e133]: Loans
+              - listitem [ref=e134]:
+                - link "Giving" [ref=e135] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e136]
+                  - generic [ref=e138]: Giving
+              - listitem
+              - listitem [ref=e139]:
+                - link "Documents" [ref=e140] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e141]
+                  - generic [ref=e143]: Documents
+              - listitem [ref=e144]:
+                - link "Reports" [ref=e145] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e146]
+                  - generic [ref=e149]: Reports
+              - listitem [ref=e150]:
+                - link "Settings" [ref=e151] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e152]
+                  - generic [ref=e155]: Settings
+            - link "Contact Support" [ref=e159] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e160]
+          - button "Collapse/Expand" [ref=e162] [cursor=pointer]:
+            - img [ref=e163]
+      - main [ref=e166]:
+        - generic [ref=e1049]:
+          - generic [ref=e1051]:
+            - heading "Arjun's Profile" [level=3] [ref=e1052]
+            - list [ref=e1054]:
+              - listitem [ref=e1055]:
+                - img [ref=e1057]
+                - link "Basic Details" [ref=e1060] [cursor=pointer]:
+                  - /url: "#/people/employees/3848927000000032948/edit"
+              - listitem [ref=e1061]
+              - listitem [ref=e1062]:
+                - generic [ref=e1063]: "2"
+                - link "Salary Details" [ref=e1064] [cursor=pointer]:
+                  - /url: "#/people/employees/3848927000000032948/edit/salary-details"
+              - listitem [ref=e1065]
+              - listitem [ref=e1066]:
+                - generic [ref=e1067]: "3"
+                - link "Personal Details" [ref=e1068] [cursor=pointer]:
+                  - /url: "#/people/employees/3848927000000032948/edit/personal-details"
+              - listitem [ref=e1069]
+              - listitem [ref=e1070]:
+                - generic [ref=e1071]: "4"
+                - link "Payment Information" [ref=e1072] [cursor=pointer]:
+                  - /url: "#/people/employees/3848927000000032948/edit/payment-details"
+              - listitem
+          - generic [ref=e1073]:
+            - generic [ref=e1075]:
+              - generic [ref=e1078]:
+                - generic [ref=e1079]: Statutory Components
+                - generic [ref=e1080]: Enable the necessary benefits and tax applicable for this employee.
+              - generic [ref=e1082]:
+                - paragraph
+                - generic [ref=e1085] [cursor=pointer]:
+                  - checkbox "Professional Tax" [checked] [ref=e1086]
+                  - text: Professional Tax
+                - separator [ref=e1087]
+                - generic [ref=e1089]:
+                  - button "Save and Continue" [ref=e1090] [cursor=pointer]
+                  - button "Cancel" [ref=e1091] [cursor=pointer]
+            - generic [ref=e1096]:
+              - generic [ref=e1097]: Salary Structure
+              - generic [ref=e1098]: Set how the employee's salary is divided for accurate pay calculation.
+            - generic [ref=e1103]:
+              - generic [ref=e1104]: Other Benefits
+              - generic [ref=e1105]: Optional Add-ons to Employee Salary Structure
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Employees | Edit Employees | Salary Details page loaded.
+  - text:       Chats  Contacts   

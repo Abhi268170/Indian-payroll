@@ -10,24 +10,22 @@ public sealed record StatutoryConfig(
     decimal CessRate,
     decimal PFWageCap,
     decimal EPFEmployeeRate,
-    decimal EPFEmployerRate,
     decimal EPSEmployerRate,
     decimal EPSCap,
-    decimal EDLIEmployerRate,
-    decimal EDLICap,
-    decimal EPFAdminRate,
-    decimal EPFAdminMinimum,
+    bool EpfRestrictEmployerWage,    // true = cap employer wage at PFWageCap; false = use actual
+    bool EpfConsiderSalaryOnLop,     // true = use LOP-reduced PF wage; false = use full structure
+    bool EpfProRateRestrictedPfWage, // true = pro-rate PFWageCap by paid days when restricted
     decimal ESIWageLimit,
     decimal ESIPWDWageLimit,
     decimal ESIEmployeeRate,
     decimal ESIEmployerRate,
     IReadOnlyList<PTSlab> PTSlabs,
-    decimal? LWFEmployeeAmount,
-    decimal? LWFEmployerAmount,
+    IReadOnlyList<LwfStateInput> LWFStates,
     bool PFEnabled,
     bool ESIEnabled,
     bool PTEnabled,
-    bool LWFEnabled
+    bool EpfIncludeEmployerInCtc,
+    bool GratuityIncludedInCtc
 );
 
 public sealed record TaxSlab(
@@ -44,5 +42,20 @@ public sealed record PTSlab(
     string StateCode,
     decimal SalaryFrom,
     decimal? SalaryTo,
-    decimal MonthlyAmount,
-    DateOnly EffectiveFrom);
+    decimal Amount,
+    DateOnly EffectiveFrom,
+    string Frequency,
+    IReadOnlyList<int> DeductionMonths);
+
+public sealed record LwfStateInput(
+    string StateCode,
+    decimal EmployeeAmount,
+    decimal EmployerAmount,
+    bool IsPercentageBased,
+    decimal? EmployeeRate,
+    decimal? EmployerRate,
+    decimal? RateCapEmployee,
+    decimal? RateCapEmployer,
+    string Frequency,
+    int? DeductionMonth,
+    decimal? WageThreshold);

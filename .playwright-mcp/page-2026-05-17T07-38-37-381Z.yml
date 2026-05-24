@@ -1,0 +1,145 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "Settings" [ref=e10] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e11]
+        - text: Settings
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e17]: DE
+        - paragraph [ref=e18]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e19]:
+        - img [ref=e20]
+        - text: Sign out
+  - generic [ref=e23]:
+    - banner [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: demo
+        - generic [ref=e27]: DE
+    - main [ref=e28]:
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e33]: IP
+            - generic [ref=e34]: Settings
+          - button "Close Settings" [ref=e35]:
+            - img [ref=e36]
+            - text: Close Settings
+        - generic [ref=e39]:
+          - navigation [ref=e40]:
+            - generic [ref=e41]:
+              - button "Org Structure" [ref=e42]:
+                - generic [ref=e43]: Org Structure
+                - img [ref=e44]
+              - list [ref=e46]:
+                - listitem [ref=e47]:
+                  - link "Work Locations" [ref=e48] [cursor=pointer]:
+                    - /url: /settings/work-locations
+                - listitem [ref=e49]:
+                  - link "Departments" [ref=e50] [cursor=pointer]:
+                    - /url: /settings/departments
+                - listitem [ref=e51]:
+                  - link "Designations" [ref=e52] [cursor=pointer]:
+                    - /url: /settings/designations
+                - listitem [ref=e53]:
+                  - link "Cost Centres" [ref=e54] [cursor=pointer]:
+                    - /url: /settings/cost-centres
+                - listitem [ref=e55]:
+                  - link "Business Units" [ref=e56] [cursor=pointer]:
+                    - /url: /settings/business-units
+            - generic [ref=e57]:
+              - button "Setup & Configuration" [ref=e58]:
+                - generic [ref=e59]: Setup & Configuration
+                - img [ref=e60]
+              - list [ref=e62]:
+                - listitem [ref=e63]:
+                  - link "Pay Schedule" [active] [ref=e64] [cursor=pointer]:
+                    - /url: /settings/pay-schedule
+                - listitem [ref=e65]:
+                  - link "Salary Components" [ref=e66] [cursor=pointer]:
+                    - /url: /settings/salary-components
+                - listitem [ref=e67]:
+                  - link "Salary Structures" [ref=e68] [cursor=pointer]:
+                    - /url: /settings/salary-structures
+                - listitem [ref=e69]:
+                  - link "Statutory Components" [ref=e70] [cursor=pointer]:
+                    - /url: /settings/statutory
+            - generic [ref=e71]:
+              - button "Taxes" [ref=e72]:
+                - generic [ref=e73]: Taxes
+                - img [ref=e74]
+              - list [ref=e76]:
+                - listitem [ref=e77]:
+                  - link "Tax Details" [ref=e78] [cursor=pointer]:
+                    - /url: /settings/tax-details
+          - generic [ref=e278]:
+            - heading "Pay Schedule" [level=1] [ref=e279]
+            - generic [ref=e280]:
+              - generic [ref=e281]:
+                - heading "Work Week" [level=2] [ref=e282]
+                - paragraph [ref=e283]: These days will be considered when calculating payable days and loss of pay.
+                - generic [ref=e284]:
+                  - button "Sun" [ref=e285] [cursor=pointer]
+                  - button "Mon" [ref=e286] [cursor=pointer]
+                  - button "Tue" [ref=e287] [cursor=pointer]
+                  - button "Wed" [ref=e288] [cursor=pointer]
+                  - button "Thu" [ref=e289] [cursor=pointer]
+                  - button "Fri" [ref=e290] [cursor=pointer]
+                  - button "Sat" [ref=e291] [cursor=pointer]
+              - generic [ref=e292]:
+                - heading "Salary Calculation Method" [level=2] [ref=e293]
+                - generic [ref=e294]:
+                  - generic [ref=e295] [cursor=pointer]:
+                    - radio "Actual days in a month Daily rate = Monthly salary ÷ calendar days in the month (28/29/30/31)" [checked] [ref=e296]
+                    - generic [ref=e297]:
+                      - text: Actual days in a month
+                      - paragraph [ref=e298]: Daily rate = Monthly salary ÷ calendar days in the month (28/29/30/31)
+                  - generic [ref=e299] [cursor=pointer]:
+                    - radio "Based on fixed working days per month Salary is prorated based on a fixed number of working days each month." [ref=e300]
+                    - generic [ref=e301]:
+                      - text: Based on fixed working days per month
+                      - paragraph [ref=e302]: Salary is prorated based on a fixed number of working days each month.
+              - generic [ref=e303]:
+                - heading "Pay Date" [level=2] [ref=e304]
+                - generic [ref=e305]:
+                  - generic [ref=e306] [cursor=pointer]:
+                    - radio "On the last day of every month" [checked] [ref=e307]
+                    - generic [ref=e308]: On the last day of every month
+                  - generic [ref=e309] [cursor=pointer]:
+                    - radio "On a specific day of every month" [ref=e310]
+                    - generic [ref=e311]: On a specific day of every month
+                - paragraph [ref=e312]: If the selected pay date falls on a non-working day or holiday, payment will be processed on the previous working day.
+              - generic [ref=e313]:
+                - heading "First Payroll Setup" [level=2] [ref=e314]
+                - paragraph [ref=e315]: Set the month and year for your first payroll run. This helps preview upcoming pay dates.
+                - generic [ref=e316]:
+                  - generic [ref=e317]:
+                    - generic [ref=e318]: Month
+                    - combobox [ref=e319]:
+                      - option "Select month" [selected]
+                      - option "January"
+                      - option "February"
+                      - option "March"
+                      - option "April"
+                      - option "May"
+                      - option "June"
+                      - option "July"
+                      - option "August"
+                      - option "September"
+                      - option "October"
+                      - option "November"
+                      - option "December"
+                  - generic [ref=e320]:
+                    - generic [ref=e321]: Year
+                    - combobox [ref=e322]:
+                      - option "Select year" [selected]
+                      - option "2025"
+                      - option "2026"
+                      - option "2027"
+                      - option "2028"
+                      - option "2029"
+              - button "Save" [ref=e324]

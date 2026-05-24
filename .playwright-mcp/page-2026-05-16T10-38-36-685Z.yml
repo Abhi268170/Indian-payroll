@@ -1,0 +1,264 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e533]:
+      - generic [ref=e535]:
+        - generic [ref=e536]:
+          - button "All Settings" [ref=e537] [cursor=pointer]:
+            - img [ref=e538]
+          - button [ref=e543] [cursor=pointer]:
+            - img [ref=e544]
+          - generic [ref=e546]:
+            - generic [ref=e547]: All Settings
+            - generic [ref=e548]: lerno
+        - generic [ref=e550]:
+          - combobox "Search" [ref=e554]
+          - img [ref=e555]
+        - button "Close Settings" [ref=e559] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e560]
+      - generic [ref=e562]:
+        - navigation [ref=e563]:
+          - generic [ref=e565]:
+            - group [ref=e566]:
+              - heading "Organisation Settings" [level=2] [ref=e567]
+              - generic [ref=e568]:
+                - region "Organisation" [ref=e570]:
+                  - generic [ref=e571]:
+                    - heading "Organisation" [level=3] [ref=e572] [cursor=pointer]:
+                      - button "Organisation" [ref=e573]:
+                        - img [ref=e574]
+                        - generic [ref=e576]: Organisation
+                    - text:      
+                - generic [ref=e590]:
+                  - region "Users and Roles" [ref=e591]:
+                    - generic [ref=e592]:
+                      - heading "Users and Roles" [level=3] [ref=e593] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e594]:
+                          - img [ref=e595]
+                          - generic [ref=e597]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e603]:
+                    - generic [ref=e604]:
+                      - heading "Taxes" [level=3] [ref=e605] [cursor=pointer]:
+                        - button "Taxes" [ref=e606]:
+                          - img [ref=e607]
+                          - generic [ref=e609]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e614]:
+                  - generic [ref=e615]:
+                    - heading "Setup & Configurations" [level=3] [ref=e616] [cursor=pointer]:
+                      - button "Setup & Configurations" [expanded] [ref=e617]:
+                        - img [ref=e618]
+                        - generic [ref=e620]: Setup & Configurations
+                    - region "Setup & Configurations" [ref=e774]:
+                      - generic [ref=e621]:
+                        - link "Pay Schedule" [ref=e622] [cursor=pointer]:
+                          - /url: "#/settings/pay-schedules"
+                          - generic [ref=e623]: Pay Schedule
+                          - text: 
+                        - link "Statutory Components" [ref=e624] [cursor=pointer]:
+                          - /url: "#/settings/statutory-details/list"
+                          - generic [ref=e625]: Statutory Components
+                          - text: 
+                        - link "Salary Components" [ref=e626] [cursor=pointer]:
+                          - /url: "#/settings/salary-components/earnings"
+                          - generic [ref=e627]: Salary Components
+                          - text: 
+                        - link "Employee Portal" [ref=e628] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences"
+                          - generic [ref=e629]: Employee Portal
+                          - text: 
+                        - link "Claims and Declarations" [ref=e630] [cursor=pointer]:
+                          - /url: "#/settings/preferences/fbp"
+                          - generic [ref=e631]: Claims and Declarations
+                          - text: 
+                - region "Customisations" [ref=e633]:
+                  - generic [ref=e634]:
+                    - heading "Customisations" [level=3] [ref=e635] [cursor=pointer]:
+                      - button "Customisations" [ref=e636]:
+                        - img [ref=e637]
+                        - generic [ref=e639]: Customisations
+                    - text:     
+                - region "Automations" [ref=e652]:
+                  - generic [ref=e653]:
+                    - heading "Automations" [level=3] [ref=e654] [cursor=pointer]:
+                      - button "Automations" [ref=e655]:
+                        - img [ref=e656]
+                        - generic [ref=e658]: Automations
+                    - text:    
+            - group [ref=e668]:
+              - heading "Module Settings" [level=2] [ref=e669]
+              - generic [ref=e670]:
+                - region "General" [ref=e672]:
+                  - generic [ref=e673]:
+                    - heading "General" [level=3] [ref=e674] [cursor=pointer]:
+                      - button "General" [ref=e675]:
+                        - img [ref=e676]
+                        - generic [ref=e678]: General
+                    - text:     
+                - region "Payments" [ref=e691]:
+                  - generic [ref=e692]:
+                    - heading "Payments" [level=3] [ref=e693] [cursor=pointer]:
+                      - button "Payments" [ref=e694]:
+                        - img [ref=e695]
+                        - generic [ref=e697]: Payments
+                    - text: 
+            - group [ref=e701]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e702]
+              - generic [ref=e703]:
+                - region "Integrations" [ref=e705]:
+                  - generic [ref=e706]:
+                    - heading "Integrations" [level=3] [ref=e707] [cursor=pointer]:
+                      - button "Integrations" [ref=e708]:
+                        - img [ref=e709]
+                        - generic [ref=e711]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e716]:
+                  - generic [ref=e717]:
+                    - heading "Developer Data" [level=3] [ref=e718] [cursor=pointer]:
+                      - button "Developer Data" [ref=e719]:
+                        - img [ref=e720]
+                        - generic [ref=e722]: Developer Data
+                    - text:   
+        - main [ref=e1284]:
+          - generic [ref=e1575]:
+            - heading "New Earning" [level=3] [ref=e1576]
+            - generic [ref=e1577]:
+              - button "Page Tips" [ref=e1578] [cursor=pointer]:
+                - img [ref=e1579]
+                - text: Page Tips
+              - link "Close" [ref=e1581] [cursor=pointer]:
+                - /url: "#/settings/salary-components/earnings"
+                - img [ref=e1582]
+          - generic [ref=e1587]:
+            - generic [ref=e1590]:
+              - generic [ref=e1591]: Earning Type *
+              - generic [ref=e1595]:
+                - generic [ref=e1596]:
+                  - combobox [expanded] [ref=e1597]:
+                    - generic [ref=e1598] [cursor=pointer]:
+                      - generic [ref=e1599]: Select
+                      - img [ref=e1612]
+                  - generic [ref=e1614]:
+                    - generic [ref=e1616]:
+                      - generic [ref=e1618]: ⚲
+                      - textbox [active] [ref=e1619]
+                    - generic [ref=e1620]:
+                      - listbox "dropdown options" [ref=e1621]:
+                        - option "Basic" [ref=e1622]:
+                          - generic "Basic" [ref=e1624] [cursor=pointer]:
+                            - generic [ref=e1625]: Basic
+                        - option "House Rent Allowance" [ref=e1626]:
+                          - generic "House Rent Allowance" [ref=e1628] [cursor=pointer]:
+                            - generic [ref=e1629]: House Rent Allowance
+                        - option "Dearness Allowance" [ref=e1630]:
+                          - generic "Dearness Allowance" [ref=e1632] [cursor=pointer]:
+                            - generic [ref=e1633]: Dearness Allowance
+                        - option "Retaining Allowance" [ref=e1634]:
+                          - generic "Retaining Allowance" [ref=e1636] [cursor=pointer]:
+                            - generic [ref=e1637]: Retaining Allowance
+                        - option "Conveyance Allowance" [ref=e1638]:
+                          - generic "Conveyance Allowance" [ref=e1640] [cursor=pointer]:
+                            - generic [ref=e1641]: Conveyance Allowance
+                        - option "Bonus" [ref=e1642]:
+                          - generic "Bonus" [ref=e1644] [cursor=pointer]:
+                            - generic [ref=e1645]: Bonus
+                        - option "Commission" [ref=e1646]:
+                          - generic "Commission" [ref=e1648] [cursor=pointer]:
+                            - generic [ref=e1649]: Commission
+                        - option "Children Education Allowance" [ref=e1650]:
+                          - generic "Children Education Allowance" [ref=e1652] [cursor=pointer]:
+                            - generic [ref=e1653]: Children Education Allowance
+                        - option "Hostel Expenditure Allowance" [ref=e1654]:
+                          - generic "Hostel Expenditure Allowance" [ref=e1656] [cursor=pointer]:
+                            - generic [ref=e1657]: Hostel Expenditure Allowance
+                        - option "Transport Allowance" [ref=e1658]:
+                          - generic "Transport Allowance" [ref=e1660] [cursor=pointer]:
+                            - generic [ref=e1661]: Transport Allowance
+                        - option "Helper Allowance" [ref=e1662]:
+                          - generic "Helper Allowance" [ref=e1664] [cursor=pointer]:
+                            - generic [ref=e1665]: Helper Allowance
+                        - option "Travelling Allowance" [ref=e1666]:
+                          - generic "Travelling Allowance" [ref=e1668] [cursor=pointer]:
+                            - generic [ref=e1669]: Travelling Allowance
+                        - option "Uniform Allowance" [ref=e1670]:
+                          - generic "Uniform Allowance" [ref=e1672] [cursor=pointer]:
+                            - generic [ref=e1673]: Uniform Allowance
+                        - option "Daily Allowance" [ref=e1674]:
+                          - generic "Daily Allowance" [ref=e1676] [cursor=pointer]:
+                            - generic [ref=e1677]: Daily Allowance
+                        - option "City Compensatory Allowance" [ref=e1678]:
+                          - generic "City Compensatory Allowance" [ref=e1680] [cursor=pointer]:
+                            - generic [ref=e1681]: City Compensatory Allowance
+                        - option "Overtime Allowance" [ref=e1682]:
+                          - generic "Overtime Allowance" [ref=e1684] [cursor=pointer]:
+                            - generic [ref=e1685]: Overtime Allowance
+                        - option "Telephone Allowance" [ref=e1686]:
+                          - generic "Telephone Allowance" [ref=e1688] [cursor=pointer]:
+                            - generic [ref=e1689]: Telephone Allowance
+                        - option "Fixed Medical Allowance" [ref=e1690]:
+                          - generic "Fixed Medical Allowance" [ref=e1692] [cursor=pointer]:
+                            - generic [ref=e1693]: Fixed Medical Allowance
+                        - option "Project Allowance" [ref=e1694]:
+                          - generic "Project Allowance" [ref=e1696] [cursor=pointer]:
+                            - generic [ref=e1697]: Project Allowance
+                        - option "Food Allowance" [ref=e1698]:
+                          - generic "Food Allowance" [ref=e1700] [cursor=pointer]:
+                            - generic [ref=e1701]: Food Allowance
+                        - option "Holiday Allowance" [ref=e1702]:
+                          - generic "Holiday Allowance" [ref=e1704] [cursor=pointer]:
+                            - generic [ref=e1705]: Holiday Allowance
+                        - option "Entertainment Allowance" [ref=e1706]:
+                          - generic "Entertainment Allowance" [ref=e1708] [cursor=pointer]:
+                            - generic [ref=e1709]: Entertainment Allowance
+                        - option "Custom Allowance" [ref=e1710]:
+                          - generic "Custom Allowance" [ref=e1712] [cursor=pointer]:
+                            - generic [ref=e1713]: Custom Allowance
+                        - option "Food Coupon" [ref=e1714]:
+                          - generic "Food Coupon" [ref=e1716] [cursor=pointer]:
+                            - generic [ref=e1717]: Food Coupon
+                        - option "Gift Coupon" [ref=e1718]:
+                          - generic "Gift Coupon" [ref=e1720] [cursor=pointer]:
+                            - generic [ref=e1721]: Gift Coupon
+                        - option "Research Allowance" [ref=e1722]:
+                          - generic "Research Allowance" [ref=e1724] [cursor=pointer]:
+                            - generic [ref=e1725]: Research Allowance
+                        - option "Books and Periodicals Allowance" [ref=e1726]:
+                          - generic "Books and Periodicals Allowance" [ref=e1728] [cursor=pointer]:
+                            - generic [ref=e1729]: Books and Periodicals Allowance
+                        - option "Shift Allowance" [ref=e1730]:
+                          - generic "Shift Allowance" [ref=e1732] [cursor=pointer]:
+                            - generic [ref=e1733]: Shift Allowance
+                        - option "Fuel Allowance" [ref=e1734]:
+                          - generic "Fuel Allowance" [ref=e1736] [cursor=pointer]:
+                            - generic [ref=e1737]: Fuel Allowance
+                        - option "Driver Allowance" [ref=e1738]:
+                          - generic "Driver Allowance" [ref=e1740] [cursor=pointer]:
+                            - generic [ref=e1741]: Driver Allowance
+                        - option "Leave Travel Allowance" [ref=e1742]:
+                          - generic "Leave Travel Allowance" [ref=e1744] [cursor=pointer]:
+                            - generic [ref=e1745]: Leave Travel Allowance
+                        - option "Vehicle Maintenance Allowance" [ref=e1746]:
+                          - generic "Vehicle Maintenance Allowance" [ref=e1748] [cursor=pointer]:
+                            - generic [ref=e1749]: Vehicle Maintenance Allowance
+                        - option "Telephone And Internet Allowance" [ref=e1750]:
+                          - generic "Telephone And Internet Allowance" [ref=e1752] [cursor=pointer]:
+                            - generic [ref=e1753]: Telephone And Internet Allowance
+                      - button "New Custom Allowance" [ref=e1754] [cursor=pointer]:
+                        - img [ref=e1756]
+                        - generic [ref=e1758]: New Custom Allowance
+                - status [ref=e1604]
+            - separator [ref=e1605]
+            - generic [ref=e1606]:
+              - button "Save" [disabled] [ref=e1607]
+              - link "Cancel" [ref=e1608] [cursor=pointer]:
+                - /url: "#/settings/salary-components/earnings"
+              - paragraph [ref=e1610]: "* indicates mandatory fields"
+    - dialog [ref=e1611]
+  - status [ref=e531]: Settings Earnings page loaded.
+  - text:       Chats  Contacts   

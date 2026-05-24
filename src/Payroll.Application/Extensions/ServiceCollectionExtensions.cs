@@ -2,6 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Payroll.Application.Behaviours;
+using Payroll.Application.Services;
 
 namespace Payroll.Application.Extensions;
 
@@ -15,12 +16,16 @@ public static class ServiceCollectionExtensions
             // Pipeline order: Logging → Validation → Performance → Handler
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+            cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(TenantValidationBehaviour<,>));
             cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
         });
 
         services.AddValidatorsFromAssembly(
             typeof(ApplicationAssemblyMarker).Assembly,
             includeInternalTypes: true);
+
+        services.AddScoped<IPayrollCostCalculator, PayrollCostCalculator>();
+        services.AddScoped<IPayrollRecomputeService, PayrollRecomputeService>();
 
         return services;
     }

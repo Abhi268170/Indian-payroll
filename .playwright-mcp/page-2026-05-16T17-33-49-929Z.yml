@@ -1,0 +1,110 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "Settings" [ref=e10] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e11]
+        - text: Settings
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e17]: AD
+        - paragraph [ref=e18]: admin@payroll.local
+      - button "Sign out" [ref=e19]:
+        - img [ref=e20]
+        - text: Sign out
+  - generic [ref=e23]:
+    - banner [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: Organisation
+        - generic [ref=e27]: AD
+    - main [ref=e28]:
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e33]: IP
+            - generic [ref=e34]: Settings
+          - button "Close Settings" [ref=e35]:
+            - img [ref=e36]
+            - text: Close Settings
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - generic [ref=e42]:
+              - heading "Work Locations" [level=1] [ref=e43]
+              - paragraph [ref=e44]: Offices and branches where employees work
+            - button "Add Location" [active] [ref=e45]:
+              - img [ref=e46]
+              - text: Add Location
+          - generic [ref=e52]:
+            - img [ref=e54]
+            - paragraph [ref=e57]: No work locations yet
+            - paragraph [ref=e58]: Add offices and branches where your employees work
+            - button "Add Location" [ref=e60]:
+              - img [ref=e61]
+              - text: Add Location
+          - complementary [ref=e63]:
+            - generic [ref=e64]:
+              - heading "Add Work Location" [level=2] [ref=e66]
+              - button "Close" [ref=e67]:
+                - img [ref=e68]
+            - generic [ref=e72]:
+              - generic [ref=e73]:
+                - generic [ref=e74]: Name*
+                - textbox "Name*" [ref=e76]
+              - generic [ref=e77]:
+                - generic [ref=e78]: State
+                - combobox "State" [ref=e79]:
+                  - option "Select state" [selected]
+                  - option "Andhra Pradesh"
+                  - option "Arunachal Pradesh"
+                  - option "Assam"
+                  - option "Bihar"
+                  - option "Chhattisgarh"
+                  - option "Goa"
+                  - option "Gujarat"
+                  - option "Haryana"
+                  - option "Himachal Pradesh"
+                  - option "Jharkhand"
+                  - option "Karnataka"
+                  - option "Kerala"
+                  - option "Madhya Pradesh"
+                  - option "Maharashtra"
+                  - option "Manipur"
+                  - option "Meghalaya"
+                  - option "Mizoram"
+                  - option "Nagaland"
+                  - option "Odisha"
+                  - option "Punjab"
+                  - option "Rajasthan"
+                  - option "Sikkim"
+                  - option "Tamil Nadu"
+                  - option "Telangana"
+                  - option "Tripura"
+                  - option "Uttar Pradesh"
+                  - option "Uttarakhand"
+                  - option "West Bengal"
+                  - option "Andaman & Nicobar Islands"
+                  - option "Chandigarh"
+                  - option "Dadra & Nagar Haveli and Daman & Diu"
+                  - option "Delhi"
+                  - option "Jammu & Kashmir"
+                  - option "Ladakh"
+                  - option "Lakshadweep"
+                  - option "Puducherry"
+              - generic [ref=e80]:
+                - generic [ref=e81]: Address Line 1
+                - textbox "Address Line 1" [ref=e83]
+              - generic [ref=e84]:
+                - generic [ref=e85]: Address Line 2
+                - textbox "Address Line 2" [ref=e87]
+              - generic [ref=e88]:
+                - generic [ref=e89]: City
+                - textbox "City" [ref=e91]
+              - generic [ref=e92]:
+                - generic [ref=e93]: Pin Code
+                - textbox "Pin Code" [ref=e95]
+            - generic [ref=e96]:
+              - button "Add Location" [ref=e97]
+              - button "Cancel" [ref=e98]

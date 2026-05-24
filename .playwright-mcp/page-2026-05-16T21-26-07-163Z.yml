@@ -1,0 +1,187 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "Settings" [ref=e10] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e11]
+        - text: Settings
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e17]: DE
+        - paragraph [ref=e18]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e19]:
+        - img [ref=e20]
+        - text: Sign out
+  - generic [ref=e23]:
+    - banner [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: demo
+        - generic [ref=e27]: DE
+    - main [ref=e28]:
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e33]: IP
+            - generic [ref=e34]: Settings
+          - button "Close Settings" [ref=e35]:
+            - img [ref=e36]
+            - text: Close Settings
+        - generic [ref=e39]:
+          - navigation [ref=e40]:
+            - generic [ref=e41]:
+              - button "Org Structure" [ref=e42]:
+                - generic [ref=e43]: Org Structure
+                - img [ref=e44]
+              - list [ref=e46]:
+                - listitem [ref=e47]:
+                  - link "Work Locations" [ref=e48] [cursor=pointer]:
+                    - /url: /settings/work-locations
+                - listitem [ref=e49]:
+                  - link "Departments" [ref=e50] [cursor=pointer]:
+                    - /url: /settings/departments
+                - listitem [ref=e51]:
+                  - link "Designations" [ref=e52] [cursor=pointer]:
+                    - /url: /settings/designations
+                - listitem [ref=e53]:
+                  - link "Cost Centres" [ref=e54] [cursor=pointer]:
+                    - /url: /settings/cost-centres
+                - listitem [ref=e55]:
+                  - link "Business Units" [ref=e56] [cursor=pointer]:
+                    - /url: /settings/business-units
+            - generic [ref=e57]:
+              - button "Setup & Configuration" [ref=e58]:
+                - generic [ref=e59]: Setup & Configuration
+                - img [ref=e60]
+              - list [ref=e62]:
+                - listitem [ref=e63]:
+                  - link "Pay Schedule" [ref=e64] [cursor=pointer]:
+                    - /url: /settings/pay-schedule
+                - listitem [ref=e65]:
+                  - link "Salary Components" [ref=e66] [cursor=pointer]:
+                    - /url: /settings/salary-components
+                - listitem [ref=e67]:
+                  - link "Salary Structures" [ref=e68] [cursor=pointer]:
+                    - /url: /settings/salary-structures
+                - listitem [ref=e69]:
+                  - link "Statutory Components" [ref=e70] [cursor=pointer]:
+                    - /url: /settings/statutory
+            - generic [ref=e71]:
+              - button "Taxes" [ref=e72]:
+                - generic [ref=e73]: Taxes
+                - img [ref=e74]
+              - list [ref=e76]:
+                - listitem [ref=e77]:
+                  - link "Tax Details" [ref=e78] [cursor=pointer]:
+                    - /url: /settings/tax-details
+          - generic [ref=e80]:
+            - generic [ref=e81]:
+              - heading "Salary Components" [level=1] [ref=e82]
+              - button "Add Component" [ref=e84]:
+                - img [ref=e85]
+                - text: Add Component
+                - img [ref=e86]
+            - generic [ref=e88]:
+              - button "All" [ref=e89]
+              - button "Earnings" [ref=e90]
+              - button "Deductions" [ref=e91]
+              - button "Reimbursements" [ref=e92]
+              - button "Benefits" [ref=e93]
+              - button "Corrections" [ref=e94]
+            - generic [ref=e99]:
+              - paragraph [ref=e100]: No components yet
+              - paragraph [ref=e101]: Add salary components to define how employees are paid.
+            - generic [ref=e110]:
+              - generic [ref=e111]:
+                - heading "Add Earning" [level=2] [ref=e112]
+                - button "Close" [ref=e113]:
+                  - img [ref=e114]
+              - generic [ref=e118]:
+                - generic [ref=e119]:
+                  - generic [ref=e120]: Earning Name *
+                  - textbox "e.g. Basic Salary" [ref=e121]: Basic Salary
+                - generic [ref=e122]:
+                  - generic [ref=e123]: Name in Payslip
+                  - textbox [ref=e124]: Basic
+                - generic [ref=e125]:
+                  - generic [ref=e126]: Earning Type *
+                  - combobox [ref=e127]:
+                    - option "Basic" [selected]
+                    - option "House Rent Allowance"
+                    - option "Conveyance Allowance"
+                    - option "Medical Allowance"
+                    - option "Special Allowance"
+                    - option "Leave Travel Allowance"
+                    - option "Children Education Allowance"
+                    - option "Children Hostel Allowance"
+                    - option "Overtime (Variable)"
+                    - option "Overtime (Flat)"
+                    - option "Bonus"
+                    - option "Performance Bonus"
+                    - option "Fixed Bonus"
+                    - option "Commission on Sales"
+                    - option "Advance Salary"
+                    - option "Gratuity"
+                    - option "Ex-Gratia"
+                    - option "Night Shift Allowance"
+                    - option "City Compensatory Allowance"
+                    - option "Dearness Allowance"
+                    - option "Uniform Allowance"
+                    - option "Tool Allowance"
+                    - option "Washing Allowance"
+                    - option "Mobile Allowance"
+                    - option "Internet Allowance"
+                    - option "Food Allowance"
+                    - option "Books & Periodicals"
+                    - option "High Altitude Allowance"
+                    - option "Border/Remote Area Allowance"
+                    - option "Arrears Earning"
+                    - option "Not In List"
+                    - option "Other"
+                - generic [ref=e128]:
+                  - generic [ref=e129]: Pay Type
+                  - generic [ref=e130]:
+                    - generic [ref=e131] [cursor=pointer]:
+                      - radio "Monthly" [checked] [ref=e132]
+                      - text: Monthly
+                    - generic [ref=e133] [cursor=pointer]:
+                      - radio "Flat Amount" [ref=e134]
+                      - text: Flat Amount
+                - generic [ref=e135]:
+                  - generic [ref=e136]: Calculation Type
+                  - combobox [ref=e137]:
+                    - option "Fixed Amount"
+                    - option "% of Basic"
+                    - option "% of Gross"
+                    - option "% of CTC" [selected]
+                - generic [ref=e138]:
+                  - generic [ref=e139]: Percentage (%)
+                  - spinbutton [ref=e140]: "40"
+                - generic [ref=e141]:
+                  - generic [ref=e142] [cursor=pointer]:
+                    - checkbox "Taxable" [checked] [ref=e143]
+                    - generic [ref=e144]: Taxable
+                  - generic [ref=e145] [cursor=pointer]:
+                    - checkbox "Consider for EPF" [checked] [active] [ref=e146]
+                    - generic [ref=e147]: Consider for EPF
+                  - generic [ref=e160]:
+                    - generic [ref=e161] [cursor=pointer]:
+                      - radio "Always" [checked] [ref=e162]
+                      - text: Always
+                    - generic [ref=e163] [cursor=pointer]:
+                      - radio "Only when PF wage < ₹15,000" [ref=e164]
+                      - text: Only when PF wage < ₹15,000
+                  - generic [ref=e148] [cursor=pointer]:
+                    - checkbox "Consider for ESI" [ref=e149]
+                    - generic [ref=e150]: Consider for ESI
+                  - generic [ref=e151] [cursor=pointer]:
+                    - checkbox "Pro-rata on attendance" [checked] [ref=e152]
+                    - generic [ref=e153]: Pro-rata on attendance
+                  - generic [ref=e154] [cursor=pointer]:
+                    - checkbox "Show in payslip" [checked] [ref=e155]
+                    - generic [ref=e156]: Show in payslip
+              - generic [ref=e157]:
+                - button "Cancel" [ref=e158]
+                - button "Create" [ref=e159]

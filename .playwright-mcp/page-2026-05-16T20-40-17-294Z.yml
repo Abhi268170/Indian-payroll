@@ -1,0 +1,383 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e1231]:
+      - generic [ref=e1233]:
+        - generic [ref=e1234]:
+          - button "All Settings" [ref=e1235] [cursor=pointer]:
+            - img [ref=e1236]
+          - button [ref=e1241] [cursor=pointer]:
+            - img [ref=e1242]
+          - generic [ref=e1244]:
+            - generic [ref=e1245]: All Settings
+            - generic [ref=e1246]: lerno
+        - generic [ref=e1248]:
+          - combobox "Search" [ref=e1252]
+          - img [ref=e1253]
+        - button "Close Settings" [ref=e1257] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e1258]
+      - generic [ref=e1260]:
+        - navigation [ref=e1261]:
+          - generic [ref=e1263]:
+            - group [ref=e1264]:
+              - heading "Organisation Settings" [level=2] [ref=e1265]
+              - generic [ref=e1266]:
+                - region "Organisation" [ref=e1268]:
+                  - generic [ref=e1269]:
+                    - heading "Organisation" [level=3] [ref=e1270] [cursor=pointer]:
+                      - button "Organisation" [ref=e1271]:
+                        - img [ref=e1272]
+                        - generic [ref=e1274]: Organisation
+                    - text:      
+                - generic [ref=e1288]:
+                  - region "Users and Roles" [ref=e1289]:
+                    - generic [ref=e1290]:
+                      - heading "Users and Roles" [level=3] [ref=e1291] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e1292]:
+                          - img [ref=e1293]
+                          - generic [ref=e1295]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e1301]:
+                    - generic [ref=e1302]:
+                      - heading "Taxes" [level=3] [ref=e1303] [cursor=pointer]:
+                        - button "Taxes" [ref=e1304]:
+                          - img [ref=e1305]
+                          - generic [ref=e1307]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e1312]:
+                  - generic [ref=e1313]:
+                    - heading "Setup & Configurations" [level=3] [ref=e1314] [cursor=pointer]:
+                      - button "Setup & Configurations" [expanded] [ref=e1315]:
+                        - img [ref=e1316]
+                        - generic [ref=e1318]: Setup & Configurations
+                    - region "Setup & Configurations" [ref=e1473]:
+                      - generic [ref=e1319]:
+                        - link "Pay Schedule" [ref=e1320] [cursor=pointer]:
+                          - /url: "#/settings/pay-schedules"
+                          - generic [ref=e1321]: Pay Schedule
+                          - text: 
+                        - link "Statutory Components" [ref=e1322] [cursor=pointer]:
+                          - /url: "#/settings/statutory-details/list"
+                          - generic [ref=e1323]: Statutory Components
+                          - text: 
+                        - link "Salary Components" [ref=e1324] [cursor=pointer]:
+                          - /url: "#/settings/salary-components/earnings"
+                          - generic [ref=e1325]: Salary Components
+                          - text: 
+                        - link "Employee Portal" [ref=e1326] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences"
+                          - generic [ref=e1327]: Employee Portal
+                          - text: 
+                        - link "Claims and Declarations" [ref=e1328] [cursor=pointer]:
+                          - /url: "#/settings/preferences/fbp"
+                          - generic [ref=e1329]: Claims and Declarations
+                          - text: 
+                - region "Customisations" [ref=e1331]:
+                  - generic [ref=e1332]:
+                    - heading "Customisations" [level=3] [ref=e1333] [cursor=pointer]:
+                      - button "Customisations" [ref=e1334]:
+                        - img [ref=e1335]
+                        - generic [ref=e1337]: Customisations
+                    - text:     
+                - region "Automations" [ref=e1350]:
+                  - generic [ref=e1351]:
+                    - heading "Automations" [level=3] [ref=e1352] [cursor=pointer]:
+                      - button "Automations" [ref=e1353]:
+                        - img [ref=e1354]
+                        - generic [ref=e1356]: Automations
+                    - text:    
+            - group [ref=e1366]:
+              - heading "Module Settings" [level=2] [ref=e1367]
+              - generic [ref=e1368]:
+                - region "General" [ref=e1370]:
+                  - generic [ref=e1371]:
+                    - heading "General" [level=3] [ref=e1372] [cursor=pointer]:
+                      - button "General" [ref=e1373]:
+                        - img [ref=e1374]
+                        - generic [ref=e1376]: General
+                    - text:     
+                - region "Payments" [ref=e1389]:
+                  - generic [ref=e1390]:
+                    - heading "Payments" [level=3] [ref=e1391] [cursor=pointer]:
+                      - button "Payments" [ref=e1392]:
+                        - img [ref=e1393]
+                        - generic [ref=e1395]: Payments
+                    - text: 
+            - group [ref=e1399]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e1400]
+              - generic [ref=e1401]:
+                - region "Integrations" [ref=e1403]:
+                  - generic [ref=e1404]:
+                    - heading "Integrations" [level=3] [ref=e1405] [cursor=pointer]:
+                      - button "Integrations" [ref=e1406]:
+                        - img [ref=e1407]
+                        - generic [ref=e1409]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e1414]:
+                  - generic [ref=e1415]:
+                    - heading "Developer Data" [level=3] [ref=e1416] [cursor=pointer]:
+                      - button "Developer Data" [ref=e1417]:
+                        - img [ref=e1418]
+                        - generic [ref=e1420]: Developer Data
+                    - text:   
+        - main [ref=e1428]:
+          - generic [ref=e1429]:
+            - generic [ref=e1430]:
+              - heading "Salary Components" [level=3] [ref=e1431]
+              - button "Add Component" [expanded] [ref=e1434] [cursor=pointer]
+            - button "Instant Helper" [ref=e1435] [cursor=pointer]:
+              - img [ref=e1436]
+            - navigation [ref=e1439]:
+              - list [ref=e1440]:
+                - listitem [ref=e1441]:
+                  - link "Earnings" [ref=e1442] [cursor=pointer]:
+                    - /url: "#/settings/salary-components/earnings"
+                - listitem [ref=e1443]:
+                  - link "Deductions" [ref=e1444] [cursor=pointer]:
+                    - /url: "#/settings/salary-components/deductions"
+                - listitem [ref=e1445]:
+                  - link "Benefits" [ref=e1446] [cursor=pointer]:
+                    - /url: "#/settings/salary-components/benefits"
+                - listitem [ref=e1447]:
+                  - link "Reimbursements" [ref=e1448] [cursor=pointer]:
+                    - /url: "#/settings/salary-components/reimbursements"
+          - generic [ref=e1474]:
+            - table [ref=e1475]:
+              - rowgroup [ref=e1476]:
+                - row "Name Earning Type Calculation Type Consider for EPF Consider for ESI Status More Actions" [ref=e1477]:
+                  - columnheader "Name" [ref=e1478]
+                  - columnheader "Earning Type" [ref=e1479]
+                  - columnheader "Calculation Type" [ref=e1480]
+                  - columnheader "Consider for EPF" [ref=e1481]
+                  - columnheader "Consider for ESI" [ref=e1482]
+                  - columnheader "Status" [ref=e1483]
+                  - columnheader "More Actions" [ref=e1484]:
+                    - generic [ref=e1485]: More Actions
+              - rowgroup [ref=e1486]:
+                - row "Basic Basic Fixed; 50% of CTC Yes Yes Active Show dropdown menu" [ref=e1487]:
+                  - cell "Basic" [ref=e1488]:
+                    - link "Basic" [ref=e1489] [cursor=pointer]:
+                      - /url: "#/settings/salary-components/earnings/3848927000000032463"
+                  - cell "Basic" [ref=e1490]
+                  - cell "Fixed; 50% of CTC" [ref=e1491]
+                  - cell "Yes" [ref=e1492]
+                  - cell "Yes" [ref=e1493]
+                  - cell "Active" [ref=e1494]
+                  - cell "Show dropdown menu" [ref=e1495]:
+                    - button "Show dropdown menu" [ref=e1497] [cursor=pointer]:
+                      - img [ref=e1498]
+                - row "House Rent Allowance House Rent Allowance Fixed; 50% of Basic No Yes Active Show dropdown menu" [ref=e1501]:
+                  - cell "House Rent Allowance" [ref=e1502]:
+                    - link "House Rent Allowance" [ref=e1503] [cursor=pointer]:
+                      - /url: "#/settings/salary-components/earnings/3848927000000032465"
+                  - cell "House Rent Allowance" [ref=e1504]
+                  - cell "Fixed; 50% of Basic" [ref=e1505]
+                  - cell "No" [ref=e1506]
+                  - cell "Yes" [ref=e1507]
+                  - cell "Active" [ref=e1508]
+                  - cell "Show dropdown menu" [ref=e1509]:
+                    - button "Show dropdown menu" [ref=e1511] [cursor=pointer]:
+                      - img [ref=e1512]
+                - row "Conveyance Allowance Conveyance Allowance Fixed; Flat Amount Yes (If PF Wage < 15k) No Active Show dropdown menu" [ref=e1515]:
+                  - cell "Conveyance Allowance" [ref=e1516]:
+                    - link "Conveyance Allowance" [ref=e1517] [cursor=pointer]:
+                      - /url: "#/settings/salary-components/earnings/3848927000000032467"
+                  - cell "Conveyance Allowance" [ref=e1518]
+                  - cell "Fixed; Flat Amount" [ref=e1519]
+                  - cell "Yes (If PF Wage < 15k)" [ref=e1520]:
+                    - text: "Yes"
+                    - generic [ref=e1521]: (If PF Wage < 15k)
+                  - cell "No" [ref=e1522]
+                  - cell "Active" [ref=e1523]
+                  - cell "Show dropdown menu" [ref=e1524]:
+                    - button "Show dropdown menu" [ref=e1526] [cursor=pointer]:
+                      - img [ref=e1527]
+                - row "Children Education Allowance Children Education Allowance Fixed; Flat Amount Yes (If PF Wage < 15k) Yes Inactive Show dropdown menu" [ref=e1530]:
+                  - cell "Children Education Allowance" [ref=e1531]:
+                    - link "Children Education Allowance" [ref=e1532] [cursor=pointer]:
+                      - /url: "#/settings/salary-components/earnings/3848927000000032473"
+                  - cell "Children Education Allowance" [ref=e1533]
+                  - cell "Fixed; Flat Amount" [ref=e1534]
+                  - cell "Yes (If PF Wage < 15k)" [ref=e1535]:
+                    - text: "Yes"
+                    - generic [ref=e1536]: (If PF Wage < 15k)
+                  - cell "Yes" [ref=e1537]
+                  - cell "Inactive" [ref=e1538]
+                  - cell "Show dropdown menu" [ref=e1539]:
+                    - button "Show dropdown menu" [ref=e1541] [cursor=pointer]:
+                      - img [ref=e1542]
+                - row "Transport Allowance Transport Allowance Fixed; Flat amount of 1600 Yes (If PF Wage < 15k) Yes Inactive Show dropdown menu" [ref=e1545]:
+                  - cell "Transport Allowance" [ref=e1546]:
+                    - link "Transport Allowance" [ref=e1547] [cursor=pointer]:
+                      - /url: "#/settings/salary-components/earnings/3848927000000032475"
+                  - cell "Transport Allowance" [ref=e1548]
+                  - cell "Fixed; Flat amount of 1600" [ref=e1549]
+                  - cell "Yes (If PF Wage < 15k)" [ref=e1550]:
+                    - text: "Yes"
+                    - generic [ref=e1551]: (If PF Wage < 15k)
+                  - cell "Yes" [ref=e1552]
+                  - cell "Inactive" [ref=e1553]
+                  - cell "Show dropdown menu" [ref=e1554]:
+                    - button "Show dropdown menu" [ref=e1556] [cursor=pointer]:
+                      - img [ref=e1557]
+                - row "Travelling Allowance Travelling Allowance Fixed; Flat Amount Yes (If PF Wage < 15k) No Inactive Show dropdown menu" [ref=e1560]:
+                  - cell "Travelling Allowance" [ref=e1561]:
+                    - link "Travelling Allowance" [ref=e1562] [cursor=pointer]:
+                      - /url: "#/settings/salary-components/earnings/3848927000000032477"
+                  - cell "Travelling Allowance" [ref=e1563]
+                  - cell "Fixed; Flat Amount" [ref=e1564]
+                  - cell "Yes (If PF Wage < 15k)" [ref=e1565]:
+                    - text: "Yes"
+                    - generic [ref=e1566]: (If PF Wage < 15k)
+                  - cell "No" [ref=e1567]
+                  - cell "Inactive" [ref=e1568]
+                  - cell "Show dropdown menu" [ref=e1569]:
+                    - button "Show dropdown menu" [ref=e1571] [cursor=pointer]:
+                      - img [ref=e1572]
+                - row "Special Allowance Custom Allowance Fixed; Flat Amount No Yes Active Show dropdown menu" [ref=e1575]:
+                  - cell "Special Allowance" [ref=e1576]:
+                    - link "Special Allowance" [ref=e1577] [cursor=pointer]:
+                      - /url: "#/settings/salary-components/earnings/3848927000000034351"
+                  - cell "Custom Allowance" [ref=e1578]
+                  - cell "Fixed; Flat Amount" [ref=e1579]
+                  - cell "No" [ref=e1580]
+                  - cell "Yes" [ref=e1581]
+                  - cell "Active" [ref=e1582]
+                  - cell "Show dropdown menu" [ref=e1583]:
+                    - button "Show dropdown menu" [ref=e1585] [cursor=pointer]:
+                      - img [ref=e1586]
+                - row "Fixed Allowance Fixed Allowance Fixed; Flat Amount Yes (If PF Wage < 15k) Yes Active Show dropdown menu" [ref=e1589]:
+                  - cell "Fixed Allowance" [ref=e1590]:
+                    - link "Fixed Allowance" [ref=e1591] [cursor=pointer]:
+                      - /url: "#/settings/salary-components/earnings/3848927000000032469"
+                  - cell "Fixed Allowance" [ref=e1592]
+                  - cell "Fixed; Flat Amount" [ref=e1593]
+                  - cell "Yes (If PF Wage < 15k)" [ref=e1594]:
+                    - text: "Yes"
+                    - generic [ref=e1595]: (If PF Wage < 15k)
+                  - cell "Yes" [ref=e1596]
+                  - cell "Active" [ref=e1597]
+                  - cell "Show dropdown menu" [ref=e1598]:
+                    - button "Show dropdown menu" [ref=e1600] [cursor=pointer]:
+                      - img [ref=e1601]
+                - row "Overtime Allowance Overtime Allowance Variable; Flat Amount No Yes Inactive Show dropdown menu" [ref=e1604]:
+                  - cell "Overtime Allowance" [ref=e1605]:
+                    - link "Overtime Allowance" [ref=e1606] [cursor=pointer]:
+                      - /url: "#/settings/salary-components/earnings/3848927000000032481"
+                  - cell "Overtime Allowance" [ref=e1607]
+                  - cell "Variable; Flat Amount" [ref=e1608]
+                  - cell "No" [ref=e1609]
+                  - cell "Yes" [ref=e1610]
+                  - cell "Inactive" [ref=e1611]
+                  - cell "Show dropdown menu" [ref=e1612]:
+                    - button "Show dropdown menu" [ref=e1614] [cursor=pointer]:
+                      - img [ref=e1615]
+                - row "Gratuity Gratuity Variable; Flat Amount No No Active Show dropdown menu" [ref=e1618]:
+                  - cell "Gratuity" [ref=e1619]:
+                    - link "Gratuity" [ref=e1620] [cursor=pointer]:
+                      - /url: "#/settings/salary-components/earnings/3848927000000032480"
+                  - cell "Gratuity" [ref=e1621]
+                  - cell "Variable; Flat Amount" [ref=e1622]
+                  - cell "No" [ref=e1623]
+                  - cell "No" [ref=e1624]
+                  - cell "Active" [ref=e1625]
+                  - cell "Show dropdown menu" [ref=e1626]:
+                    - button "Show dropdown menu" [ref=e1628] [cursor=pointer]:
+                      - img [ref=e1629]
+                - row "Bonus Bonus Variable; Flat Amount No No Active Show dropdown menu" [ref=e1632]:
+                  - cell "Bonus" [ref=e1633]:
+                    - link "Bonus" [ref=e1634] [cursor=pointer]:
+                      - /url: "#/settings/salary-components/earnings/3848927000000032471"
+                  - cell "Bonus" [ref=e1635]
+                  - cell "Variable; Flat Amount" [ref=e1636]
+                  - cell "No" [ref=e1637]
+                  - cell "No" [ref=e1638]
+                  - cell "Active" [ref=e1639]
+                  - cell "Show dropdown menu" [ref=e1640]:
+                    - button "Show dropdown menu" [ref=e1642] [cursor=pointer]:
+                      - img [ref=e1643]
+                - row "Commission Commission Variable; Flat Amount No Yes Active Show dropdown menu" [ref=e1646]:
+                  - cell "Commission" [ref=e1647]:
+                    - link "Commission" [ref=e1648] [cursor=pointer]:
+                      - /url: "#/settings/salary-components/earnings/3848927000000032472"
+                  - cell "Commission" [ref=e1649]
+                  - cell "Variable; Flat Amount" [ref=e1650]
+                  - cell "No" [ref=e1651]
+                  - cell "Yes" [ref=e1652]
+                  - cell "Active" [ref=e1653]
+                  - cell "Show dropdown menu" [ref=e1654]:
+                    - button "Show dropdown menu" [ref=e1656] [cursor=pointer]:
+                      - img [ref=e1657]
+                - row "Leave Encashment Leave Encashment Variable; Flat Amount No No Active Show dropdown menu" [ref=e1660]:
+                  - cell "Leave Encashment" [ref=e1661]:
+                    - link "Leave Encashment" [ref=e1662] [cursor=pointer]:
+                      - /url: "#/settings/salary-components/earnings/3848927000000032479"
+                  - cell "Leave Encashment" [ref=e1663]
+                  - cell "Variable; Flat Amount" [ref=e1664]
+                  - cell "No" [ref=e1665]
+                  - cell "No" [ref=e1666]
+                  - cell "Active" [ref=e1667]
+                  - cell "Show dropdown menu" [ref=e1668]:
+                    - button "Show dropdown menu" [ref=e1670] [cursor=pointer]:
+                      - img [ref=e1671]
+                - row "Notice Pay Notice Pay Variable; Flat Amount No No Active Show dropdown menu" [ref=e1674]:
+                  - cell "Notice Pay" [ref=e1675]:
+                    - link "Notice Pay" [ref=e1676] [cursor=pointer]:
+                      - /url: "#/settings/salary-components/earnings/3848927000000032482"
+                  - cell "Notice Pay" [ref=e1677]
+                  - cell "Variable; Flat Amount" [ref=e1678]
+                  - cell "No" [ref=e1679]
+                  - cell "No" [ref=e1680]
+                  - cell "Active" [ref=e1681]
+                  - cell "Show dropdown menu" [ref=e1682]:
+                    - button "Show dropdown menu" [ref=e1684] [cursor=pointer]:
+                      - img [ref=e1685]
+                - row "Hold Salary Hold Salary (Non Taxable) Variable; Flat Amount No No Active Show dropdown menu" [ref=e1688]:
+                  - cell "Hold Salary" [ref=e1689]:
+                    - link "Hold Salary" [ref=e1690] [cursor=pointer]:
+                      - /url: "#/settings/salary-components/earnings/3848927000000032483"
+                  - cell "Hold Salary (Non Taxable)" [ref=e1691]:
+                    - text: Hold Salary
+                    - generic [ref=e1692]: (Non Taxable)
+                  - cell "Variable; Flat Amount" [ref=e1693]
+                  - cell "No" [ref=e1694]
+                  - cell "No" [ref=e1695]
+                  - cell "Active" [ref=e1696]
+                  - cell "Show dropdown menu" [ref=e1697]:
+                    - button "Show dropdown menu" [ref=e1699] [cursor=pointer]:
+                      - img [ref=e1700]
+            - generic [ref=e1704]:
+              - generic [ref=e1705]:
+                - generic [ref=e1706]: "Total Count:"
+                - button "View" [ref=e1707] [cursor=pointer]
+              - generic [ref=e1708]:
+                - generic [ref=e1710]:
+                  - combobox "per page" [ref=e1712]:
+                    - generic [ref=e1713] [cursor=pointer]:
+                      - img [ref=e1714]
+                      - generic "50 per page" [ref=e1716]
+                  - status [ref=e1717]
+                - generic [ref=e1718]:
+                  - button "Previous Page" [disabled] [ref=e1719]:
+                    - img [ref=e1721]
+                  - text: 1 - 15
+                  - button "Next Page" [disabled] [ref=e1723]:
+                    - img [ref=e1725]
+    - listbox [ref=e1727]:
+      - link "Earning" [active] [ref=e1728] [cursor=pointer]:
+        - /url: "#/settings/salary-components/earnings/new"
+      - link "Correction" [ref=e1729] [cursor=pointer]:
+        - /url: "#/settings/salary-components/correction/new"
+      - link "Benefit" [ref=e1730] [cursor=pointer]:
+        - /url: "#/settings/salary-components/benefits/new"
+      - link "Deduction" [ref=e1731] [cursor=pointer]:
+        - /url: "#/settings/salary-components/deductions/new"
+      - link "Reimbursement" [ref=e1732] [cursor=pointer]:
+        - /url: "#/settings/salary-components/reimbursements/new"
+  - status [ref=e259]: Settings Earnings page loaded.
+  - text:       Chats  Contacts   

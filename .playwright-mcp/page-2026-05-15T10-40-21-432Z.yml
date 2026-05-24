@@ -1,0 +1,140 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e5]:
+      - navigation:
+        - generic [ref=e7]:
+          - img "Zoho Payroll" [ref=e8]
+          - generic [ref=e9]: Payroll
+        - generic [ref=e13]:
+          - button "Advanced Search" [ref=e14] [cursor=pointer]:
+            - img [ref=e15]
+          - textbox "Search in Employee" [ref=e19]
+        - generic [ref=e21]:
+          - generic [ref=e24] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e26] [cursor=pointer]
+          - button "lerno" [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]: lerno
+            - img [ref=e32]
+          - button "Refer and Earn" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+          - button "Notifications" [ref=e41] [cursor=pointer]:
+            - generic [ref=e42]:
+              - generic [ref=e2038]: "4"
+              - img [ref=e43]
+          - button "Settings" [ref=e46] [cursor=pointer]:
+            - img [ref=e47]
+          - button "A" [ref=e52] [cursor=pointer]:
+            - generic [ref=e53]: A
+          - img [ref=e70] [cursor=pointer]
+    - generic [ref=e73]:
+      - complementary [ref=e74]:
+        - navigation [ref=e75]:
+          - generic [ref=e76]:
+            - list [ref=e77]:
+              - link "Getting Started" [ref=e78] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e80]:
+                  - generic [ref=e81]:
+                    - img [ref=e83]
+                    - text: Getting Started
+                  - img [ref=e87]
+              - listitem [ref=e89]:
+                - link "Dashboard" [ref=e90] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e91]
+                  - generic [ref=e94]: Dashboard
+              - listitem [ref=e95]:
+                - link "Employees" [ref=e96] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e97]
+                  - generic [ref=e99]: Employees
+              - listitem [ref=e100]:
+                - link "Pay Runs" [ref=e101] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e102]
+                  - generic [ref=e105]: Pay Runs
+              - listitem [ref=e106]:
+                - list [ref=e107]:
+                  - listitem [ref=e108]:
+                    - button "Approvals" [ref=e110] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e111]:
+                        - button "Approvals" [ref=e112]:
+                          - img [ref=e5933]
+                          - img [ref=e115]
+                          - generic [ref=e118]: Approvals
+                          - img [ref=e119]
+              - listitem [ref=e121]:
+                - link "Form 16" [ref=e122] [cursor=pointer]:
+                  - /url: "#/taxes-and-forms/form16"
+                  - img [ref=e123]
+                  - generic [ref=e127]: Form 16
+              - listitem [ref=e128]:
+                - link "Loans" [ref=e129] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e130]
+                  - generic [ref=e133]: Loans
+              - listitem [ref=e134]:
+                - link "Giving" [ref=e135] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e136]
+                  - generic [ref=e138]: Giving
+              - listitem
+              - listitem [ref=e139]:
+                - link "Documents" [ref=e140] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e141]
+                  - generic [ref=e143]: Documents
+              - listitem [ref=e144]:
+                - link "Reports" [ref=e145] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e146]
+                  - generic [ref=e149]: Reports
+              - listitem [ref=e150]:
+                - link "Settings" [ref=e151] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e152]
+                  - generic [ref=e155]: Settings
+            - link "Contact Support" [ref=e159] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e160]
+            - generic [ref=e162]:
+              - paragraph [ref=e163]: Track TDS Liabilities and Generate Form 24Q
+              - button "View Details" [active] [ref=e164] [cursor=pointer]
+          - button "Collapse/Expand" [ref=e165] [cursor=pointer]:
+            - img [ref=e166]
+      - main [ref=e169]:
+        - generic [ref=e5939]:
+          - heading " Page not found" [level=2] [ref=e5940]:
+            - generic [ref=e5941]: 
+            - text: Page not found
+          - paragraph [ref=e5942]: Sorry we could not find the page you are requesting
+    - generic [ref=e5944]:
+      - dialog:
+        - generic [ref=e5945]:
+          - generic [ref=e5946]:
+            - heading "Record Challans and Generate Form 24Q" [level=4] [ref=e5947]
+            - paragraph [ref=e5948]: Introducing TDS Liabilities and Challans to help you deal with all the processes involved in generating your Form 24Q seamlessly in Zoho Payroll.
+          - generic [ref=e5949]:
+            - img [ref=e5951]
+            - generic [ref=e5952]:
+              - generic [ref=e5953]:
+                - term [ref=e5954]: TDS Liabilities
+                - definition [ref=e5955]: View the TDS details of the amount you are liable to pay the Government for all your employees in Zoho Payroll.
+                - term [ref=e5956]: Challans
+                - definition [ref=e5957]: Record challans and associate them with your employees' TDS liabilities automatically.
+                - term [ref=e5958]: Form 24Q
+                - definition [ref=e5959]: Based on your TDS liabilities and challan payments, generate your Form 24Q on time every quarter.
+              - generic [ref=e5960]:
+                - img [ref=e5962]
+                - paragraph [ref=e5964]: You can track TDS challan payments and Form 24Q from April 2026 onwards
+          - generic [ref=e5966]:
+            - button "Enable" [ref=e5967] [cursor=pointer]
+            - button "Cancel" [ref=e5968] [cursor=pointer]
+  - status [ref=e529]: page loaded.
+  - text:       Chats  Contacts   

@@ -10,6 +10,9 @@ services:
       # Connect directly to db in dev — skip pgbouncer for easier debugging
       ConnectionStrings__Payroll: "Host=db;Port=5432;Database=payroll;Username=payroll;Password=${DB_PASSWORD};CommandTimeout=30"
       Encryption__Key: "${ENCRYPTION_KEY}"
+      SUPERADMIN_EMAIL: "${SUPERADMIN_EMAIL}"
+      SUPERADMIN_PASSWORD: "${SUPERADMIN_PASSWORD}"
+      OPENIDDICT_CLIENT_SECRET: "${OPENIDDICT_CLIENT_SECRET}"
     ports:
       - "5000:8080"
 
@@ -19,6 +22,26 @@ services:
       # Connect directly to db in dev
       ConnectionStrings__Payroll: "Host=db;Port=5432;Database=payroll;Username=payroll;Password=${DB_PASSWORD}"
       Encryption__Key: "${ENCRYPTION_KEY}"
+      SUPERADMIN_EMAIL: "${SUPERADMIN_EMAIL}"
+      SUPERADMIN_PASSWORD: "${SUPERADMIN_PASSWORD}"
+      OPENIDDICT_CLIENT_SECRET: "${OPENIDDICT_CLIENT_SECRET}"
+
+  frontend:
+    build:
+      target: dev
+    volumes:
+      - ./web/src:/app/src
+      - ./web/public:/app/public
+      - ./web/index.html:/app/index.html
+      - ./web/vite.config.ts:/app/vite.config.ts
+      - ./web/tsconfig.json:/app/tsconfig.json
+      - ./web/tsconfig.app.json:/app/tsconfig.app.json
+      - ./web/tsconfig.node.json:/app/tsconfig.node.json
+      - ./web/eslint.config.js:/app/eslint.config.js
+    environment:
+      VITE_API_URL: "http://localhost:5000"
+    ports:
+      - "5173:5173"
 
   db:
     restart: "no"

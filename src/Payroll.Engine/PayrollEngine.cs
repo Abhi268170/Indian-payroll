@@ -23,17 +23,20 @@ public static class PayrollEngine
         StatutoryConfig config)
     {
         GrossResult gross = GrossCalculator.Compute(emp, run);
-        PFResult pf = PFCalculator.Compute(gross.PFWage, config, emp.PFOptOut, emp.VPFAmount);
-        ESIResult esi = ESICalculator.Compute(gross.GrossWage, config, emp.IsESIExempt, emp.IsPWD);
-        PTResult pt = PTCalculator.Compute(gross.GrossWage, emp.WorkStateCode, config, run);
-        LWFResult lwf = LWFCalculator.Compute(emp.WorkStateCode, config, run);
+        PFResult pf = PFCalculator.Compute(gross.PFWage, gross.FullPFWage, emp.LOPDays, run.SalaryDivisor, config, !emp.EpfEnabled, emp.VPFAmount);
+        ESIResult esi = ESICalculator.Compute(gross.ESIWage, config, emp.IsESIExempt, emp.IsPWD);
+        PTResult pt = PTCalculator.Compute(gross.GrossWage, emp, config, run);
+        LWFResult lwf = LWFCalculator.Compute(emp.WorkStateCode, gross.GrossWage, config, run);
         TDSResult tds = TDSCalculator.Compute(
-            gross.AnnualProjectedGross,
-            pt.Amount,
-            pf.EmployeeContribution,
+            gross.AnnualProjectedTaxableGross,
+            emp.PriorEmployerYTDTaxableIncome,
             emp.PriorEmployerYTDTDSDeducted,
+            emp.CurrentEmployerYTDTDSDeducted,
+            emp.HasPan,
             config,
             run.MonthsRemainingInFY);
+
+        GratuityResult gratuity = GratuityCalculator.Compute(emp.BasicWage, emp.GratuityEnabled);
 
         decimal netPay = gross.GrossWage
             - tds.MonthlyTDS
@@ -43,6 +46,6 @@ public static class PayrollEngine
             - pt.Amount
             - lwf.EmployeeAmount;
 
-        return new PayrollResult(emp.EmployeeId, gross, tds, pf, esi, pt, lwf, netPay);
+        return new PayrollResult(emp.EmployeeId, gross, tds, pf, esi, pt, lwf, netPay, gratuity);
     }
 }

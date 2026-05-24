@@ -1,0 +1,173 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e904]:
+      - navigation:
+        - generic [ref=e906]:
+          - img "Zoho Payroll" [ref=e907]
+          - generic [ref=e908]: Payroll
+        - generic [ref=e912]:
+          - button "Advanced Search" [ref=e913] [cursor=pointer]:
+            - img [ref=e914]
+          - textbox "Search in Employee" [ref=e918]
+        - generic [ref=e920]:
+          - generic [ref=e923] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e925] [cursor=pointer]
+          - button "lerno" [ref=e929] [cursor=pointer]:
+            - generic [ref=e930]: lerno
+            - img [ref=e931]
+          - button "Refer and Earn" [ref=e935] [cursor=pointer]:
+            - img [ref=e936]
+          - button "Notifications" [ref=e940] [cursor=pointer]:
+            - generic [ref=e941]:
+              - generic [ref=e1099]: "4"
+              - img [ref=e942]
+          - button "Settings" [ref=e945] [cursor=pointer]:
+            - img [ref=e946]
+          - button "A" [ref=e1100] [cursor=pointer]:
+            - generic [ref=e952]: A
+          - img [ref=e970] [cursor=pointer]
+    - generic [ref=e74]:
+      - complementary [ref=e973]:
+        - navigation [ref=e974]:
+          - generic [ref=e975]:
+            - list [ref=e976]:
+              - link "Getting Started" [ref=e977] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e2279]:
+                  - generic [ref=e2280]:
+                    - img [ref=e2282]
+                    - text: Getting Started
+                  - img [ref=e2286]
+              - listitem [ref=e988]:
+                - link "Dashboard" [ref=e989] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e2288]
+                  - generic [ref=e993]: Dashboard
+              - listitem [ref=e994]:
+                - link "Employees" [ref=e995] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e2291]
+                  - generic [ref=e998]: Employees
+              - listitem [ref=e999]:
+                - link "Pay Runs" [ref=e1000] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e2293]
+                  - generic [ref=e1004]: Pay Runs
+              - listitem [ref=e1005]:
+                - list [ref=e1006]:
+                  - listitem [ref=e1007]:
+                    - button "Approvals" [ref=e1009] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e1010]:
+                        - button "Approvals" [expanded] [ref=e1011]:
+                          - img [ref=e2296]
+                          - img [ref=e2298]
+                          - generic [ref=e1017]: Approvals
+                          - img [ref=e1018]
+                    - list "Approvals" [ref=e1422]:
+                      - listitem [ref=e1020]:
+                        - link "Reimbursements" [ref=e1021] [cursor=pointer]:
+                          - /url: "#/approvals/reimbursements?filter_by=Status.Submitted"
+                      - listitem [ref=e1022]:
+                        - link "Proof Of Investments" [ref=e1023] [cursor=pointer]:
+                          - /url: "#/approvals/proof-of-investment"
+                      - listitem [ref=e1024]:
+                        - link "Salary Revision" [ref=e1025] [cursor=pointer]:
+                          - /url: "#/approvals/salary-revision"
+              - listitem [ref=e1026]:
+                - list [ref=e1027]:
+                  - listitem [ref=e1028]:
+                    - button "Taxes & Forms" [ref=e1030] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e1031]:
+                        - button "Taxes & Forms" [ref=e1032]:
+                          - img [ref=e2301]
+                          - img [ref=e2303]
+                          - generic [ref=e1040]: Taxes & Forms
+                          - img [ref=e1041]
+              - listitem [ref=e1051]:
+                - link "Loans" [ref=e1052] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e2308]
+                  - generic [ref=e1056]: Loans
+              - listitem [ref=e1057]:
+                - link "Giving" [ref=e1058] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e2311]
+                  - generic [ref=e1061]: Giving
+              - listitem
+              - listitem [ref=e1062]:
+                - link "Documents" [ref=e1063] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e2313]
+                  - generic [ref=e1066]: Documents
+              - listitem [ref=e1067]:
+                - link "Reports" [ref=e1068] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e2315]
+                  - generic [ref=e1072]: Reports
+              - listitem [ref=e1073]:
+                - link "Settings" [ref=e1074] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e2318]
+                  - generic [ref=e1078]: Settings
+            - link "Contact Support" [ref=e2324] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e2325]
+          - button "Collapse/Expand" [ref=e1085] [cursor=pointer]:
+            - img [ref=e2327]
+      - main [ref=e1089]:
+        - generic [ref=e2330]:
+          - generic [ref=e2331]:
+            - generic [ref=e2333]:
+              - button "Pending Claims" [expanded] [ref=e2334] [cursor=pointer]:
+                - text: Pending Claims
+                - img [ref=e2336]
+              - listbox [ref=e2392]:
+                - button "All Claims" [active] [ref=e2393] [cursor=pointer]
+                - button "Pending Claims" [ref=e2394] [cursor=pointer]
+                - button "Approved Claims" [ref=e2395] [cursor=pointer]
+                - button "Rejected Claims" [ref=e2396] [cursor=pointer]
+            - generic [ref=e2339]:
+              - button "Add" [ref=e2341] [cursor=pointer]:
+                - img [ref=e2342]
+                - generic [ref=e2344]: Add
+              - button "Show dropdown menu" [ref=e2346] [cursor=pointer]:
+                - img [ref=e2347]
+              - button [ref=e2350] [cursor=pointer]:
+                - img [ref=e2351]
+              - button "Instant Helper" [ref=e2353] [cursor=pointer]:
+                - img [ref=e2354]
+          - generic [ref=e2360]:
+            - generic [ref=e2361] [cursor=pointer]:
+              - generic [ref=e2362]: "Claim Month:"
+              - textbox "Select Period" [ref=e2363]: May 2026
+              - button [ref=e2365]:
+                - img [ref=e2366]
+            - generic [ref=e2368] [cursor=pointer]:
+              - generic [ref=e2369]: "Employees:"
+              - generic [ref=e2371]:
+                - combobox "Employees:" [ref=e2373]:
+                  - generic [ref=e2374]:
+                    - generic [ref=e2376]: Select an Employee
+                    - img [ref=e2379]
+                - status [ref=e2381]
+            - button "Clear Filter" [ref=e2383] [cursor=pointer]:
+              - img [ref=e2384]
+              - text: Clear Filter
+          - generic [ref=e2388]:
+            - img [ref=e2389]
+            - heading "No results found" [level=3] [ref=e2390]
+            - generic [ref=e2391]: Looks like you don't have any results for the filter applied
+  - generic [ref=e535] [cursor=pointer]:
+    - generic [ref=e536]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e537]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e539]: Don't show again
+  - status [ref=e540]: Approvals | Reimbursements page loaded.
+  - text:       Chats  Contacts   

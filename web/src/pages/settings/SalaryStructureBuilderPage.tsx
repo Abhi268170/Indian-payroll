@@ -1,0 +1,482 @@
+import { useState, useMemo, type ReactElement } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate, useParams } from 'react-router-dom'
+import { Plus, Trash2, ChevronDown, ChevronRight } from 'lucide-react'
+import { api } from '@/lib/api'
+import { Button } from '@/components/ui/Button'
+import { Spinner } from '@/components/ui/Spinner'
+import { useToast } from '@/components/ui/useToast'
+import { formatINR } from '@/lib/format'
+import type { SalaryComponentSummary } from './SalaryComponentsPage'
+
+type ComponentCategory = 'Earning' | 'Deduction' | 'Reimbursement' | 'Benefit' | 'Correction'
+type FormulaType = 'Fixed' | 'PercentOfBasic' | 'PercentOfGross' | 'PercentOfCTC' | 'ResidualCTC'
+
+interface DetailComponent {
+  componentId: string
+  componentName: string
+  componentCode: string
+  category: ComponentCategory
+  isSystemComponent: boolean
+  formulaType: FormulaType
+  fixedAmount: number | null
+  percentage: number | null
+  displayOrder: number
+}
+
+interface TemplateDetail {
+  id: string
+  name: string
+  description: string | null
+  isActive: boolean
+  components: DetailComponent[]
+}
+
+interface TemplateRow {
+  componentId: string
+  componentName: string
+  category: ComponentCategory
+  isSystemComponent: boolean
+  formulaType: FormulaType
+  fixedAmount: string
+  percentage: string
+  displayOrder: number
+}
+
+const FORMULA_LABELS: Record<FormulaType, string> = {
+  Fixed: 'Fixed',
+  PercentOfBasic: '% of Basic',
+  PercentOfGross: '% of Gross',
+  PercentOfCTC: '% of CTC',
+  ResidualCTC: 'Residual (auto)',
+}
+
+const CATEGORY_GROUPS: { label: string; category: ComponentCategory }[] = [
+  { label: 'Earnings', category: 'Earning' },
+  { label: 'Deductions', category: 'Deduction' },
+  { label: 'Reimbursements', category: 'Reimbursement' },
+  { label: 'Benefits', category: 'Benefit' },
+]
+
+function computeAmounts(rows: TemplateRow[], previewCtc: number): Map<string, number> {
+  const annualCtc = previewCtc
+  const result = new Map<string, number>()
+
+  const basicRow = rows.find(r => r.componentName.toLowerCase() === 'basic' || r.componentName.toLowerCase() === 'basic salary')
+  const basicAnnual = basicRow
+    ? (basicRow.formulaType === 'PercentOfCTC'
+        ? (parseFloat(basicRow.percentage) / 100) * annualCtc
+        : basicRow.formulaType === 'Fixed'
+          ? parseFloat(basicRow.fixedAmount) * 12
+          : 0)
+    : 0
+
+  let allocated = 0
+
+  for (const row of rows) {
+    if (row.formulaType === 'ResidualCTC') continue
+    let annual = 0
+    if (row.formulaType === 'Fixed') {
+      annual = (parseFloat(row.fixedAmount) || 0) * 12
+    } else if (row.formulaType === 'PercentOfCTC') {
+      annual = ((parseFloat(row.percentage) || 0) / 100) * annualCtc
+    } else if (row.formulaType === 'PercentOfBasic') {
+      annual = ((parseFloat(row.percentage) || 0) / 100) * basicAnnual
+    } else if (row.formulaType === 'PercentOfGross') {
+      annual = 0 // gross not computable without full pass; approximate
+    }
+    result.set(row.componentId, annual)
+    allocated += annual
+  }
+
+  // Fixed Allowance gets the remainder
+  const residualRow = rows.find(r => r.formulaType === 'ResidualCTC')
+  if (residualRow) {
+    result.set(residualRow.componentId, Math.max(0, annualCtc - allocated))
+  }
+
+  return result
+}
+
+export default function SalaryStructureBuilderPage(): ReactElement {
+  const { id } = useParams<{ id?: string }>()
+  const isNew = !id
+  const navigate = useNavigate()
+  const qc = useQueryClient()
+  const { success: toastSuccess, error: toastError } = useToast()
+
+  const [templateName, setTemplateName] = useState('')
+  const [description, setDescription] = useState('')
+  const [rows, setRows] = useState<TemplateRow[]>([])
+  const [previewCtc, setPreviewCtc] = useState('600000')
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(['Earnings']))
+  const [initialized, setInitialized] = useState(false)
+
+  // Load all components for the picker
+  const { data: allComponents = [] } = useQuery<SalaryComponentSummary[]>({
+    queryKey: ['salary-components', null],
+    queryFn: async () => {
+      const res = await api.get<SalaryComponentSummary[]>('/api/v1/salary-components')
+      return res.data
+    },
+  })
+
+  // Load template for edit mode
+  useQuery<TemplateDetail>({
+    queryKey: ['salary-structure-template', id],
+    queryFn: async () => {
+      const res = await api.get<TemplateDetail>(`/api/v1/salary-structure-templates/${id!}`)
+      return res.data
+    },
+    enabled: !isNew,
+    select: data => data,
+    staleTime: Infinity,
+  })
+
+  // Initialize rows from template data when editing
+  const { data: templateData } = useQuery<TemplateDetail>({
+    queryKey: ['salary-structure-template', id],
+    queryFn: async () => {
+      const res = await api.get<TemplateDetail>(`/api/v1/salary-structure-templates/${id!}`)
+      return res.data
+    },
+    enabled: !isNew,
+  })
+
+  if (!initialized && templateData) {
+    setTemplateName(templateData.name)
+    setDescription(templateData.description ?? '')
+    setRows(templateData.components.map(c => ({
+      componentId: c.componentId,
+      componentName: c.componentName,
+      category: c.category,
+      isSystemComponent: c.isSystemComponent,
+      formulaType: c.formulaType,
+      fixedAmount: c.fixedAmount?.toString() ?? '',
+      percentage: c.percentage?.toString() ?? '',
+      displayOrder: c.displayOrder,
+    })))
+    setInitialized(true)
+  }
+
+  const saveMutation = useMutation({
+    mutationFn: () => {
+      const payload = {
+        name: templateName,
+        description: description || null,
+        components: rows.map((r, i) => ({
+          componentId: r.componentId,
+          formulaType: r.formulaType,
+          fixedAmount: r.formulaType === 'Fixed' ? parseFloat(r.fixedAmount) || null : null,
+          percentage: r.formulaType !== 'Fixed' && r.formulaType !== 'ResidualCTC'
+            ? parseFloat(r.percentage) || null
+            : null,
+          displayOrder: i,
+        })),
+      }
+      return isNew
+        ? api.post<{ id: string }>('/api/v1/salary-structure-templates', payload)
+        : api.put(`/api/v1/salary-structure-templates/${id}`, payload)
+    },
+    onSuccess: async () => {
+      toastSuccess(isNew ? 'Salary structure created' : 'Salary structure updated')
+      await qc.invalidateQueries({ queryKey: ['salary-structure-templates'] })
+      void navigate('/settings/salary-structures')
+    },
+    onError: (err: unknown) => {
+      const msg = extractError(err)
+      toastError(msg ?? 'Failed to save salary structure')
+    },
+  })
+
+  const amounts = useMemo(
+    () => computeAmounts(rows, parseFloat(previewCtc) || 0),
+    [rows, previewCtc],
+  )
+
+  const alreadyAdded = new Set(rows.map(r => r.componentId))
+
+  function addComponent(comp: SalaryComponentSummary): void {
+    if (alreadyAdded.has(comp.id)) return
+    const formulaType: FormulaType = comp.isSystemComponent ? 'ResidualCTC' : 'PercentOfCTC'
+    setRows(prev => [
+      ...prev,
+      {
+        componentId: comp.id,
+        componentName: comp.name,
+        category: comp.category,
+        isSystemComponent: comp.isSystemComponent,
+        formulaType,
+        fixedAmount: '',
+        percentage: '',
+        displayOrder: prev.length,
+      },
+    ])
+  }
+
+  function removeRow(componentId: string): void {
+    setRows(prev => prev.filter(r => r.componentId !== componentId))
+  }
+
+  function updateRow(componentId: string, patch: Partial<TemplateRow>): void {
+    setRows(prev => prev.map(r => r.componentId === componentId ? { ...r, ...patch } : r))
+  }
+
+  function toggleGroup(label: string): void {
+    setExpandedGroups(prev => {
+      const next = new Set(prev)
+      if (next.has(label)) next.delete(label)
+      else next.add(label)
+      return next
+    })
+  }
+
+  const isLoading = !isNew && !initialized && !templateData
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center py-20"><Spinner /></div>
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="flex-shrink-0 border-b border-[var(--color-border)] bg-white px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <input
+            className="text-[18px] font-semibold text-[var(--color-text-primary)] border-0 outline-none bg-transparent placeholder-gray-300 min-w-[200px]"
+            placeholder="Structure name..."
+            value={templateName}
+            onChange={e => { setTemplateName(e.target.value) }}
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={() => { void navigate('/settings/salary-structures') }}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="button"
+            variant="primary"
+            size="sm"
+            loading={saveMutation.isPending}
+            disabled={!templateName || rows.length === 0}
+            onClick={() => { saveMutation.mutate() }}
+          >
+            {isNew ? 'Create' : 'Save'}
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left: Component Picker */}
+        <aside className="w-64 flex-shrink-0 border-r border-[var(--color-border)] bg-white overflow-y-auto">
+          <div className="px-4 pt-4 pb-2">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-muted)]">
+              Components
+            </p>
+            <p className="text-[12px] text-[var(--color-text-muted)] mt-0.5">
+              Click to add to structure
+            </p>
+          </div>
+
+          {CATEGORY_GROUPS.map(group => {
+            const groupComponents = allComponents.filter(c => c.category === group.category && c.isActive)
+            const expanded = expandedGroups.has(group.label)
+            return (
+              <div key={group.label} className="border-t border-[var(--color-border)]">
+                <button
+                  type="button"
+                  onClick={() => { toggleGroup(group.label) }}
+                  className="w-full flex items-center justify-between px-4 py-2.5 text-[12px] font-semibold text-[var(--color-text-secondary)] hover:bg-gray-50 transition-colors"
+                >
+                  {group.label} ({groupComponents.length})
+                  {expanded
+                    ? <ChevronDown className="w-3.5 h-3.5" />
+                    : <ChevronRight className="w-3.5 h-3.5" />}
+                </button>
+                {expanded && groupComponents.map(comp => {
+                  const added = alreadyAdded.has(comp.id)
+                  return (
+                    <button
+                      key={comp.id}
+                      type="button"
+                      disabled={added}
+                      onClick={() => { addComponent(comp) }}
+                      className={[
+                        'w-full text-left px-4 py-2 flex items-center justify-between text-[13px] transition-colors',
+                        added
+                          ? 'text-[var(--color-text-muted)] cursor-default'
+                          : 'text-[var(--color-text-primary)] hover:bg-blue-50 hover:text-[var(--color-primary)] cursor-pointer',
+                      ].join(' ')}
+                    >
+                      <span className="truncate">{comp.name}</span>
+                      {!added && <Plus className="w-3 h-3 flex-shrink-0 ml-1" />}
+                    </button>
+                  )
+                })}
+              </div>
+            )
+          })}
+        </aside>
+
+        {/* Right: Template Editor */}
+        <div className="flex-1 overflow-y-auto px-6 py-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div>
+              <label className="block text-[12px] text-[var(--color-text-secondary)] mb-1">Description</label>
+              <input
+                className="h-9 px-3 border border-[var(--color-border)] rounded-lg text-[13px] text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-primary)] w-80"
+                placeholder="Optional description"
+                value={description}
+                onChange={e => { setDescription(e.target.value) }}
+              />
+            </div>
+            <div>
+              <label className="block text-[12px] text-[var(--color-text-secondary)] mb-1">
+                Preview Annual CTC (₹)
+              </label>
+              <input
+                type="number"
+                className="h-9 px-3 border border-[var(--color-border)] rounded-lg text-[13px] text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-primary)] w-40"
+                value={previewCtc}
+                onChange={e => { setPreviewCtc(e.target.value) }}
+              />
+            </div>
+          </div>
+
+          {rows.length === 0 ? (
+            <div className="border-2 border-dashed border-[var(--color-border)] rounded-xl py-16 text-center">
+              <p className="text-[14px] font-medium text-[var(--color-text-secondary)]">
+                No components added
+              </p>
+              <p className="text-[13px] text-[var(--color-text-muted)] mt-1">
+                Select components from the left panel to build your structure.
+                Fixed Allowance is required.
+              </p>
+            </div>
+          ) : (
+            <div className="bg-white border border-[var(--color-border)] rounded-xl overflow-hidden">
+              <table className="w-full text-[13px]">
+                <thead>
+                  <tr className="border-b border-[var(--color-border)] bg-gray-50">
+                    <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">Component</th>
+                    <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">Formula</th>
+                    <th className="text-left px-4 py-3 font-medium text-[var(--color-text-secondary)]">Value</th>
+                    <th className="text-right px-4 py-3 font-medium text-[var(--color-text-secondary)]">Annual Amount</th>
+                    <th className="px-4 py-3 w-8" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row, i) => {
+                    const annual = amounts.get(row.componentId) ?? 0
+                    return (
+                      <tr
+                        key={row.componentId}
+                        className={i < rows.length - 1 ? 'border-b border-[var(--color-border)]' : ''}
+                      >
+                        <td className="px-4 py-3">
+                          <span className="font-medium text-[var(--color-text-primary)]">{row.componentName}</span>
+                          {row.isSystemComponent && (
+                            <span className="ml-2 text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-medium">
+                              System
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {row.isSystemComponent ? (
+                            <span className="text-[var(--color-text-muted)]">{FORMULA_LABELS[row.formulaType]}</span>
+                          ) : (
+                            <select
+                              value={row.formulaType}
+                              onChange={e => {
+                                updateRow(row.componentId, {
+                                  formulaType: e.target.value as FormulaType,
+                                  fixedAmount: '',
+                                  percentage: '',
+                                })
+                              }}
+                              className="h-8 px-2 border border-[var(--color-border)] rounded-lg text-[12px] focus:outline-none focus:border-[var(--color-primary)] bg-white"
+                            >
+                              <option value="Fixed">Fixed Amount</option>
+                              <option value="PercentOfBasic">% of Basic</option>
+                              <option value="PercentOfGross">% of Gross</option>
+                              <option value="PercentOfCTC">% of CTC</option>
+                            </select>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {row.formulaType === 'ResidualCTC' ? (
+                            <span className="text-[var(--color-text-muted)] text-[12px]">auto-calculated</span>
+                          ) : row.formulaType === 'Fixed' ? (
+                            <input
+                              type="number"
+                              className="h-8 w-28 px-2 border border-[var(--color-border)] rounded-lg text-[12px] focus:outline-none focus:border-[var(--color-primary)]"
+                              placeholder="₹/month"
+                              value={row.fixedAmount}
+                              onChange={e => { updateRow(row.componentId, { fixedAmount: e.target.value }) }}
+                            />
+                          ) : (
+                            <div className="flex items-center gap-1">
+                              <input
+                                type="number"
+                                className="h-8 w-20 px-2 border border-[var(--color-border)] rounded-lg text-[12px] focus:outline-none focus:border-[var(--color-primary)]"
+                                placeholder="0.00"
+                                min={0}
+                                max={100}
+                                value={row.percentage}
+                                onChange={e => { updateRow(row.componentId, { percentage: e.target.value }) }}
+                              />
+                              <span className="text-[12px] text-[var(--color-text-muted)]">%</span>
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-right font-medium text-[var(--color-text-primary)]">
+                          {annual > 0 ? formatINR(annual) : '—'}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {!row.isSystemComponent && (
+                            <button
+                              type="button"
+                              onClick={() => { removeRow(row.componentId) }}
+                              className="text-[var(--color-text-muted)] hover:text-red-500 transition-colors"
+                              aria-label="Remove"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+                <tfoot>
+                  <tr className="border-t-2 border-[var(--color-border)] bg-gray-50">
+                    <td colSpan={3} className="px-4 py-3 font-semibold text-[var(--color-text-primary)]">
+                      Total Annual CTC
+                    </td>
+                    <td className="px-4 py-3 text-right font-semibold text-[var(--color-text-primary)]">
+                      {formatINR(parseFloat(previewCtc) || 0)}
+                    </td>
+                    <td />
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function extractError(err: unknown): string | null {
+  if (typeof err === 'object' && err !== null && 'response' in err) {
+    const res = (err as { response?: { data?: { error?: string; errors?: string[] } } }).response
+    return res?.data?.error ?? res?.data?.errors?.[0] ?? null
+  }
+  return null
+}

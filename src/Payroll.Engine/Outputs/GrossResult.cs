@@ -2,7 +2,12 @@ namespace Payroll.Engine.Outputs;
 
 public sealed record GrossResult(
     decimal GrossWage,
-    decimal PFWage,
+    decimal PFWage,              // LOP-prorated PF wage (actual earned)
+    decimal FullPFWage,          // non-prorated PF wage from salary structure
     decimal AnnualProjectedGross,
     decimal LOPDeduction,
-    decimal ArrearAmount);
+    decimal ArrearAmount,
+    IReadOnlyList<ComponentAmountResult> ComponentBreakdown,
+    decimal TaxableGrossWage,            // Σ prorated amounts where IsTaxable
+    decimal AnnualProjectedTaxableGross, // used by TDSCalculator instead of full gross
+    decimal ESIWage);                    // Σ prorated amounts where ConsiderForEsi

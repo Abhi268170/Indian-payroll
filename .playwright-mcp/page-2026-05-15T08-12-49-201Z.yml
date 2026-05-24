@@ -1,0 +1,236 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e7077]:
+      - generic [ref=e7079]:
+        - generic [ref=e7080]:
+          - button "All Settings" [ref=e7081] [cursor=pointer]:
+            - img [ref=e7082]
+          - button [ref=e7087] [cursor=pointer]:
+            - img [ref=e7088]
+          - generic [ref=e7090]:
+            - generic [ref=e7091]: All Settings
+            - generic [ref=e7092]: lerno
+        - generic [ref=e7094]:
+          - combobox "Search" [ref=e7098]
+          - img [ref=e7099]
+        - button "Close Settings" [ref=e7103] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e7104]
+      - generic [ref=e7106]:
+        - navigation [ref=e7107]:
+          - generic [ref=e7109]:
+            - group [ref=e7110]:
+              - heading "Organisation Settings" [level=2] [ref=e7111]
+              - generic [ref=e7112]:
+                - region "Organisation" [ref=e7114]:
+                  - generic [ref=e7115]:
+                    - heading "Organisation" [level=3] [ref=e7116] [cursor=pointer]:
+                      - button "Organisation" [ref=e7117]:
+                        - img [ref=e7118]
+                        - generic [ref=e7120]: Organisation
+                    - text:      
+                - generic [ref=e7121]:
+                  - region "Users and Roles" [ref=e7122]:
+                    - generic [ref=e7123]:
+                      - heading "Users and Roles" [level=3] [ref=e7124] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e7125]:
+                          - img [ref=e7126]
+                          - generic [ref=e7128]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e7129]:
+                    - generic [ref=e7130]:
+                      - heading "Taxes" [level=3] [ref=e7131] [cursor=pointer]:
+                        - button "Taxes" [ref=e7132]:
+                          - img [ref=e7133]
+                          - generic [ref=e7135]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e7137]:
+                  - generic [ref=e7138]:
+                    - heading "Setup & Configurations" [level=3] [ref=e7139] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e7140]:
+                        - img [ref=e7141]
+                        - generic [ref=e7143]: Setup & Configurations
+                    - text:     
+                - region "Customisations" [ref=e7145]:
+                  - generic [ref=e7146]:
+                    - heading "Customisations" [level=3] [ref=e7147] [cursor=pointer]:
+                      - button "Customisations" [expanded] [ref=e7148]:
+                        - img [ref=e7149]
+                        - generic [ref=e7151]: Customisations
+                    - region "Customisations" [ref=e7152]:
+                      - generic [ref=e7153]:
+                        - link "Email Templates" [ref=e7154] [cursor=pointer]:
+                          - /url: "#/settings/email-templates"
+                          - generic [ref=e7155]: Email Templates
+                          - text: 
+                        - link "Sender Email Preferences" [ref=e7156] [cursor=pointer]:
+                          - /url: "#/settings/email-preference"
+                          - generic [ref=e7157]: Sender Email Preferences
+                          - text: 
+                        - link "Salary Templates" [ref=e7158] [cursor=pointer]:
+                          - /url: "#/settings/salary-templates"
+                          - generic [ref=e7159]: Salary Templates
+                          - text: 
+                        - link "PDF Templates" [ref=e7160] [cursor=pointer]:
+                          - /url: "#/settings/templates/regular-payslip"
+                          - generic [ref=e7161]: PDF Templates
+                          - text: 
+                        - link "Reporting Tags" [ref=e7162] [cursor=pointer]:
+                          - /url: "#/settings/advanced-reportingtags"
+                          - generic [ref=e7163]: Reporting Tags
+                          - text: 
+                - region "Automations" [ref=e7165]:
+                  - generic [ref=e7166]:
+                    - heading "Automations" [level=3] [ref=e7167] [cursor=pointer]:
+                      - button "Automations" [ref=e7168]:
+                        - img [ref=e7169]
+                        - generic [ref=e7171]: Automations
+                    - text:    
+            - group [ref=e7172]:
+              - heading "Module Settings" [level=2] [ref=e7173]
+              - generic [ref=e7174]:
+                - region "General" [ref=e7176]:
+                  - generic [ref=e7177]:
+                    - heading "General" [level=3] [ref=e7178] [cursor=pointer]:
+                      - button "General" [ref=e7179]:
+                        - img [ref=e7180]
+                        - generic [ref=e7182]: General
+                    - text:     
+                - region "Payments" [ref=e7184]:
+                  - generic [ref=e7185]:
+                    - heading "Payments" [level=3] [ref=e7186] [cursor=pointer]:
+                      - button "Payments" [ref=e7187]:
+                        - img [ref=e7188]
+                        - generic [ref=e7190]: Payments
+                    - text: 
+            - group [ref=e7191]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e7192]
+              - generic [ref=e7193]:
+                - region "Integrations" [ref=e7195]:
+                  - generic [ref=e7196]:
+                    - heading "Integrations" [level=3] [ref=e7197] [cursor=pointer]:
+                      - button "Integrations" [ref=e7198]:
+                        - img [ref=e7199]
+                        - generic [ref=e7201]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e7203]:
+                  - generic [ref=e7204]:
+                    - heading "Developer Data" [level=3] [ref=e7205] [cursor=pointer]:
+                      - button "Developer Data" [ref=e7206]:
+                        - img [ref=e7207]
+                        - generic [ref=e7209]: Developer Data
+                    - text:   
+        - generic [ref=e7210]:
+          - heading "PDF Templates" [level=3] [ref=e7212]
+          - list [ref=e7214]:
+            - listitem [ref=e7215]: payslip
+            - listitem [ref=e7216]:
+              - link "Regular Payslips" [ref=e7217] [cursor=pointer]:
+                - /url: "#/settings/templates/regular-payslip"
+            - listitem [ref=e7218]:
+              - link "Final Settlement Payslip" [ref=e7219] [cursor=pointer]:
+                - /url: "#/settings/templates/final-settlement-payslip"
+            - listitem
+            - listitem [ref=e7220]: Letter Templates
+            - listitem [ref=e7221]:
+              - link "Salary Certificate" [ref=e7222] [cursor=pointer]:
+                - /url: "#/settings/templates/letter-templates/salary-certificate"
+            - listitem [ref=e7223]:
+              - link "Salary Revision Letter" [ref=e7224] [cursor=pointer]:
+                - /url: "#/settings/templates/letter-templates/salary-revision"
+            - listitem [ref=e7225]:
+              - link "Bonus Letter" [ref=e7226] [cursor=pointer]:
+                - /url: "#/settings/templates/letter-templates/bonus-letter"
+        - main [ref=e7227]:
+          - heading "Regular Payslips" [level=3] [ref=e7229]
+          - list [ref=e7232]:
+            - listitem [ref=e7233]:
+              - heading "Elegant Template" [level=5] [ref=e7234]
+              - generic [ref=e7235]:
+                - img [ref=e7237]
+                - generic [ref=e7238]: Default
+                - generic [ref=e7240]:
+                  - button "Preview Elegant Template" [ref=e7241] [cursor=pointer]:
+                    - img [ref=e7242]
+                  - link "Edit Elegant Template" [ref=e7245] [cursor=pointer]:
+                    - /url: "#/settings/templates/regular-payslip/3848927000000032588/edit"
+                    - img [ref=e7246]
+            - listitem [ref=e7248]:
+              - heading "Standard Template" [level=5] [ref=e7249]
+              - generic [ref=e7250]:
+                - img [ref=e7252]
+                - generic [ref=e7254]:
+                  - button "Set as Default" [ref=e7255] [cursor=pointer]
+                  - button "Preview Standard Template" [ref=e7256] [cursor=pointer]:
+                    - img [ref=e7257]
+                  - link "Edit Standard Template" [ref=e7260] [cursor=pointer]:
+                    - /url: "#/settings/templates/regular-payslip/3848927000000032590/edit"
+                    - img [ref=e7261]
+            - listitem [ref=e7263]:
+              - heading "Mini Template" [level=5] [ref=e7264]
+              - generic [ref=e7265]:
+                - img [ref=e7267]
+                - generic [ref=e7269]:
+                  - button "Set as Default" [ref=e7270] [cursor=pointer]
+                  - button "Preview Mini Template" [ref=e7271] [cursor=pointer]:
+                    - img [ref=e7272]
+                  - link "Edit Mini Template" [ref=e7275] [cursor=pointer]:
+                    - /url: "#/settings/templates/regular-payslip/3848927000000032592/edit"
+                    - img [ref=e7276]
+            - listitem [ref=e7278]:
+              - heading "Simple Template" [level=5] [ref=e7279]
+              - generic [ref=e7280]:
+                - img [ref=e7282]
+                - generic [ref=e7284]:
+                  - button "Set as Default" [ref=e7285] [cursor=pointer]
+                  - button "Preview Simple Template" [ref=e7286] [cursor=pointer]:
+                    - img [ref=e7287]
+                  - link "Edit Simple Template" [ref=e7290] [cursor=pointer]:
+                    - /url: "#/settings/templates/regular-payslip/3848927000000032594/edit"
+                    - img [ref=e7291]
+            - listitem [ref=e7293]:
+              - heading "Lite Template" [level=5] [ref=e7294]
+              - generic [ref=e7295]:
+                - img [ref=e7297]
+                - generic [ref=e7299]:
+                  - button "Set as Default" [ref=e7300] [cursor=pointer]
+                  - button "Preview Lite Template" [ref=e7301] [cursor=pointer]:
+                    - img [ref=e7302]
+                  - link "Edit Lite Template" [ref=e7305] [cursor=pointer]:
+                    - /url: "#/settings/templates/regular-payslip/3848927000000032596/edit"
+                    - img [ref=e7306]
+            - listitem [ref=e7308]:
+              - heading "Simple Spreadsheet Template" [level=5] [ref=e7309]
+              - generic [ref=e7310]:
+                - img [ref=e7312]
+                - generic [ref=e7314]:
+                  - button "Set as Default" [ref=e7315] [cursor=pointer]
+                  - button "Preview Simple Spreadsheet Template" [ref=e7316] [cursor=pointer]:
+                    - img [ref=e7317]
+                  - link "Edit Simple Spreadsheet Template" [ref=e7320] [cursor=pointer]:
+                    - /url: "#/settings/templates/regular-payslip/3848927000000032598/edit"
+                    - img [ref=e7321]
+            - listitem [ref=e7323]:
+              - heading "Professional Template" [level=5] [ref=e7324]
+              - generic [ref=e7325]:
+                - img [ref=e7327]
+                - generic [ref=e7329]:
+                  - button "Set as Default" [ref=e7330] [cursor=pointer]
+                  - button "Preview Professional Template" [ref=e7331] [cursor=pointer]:
+                    - img [ref=e7332]
+                  - link "Edit Professional Template" [ref=e7335] [cursor=pointer]:
+                    - /url: "#/settings/templates/regular-payslip/3848927000000032600/edit"
+                    - img [ref=e7336]
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Settings PDF Templates Regular Payslips page loaded.
+  - text:       Chats  Contacts   

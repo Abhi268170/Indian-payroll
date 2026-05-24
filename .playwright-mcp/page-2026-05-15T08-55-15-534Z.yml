@@ -1,0 +1,233 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e1881]:
+      - navigation:
+        - generic [ref=e1883]:
+          - img "Zoho Payroll" [ref=e1884]
+          - generic [ref=e1885]: Payroll
+        - generic [ref=e1889]:
+          - button "Advanced Search" [ref=e1890] [cursor=pointer]:
+            - img [ref=e1891]
+          - textbox "Search in Employee" [ref=e1895]
+        - generic [ref=e1897]:
+          - generic [ref=e1900] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e1902] [cursor=pointer]
+          - button "lerno" [ref=e1906] [cursor=pointer]:
+            - generic [ref=e1907]: lerno
+            - img [ref=e1908]
+          - button "Refer and Earn" [ref=e1912] [cursor=pointer]:
+            - img [ref=e1913]
+          - button "Notifications" [ref=e1917] [cursor=pointer]:
+            - img [ref=e1919]
+          - button "Settings" [ref=e1922] [cursor=pointer]:
+            - img [ref=e1923]
+          - button "A" [ref=e2061] [cursor=pointer]:
+            - generic [ref=e1929]: A
+          - img [ref=e1947] [cursor=pointer]
+    - generic [ref=e73]:
+      - complementary [ref=e1950]:
+        - navigation [ref=e1951]:
+          - generic [ref=e1952]:
+            - list [ref=e1953]:
+              - link "Getting Started" [ref=e1954] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e1956]:
+                  - generic [ref=e1957]:
+                    - img [ref=e1959]
+                    - text: Getting Started
+                  - img [ref=e1963]
+              - listitem [ref=e1965]:
+                - link "Dashboard" [ref=e1966] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e1967]
+                  - generic [ref=e1970]: Dashboard
+              - listitem [ref=e1971]:
+                - link "Employees" [ref=e1972] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e1973]
+                  - generic [ref=e1975]: Employees
+              - listitem [ref=e1976]:
+                - link "Pay Runs" [ref=e1977] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e1978]
+                  - generic [ref=e1981]: Pay Runs
+              - listitem [ref=e1982]:
+                - list [ref=e1983]:
+                  - listitem [ref=e1984]:
+                    - button "Approvals" [ref=e1986] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e1987]:
+                        - button "Approvals" [ref=e1988]:
+                          - img [ref=e1989]
+                          - img [ref=e1991]
+                          - generic [ref=e1994]: Approvals
+                          - img [ref=e1995]
+              - listitem [ref=e2003]:
+                - link "Form 16" [ref=e2004] [cursor=pointer]:
+                  - /url: "#/taxes-and-forms/form16"
+                  - img [ref=e2005]
+                  - generic [ref=e2009]: Form 16
+              - listitem [ref=e2010]:
+                - link "Loans" [ref=e2011] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e2012]
+                  - generic [ref=e2015]: Loans
+              - listitem [ref=e2016]:
+                - link "Giving" [ref=e2017] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e2018]
+                  - generic [ref=e2020]: Giving
+              - listitem
+              - listitem [ref=e2021]:
+                - link "Documents" [ref=e2022] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e2023]
+                  - generic [ref=e2025]: Documents
+              - listitem [ref=e2026]:
+                - link "Reports" [ref=e2027] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e2028]
+                  - generic [ref=e2031]: Reports
+              - listitem [ref=e2032]:
+                - link "Settings" [ref=e2033] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e2034]
+                  - generic [ref=e2037]: Settings
+            - link "Contact Support" [ref=e2041] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e2042]
+            - generic [ref=e2044]:
+              - paragraph [ref=e2045]: Track TDS Liabilities and Generate Form 24Q
+              - button "View Details" [ref=e2046] [cursor=pointer]
+          - button "Collapse/Expand" [ref=e2047] [cursor=pointer]:
+            - img [ref=e2048]
+      - main [ref=e2051]:
+        - generic [ref=e2998]:
+          - generic [ref=e2999]:
+            - generic [ref=e3000]:
+              - generic [ref=e3001]:
+                - generic [ref=e3002]: A
+                - generic [ref=e3003]:
+                  - generic [ref=e3004]:
+                    - generic [ref=e3005]: EMP001 -
+                    - generic [ref=e3006]: Arjun Mehta
+                    - generic [ref=e3007]: Active
+                  - generic [ref=e3008]: Senior Software Engineer
+              - generic [ref=e3009]:
+                - button "Add" [ref=e3011] [cursor=pointer]
+                - button "Show dropdown menu" [ref=e3013] [cursor=pointer]:
+                  - img [ref=e3014]
+                - button "Close" [ref=e3016] [cursor=pointer]:
+                  - img [ref=e3017]
+            - navigation [ref=e3020]:
+              - list [ref=e3021]:
+                - listitem [ref=e3022]:
+                  - link "Overview" [ref=e3023] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948"
+                - listitem [ref=e3024]:
+                  - link "Salary Details" [ref=e3025] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948/salary-details"
+                - listitem [ref=e3026]:
+                  - link "Investments" [ref=e3027] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948/investments-and-proofs"
+                - listitem [ref=e3028]:
+                  - link "Payslips & Forms" [ref=e3029] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948/payslips-and-forms"
+                - listitem [ref=e3030]:
+                  - link "Loans" [ref=e3031] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948/loans"
+          - generic [ref=e3467]:
+            - generic [ref=e3469]:
+              - generic [ref=e3470]:
+                - heading "Salary Details Edit" [level=4] [ref=e3471]:
+                  - text: Salary Details
+                  - link "Edit" [ref=e3472] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948/edit-salary-details"
+                    - button "Edit" [ref=e3473]:
+                      - img [ref=e3474]
+                - generic [ref=e3477]:
+                  - generic [ref=e3478]:
+                    - generic [ref=e3479]:
+                      - generic [ref=e3480]: Annual CTC
+                      - generic [ref=e3481]: ₹8,40,000.00 per year
+                    - generic [ref=e3482]:
+                      - generic [ref=e3483]: Monthly CTC
+                      - generic [ref=e3484]: ₹70,000.00 per month
+                  - generic [ref=e3486]:
+                    - button "Show dropdown menu" [expanded] [ref=e3487] [cursor=pointer]:
+                      - img [ref=e3488]
+                    - listbox [ref=e3543]:
+                      - button "Print Salary Structure" [active] [ref=e3544] [cursor=pointer]:
+                        - img [ref=e3545]
+                        - text: Print Salary Structure
+                      - separator [ref=e3548]
+                      - button "Send Salary Certificate" [ref=e3549] [cursor=pointer]:
+                        - img [ref=e3550]
+                        - text: Send Salary Certificate
+                      - button "Print Salary Certificate" [ref=e3552] [cursor=pointer]:
+                        - img [ref=e3553]
+                        - text: Print Salary Certificate
+              - generic [ref=e3490]:
+                - heading "Salary Structure" [level=4] [ref=e3492]
+                - generic [ref=e3493]:
+                  - table [ref=e3494]:
+                    - rowgroup [ref=e3495]:
+                      - row "Salary Components Monthly Amount Annual Amount" [ref=e3496]:
+                        - columnheader "Salary Components" [ref=e3497]
+                        - columnheader "Monthly Amount" [ref=e3498]
+                        - columnheader "Annual Amount" [ref=e3499]
+                  - table [ref=e3500]:
+                    - rowgroup [ref=e3501]:
+                      - row "Earnings" [ref=e3502]:
+                        - cell "Earnings" [ref=e3503]
+                      - row "Basic (57.14 % of CTC) ₹39,998.00 ₹4,79,976.00" [ref=e3504]:
+                        - cell "Basic (57.14 % of CTC)" [ref=e3505]:
+                          - text: Basic
+                          - generic [ref=e3506]: (57.14 % of CTC)
+                        - cell "₹39,998.00" [ref=e3507]
+                        - cell "₹4,79,976.00" [ref=e3508]:
+                          - generic [ref=e3509]: ₹4,79,976.00
+                      - row "House Rent Allowance (40.00 % of Basic Amount) ₹15,999.00 ₹1,91,988.00" [ref=e3510]:
+                        - cell "House Rent Allowance (40.00 % of Basic Amount)" [ref=e3511]:
+                          - text: House Rent Allowance
+                          - generic [ref=e3512]: (40.00 % of Basic Amount)
+                        - cell "₹15,999.00" [ref=e3513]
+                        - cell "₹1,91,988.00" [ref=e3514]:
+                          - generic [ref=e3515]: ₹1,91,988.00
+                      - row "Fixed Allowance ₹14,003.00 ₹1,68,036.00" [ref=e3516]:
+                        - cell "Fixed Allowance" [ref=e3517]
+                        - cell "₹14,003.00" [ref=e3518]
+                        - cell "₹1,68,036.00" [ref=e3519]:
+                          - generic [ref=e3520]: ₹1,68,036.00
+                  - table [ref=e3521]:
+                    - rowgroup [ref=e3522]:
+                      - row "Cost to Company ₹70,000.00 ₹8,40,000.00" [ref=e3523]:
+                        - cell "Cost to Company" [ref=e3524]:
+                          - strong [ref=e3525]: Cost to Company
+                        - cell "₹70,000.00" [ref=e3526]:
+                          - strong [ref=e3527]: ₹70,000.00
+                        - cell "₹8,40,000.00" [ref=e3528]:
+                          - strong [ref=e3529]: ₹8,40,000.00
+            - generic [ref=e3532]:
+              - heading "Perquisites" [level=4] [ref=e3533]
+              - generic [ref=e3536]:
+                - generic [ref=e3537]: Additional Benefits
+                - generic [ref=e3538]:
+                  - generic [ref=e3539]: ₹0.00
+                  - link "View Details" [ref=e3540] [cursor=pointer]:
+                    - /url: "#/people/employees/3848927000000032948/perquisites"
+                    - text: View Details
+                    - img [ref=e3541]
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Employees Salary Details page loaded.
+  - text:       Chats  Contacts   

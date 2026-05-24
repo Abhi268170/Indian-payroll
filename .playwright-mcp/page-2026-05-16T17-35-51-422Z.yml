@@ -1,0 +1,40 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "Settings" [ref=e10] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e11]
+        - text: Settings
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e17]: DE
+        - paragraph [ref=e18]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e19]:
+        - img [ref=e20]
+        - text: Sign out
+  - generic [ref=e23]:
+    - banner [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: demo
+        - generic [ref=e27]: DE
+    - main [ref=e28]:
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e33]: IP
+            - generic [ref=e34]: Settings
+          - button "Close Settings" [ref=e35]:
+            - img [ref=e36]
+            - text: Close Settings
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - generic [ref=e42]:
+              - heading "Work Locations" [level=1] [ref=e43]
+              - paragraph [ref=e44]: Offices and branches where employees work
+            - button "Add Location" [ref=e45]:
+              - img [ref=e46]
+              - text: Add Location
+          - img [ref=e49]

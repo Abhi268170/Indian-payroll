@@ -1,0 +1,269 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e533]:
+      - generic [ref=e535]:
+        - generic [ref=e536]:
+          - button "All Settings" [ref=e537] [cursor=pointer]:
+            - img [ref=e538]
+          - button [ref=e543] [cursor=pointer]:
+            - img [ref=e544]
+          - generic [ref=e546]:
+            - generic [ref=e547]: All Settings
+            - generic [ref=e548]: lerno
+        - generic [ref=e550]:
+          - combobox "Search" [active] [ref=e554]
+          - img [ref=e555]
+        - button "Close Settings" [ref=e559] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e560]
+      - generic [ref=e562]:
+        - navigation [ref=e563]:
+          - generic [ref=e565]:
+            - group [ref=e566]:
+              - heading "Organisation Settings" [level=2] [ref=e567]
+              - generic [ref=e568]:
+                - region "Organisation" [ref=e570]:
+                  - generic [ref=e571]:
+                    - heading "Organisation" [level=3] [ref=e572] [cursor=pointer]:
+                      - button "Organisation" [ref=e573]:
+                        - img [ref=e574]
+                        - generic [ref=e576]: Organisation
+                    - region "Organisation":
+                      - generic [ref=e577]:
+                        - link "Profile" [ref=e578] [cursor=pointer]:
+                          - /url: "#/settings/orgprofile"
+                          - generic [ref=e579]: Profile
+                          - text: 
+                        - link "Branding" [ref=e580] [cursor=pointer]:
+                          - /url: "#/settings/branding"
+                          - generic [ref=e581]: Branding
+                          - text: 
+                        - link "Work Locations" [ref=e582] [cursor=pointer]:
+                          - /url: "#/settings/work-locations"
+                          - generic [ref=e583]: Work Locations
+                          - text: 
+                        - link "Departments" [ref=e584] [cursor=pointer]:
+                          - /url: "#/settings/departments"
+                          - generic [ref=e585]: Departments
+                          - text: 
+                        - link "Designations" [ref=e586] [cursor=pointer]:
+                          - /url: "#/settings/designations"
+                          - generic [ref=e587]: Designations
+                          - text: 
+                        - link "Subscriptions" [ref=e588] [cursor=pointer]:
+                          - /url: "#/settings/subscription-details"
+                          - generic [ref=e589]: Subscriptions
+                          - text: 
+                - generic [ref=e590]:
+                  - region "Users and Roles" [ref=e591]:
+                    - generic [ref=e592]:
+                      - heading "Users and Roles" [level=3] [ref=e593] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e594]:
+                          - img [ref=e595]
+                          - generic [ref=e597]: Users and Roles
+                      - region "Users and Roles":
+                        - generic [ref=e598]:
+                          - link "Users" [ref=e599] [cursor=pointer]:
+                            - /url: "#/settings/users-roles/users"
+                            - generic [ref=e600]: Users
+                            - text: 
+                          - link "Roles" [ref=e601] [cursor=pointer]:
+                            - /url: "#/settings/users-roles/roles"
+                            - generic [ref=e602]: Roles
+                            - text: 
+                  - region "Taxes" [ref=e603]:
+                    - generic [ref=e604]:
+                      - heading "Taxes" [level=3] [ref=e605] [cursor=pointer]:
+                        - button "Taxes" [ref=e606]:
+                          - img [ref=e607]
+                          - generic [ref=e609]: Taxes
+                      - region "Taxes":
+                        - link "Tax Details" [ref=e611] [cursor=pointer]:
+                          - /url: "#/settings/taxes"
+                          - generic [ref=e612]: Tax Details
+                          - text: 
+                - region "Setup & Configurations" [ref=e614]:
+                  - generic [ref=e615]:
+                    - heading "Setup & Configurations" [level=3] [ref=e616] [cursor=pointer]:
+                      - button "Setup & Configurations" [expanded] [ref=e617]:
+                        - img [ref=e618]
+                        - generic [ref=e620]: Setup & Configurations
+                    - region "Setup & Configurations":
+                      - generic [ref=e621]:
+                        - link "Pay Schedule" [ref=e622] [cursor=pointer]:
+                          - /url: "#/settings/pay-schedules"
+                          - generic [ref=e623]: Pay Schedule
+                          - text: 
+                        - link "Statutory Components" [ref=e624] [cursor=pointer]:
+                          - /url: "#/settings/statutory-details/list"
+                          - generic [ref=e625]: Statutory Components
+                          - text: 
+                        - link "Salary Components" [ref=e626] [cursor=pointer]:
+                          - /url: "#/settings/salary-components/earnings"
+                          - generic [ref=e627]: Salary Components
+                          - text: 
+                        - link "Employee Portal" [ref=e628] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences"
+                          - generic [ref=e629]: Employee Portal
+                          - text: 
+                        - link "Claims and Declarations" [ref=e630] [cursor=pointer]:
+                          - /url: "#/settings/preferences/fbp"
+                          - generic [ref=e631]: Claims and Declarations
+                          - text: 
+                - region "Customisations" [ref=e633]:
+                  - generic [ref=e634]:
+                    - heading "Customisations" [level=3] [ref=e635] [cursor=pointer]:
+                      - button "Customisations" [ref=e636]:
+                        - img [ref=e637]
+                        - generic [ref=e639]: Customisations
+                    - region "Customisations":
+                      - generic [ref=e640]:
+                        - link "Email Templates" [ref=e641] [cursor=pointer]:
+                          - /url: "#/settings/email-templates"
+                          - generic [ref=e642]: Email Templates
+                          - text: 
+                        - link "Sender Email Preferences" [ref=e643] [cursor=pointer]:
+                          - /url: "#/settings/email-preference"
+                          - generic [ref=e644]: Sender Email Preferences
+                          - text: 
+                        - link "Salary Templates" [ref=e645] [cursor=pointer]:
+                          - /url: "#/settings/salary-templates"
+                          - generic [ref=e646]: Salary Templates
+                          - text: 
+                        - link "PDF Templates" [ref=e647] [cursor=pointer]:
+                          - /url: "#/settings/templates/regular-payslip"
+                          - generic [ref=e648]: PDF Templates
+                          - text: 
+                        - link "Reporting Tags" [ref=e649] [cursor=pointer]:
+                          - /url: "#/settings/advanced-reportingtags"
+                          - generic [ref=e650]: Reporting Tags
+                          - text: 
+                - region "Automations" [ref=e652]:
+                  - generic [ref=e653]:
+                    - heading "Automations" [level=3] [ref=e654] [cursor=pointer]:
+                      - button "Automations" [ref=e655]:
+                        - img [ref=e656]
+                        - generic [ref=e658]: Automations
+                    - region "Automations":
+                      - generic [ref=e659]:
+                        - link "Workflow Rules" [ref=e660] [cursor=pointer]:
+                          - /url: "#/settings/automation/workflows"
+                          - generic [ref=e661]: Workflow Rules
+                          - text: 
+                        - link "Actions" [ref=e662] [cursor=pointer]:
+                          - /url: "#/settings/automation/actions/alerts"
+                          - generic [ref=e663]: Actions
+                          - text: 
+                        - link "Schedules" [ref=e664] [cursor=pointer]:
+                          - /url: "#/settings/automation/schedules"
+                          - generic [ref=e665]: Schedules
+                          - text: 
+                        - link "Workflow Logs" [ref=e666] [cursor=pointer]:
+                          - /url: "#/settings/automation/logs/alerts"
+                          - generic [ref=e667]: Workflow Logs
+                          - text: 
+            - group [ref=e668]:
+              - heading "Module Settings" [level=2] [ref=e669]
+              - generic [ref=e670]:
+                - region "General" [ref=e672]:
+                  - generic [ref=e673]:
+                    - heading "General" [level=3] [ref=e674] [cursor=pointer]:
+                      - button "General" [ref=e675]:
+                        - img [ref=e676]
+                        - generic [ref=e678]: General
+                    - region "General":
+                      - generic [ref=e679]:
+                        - link "Employees & Contractors" [ref=e680] [cursor=pointer]:
+                          - /url: "#/settings/employee/contractor"
+                          - generic [ref=e681]: Employees & Contractors
+                          - text: 
+                        - link "Pay Runs" [ref=e682] [cursor=pointer]:
+                          - /url: "#/settings/payrun/custom-approval/list"
+                          - generic [ref=e683]: Pay Runs
+                          - text: 
+                        - link "Salary Revisions" [ref=e684] [cursor=pointer]:
+                          - /url: "#/settings/salary-revision/custom-approval/list"
+                          - generic [ref=e685]: Salary Revisions
+                          - text: 
+                        - link "Leave & Attendance" [ref=e686] [cursor=pointer]:
+                          - /url: "#/settings/holiday-leave/enable-module"
+                          - generic [ref=e687]: Leave & Attendance
+                          - text: 
+                        - link "Loans" [ref=e688] [cursor=pointer]:
+                          - /url: "#/settings/loan/custom-field/list"
+                          - generic [ref=e689]: Loans
+                          - text: 
+                - region "Payments" [ref=e691]:
+                  - generic [ref=e692]:
+                    - heading "Payments" [level=3] [ref=e693] [cursor=pointer]:
+                      - button "Payments" [ref=e694]:
+                        - img [ref=e695]
+                        - generic [ref=e697]: Payments
+                    - region "Payments":
+                      - link "Direct Deposits" [ref=e699] [cursor=pointer]:
+                        - /url: "#/settings/direct-deposit"
+                        - generic [ref=e700]: Direct Deposits
+                        - text: 
+            - group [ref=e701]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e702]
+              - generic [ref=e703]:
+                - region "Integrations" [ref=e705]:
+                  - generic [ref=e706]:
+                    - heading "Integrations" [level=3] [ref=e707] [cursor=pointer]:
+                      - button "Integrations" [ref=e708]:
+                        - img [ref=e709]
+                        - generic [ref=e711]: Integrations
+                    - region "Integrations":
+                      - link "Zoho Apps" [ref=e713] [cursor=pointer]:
+                        - /url: "#/settings/integrations/zoho"
+                        - generic [ref=e714]: Zoho Apps
+                        - text: 
+                - region "Developer Data" [ref=e716]:
+                  - generic [ref=e717]:
+                    - heading "Developer Data" [level=3] [ref=e718] [cursor=pointer]:
+                      - button "Developer Data" [ref=e719]:
+                        - img [ref=e720]
+                        - generic [ref=e722]: Developer Data
+                    - region "Developer Data":
+                      - generic [ref=e723]:
+                        - link "Connections" [ref=e724] [cursor=pointer]:
+                          - /url: "#/settings/developer-space/connections"
+                          - generic [ref=e725]: Connections
+                          - text: 
+                        - link "Incoming Webhooks" [ref=e726] [cursor=pointer]:
+                          - /url: "#/settings/developer-space/incomingwebhooks"
+                          - generic [ref=e727]: Incoming Webhooks
+                          - text: 
+                        - link "Data Backup" [ref=e728] [cursor=pointer]:
+                          - /url: "#/settings/data-backup"
+                          - generic [ref=e729]: Data Backup
+                          - text: 
+        - main [ref=e730]:
+          - generic [ref=e731]:
+            - heading "Statutory Components" [level=3] [ref=e732]
+            - button "Instant Helper" [ref=e733] [cursor=pointer]:
+              - img [ref=e734]
+            - navigation [ref=e738]:
+              - list [ref=e739]:
+                - listitem [ref=e740]:
+                  - link "EPF" [ref=e741] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list"
+                - listitem [ref=e742]:
+                  - link "ESI" [ref=e743] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/esi"
+                - listitem [ref=e744]:
+                  - link "Professional Tax" [ref=e745] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/pt"
+                - listitem [ref=e746]:
+                  - link "Labour Welfare Fund" [ref=e747] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/lwf"
+                - listitem [ref=e748]:
+                  - link "Statutory Bonus" [ref=e749] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/statutory-bonus"
+  - status [ref=e531]: Dashboard page loaded.
+  - text:       Chats  Contacts   

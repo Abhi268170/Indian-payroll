@@ -1,0 +1,14 @@
+- generic [ref=e4]:
+  - heading "Indian Payroll" [level=1] [ref=e5]
+  - paragraph [ref=e6]: Sign in to your account
+  - generic [ref=e7]:
+    - generic [ref=e8]:
+      - generic [ref=e9]: Email
+      - textbox "you@company.com" [ref=e10]: admin@payroll.local
+    - generic [ref=e11]:
+      - generic [ref=e12]: Password
+      - textbox [ref=e13]: Demo@Payroll2024!
+    - paragraph [ref=e20]: Invalid credentials or server error.
+    - button "Sign in" [ref=e14]
+    - link "Forgot password?" [ref=e16] [cursor=pointer]:
+      - /url: /forgot-password

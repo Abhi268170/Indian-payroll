@@ -1,0 +1,140 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "Settings" [ref=e10] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e11]
+        - text: Settings
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e17]: DE
+        - paragraph [ref=e18]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e19]:
+        - img [ref=e20]
+        - text: Sign out
+  - generic [ref=e23]:
+    - banner [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: demo
+        - generic [ref=e27]: DE
+    - main [ref=e28]:
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e33]: IP
+            - generic [ref=e34]: Settings
+          - button "Close Settings" [ref=e35]:
+            - img [ref=e36]
+            - text: Close Settings
+        - generic [ref=e39]:
+          - navigation [ref=e40]:
+            - generic [ref=e41]:
+              - button "Org Structure" [ref=e42]:
+                - generic [ref=e43]: Org Structure
+                - img [ref=e44]
+              - list [ref=e46]:
+                - listitem [ref=e47]:
+                  - link "Work Locations" [ref=e48] [cursor=pointer]:
+                    - /url: /settings/work-locations
+                - listitem [ref=e49]:
+                  - link "Departments" [ref=e50] [cursor=pointer]:
+                    - /url: /settings/departments
+                - listitem [ref=e51]:
+                  - link "Designations" [ref=e52] [cursor=pointer]:
+                    - /url: /settings/designations
+                - listitem [ref=e53]:
+                  - link "Cost Centres" [ref=e54] [cursor=pointer]:
+                    - /url: /settings/cost-centres
+                - listitem [ref=e55]:
+                  - link "Business Units" [ref=e56] [cursor=pointer]:
+                    - /url: /settings/business-units
+            - generic [ref=e57]:
+              - button "Setup & Configuration" [ref=e58]:
+                - generic [ref=e59]: Setup & Configuration
+                - img [ref=e60]
+              - list [ref=e62]:
+                - listitem [ref=e63]:
+                  - link "Pay Schedule" [ref=e64] [cursor=pointer]:
+                    - /url: /settings/pay-schedule
+                - listitem [ref=e65]:
+                  - link "Salary Components" [ref=e66] [cursor=pointer]:
+                    - /url: /settings/salary-components
+                - listitem [ref=e67]:
+                  - link "Salary Structures" [ref=e68] [cursor=pointer]:
+                    - /url: /settings/salary-structures
+                - listitem [ref=e69]:
+                  - link "Statutory Components" [ref=e70] [cursor=pointer]:
+                    - /url: /settings/statutory
+            - generic [ref=e71]:
+              - button "Taxes" [ref=e72]:
+                - generic [ref=e73]: Taxes
+                - img [ref=e74]
+              - list [ref=e76]:
+                - listitem [ref=e77]:
+                  - link "Tax Details" [ref=e78] [cursor=pointer]:
+                    - /url: /settings/tax-details
+          - generic [ref=e80]:
+            - generic [ref=e81]:
+              - heading "Statutory Components" [level=2] [ref=e82]
+              - paragraph [ref=e83]: Configure mandatory statutory deductions — EPF, ESI, Professional Tax, LWF, and Statutory Bonus.
+            - generic [ref=e84]:
+              - button "EPF" [ref=e85]
+              - button "ESI" [ref=e86]
+              - button "Professional Tax" [ref=e87]
+              - button "Labour Welfare Fund" [ref=e88]
+              - button "Statutory Bonus" [ref=e89]
+            - generic [ref=e94]:
+              - generic [ref=e95]:
+                - heading "Professional Tax" [level=3] [ref=e96]
+                - paragraph [ref=e97]: PT is determined by employee's work location state. Configure work locations to enable PT.
+              - generic [ref=e100]:
+                - generic [ref=e101]:
+                  - generic [ref=e102]: Maharashtra
+                  - generic [ref=e103]: Mumbai Head Office
+                - button "View Tax Slabs" [active] [ref=e104]
+              - generic [ref=e106]:
+                - generic [ref=e107]:
+                  - heading "Maharashtra — PT Slabs" [level=3] [ref=e108]
+                  - button "×" [ref=e109]
+                - table [ref=e111]:
+                  - rowgroup [ref=e112]:
+                    - row "Min Gross Max Gross Gender PT Amount Frequency" [ref=e113]:
+                      - columnheader "Min Gross" [ref=e114]
+                      - columnheader "Max Gross" [ref=e115]
+                      - columnheader "Gender" [ref=e116]
+                      - columnheader "PT Amount" [ref=e117]
+                      - columnheader "Frequency" [ref=e118]
+                  - rowgroup [ref=e119]:
+                    - row "₹0 ₹7,499 Male ₹0 Monthly" [ref=e120]:
+                      - cell "₹0" [ref=e121]
+                      - cell "₹7,499" [ref=e122]
+                      - cell "Male" [ref=e123]
+                      - cell "₹0" [ref=e124]
+                      - cell "Monthly" [ref=e125]
+                    - row "₹0 ₹9,999 Female ₹0 Monthly" [ref=e126]:
+                      - cell "₹0" [ref=e127]
+                      - cell "₹9,999" [ref=e128]
+                      - cell "Female" [ref=e129]
+                      - cell "₹0" [ref=e130]
+                      - cell "Monthly" [ref=e131]
+                    - row "₹7,500 ₹9,999 Male ₹175 Monthly" [ref=e132]:
+                      - cell "₹7,500" [ref=e133]
+                      - cell "₹9,999" [ref=e134]
+                      - cell "Male" [ref=e135]
+                      - cell "₹175" [ref=e136]
+                      - cell "Monthly" [ref=e137]
+                    - row "₹10,000 No limit Male ₹200 Monthly+Feb" [ref=e138]:
+                      - cell "₹10,000" [ref=e139]
+                      - cell "No limit" [ref=e140]
+                      - cell "Male" [ref=e141]
+                      - cell "₹200" [ref=e142]
+                      - cell "Monthly+Feb" [ref=e143]
+                    - row "₹10,000 No limit Female ₹200 Monthly+Feb" [ref=e144]:
+                      - cell "₹10,000" [ref=e145]
+                      - cell "No limit" [ref=e146]
+                      - cell "Female" [ref=e147]
+                      - cell "₹200" [ref=e148]
+                      - cell "Monthly+Feb" [ref=e149]

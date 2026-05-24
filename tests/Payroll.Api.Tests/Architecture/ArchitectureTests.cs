@@ -1,5 +1,7 @@
 using FluentAssertions;
 using NetArchTest.Rules;
+using Payroll.Application;
+using Payroll.Application.Interfaces;
 using Xunit;
 
 namespace Payroll.Api.Tests.Architecture;
@@ -53,6 +55,25 @@ public sealed class ArchitectureTests
              .GetResult()
              .IsSuccessful
              .Should().BeTrue("Application must not depend on Infrastructure or Api");
+    }
+
+    [Fact]
+    public void IAllowWithoutTenant_Implementors_MustBeInPlatformNamespace()
+    {
+        // Enforces the convention: only SuperAdmin-level commands/queries may bypass tenant validation.
+        // They must live in Payroll.Application.Commands.Platform or Payroll.Application.Queries.Platform.
+        IEnumerable<Type> types = Types.InAssembly(typeof(ApplicationAssemblyMarker).Assembly)
+             .That()
+             .ImplementInterface(typeof(IAllowWithoutTenant))
+             .GetTypes();
+
+        bool allInPlatform = types.All(t =>
+            t.Namespace?.StartsWith("Payroll.Application.Commands.Platform") == true ||
+            t.Namespace?.StartsWith("Payroll.Application.Queries.Platform") == true ||
+            t.Namespace?.StartsWith("Payroll.Application.Commands.Auth") == true);
+
+        allInPlatform.Should().BeTrue(
+            "IAllowWithoutTenant types must reside in Payroll.Application.Commands.Platform, Payroll.Application.Queries.Platform, or Payroll.Application.Commands.Auth");
     }
 
     [Fact]

@@ -1,0 +1,232 @@
+- generic:
+  - iframe
+  - generic [ref=e2504]:
+    - generic [ref=e2505]: This Employee does not have any reimbursements opted and hence you cannot create claims.
+    - button [ref=e2507] [cursor=pointer]:
+      - img [ref=e2508]
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e904]:
+      - navigation:
+        - generic [ref=e906]:
+          - img "Zoho Payroll" [ref=e907]
+          - generic [ref=e908]: Payroll
+        - generic [ref=e912]:
+          - button "Advanced Search" [ref=e913] [cursor=pointer]:
+            - img [ref=e914]
+          - textbox "Search in Employee" [ref=e918]
+        - generic [ref=e920]:
+          - generic [ref=e923] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e925] [cursor=pointer]
+          - button "lerno" [ref=e929] [cursor=pointer]:
+            - generic [ref=e930]: lerno
+            - img [ref=e931]
+          - button "Refer and Earn" [ref=e935] [cursor=pointer]:
+            - img [ref=e936]
+          - button "Notifications" [ref=e940] [cursor=pointer]:
+            - generic [ref=e941]:
+              - generic [ref=e1099]: "4"
+              - img [ref=e942]
+          - button "Settings" [ref=e945] [cursor=pointer]:
+            - img [ref=e946]
+          - button "A" [ref=e1100] [cursor=pointer]:
+            - generic [ref=e952]: A
+          - img [ref=e970] [cursor=pointer]
+    - generic [ref=e74]:
+      - complementary [ref=e973]:
+        - navigation [ref=e974]:
+          - generic [ref=e975]:
+            - list [ref=e976]:
+              - link "Getting Started" [ref=e977] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e2549]:
+                  - generic [ref=e2550]:
+                    - img [ref=e2552]
+                    - text: Getting Started
+                  - img [ref=e2556]
+              - listitem [ref=e988]:
+                - link "Dashboard" [ref=e989] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e2558]
+                  - generic [ref=e993]: Dashboard
+              - listitem [ref=e994]:
+                - link "Employees" [ref=e995] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e2561]
+                  - generic [ref=e998]: Employees
+              - listitem [ref=e999]:
+                - link "Pay Runs" [ref=e1000] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e2563]
+                  - generic [ref=e1004]: Pay Runs
+              - listitem [ref=e1005]:
+                - list [ref=e1006]:
+                  - listitem [ref=e1007]:
+                    - button "Approvals" [ref=e1009] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e1010]:
+                        - button "Approvals" [ref=e1011]:
+                          - img [ref=e2815]
+                          - img [ref=e2568]
+                          - generic [ref=e1017]: Approvals
+                          - img [ref=e1018]
+              - listitem [ref=e1026]:
+                - list [ref=e1027]:
+                  - listitem [ref=e1028]:
+                    - button "Taxes & Forms" [ref=e1030] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e1031]:
+                        - button "Taxes & Forms" [ref=e1032]:
+                          - img [ref=e2571]
+                          - img [ref=e2573]
+                          - generic [ref=e1040]: Taxes & Forms
+                          - img [ref=e1041]
+              - listitem [ref=e1051]:
+                - link "Loans" [ref=e1052] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e2578]
+                  - generic [ref=e1056]: Loans
+              - listitem [ref=e1057]:
+                - link "Giving" [ref=e1058] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e2581]
+                  - generic [ref=e1061]: Giving
+              - listitem
+              - listitem [ref=e1062]:
+                - link "Documents" [ref=e1063] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e2583]
+                  - generic [ref=e1066]: Documents
+              - listitem [ref=e1067]:
+                - link "Reports" [ref=e1068] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e2585]
+                  - generic [ref=e1072]: Reports
+              - listitem [ref=e1073]:
+                - link "Settings" [ref=e1074] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e2588]
+                  - generic [ref=e1078]: Settings
+            - link "Contact Support" [ref=e2594] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e2595]
+          - button "Collapse/Expand" [ref=e1085] [cursor=pointer]:
+            - img [ref=e2597]
+      - main [ref=e1089]:
+        - generic [ref=e2817]:
+          - generic [ref=e3063]:
+            - generic [ref=e3065]:
+              - text: Salary Revision for Arjun Mehta
+              - button [ref=e3067] [cursor=pointer]:
+                - img [ref=e3068]
+            - generic [ref=e3072]:
+              - generic [ref=e3073]:
+                - text: Previous CTC
+                - paragraph [ref=e3074]: ₹8,40,000.00
+              - generic [ref=e3075]:
+                - text: Previous Monthly Salary
+                - paragraph [ref=e3076]: ₹70,000.00
+          - generic [ref=e3081]:
+            - radiogroup "Select the Salary Revision type *" [ref=e3082]:
+              - heading "Select the Salary Revision type *" [level=3] [ref=e3084]
+              - generic [ref=e3085]:
+                - radio "Revise CTC by percentage" [ref=e3086] [cursor=pointer]
+                - generic [ref=e3087] [cursor=pointer]: Revise CTC by percentage
+                - generic [ref=e3088]:
+                  - spinbutton [disabled] [ref=e3089]
+                  - generic [ref=e3090]: "%"
+              - radio "Enter the new CTC amount below" [checked] [ref=e3091] [cursor=pointer]
+              - generic [ref=e3092] [cursor=pointer]: Enter the new CTC amount below
+            - generic [ref=e3095]:
+              - generic [ref=e3096]: Revised Annual CTC *
+              - generic [ref=e3099]:
+                - generic [ref=e3101]: ₹
+                - generic [ref=e3102]: per year
+                - spinbutton [active] [ref=e3103]: "840000"
+            - table [ref=e3105]:
+              - rowgroup [ref=e3106]:
+                - row "Salary Components Calculation Type Monthly Amount Annual Amount" [ref=e3107]:
+                  - columnheader "Salary Components" [ref=e3108]
+                  - columnheader "Calculation Type" [ref=e3109]
+                  - columnheader "Monthly Amount" [ref=e3110]
+                  - columnheader "Annual Amount" [ref=e3111]
+                  - columnheader [ref=e3112]
+              - rowgroup [ref=e3113]:
+                - row "Earnings" [ref=e3114]:
+                  - cell "Earnings" [ref=e3115]
+                - row "Basic % of CTC 479976" [ref=e3116]:
+                  - cell "Basic" [ref=e3117]:
+                    - generic [ref=e3119]: Basic
+                  - cell "% of CTC" [ref=e3120]:
+                    - generic [ref=e3122]:
+                      - spinbutton [ref=e3123]: "57.14"
+                      - generic [ref=e3124]: "% of CTC"
+                  - cell [ref=e3125]:
+                    - spinbutton [disabled] [ref=e3126]: "39998"
+                  - cell "479976" [ref=e3127]
+                  - cell [ref=e3128]
+                - row "House Rent Allowance % of Basic 191988" [ref=e3129]:
+                  - cell "House Rent Allowance" [ref=e3130]:
+                    - generic [ref=e3132]: House Rent Allowance
+                  - cell "% of Basic" [ref=e3133]:
+                    - generic [ref=e3135]:
+                      - spinbutton [ref=e3136]: "40.00"
+                      - generic [ref=e3137]: "% of Basic"
+                  - cell [ref=e3138]:
+                    - spinbutton [disabled] [ref=e3139]: "15999"
+                  - cell "191988" [ref=e3140]
+                  - cell [ref=e3141]
+                - row "Fixed Allowance Monthly CTC - Sum of all other components Fixed amount 14003 168036" [ref=e3142]:
+                  - cell "Fixed Allowance Monthly CTC - Sum of all other components" [ref=e3143]:
+                    - generic [ref=e3145]:
+                      - text: Fixed Allowance
+                      - img [ref=e3148]
+                      - generic [ref=e3150]: Monthly CTC - Sum of all other components
+                  - cell "Fixed amount" [ref=e3151]
+                  - cell "14003" [ref=e3152]
+                  - cell "168036" [ref=e3153]
+                  - cell [ref=e3154]
+                - row "Add Earning" [ref=e3155]:
+                  - cell "Add Earning" [ref=e3156]:
+                    - button "Add Earning" [ref=e3159] [cursor=pointer]:
+                      - img [ref=e3160]
+                      - text: Add Earning
+              - rowgroup [ref=e3162]:
+                - row [ref=e3163]:
+                  - cell [ref=e3164]
+                - row "Cost to Company ₹70000 ₹840000" [ref=e3165]:
+                  - cell "Cost to Company ₹70000 ₹840000" [ref=e3166]:
+                    - table [ref=e3167]:
+                      - row "Cost to Company ₹70000 ₹840000" [ref=e3168]:
+                        - cell "Cost to Company" [ref=e3169]:
+                          - strong [ref=e3170]: Cost to Company
+                        - cell "₹70000" [ref=e3171]:
+                          - strong [ref=e3172]: ₹70000
+                        - cell "₹840000" [ref=e3173]:
+                          - strong [ref=e3174]: ₹840000
+                        - cell [ref=e3175]
+            - generic [ref=e3176]:
+              - generic [ref=e3177]: Payout Preferences *
+              - generic [ref=e3178]:
+                - generic [ref=e3179]: Revised Salary effective from
+                - textbox "Revised Salary effective from" [ref=e3182]:
+                  - /placeholder: M yyyy
+              - generic [ref=e3183]:
+                - generic [ref=e3184]: Payout Month
+                - textbox "Payout Month" [ref=e3187]:
+                  - /placeholder: M yyyy
+              - paragraph [ref=e3188]: "Note: Zoho Payroll will automatically calculate any arrears in the salary and process them in the payout month, eliminating the need for manually adding arrear components."
+            - generic [ref=e3190]:
+              - separator [ref=e3191]
+              - button "Submit" [ref=e3192] [cursor=pointer]
+              - button "Cancel" [ref=e3193] [cursor=pointer]
+  - generic [ref=e535] [cursor=pointer]:
+    - generic [ref=e536]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e537]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e539]: Don't show again
+  - status [ref=e540]: Employees | Salary Revision page loaded.
+  - text:       Chats  Contacts   

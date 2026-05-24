@@ -1,0 +1,233 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e5]:
+      - navigation:
+        - generic [ref=e7]:
+          - img "Zoho Payroll" [ref=e8]
+          - generic [ref=e9]: Payroll
+        - generic [ref=e13]:
+          - button "Advanced Search" [ref=e14] [cursor=pointer]:
+            - img [ref=e15]
+          - textbox "Search in Employee" [ref=e19]
+        - generic [ref=e21]:
+          - generic [ref=e24] [cursor=pointer]: Your trial expires in 12 day(s).
+          - button "Upgrade" [ref=e26] [cursor=pointer]
+          - button "lerno" [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]: lerno
+            - img [ref=e32]
+          - button "Refer and Earn" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+          - button "Notifications" [ref=e41] [cursor=pointer]:
+            - generic [ref=e42]:
+              - generic [ref=e43]: "5"
+              - img [ref=e44]
+          - button "Settings" [ref=e47] [cursor=pointer]:
+            - img [ref=e48]
+          - button "A" [ref=e53] [cursor=pointer]:
+            - generic [ref=e54]: A
+          - img [ref=e71] [cursor=pointer]
+    - generic [ref=e74]:
+      - complementary [ref=e75]:
+        - navigation [ref=e76]:
+          - generic [ref=e77]:
+            - list [ref=e78]:
+              - link "Getting Started" [ref=e79] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e81]:
+                  - generic [ref=e82]:
+                    - img [ref=e84]
+                    - text: Getting Started
+                  - img [ref=e88]
+              - listitem [ref=e90]:
+                - link "Dashboard" [ref=e91] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e92]
+                  - generic [ref=e95]: Dashboard
+              - listitem [ref=e96]:
+                - link "Employees" [ref=e97] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e98]
+                  - generic [ref=e100]: Employees
+              - listitem [ref=e101]:
+                - link "Pay Runs" [ref=e102] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e103]
+                  - generic [ref=e106]: Pay Runs
+              - listitem [ref=e107]:
+                - list [ref=e108]:
+                  - listitem [ref=e109]:
+                    - button "Approvals" [ref=e111] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e112]:
+                        - button "Approvals" [ref=e113]:
+                          - img [ref=e114]
+                          - img [ref=e116]
+                          - generic [ref=e119]: Approvals
+                          - img [ref=e120]
+              - listitem [ref=e122]:
+                - list [ref=e123]:
+                  - listitem [ref=e124]:
+                    - button "Taxes & Forms" [ref=e126] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e127]:
+                        - button "Taxes & Forms" [ref=e128]:
+                          - img [ref=e129]
+                          - img [ref=e131]
+                          - generic [ref=e136]: Taxes & Forms
+                          - img [ref=e137]
+              - listitem [ref=e139]:
+                - link "Loans" [ref=e140] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e141]
+                  - generic [ref=e144]: Loans
+              - listitem [ref=e145]:
+                - link "Giving" [ref=e146] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e147]
+                  - generic [ref=e149]: Giving
+              - listitem
+              - listitem [ref=e150]:
+                - link "Documents" [ref=e151] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e152]
+                  - generic [ref=e154]: Documents
+              - listitem [ref=e155]:
+                - link "Reports" [ref=e156] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e157]
+                  - generic [ref=e160]: Reports
+              - listitem [ref=e161]:
+                - link "Settings" [ref=e162] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e163]
+                  - generic [ref=e166]: Settings
+            - link "Contact Support" [ref=e170] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e171]
+          - button "Collapse/Expand" [ref=e173] [cursor=pointer]:
+            - img [ref=e174]
+      - main [ref=e177]:
+        - generic [ref=e530]:
+          - generic [ref=e810]:
+            - button "Active Employees" [ref=e813] [cursor=pointer]:
+              - text: Active Employees
+              - img [ref=e815]
+            - generic [ref=e818]:
+              - paragraph [ref=e821]:
+                - img [ref=e822]
+                - generic [ref=e824]: You have 3 incomplete employees.
+                - button "View" [ref=e825] [cursor=pointer]
+              - button "Add" [ref=e827] [cursor=pointer]:
+                - img [ref=e828]
+                - generic [ref=e830]: Add
+              - button "Show dropdown menu" [ref=e832] [cursor=pointer]:
+                - img [ref=e833]
+              - button [ref=e836] [cursor=pointer]:
+                - img [ref=e837]
+              - button "Instant Helper" [ref=e839] [cursor=pointer]:
+                - img [ref=e840]
+          - table [ref=e844]:
+            - rowgroup [ref=e845]:
+              - row "Select all rows Employee Name Work Email Department Employee Status Show dropdown menu" [ref=e846]:
+                - columnheader "Select all rows" [ref=e847]:
+                  - checkbox "Select all rows" [ref=e848] [cursor=pointer]
+                - columnheader "Employee Name" [ref=e849]:
+                  - button "Employee Name" [ref=e850] [cursor=pointer]:
+                    - text: Employee Name
+                    - img [ref=e851]
+                - columnheader "Work Email" [ref=e853]:
+                  - generic [ref=e854]: Work Email
+                - columnheader "Department" [ref=e855]:
+                  - generic [ref=e856]: Department
+                - columnheader "Employee Status" [ref=e857]:
+                  - generic [ref=e858]: Employee Status
+                - columnheader "Show dropdown menu" [ref=e859]:
+                  - button "Show dropdown menu" [ref=e861] [cursor=pointer]:
+                    - img [ref=e862]
+            - rowgroup [ref=e864]:
+              - row "A Arjun Mehta - EMP001 Senior Software Engineer arjun.mehta@lerno.com Engineering Active" [ref=e865] [cursor=pointer]:
+                - cell [ref=e866]:
+                  - checkbox [ref=e867]
+                - cell "A Arjun Mehta - EMP001 Senior Software Engineer" [ref=e868]:
+                  - generic [ref=e869]:
+                    - generic [ref=e871]: A
+                    - generic [ref=e872]:
+                      - link "Arjun Mehta - EMP001" [ref=e873]:
+                        - /url: "#/people/employees/3848927000000032948"
+                      - generic [ref=e874]: Senior Software Engineer
+                - cell "arjun.mehta@lerno.com" [ref=e875]
+                - cell "Engineering" [ref=e876]
+                - cell "Active" [ref=e877]:
+                  - generic [ref=e878]: Active
+                - cell [ref=e879]
+              - row "P Priya Sharma - EMP002 Junior Developer priya.sharma@lerno.com Engineering Will be resigned on 17/06/2026" [ref=e880] [cursor=pointer]:
+                - cell [ref=e881]:
+                  - checkbox [ref=e882]
+                - cell "P Priya Sharma - EMP002 Junior Developer" [ref=e883]:
+                  - generic [ref=e884]:
+                    - generic [ref=e886]: P
+                    - generic [ref=e887]:
+                      - link "Priya Sharma - EMP002" [ref=e888]:
+                        - /url: "#/people/employees/3848927000000032984"
+                      - generic [ref=e889]: Junior Developer
+                - cell "priya.sharma@lerno.com" [ref=e890]
+                - cell "Engineering" [ref=e891]
+                - cell "Will be resigned on 17/06/2026" [ref=e892]:
+                  - generic [ref=e893]:
+                    - generic [ref=e894]: Will be resigned
+                    - generic [ref=e895]: on 17/06/2026
+                - cell [ref=e896]
+              - row "V Vikram Nair - EMP003 Engineering Manager This employee's profile is incomplete. Complete now" [ref=e897] [cursor=pointer]:
+                - cell [ref=e898]:
+                  - checkbox [ref=e899]
+                - cell "V Vikram Nair - EMP003 Engineering Manager" [ref=e900]:
+                  - generic [ref=e901]:
+                    - generic [ref=e903]: V
+                    - generic [ref=e904]:
+                      - link "Vikram Nair - EMP003" [ref=e905]:
+                        - /url: "#/people/employees/3848927000000034014"
+                      - generic [ref=e906]: Engineering Manager
+                - cell "This employee's profile is incomplete. Complete now" [ref=e907]:
+                  - generic [ref=e909]:
+                    - img [ref=e910]
+                    - text: This employee's profile is incomplete.
+                    - link "Complete now" [ref=e912]:
+                      - /url: "#"
+              - row "A Aisha Khan - EMP004 UX Consultant This employee's profile is incomplete. Complete now" [ref=e913] [cursor=pointer]:
+                - cell [ref=e914]:
+                  - checkbox [ref=e915]
+                - cell "A Aisha Khan - EMP004 UX Consultant" [ref=e916]:
+                  - generic [ref=e917]:
+                    - generic [ref=e919]: A
+                    - generic [ref=e920]:
+                      - link "Aisha Khan - EMP004" [ref=e921]:
+                        - /url: "#/people/employees/3848927000000034040"
+                      - generic [ref=e922]: UX Consultant
+                - cell "This employee's profile is incomplete. Complete now" [ref=e923]:
+                  - generic [ref=e925]:
+                    - img [ref=e926]
+                    - text: This employee's profile is incomplete.
+                    - link "Complete now" [ref=e928]:
+                      - /url: "#"
+              - row "R Rahul Desai - EMP005 QA Engineer This employee's profile is incomplete. Complete now" [ref=e929] [cursor=pointer]:
+                - cell [ref=e930]:
+                  - checkbox [ref=e931]
+                - cell "R Rahul Desai - EMP005 QA Engineer" [ref=e932]:
+                  - generic [ref=e933]:
+                    - generic [ref=e935]: R
+                    - generic [ref=e936]:
+                      - link "Rahul Desai - EMP005" [ref=e937]:
+                        - /url: "#/people/employees/3848927000000034063"
+                      - generic [ref=e938]: QA Engineer
+                - cell "This employee's profile is incomplete. Complete now" [ref=e939]:
+                  - generic [ref=e941]:
+                    - img [ref=e942]
+                    - text: This employee's profile is incomplete.
+                    - link "Complete now" [ref=e944]:
+                      - /url: "#"
+  - status [ref=e525]: Employees page loaded.
+  - text:       Chats  Contacts   

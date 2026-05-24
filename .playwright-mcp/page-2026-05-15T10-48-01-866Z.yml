@@ -1,0 +1,180 @@
+- generic:
+  - iframe
+  - generic [ref=e2504]:
+    - generic [ref=e2505]: This Employee does not have any reimbursements opted and hence you cannot create claims.
+    - button [ref=e2507] [cursor=pointer]:
+      - img [ref=e2508]
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e904]:
+      - navigation:
+        - generic [ref=e906]:
+          - img "Zoho Payroll" [ref=e907]
+          - generic [ref=e908]: Payroll
+        - generic [ref=e912]:
+          - button "Advanced Search" [ref=e913] [cursor=pointer]:
+            - img [ref=e914]
+          - textbox "Search in Employee" [ref=e918]
+        - generic [ref=e920]:
+          - generic [ref=e923] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e925] [cursor=pointer]
+          - button "lerno" [ref=e929] [cursor=pointer]:
+            - generic [ref=e930]: lerno
+            - img [ref=e931]
+          - button "Refer and Earn" [ref=e935] [cursor=pointer]:
+            - img [ref=e936]
+          - button "Notifications" [ref=e940] [cursor=pointer]:
+            - generic [ref=e941]:
+              - generic [ref=e1099]: "4"
+              - img [ref=e942]
+          - button "Settings" [ref=e945] [cursor=pointer]:
+            - img [ref=e946]
+          - button "A" [ref=e1100] [cursor=pointer]:
+            - generic [ref=e952]: A
+          - img [ref=e970] [cursor=pointer]
+    - generic [ref=e74]:
+      - complementary [ref=e973]:
+        - navigation [ref=e974]:
+          - list [ref=e976]:
+            - link "Getting Started" [ref=e977] [cursor=pointer]:
+              - /url: "#/home/dashboard"
+              - generic [ref=e978]:
+                - img [ref=e2413]
+                - generic [ref=e2415]: Getting Started
+            - listitem [ref=e988]:
+              - link "Dashboard" [ref=e989] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - img [ref=e2416]
+                - generic [ref=e993]: Dashboard
+            - listitem [ref=e994]:
+              - link "Employees" [ref=e995] [cursor=pointer]:
+                - /url: "#/people/employees"
+                - img [ref=e2419]
+                - generic [ref=e998]: Employees
+            - listitem [ref=e999]:
+              - link "Pay Runs" [ref=e1000] [cursor=pointer]:
+                - /url: "#/payruns"
+                - img [ref=e2421]
+                - generic [ref=e1004]: Pay Runs
+            - listitem [ref=e1005]:
+              - list [ref=e1006]:
+                - listitem [ref=e1007]:
+                  - button "Approvals" [ref=e1009] [cursor=pointer]:
+                    - heading "Approvals" [level=3] [ref=e1010]:
+                      - button "Approvals" [expanded] [ref=e1011]:
+                        - img [ref=e2424]
+                        - generic [ref=e1017]: Approvals
+                        - img [ref=e1018]
+            - listitem [ref=e1026]:
+              - list [ref=e1027]:
+                - listitem [ref=e1028]:
+                  - button "Taxes & Forms" [ref=e1030] [cursor=pointer]:
+                    - heading "Taxes & Forms" [level=3] [ref=e1031]:
+                      - button "Taxes & Forms" [ref=e1032]:
+                        - img [ref=e2427]
+                        - generic [ref=e1040]: Taxes & Forms
+                        - img [ref=e1041]
+            - listitem [ref=e1051]:
+              - link "Loans" [ref=e1052] [cursor=pointer]:
+                - /url: "#/loans"
+                - img [ref=e2432]
+                - generic [ref=e1056]: Loans
+            - listitem [ref=e1057]:
+              - link "Giving" [ref=e1058] [cursor=pointer]:
+                - /url: "#/donations"
+                - img [ref=e2435]
+                - generic [ref=e1061]: Giving
+            - listitem [ref=e1062]:
+              - link "Documents" [ref=e1063] [cursor=pointer]:
+                - /url: "#/documents/folder"
+                - img [ref=e2437]
+                - generic [ref=e1066]: Documents
+            - listitem [ref=e1067]:
+              - link "Reports" [ref=e1068] [cursor=pointer]:
+                - /url: "#/reports"
+                - img [ref=e2439]
+                - generic [ref=e1072]: Reports
+            - listitem [ref=e1073]:
+              - link "Settings" [ref=e1074] [cursor=pointer]:
+                - /url: "#/settings"
+                - img [ref=e2442]
+                - generic [ref=e1078]: Settings
+          - button "Collapse/Expand" [ref=e1085] [cursor=pointer]:
+            - img [ref=e2445]
+      - main [ref=e1089]:
+        - generic [ref=e2448]:
+          - heading "New Claim Close" [level=3] [ref=e2450]:
+            - text: New Claim
+            - generic [ref=e2451]:
+              - link "Close":
+                - /url: "#/approvals/reimbursements?filter_by=Status.Submitted"
+                - img [ref=e2452] [cursor=pointer]
+          - generic [ref=e2455]:
+            - generic [ref=e2458]:
+              - generic [ref=e2459]: Employee Name
+              - generic [ref=e2462]:
+                - generic [ref=e2463]:
+                  - combobox "Employee Name" [expanded] [ref=e2464]:
+                    - generic [ref=e2465] [cursor=pointer]:
+                      - generic "Vikram Nair (EMP003)" [ref=e2510]
+                      - img [ref=e2513]
+                  - generic [ref=e2515]:
+                    - generic [ref=e2517]:
+                      - generic [ref=e2519]: ⚲
+                      - textbox [active] [ref=e2520]
+                    - listbox "dropdown options" [ref=e2522]:
+                      - option "Arjun Mehta (EMP001)" [ref=e2523]:
+                        - generic "Arjun Mehta (EMP001)" [ref=e2525] [cursor=pointer]:
+                          - generic [ref=e2526]: Arjun Mehta (EMP001)
+                      - option "Priya Sharma (EMP002)" [ref=e2527]:
+                        - generic "Priya Sharma (EMP002)" [ref=e2529] [cursor=pointer]:
+                          - generic [ref=e2530]: Priya Sharma (EMP002)
+                      - option "Vikram Nair (EMP003)" [selected] [ref=e2531]:
+                        - generic "Vikram Nair (EMP003)" [ref=e2533] [cursor=pointer]:
+                          - generic [ref=e2534]: Vikram Nair (EMP003)
+                          - img [ref=e2536]
+                      - option "Aisha Khan (EMP004)" [ref=e2538]:
+                        - generic "Aisha Khan (EMP004)" [ref=e2540] [cursor=pointer]:
+                          - generic [ref=e2541]: Aisha Khan (EMP004)
+                      - option "Rahul Desai (EMP005)" [ref=e2542]:
+                        - generic "Rahul Desai (EMP005)" [ref=e2544] [cursor=pointer]:
+                          - generic [ref=e2545]: Rahul Desai (EMP005)
+                - status [ref=e2471]
+            - generic:
+              - generic:
+                - table:
+                  - rowgroup:
+                    - row "Reimbursement Type * Bill Date Bill Number Attachments Claim Amount * Approved Amount * Comment Action":
+                      - columnheader "Reimbursement Type *"
+                      - columnheader "Bill Date"
+                      - columnheader "Bill Number"
+                      - columnheader "Attachments"
+                      - columnheader "Claim Amount *"
+                      - columnheader "Approved Amount *"
+                      - columnheader "Comment":
+                        - generic: Comment
+                      - columnheader "Action":
+                        - generic: Action
+                  - rowgroup
+                - generic:
+                  - button "Add another bill":
+                    - img
+                    - text: Add another bill
+          - generic:
+            - generic:
+              - button "Save & Approve"
+              - link "Cancel":
+                - /url: "#/approvals/reimbursements?filter_by=Status.Submitted"
+              - generic:
+                - paragraph: "* indicates mandatory fields"
+  - generic [ref=e535] [cursor=pointer]:
+    - generic [ref=e536]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e537]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e539]: Don't show again
+  - status [ref=e540]: Add Claim page loaded.
+  - text:       Chats  Contacts   

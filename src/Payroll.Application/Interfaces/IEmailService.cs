@@ -1,0 +1,7 @@
+namespace Payroll.Application.Interfaces;
+
+public interface IEmailService
+{
+    Task SendAsync(string to, string subject, string htmlBody, CancellationToken ct = default);
+    Task SendWithAttachmentAsync(string to, string subject, string htmlBody, byte[] attachment, string attachmentName, string contentType, CancellationToken ct = default);
+}

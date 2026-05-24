@@ -1,0 +1,522 @@
+- generic:
+  - iframe
+  - generic [ref=e5]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e6] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e7]
+    - banner "Top Band" [ref=e9]:
+      - navigation:
+        - generic [ref=e11]:
+          - img "Zoho Payroll" [ref=e12]
+          - generic [ref=e13]: Payroll
+        - generic [ref=e17]:
+          - button "Advanced Search" [ref=e18] [cursor=pointer]:
+            - img [ref=e19]
+          - textbox "Search in Employee" [ref=e23]
+        - generic [ref=e25]:
+          - generic [ref=e28] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e30] [cursor=pointer]
+          - button "lerno" [ref=e34] [cursor=pointer]:
+            - generic [ref=e35]: lerno
+            - img [ref=e36]
+          - button "Refer and Earn" [ref=e40] [cursor=pointer]:
+            - img [ref=e41]
+          - button "Notifications" [ref=e45] [cursor=pointer]:
+            - generic [ref=e46]:
+              - generic [ref=e47]: "4"
+              - img [ref=e48]
+          - button "Settings" [ref=e51] [cursor=pointer]:
+            - img [ref=e52]
+          - button "A" [ref=e57] [cursor=pointer]:
+            - generic [ref=e58]: A
+          - img [ref=e75] [cursor=pointer]
+    - generic [ref=e78]:
+      - complementary [ref=e79]:
+        - navigation [ref=e80]:
+          - list [ref=e82]:
+            - listitem [ref=e83]:
+              - link "Dashboard" [ref=e84] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - img [ref=e1141]
+                - generic [ref=e88]: Dashboard
+            - listitem [ref=e89]:
+              - link "Employees" [ref=e90] [cursor=pointer]:
+                - /url: "#/people/employees"
+                - img [ref=e1144]
+                - generic [ref=e93]: Employees
+            - listitem [ref=e94]:
+              - link "Pay Runs" [ref=e95] [cursor=pointer]:
+                - /url: "#/payruns"
+                - img [ref=e1146]
+                - generic [ref=e99]: Pay Runs
+            - listitem [ref=e100]:
+              - list [ref=e101]:
+                - listitem [ref=e102]:
+                  - button "Approvals" [ref=e104] [cursor=pointer]:
+                    - heading "Approvals" [level=3] [ref=e105]:
+                      - button "Approvals" [ref=e106]:
+                        - img [ref=e1149]
+                        - generic [ref=e112]: Approvals
+                        - img [ref=e113]
+            - listitem [ref=e115]:
+              - list [ref=e116]:
+                - listitem [ref=e117]:
+                  - button "Taxes & Forms" [ref=e119] [cursor=pointer]:
+                    - heading "Taxes & Forms" [level=3] [ref=e120]:
+                      - button "Taxes & Forms" [ref=e121]:
+                        - img [ref=e1152]
+                        - generic [ref=e129]: Taxes & Forms
+                        - img [ref=e130]
+            - listitem [ref=e132]:
+              - link "Loans" [ref=e133] [cursor=pointer]:
+                - /url: "#/loans?sort_column=&sort_order="
+                - img [ref=e1157]
+                - generic [ref=e137]: Loans
+            - listitem [ref=e138]:
+              - link "Giving" [ref=e139] [cursor=pointer]:
+                - /url: "#/donations"
+                - img [ref=e1160]
+                - generic [ref=e142]: Giving
+            - listitem [ref=e143]:
+              - link "Documents" [ref=e144] [cursor=pointer]:
+                - /url: "#/documents/folder"
+                - img [ref=e1162]
+                - generic [ref=e147]: Documents
+            - listitem [ref=e148]:
+              - link "Reports" [ref=e149] [cursor=pointer]:
+                - /url: "#/reports"
+                - img [ref=e1164]
+                - generic [ref=e153]: Reports
+            - listitem [ref=e154]:
+              - link "Settings" [ref=e155] [cursor=pointer]:
+                - /url: "#/settings"
+                - img [ref=e1167]
+                - generic [ref=e159]: Settings
+          - button "Collapse/Expand" [ref=e166] [cursor=pointer]:
+            - img [ref=e1170]
+      - main [ref=e170]:
+        - generic [ref=e1173]:
+          - button "View the reports sidebar" [ref=e1175] [cursor=pointer]:
+            - img [ref=e1176]
+          - generic [ref=e1185]:
+            - generic [ref=e1187]:
+              - heading "Reports Centre" [level=2] [ref=e1188]
+              - generic [ref=e1190]:
+                - combobox "Search reports" [ref=e1194]
+                - img [ref=e1195]
+            - generic [ref=e1197]:
+              - generic [ref=e1198]:
+                - list [ref=e1199]:
+                  - listitem [ref=e1200]:
+                    - button "Home" [ref=e1201] [cursor=pointer]:
+                      - img [ref=e1202]
+                      - text: Home
+                  - listitem [ref=e1205]:
+                    - button "Favorites" [ref=e1206] [cursor=pointer]:
+                      - img [ref=e1207]
+                      - text: Favorites
+                  - listitem [ref=e1209]:
+                    - button "Shared Reports" [ref=e1210] [cursor=pointer]:
+                      - img [ref=e1211]
+                      - text: Shared Reports
+                  - listitem [ref=e1213]:
+                    - button "Scheduled Reports" [ref=e1214] [cursor=pointer]:
+                      - img [ref=e1215]
+                      - text: Scheduled Reports
+                  - generic [ref=e1218]: Report Category
+                  - listitem [ref=e1219]:
+                    - button "Payroll Overview" [ref=e1220] [cursor=pointer]:
+                      - img [ref=e1221]
+                      - generic [ref=e1223]: Payroll Overview
+                  - listitem [ref=e1224]:
+                    - button "Statutory Reports" [ref=e1225] [cursor=pointer]:
+                      - img [ref=e1226]
+                      - generic [ref=e1228]: Statutory Reports
+                  - listitem [ref=e1229]:
+                    - button "Employee/Contractor Reports" [ref=e1230] [cursor=pointer]:
+                      - img [ref=e1231]
+                      - generic [ref=e1233]: Employee/Contractor Reports
+                  - listitem [ref=e1234]:
+                    - button "Declarations & Investments" [ref=e1235] [cursor=pointer]:
+                      - img [ref=e1236]
+                      - generic [ref=e1238]: Declarations & Investments
+                  - listitem [ref=e1239]:
+                    - button "Deduction Reports" [ref=e1240] [cursor=pointer]:
+                      - img [ref=e1241]
+                      - generic [ref=e1243]: Deduction Reports
+                  - listitem [ref=e1244]:
+                    - button "Taxes and Forms" [ref=e1245] [cursor=pointer]:
+                      - img [ref=e1246]
+                      - generic [ref=e1248]: Taxes and Forms
+                  - listitem [ref=e1249]:
+                    - button "Loan Reports" [ref=e1250] [cursor=pointer]:
+                      - img [ref=e1251]
+                      - generic [ref=e1253]: Loan Reports
+                  - listitem [ref=e1254]:
+                    - button "Payroll Journal" [ref=e1255] [cursor=pointer]:
+                      - img [ref=e1256]
+                      - generic [ref=e1258]: Payroll Journal
+                  - listitem [ref=e1259]:
+                    - button "Activity" [ref=e1260] [cursor=pointer]:
+                      - img [ref=e1261]
+                      - generic [ref=e1263]: Activity
+                - generic [ref=e1264]:
+                  - img [ref=e1266]
+                  - generic [ref=e1268]:
+                    - strong [ref=e1270]:
+                      - text: Advanced Financial
+                      - text: Analytics for Zoho Payroll
+                    - link "Try Zoho Analytics" [ref=e1271] [cursor=pointer]:
+                      - /url: "#/settings/integrations/zoho/analytics"
+              - generic [ref=e1272]:
+                - heading "All Reports 39" [level=3] [ref=e1274]:
+                  - strong [ref=e1275]: All Reports
+                  - text: "39"
+                - table [ref=e1276]:
+                  - rowgroup [ref=e1277]:
+                    - row "Report Name Report Category Created by Last Visited" [ref=e1278]:
+                      - columnheader "Report Name" [ref=e1279]
+                      - columnheader "Report Category" [ref=e1280]
+                      - columnheader "Created by" [ref=e1281]
+                      - columnheader "Last Visited" [ref=e1282]
+                  - rowgroup [ref=e1283]:
+                    - row "Mark as Favorite Payroll Summary Payroll Overview System Generated 15/05/2026 04:47 PM" [ref=e1284] [cursor=pointer]:
+                      - cell "Mark as Favorite Payroll Summary" [ref=e1285]:
+                        - button "Mark as Favorite" [ref=e1286]:
+                          - img [ref=e1287]
+                        - button "Payroll Summary" [ref=e1289]
+                      - cell "Payroll Overview" [ref=e1290]
+                      - cell "System Generated" [ref=e1291]
+                      - cell "15/05/2026 04:47 PM" [ref=e1292]
+                    - row "Mark as Favorite Salary Register - Monthly Payroll Overview System Generated -" [ref=e1293] [cursor=pointer]:
+                      - cell "Mark as Favorite Salary Register - Monthly" [ref=e1294]:
+                        - button "Mark as Favorite" [ref=e1295]:
+                          - img [ref=e1296]
+                        - button "Salary Register - Monthly" [ref=e1298]
+                      - cell "Payroll Overview" [ref=e1299]
+                      - cell "System Generated" [ref=e1300]
+                      - cell "-" [ref=e1301]
+                    - row "Mark as Favorite Employees' Salary Statement Payroll Overview System Generated -" [ref=e1302] [cursor=pointer]:
+                      - cell "Mark as Favorite Employees' Salary Statement" [ref=e1303]:
+                        - button "Mark as Favorite" [ref=e1304]:
+                          - img [ref=e1305]
+                        - button "Employees' Salary Statement" [ref=e1307]
+                      - cell "Payroll Overview" [ref=e1308]
+                      - cell "System Generated" [ref=e1309]
+                      - cell "-" [ref=e1310]
+                    - row "Mark as Favorite Employees' Pay Summary Payroll Overview System Generated -" [ref=e1311] [cursor=pointer]:
+                      - cell "Mark as Favorite Employees' Pay Summary" [ref=e1312]:
+                        - button "Mark as Favorite" [ref=e1313]:
+                          - img [ref=e1314]
+                        - button "Employees' Pay Summary" [ref=e1316]
+                      - cell "Payroll Overview" [ref=e1317]
+                      - cell "System Generated" [ref=e1318]
+                      - cell "-" [ref=e1319]
+                    - row "Mark as Favorite Payroll Liability Summary Payroll Overview System Generated -" [ref=e1320] [cursor=pointer]:
+                      - cell "Mark as Favorite Payroll Liability Summary" [ref=e1321]:
+                        - button "Mark as Favorite" [ref=e1322]:
+                          - img [ref=e1323]
+                        - button "Payroll Liability Summary" [ref=e1325]
+                      - cell "Payroll Overview" [ref=e1326]
+                      - cell "System Generated" [ref=e1327]
+                      - cell "-" [ref=e1328]
+                    - row "Mark as Favorite Leave Encashment Summary Payroll Overview System Generated -" [ref=e1329] [cursor=pointer]:
+                      - cell "Mark as Favorite Leave Encashment Summary" [ref=e1330]:
+                        - button "Mark as Favorite" [ref=e1331]:
+                          - img [ref=e1332]
+                        - button "Leave Encashment Summary" [ref=e1334]
+                      - cell "Payroll Overview" [ref=e1335]
+                      - cell "System Generated" [ref=e1336]
+                      - cell "-" [ref=e1337]
+                    - row "Mark as Favorite Loss Of Pay Summary Payroll Overview System Generated -" [ref=e1338] [cursor=pointer]:
+                      - cell "Mark as Favorite Loss Of Pay Summary" [ref=e1339]:
+                        - button "Mark as Favorite" [ref=e1340]:
+                          - img [ref=e1341]
+                        - button "Loss Of Pay Summary" [ref=e1343]
+                      - cell "Payroll Overview" [ref=e1344]
+                      - cell "System Generated" [ref=e1345]
+                      - cell "-" [ref=e1346]
+                    - row "Mark as Favorite Variable Pay Earnings Report Payroll Overview System Generated -" [ref=e1347] [cursor=pointer]:
+                      - cell "Mark as Favorite Variable Pay Earnings Report" [ref=e1348]:
+                        - button "Mark as Favorite" [ref=e1349]:
+                          - img [ref=e1350]
+                        - button "Variable Pay Earnings Report" [ref=e1352]
+                      - cell "Payroll Overview" [ref=e1353]
+                      - cell "System Generated" [ref=e1354]
+                      - cell "-" [ref=e1355]
+                    - row "Mark as Favorite Scheduled Earning Summary Payroll Overview System Generated -" [ref=e1356] [cursor=pointer]:
+                      - cell "Mark as Favorite Scheduled Earning Summary" [ref=e1357]:
+                        - button "Mark as Favorite" [ref=e1358]:
+                          - img [ref=e1359]
+                        - button "Scheduled Earning Summary" [ref=e1361]
+                      - cell "Payroll Overview" [ref=e1362]
+                      - cell "System Generated" [ref=e1363]
+                      - cell "-" [ref=e1364]
+                  - rowgroup [ref=e1365]:
+                    - row "Mark as Favorite EPF Summary Statutory Reports System Generated -" [ref=e1366] [cursor=pointer]:
+                      - cell "Mark as Favorite EPF Summary" [ref=e1367]:
+                        - button "Mark as Favorite" [ref=e1368]:
+                          - img [ref=e1369]
+                        - button "EPF Summary" [ref=e1371]
+                      - cell "Statutory Reports" [ref=e1372]
+                      - cell "System Generated" [ref=e1373]
+                      - cell "-" [ref=e1374]
+                    - row "Mark as Favorite EPF ECR Report Statutory Reports System Generated -" [ref=e1375] [cursor=pointer]:
+                      - cell "Mark as Favorite EPF ECR Report" [ref=e1376]:
+                        - button "Mark as Favorite" [ref=e1377]:
+                          - img [ref=e1378]
+                        - button "EPF ECR Report" [ref=e1380]
+                      - cell "Statutory Reports" [ref=e1381]
+                      - cell "System Generated" [ref=e1382]
+                      - cell "-" [ref=e1383]
+                    - row "Mark as Favorite ESI Summary Statutory Reports System Generated -" [ref=e1384] [cursor=pointer]:
+                      - cell "Mark as Favorite ESI Summary" [ref=e1385]:
+                        - button "Mark as Favorite" [ref=e1386]:
+                          - img [ref=e1387]
+                        - button "ESI Summary" [ref=e1389]
+                      - cell "Statutory Reports" [ref=e1390]
+                      - cell "System Generated" [ref=e1391]
+                      - cell "-" [ref=e1392]
+                    - row "Mark as Favorite ESI Monthly summary Statutory Reports System Generated -" [ref=e1393] [cursor=pointer]:
+                      - cell "Mark as Favorite ESI Monthly summary" [ref=e1394]:
+                        - button "Mark as Favorite" [ref=e1395]:
+                          - img [ref=e1396]
+                        - button "ESI Monthly summary" [ref=e1398]
+                      - cell "Statutory Reports" [ref=e1399]
+                      - cell "System Generated" [ref=e1400]
+                      - cell "-" [ref=e1401]
+                    - row "Mark as Favorite Professional Tax Summary Statutory Reports System Generated -" [ref=e1402] [cursor=pointer]:
+                      - cell "Mark as Favorite Professional Tax Summary" [ref=e1403]:
+                        - button "Mark as Favorite" [ref=e1404]:
+                          - img [ref=e1405]
+                        - button "Professional Tax Summary" [ref=e1407]
+                      - cell "Statutory Reports" [ref=e1408]
+                      - cell "System Generated" [ref=e1409]
+                      - cell "-" [ref=e1410]
+                    - row "Mark as Favorite Employee-wise Professional Tax Report Statutory Reports System Generated -" [ref=e1411] [cursor=pointer]:
+                      - cell "Mark as Favorite Employee-wise Professional Tax Report" [ref=e1412]:
+                        - button "Mark as Favorite" [ref=e1413]:
+                          - img [ref=e1414]
+                        - button "Employee-wise Professional Tax Report" [ref=e1416]
+                      - cell "Statutory Reports" [ref=e1417]
+                      - cell "System Generated" [ref=e1418]
+                      - cell "-" [ref=e1419]
+                    - row "Mark as Favorite Annual Professional Tax Report Statutory Reports System Generated -" [ref=e1420] [cursor=pointer]:
+                      - cell "Mark as Favorite Annual Professional Tax Report" [ref=e1421]:
+                        - button "Mark as Favorite" [ref=e1422]:
+                          - img [ref=e1423]
+                        - button "Annual Professional Tax Report" [ref=e1425]
+                      - cell "Statutory Reports" [ref=e1426]
+                      - cell "System Generated" [ref=e1427]
+                      - cell "-" [ref=e1428]
+                    - row "Mark as Favorite Labour Welfare Fund Summary Statutory Reports System Generated -" [ref=e1429] [cursor=pointer]:
+                      - cell "Mark as Favorite Labour Welfare Fund Summary" [ref=e1430]:
+                        - button "Mark as Favorite" [ref=e1431]:
+                          - img [ref=e1432]
+                        - button "Labour Welfare Fund Summary" [ref=e1434]
+                      - cell "Statutory Reports" [ref=e1435]
+                      - cell "System Generated" [ref=e1436]
+                      - cell "-" [ref=e1437]
+                  - rowgroup [ref=e1438]:
+                    - row "Mark as Favorite Compensation Details Employee/Contractor Reports System Generated -" [ref=e1439] [cursor=pointer]:
+                      - cell "Mark as Favorite Compensation Details" [ref=e1440]:
+                        - button "Mark as Favorite" [ref=e1441]:
+                          - img [ref=e1442]
+                        - button "Compensation Details" [ref=e1444]
+                      - cell "Employee/Contractor Reports" [ref=e1445]
+                      - cell "System Generated" [ref=e1446]
+                      - cell "-" [ref=e1447]
+                    - row "Mark as Favorite Reimbursement Claim Summary Employee/Contractor Reports System Generated -" [ref=e1448] [cursor=pointer]:
+                      - cell "Mark as Favorite Reimbursement Claim Summary" [ref=e1449]:
+                        - button "Mark as Favorite" [ref=e1450]:
+                          - img [ref=e1451]
+                        - button "Reimbursement Claim Summary" [ref=e1453]
+                      - cell "Employee/Contractor Reports" [ref=e1454]
+                      - cell "System Generated" [ref=e1455]
+                      - cell "-" [ref=e1456]
+                    - row "Mark as Favorite Employee Perquisites Summary Employee/Contractor Reports System Generated -" [ref=e1457] [cursor=pointer]:
+                      - cell "Mark as Favorite Employee Perquisites Summary" [ref=e1458]:
+                        - button "Mark as Favorite" [ref=e1459]:
+                          - img [ref=e1460]
+                        - button "Employee Perquisites Summary" [ref=e1462]
+                      - cell "Employee/Contractor Reports" [ref=e1463]
+                      - cell "System Generated" [ref=e1464]
+                      - cell "-" [ref=e1465]
+                    - row "Mark as Favorite Full and Final Settlement Report Employee/Contractor Reports System Generated -" [ref=e1466] [cursor=pointer]:
+                      - cell "Mark as Favorite Full and Final Settlement Report" [ref=e1467]:
+                        - button "Mark as Favorite" [ref=e1468]:
+                          - img [ref=e1469]
+                        - button "Full and Final Settlement Report" [ref=e1471]
+                      - cell "Employee/Contractor Reports" [ref=e1472]
+                      - cell "System Generated" [ref=e1473]
+                      - cell "-" [ref=e1474]
+                    - row "Mark as Favorite Employees' Salary Revisions Employee/Contractor Reports System Generated -" [ref=e1475] [cursor=pointer]:
+                      - cell "Mark as Favorite Employees' Salary Revisions" [ref=e1476]:
+                        - button "Mark as Favorite" [ref=e1477]:
+                          - img [ref=e1478]
+                        - button "Employees' Salary Revisions" [ref=e1480]
+                      - cell "Employee/Contractor Reports" [ref=e1481]
+                      - cell "System Generated" [ref=e1482]
+                      - cell "-" [ref=e1483]
+                    - row "Mark as Favorite Salary Revision History Employee/Contractor Reports System Generated -" [ref=e1484] [cursor=pointer]:
+                      - cell "Mark as Favorite Salary Revision History" [ref=e1485]:
+                        - button "Mark as Favorite" [ref=e1486]:
+                          - img [ref=e1487]
+                        - button "Salary Revision History" [ref=e1489]
+                      - cell "Employee/Contractor Reports" [ref=e1490]
+                      - cell "System Generated" [ref=e1491]
+                      - cell "-" [ref=e1492]
+                    - row "Mark as Favorite Salary Withhold Report Employee/Contractor Reports System Generated -" [ref=e1493] [cursor=pointer]:
+                      - cell "Mark as Favorite Salary Withhold Report" [ref=e1494]:
+                        - button "Mark as Favorite" [ref=e1495]:
+                          - img [ref=e1496]
+                        - button "Salary Withhold Report" [ref=e1498]
+                      - cell "Employee/Contractor Reports" [ref=e1499]
+                      - cell "System Generated" [ref=e1500]
+                      - cell "-" [ref=e1501]
+                  - rowgroup [ref=e1502]:
+                    - row "Mark as Favorite FBP declaration Report Declarations & Investments System Generated -" [ref=e1503] [cursor=pointer]:
+                      - cell "Mark as Favorite FBP declaration Report" [ref=e1504]:
+                        - button "Mark as Favorite" [ref=e1505]:
+                          - img [ref=e1506]
+                        - button "FBP declaration Report" [ref=e1508]
+                      - cell "Declarations & Investments" [ref=e1509]
+                      - cell "System Generated" [ref=e1510]
+                      - cell "-" [ref=e1511]
+                    - row "Mark as Favorite Investment Declaration Report Declarations & Investments System Generated -" [ref=e1512] [cursor=pointer]:
+                      - cell "Mark as Favorite Investment Declaration Report" [ref=e1513]:
+                        - button "Mark as Favorite" [ref=e1514]:
+                          - img [ref=e1515]
+                        - button "Investment Declaration Report" [ref=e1517]
+                      - cell "Declarations & Investments" [ref=e1518]
+                      - cell "System Generated" [ref=e1519]
+                      - cell "-" [ref=e1520]
+                    - row "Mark as Favorite Proof of Investment Report Declarations & Investments System Generated -" [ref=e1521] [cursor=pointer]:
+                      - cell "Mark as Favorite Proof of Investment Report" [ref=e1522]:
+                        - button "Mark as Favorite" [ref=e1523]:
+                          - img [ref=e1524]
+                        - button "Proof of Investment Report" [ref=e1526]
+                      - cell "Declarations & Investments" [ref=e1527]
+                      - cell "System Generated" [ref=e1528]
+                      - cell "-" [ref=e1529]
+                  - rowgroup [ref=e1530]:
+                    - row "Mark as Favorite Benefits & Deductions Summary Deduction Reports System Generated -" [ref=e1531] [cursor=pointer]:
+                      - cell "Mark as Favorite Benefits & Deductions Summary" [ref=e1532]:
+                        - button "Mark as Favorite" [ref=e1533]:
+                          - img [ref=e1534]
+                        - button "Benefits & Deductions Summary" [ref=e1536]
+                      - cell "Deduction Reports" [ref=e1537]
+                      - cell "System Generated" [ref=e1538]
+                      - cell "-" [ref=e1539]
+                    - row "Mark as Favorite Deductions Summary Deduction Reports System Generated -" [ref=e1540] [cursor=pointer]:
+                      - cell "Mark as Favorite Deductions Summary" [ref=e1541]:
+                        - button "Mark as Favorite" [ref=e1542]:
+                          - img [ref=e1543]
+                        - button "Deductions Summary" [ref=e1545]
+                      - cell "Deduction Reports" [ref=e1546]
+                      - cell "System Generated" [ref=e1547]
+                      - cell "-" [ref=e1548]
+                    - row "Mark as Favorite Benefits Summary Deduction Reports System Generated -" [ref=e1549] [cursor=pointer]:
+                      - cell "Mark as Favorite Benefits Summary" [ref=e1550]:
+                        - button "Mark as Favorite" [ref=e1551]:
+                          - img [ref=e1552]
+                        - button "Benefits Summary" [ref=e1554]
+                      - cell "Deduction Reports" [ref=e1555]
+                      - cell "System Generated" [ref=e1556]
+                      - cell "-" [ref=e1557]
+                    - row "Mark as Favorite Donations Summary Deduction Reports System Generated -" [ref=e1558] [cursor=pointer]:
+                      - cell "Mark as Favorite Donations Summary" [ref=e1559]:
+                        - button "Mark as Favorite" [ref=e1560]:
+                          - img [ref=e1561]
+                        - button "Donations Summary" [ref=e1563]
+                      - cell "Deduction Reports" [ref=e1564]
+                      - cell "System Generated" [ref=e1565]
+                      - cell "-" [ref=e1566]
+                  - rowgroup [ref=e1567]:
+                    - row "Mark as Favorite TDS Deduction summary Taxes and Forms System Generated -" [ref=e1568] [cursor=pointer]:
+                      - cell "Mark as Favorite TDS Deduction summary" [ref=e1569]:
+                        - button "Mark as Favorite" [ref=e1570]:
+                          - img [ref=e1571]
+                        - button "TDS Deduction summary" [ref=e1573]
+                      - cell "Taxes and Forms" [ref=e1574]
+                      - cell "System Generated" [ref=e1575]
+                      - cell "-" [ref=e1576]
+                    - row "Mark as Favorite Form 24Q Taxes and Forms System Generated -" [ref=e1577] [cursor=pointer]:
+                      - cell "Mark as Favorite Form 24Q" [ref=e1578]:
+                        - button "Mark as Favorite" [ref=e1579]:
+                          - img [ref=e1580]
+                        - button "Form 24Q" [ref=e1582]
+                      - cell "Taxes and Forms" [ref=e1583]
+                      - cell "System Generated" [ref=e1584]
+                      - cell "-" [ref=e1585]
+                  - rowgroup [ref=e1586]:
+                    - row "Mark as Favorite Loan Outstanding Summary Loan Reports System Generated -" [ref=e1587] [cursor=pointer]:
+                      - cell "Mark as Favorite Loan Outstanding Summary" [ref=e1588]:
+                        - button "Mark as Favorite" [ref=e1589]:
+                          - img [ref=e1590]
+                        - button "Loan Outstanding Summary" [ref=e1592]
+                      - cell "Loan Reports" [ref=e1593]
+                      - cell "System Generated" [ref=e1594]
+                      - cell "-" [ref=e1595]
+                    - row "Mark as Favorite Loan Perquisite Summary Loan Reports System Generated -" [ref=e1596] [cursor=pointer]:
+                      - cell "Mark as Favorite Loan Perquisite Summary" [ref=e1597]:
+                        - button "Mark as Favorite" [ref=e1598]:
+                          - img [ref=e1599]
+                        - button "Loan Perquisite Summary" [ref=e1601]
+                      - cell "Loan Reports" [ref=e1602]
+                      - cell "System Generated" [ref=e1603]
+                      - cell "-" [ref=e1604]
+                    - row "Mark as Favorite Loan Perquisite Projection Loan Reports System Generated -" [ref=e1605] [cursor=pointer]:
+                      - cell "Mark as Favorite Loan Perquisite Projection" [ref=e1606]:
+                        - button "Mark as Favorite" [ref=e1607]:
+                          - img [ref=e1608]
+                        - button "Loan Perquisite Projection" [ref=e1610]
+                      - cell "Loan Reports" [ref=e1611]
+                      - cell "System Generated" [ref=e1612]
+                      - cell "-" [ref=e1613]
+                    - row "Mark as Favorite Loan Summary Report Loan Reports System Generated 15/05/2026 04:47 PM" [ref=e1614] [cursor=pointer]:
+                      - cell "Mark as Favorite Loan Summary Report" [ref=e1615]:
+                        - button "Mark as Favorite" [ref=e1616]:
+                          - img [ref=e1617]
+                        - button "Loan Summary Report" [ref=e1619]
+                      - cell "Loan Reports" [ref=e1620]
+                      - cell "System Generated" [ref=e1621]
+                      - cell "15/05/2026 04:47 PM" [ref=e1622]
+                  - rowgroup [ref=e1623]:
+                    - row "Mark as Favorite Payroll Journal Summary Payroll Journal System Generated -" [ref=e1624] [cursor=pointer]:
+                      - cell "Mark as Favorite Payroll Journal Summary" [ref=e1625]:
+                        - button "Mark as Favorite" [ref=e1626]:
+                          - img [ref=e1627]
+                        - button "Payroll Journal Summary" [ref=e1629]
+                      - cell "Payroll Journal" [ref=e1630]
+                      - cell "System Generated" [ref=e1631]
+                      - cell "-" [ref=e1632]
+                  - rowgroup [ref=e1633]:
+                    - row "Mark as Favorite Activity Logs Activity System Generated -" [ref=e1634] [cursor=pointer]:
+                      - cell "Mark as Favorite Activity Logs" [ref=e1635]:
+                        - button "Mark as Favorite" [ref=e1636]:
+                          - img [ref=e1637]
+                        - button "Activity Logs" [ref=e1639]
+                      - cell "Activity" [ref=e1640]
+                      - cell "System Generated" [ref=e1641]
+                      - cell "-" [ref=e1642]
+    - generic [ref=e1644]:
+      - dialog "Meet the New Reports Centre":
+        - generic [ref=e1646]:
+          - generic [ref=e1647]:
+            - heading "Meet the New Reports Centre" [level=3] [ref=e1648]:
+              - text: Meet the New Reports Centre
+              - img [ref=e1649]
+            - img [ref=e1651]
+            - paragraph [ref=e1653]: The Reports Centre has been refreshed to make it easier to browse, find, and work with reports.
+            - button "Take a Tour" [active] [ref=e1655] [cursor=pointer]
+          - img "Meet the New <span class=\"text-blue-800\">Reports</span> Centre" [ref=e1657]
+  - generic [ref=e264] [cursor=pointer]:
+    - generic [ref=e265]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e266]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e268]: Don't show again
+  - status [ref=e269]: Reports page loaded.
+  - text:       Chats  Contacts   

@@ -1,0 +1,108 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "People" [ref=e10] [cursor=pointer]:
+        - /url: /employees
+        - img [ref=e11]
+        - text: People
+      - link "Settings" [ref=e16] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e17]
+        - text: Settings
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e23]: DE
+        - paragraph [ref=e24]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e25]:
+        - img [ref=e26]
+        - text: Sign out
+  - generic [ref=e29]:
+    - banner [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]: demo
+        - generic [ref=e33]: DE
+    - main [ref=e34]:
+      - generic [ref=e99]:
+        - button "Employees" [ref=e100]:
+          - img [ref=e101]
+          - text: Employees
+        - generic [ref=e104]:
+          - generic [ref=e106]: AM
+          - generic [ref=e107]:
+            - generic [ref=e108]:
+              - heading "Arjun Mehta" [level=1] [ref=e109]
+              - generic [ref=e110]: Active
+              - generic [ref=e111]:
+                - img [ref=e112]
+                - text: Profile Incomplete
+            - paragraph [ref=e114]: Senior Software Engineer · Engineering
+            - generic [ref=e115]:
+              - generic [ref=e116]: arjun.mehta@demo.com
+              - generic [ref=e117]: "9876543210"
+              - generic [ref=e118]: EMP001
+              - generic [ref=e119]: Joined 01/04/2025
+        - generic [ref=e120]:
+          - button "Overview" [ref=e121]
+          - button "Personal Details" [ref=e122]
+          - button "Payment Info" [ref=e123]
+          - button "Statutory" [ref=e124]
+        - generic [ref=e126]:
+          - heading "Basic Details" [level=2] [ref=e127]
+          - generic [ref=e128]:
+            - generic [ref=e129]:
+              - generic [ref=e130]: First Name *
+              - textbox [ref=e131]: Arjun
+            - generic [ref=e132]:
+              - generic [ref=e133]: Middle Name
+              - textbox [ref=e134]
+            - generic [ref=e135]:
+              - generic [ref=e136]: Last Name *
+              - textbox [ref=e137]: Mehta
+          - generic [ref=e138]:
+            - generic [ref=e139]:
+              - generic [ref=e140]: Work Email
+              - textbox [disabled] [ref=e141]: arjun.mehta@demo.com
+              - paragraph [ref=e142]: Email cannot be changed
+            - generic [ref=e143]:
+              - generic [ref=e144]: Mobile Number
+              - textbox "10-digit number" [ref=e145]: "9876543210"
+          - generic [ref=e146]:
+            - generic [ref=e147]:
+              - generic [ref=e148]: Gender *
+              - combobox [ref=e149]:
+                - option "Male" [selected]
+                - option "Female"
+                - option "Other"
+            - generic [ref=e150]:
+              - generic [ref=e151]: Employee Code
+              - textbox [disabled] [ref=e152]: EMP001
+          - generic [ref=e153]:
+            - generic [ref=e154]: Employment Type
+            - textbox [disabled] [ref=e155]: FullTime
+          - generic [ref=e156]:
+            - generic [ref=e157]:
+              - generic [ref=e158]: Department *
+              - combobox [ref=e159]:
+                - option "Engineering" [selected]
+                - option "HR"
+            - generic [ref=e160]:
+              - generic [ref=e161]: Designation *
+              - combobox [ref=e162]:
+                - option "Junior Developer"
+                - option "Senior Software Engineer" [selected]
+            - generic [ref=e163]:
+              - generic [ref=e164]: Work Location *
+              - combobox [ref=e165]:
+                - option "Mumbai Head Office" [selected]
+                - option "tvm"
+          - generic [ref=e166]:
+            - generic [ref=e167] [cursor=pointer]:
+              - checkbox "Mark as Director" [ref=e168]
+              - generic [ref=e169]: Mark as Director
+            - generic [ref=e170] [cursor=pointer]:
+              - checkbox "Enable Portal Access" [ref=e171]
+              - generic [ref=e172]: Enable Portal Access
+          - button "Save Changes" [disabled] [ref=e174]

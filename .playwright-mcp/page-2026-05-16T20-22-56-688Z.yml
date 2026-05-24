@@ -1,0 +1,9 @@
+- generic [ref=e4]:
+  - heading "Forgot Password" [level=1] [ref=e5]
+  - generic [ref=e6]:
+    - generic [ref=e7]:
+      - generic [ref=e8]: Email
+      - textbox "you@example.com" [ref=e9]
+    - button "Send Reset Link" [ref=e10]
+    - link "Back to login" [ref=e12] [cursor=pointer]:
+      - /url: /login

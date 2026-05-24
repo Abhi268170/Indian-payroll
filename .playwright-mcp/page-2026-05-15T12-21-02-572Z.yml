@@ -1,0 +1,140 @@
+- generic:
+  - iframe
+  - generic [ref=e13742]:
+    - generic [ref=e13743]: Please make sure pre-payment is not a date in the future.
+    - button [ref=e14841] [cursor=pointer]:
+      - img [ref=e14842]
+  - generic [ref=e5]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e6] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e7]
+    - banner "Top Band" [ref=e22975]:
+      - navigation:
+        - generic [ref=e22977]:
+          - img "Zoho Payroll" [ref=e22978]
+          - generic [ref=e22979]: Payroll
+        - generic [ref=e22983]:
+          - button "Advanced Search" [ref=e22984] [cursor=pointer]:
+            - img [ref=e22985]
+          - textbox "Search in Employee" [ref=e22989]: HDFC Bank
+          - button "Clear Searched Text" [ref=e22991] [cursor=pointer]:
+            - img [ref=e22992]
+        - generic [ref=e22994]:
+          - generic [ref=e22997] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e22999] [cursor=pointer]
+          - button "lerno" [ref=e23003] [cursor=pointer]:
+            - generic [ref=e23004]: lerno
+            - img [ref=e23005]
+          - button "Refer and Earn" [ref=e23009] [cursor=pointer]:
+            - img [ref=e23010]
+          - button "Notifications" [ref=e23014] [cursor=pointer]:
+            - img [ref=e23016]
+          - button "Settings" [ref=e23019] [cursor=pointer]:
+            - img [ref=e23020]
+          - button "abhijithss2255" [ref=e23025] [cursor=pointer]:
+            - img "abhijithss2255" [ref=e23027]
+          - img [ref=e23044] [cursor=pointer]
+    - generic [ref=e78]:
+      - complementary [ref=e23047]:
+        - navigation [ref=e23048]:
+          - generic [ref=e23049]:
+            - list [ref=e23050]:
+              - listitem [ref=e23051]:
+                - link "Dashboard" [ref=e23052] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e23053]
+                  - generic [ref=e23056]: Dashboard
+              - listitem [ref=e23057]:
+                - link "Employees" [ref=e23058] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e23059]
+                  - generic [ref=e23061]: Employees
+              - listitem [ref=e23062]:
+                - link "Pay Runs" [ref=e23063] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e23064]
+                  - generic [ref=e23067]: Pay Runs
+              - listitem [ref=e23068]:
+                - list [ref=e23069]:
+                  - listitem [ref=e23070]:
+                    - button "Approvals" [ref=e23072] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e23073]:
+                        - button "Approvals" [ref=e23074]:
+                          - img [ref=e23075]
+                          - img [ref=e23077]
+                          - generic [ref=e23080]: Approvals
+                          - img [ref=e23081]
+                    - list "Approvals":
+                      - listitem [ref=e23083]:
+                        - link "Reimbursements" [ref=e23084] [cursor=pointer]:
+                          - /url: "#/approvals/reimbursements"
+                      - listitem [ref=e23085]:
+                        - link "Proof Of Investments" [ref=e23086] [cursor=pointer]:
+                          - /url: "#/approvals/proof-of-investment"
+                      - listitem [ref=e23087]:
+                        - link "Salary Revision" [ref=e23088] [cursor=pointer]:
+                          - /url: "#/approvals/salary-revision"
+              - listitem [ref=e23089]:
+                - list [ref=e23090]:
+                  - listitem [ref=e23091]:
+                    - button "Taxes & Forms" [ref=e23093] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e23094]:
+                        - button "Taxes & Forms" [ref=e23095]:
+                          - img [ref=e23096]
+                          - img [ref=e23098]
+                          - generic [ref=e23103]: Taxes & Forms
+                          - img [ref=e23104]
+                    - list "Taxes & Forms":
+                      - listitem [ref=e23106]:
+                        - link "TDS Liabilities" [ref=e23107] [cursor=pointer]:
+                          - /url: "#/taxes-and-forms/tax-liabilities/pending"
+                      - listitem [ref=e23108]:
+                        - link "Challans" [ref=e23109] [cursor=pointer]:
+                          - /url: "#/taxes-and-forms/tax-payments/unassociated"
+                      - listitem [ref=e23110]:
+                        - link "Form 24Q" [ref=e23111] [cursor=pointer]:
+                          - /url: "#/taxes-and-forms/form24q"
+                      - listitem [ref=e23112]:
+                        - link "Form 16" [ref=e23113] [cursor=pointer]:
+                          - /url: "#/taxes-and-forms/form16"
+              - listitem [ref=e23114]:
+                - link "Loans" [ref=e23115] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e23116]
+                  - generic [ref=e23119]: Loans
+              - listitem [ref=e23120]:
+                - link "Giving" [ref=e23121] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e23122]
+                  - generic [ref=e23124]: Giving
+              - listitem
+              - listitem [ref=e23125]:
+                - link "Documents" [ref=e23126] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e23127]
+                  - generic [ref=e23129]: Documents
+              - listitem [ref=e23130]:
+                - link "Reports" [ref=e23131] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e23132]
+                  - generic [ref=e23135]: Reports
+              - listitem [ref=e23136]:
+                - link "Settings" [ref=e23137] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e23138]
+                  - generic [ref=e23141]: Settings
+            - link "Contact Support" [ref=e23145] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e23146]
+          - button "Collapse/Expand" [ref=e23148] [cursor=pointer]:
+            - img [ref=e23149]
+      - main [ref=e23152]:
+        - generic [ref=e23153]:
+          - heading " Page not found" [level=2] [ref=e23154]:
+            - generic [ref=e23155]: 
+            - text: Page not found
+          - paragraph [ref=e23156]: Sorry we could not find the page you are requesting
+  - status [ref=e269]: page loaded.
+  - text:       Chats  Contacts   

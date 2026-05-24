@@ -1,0 +1,195 @@
+- generic:
+  - iframe
+  - generic [ref=e5]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e6] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e7]
+    - banner "Top Band" [ref=e9]:
+      - navigation:
+        - generic [ref=e11]:
+          - img "Zoho Payroll" [ref=e12]
+          - generic [ref=e13]: Payroll
+        - generic [ref=e17]:
+          - button "Advanced Search" [ref=e18] [cursor=pointer]:
+            - img [ref=e19]
+          - textbox "Search in Employee" [ref=e23]
+        - generic [ref=e25]:
+          - generic [ref=e28] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e30] [cursor=pointer]
+          - button "lerno" [ref=e34] [cursor=pointer]:
+            - generic [ref=e35]: lerno
+            - img [ref=e36]
+          - button "Refer and Earn" [ref=e40] [cursor=pointer]:
+            - img [ref=e41]
+          - button "Notifications" [ref=e45] [cursor=pointer]:
+            - generic [ref=e46]:
+              - generic [ref=e47]: "4"
+              - img [ref=e48]
+          - button "Settings" [ref=e51] [cursor=pointer]:
+            - img [ref=e52]
+          - button "A" [ref=e57] [cursor=pointer]:
+            - generic [ref=e58]: A
+          - img [ref=e75] [cursor=pointer]
+    - generic [ref=e78]:
+      - complementary [ref=e79]:
+        - navigation [ref=e80]:
+          - generic [ref=e81]:
+            - list [ref=e82]:
+              - listitem [ref=e83]:
+                - link "Dashboard" [ref=e84] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e936]
+                  - generic [ref=e88]: Dashboard
+              - listitem [ref=e89]:
+                - link "Employees" [ref=e90] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e939]
+                  - generic [ref=e93]: Employees
+              - listitem [ref=e94]:
+                - link "Pay Runs" [ref=e95] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e941]
+                  - generic [ref=e99]: Pay Runs
+              - listitem [ref=e100]:
+                - list [ref=e101]:
+                  - listitem [ref=e102]:
+                    - button "Approvals" [ref=e104] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e105]:
+                        - button "Approvals" [ref=e106]:
+                          - img [ref=e944]
+                          - img [ref=e946]
+                          - generic [ref=e112]: Approvals
+                          - img [ref=e113]
+              - listitem [ref=e115]:
+                - list [ref=e116]:
+                  - listitem [ref=e117]:
+                    - button "Taxes & Forms" [ref=e119] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e120]:
+                        - button "Taxes & Forms" [ref=e121]:
+                          - img [ref=e949]
+                          - img [ref=e951]
+                          - generic [ref=e129]: Taxes & Forms
+                          - img [ref=e130]
+              - listitem [ref=e132]:
+                - link "Loans" [ref=e133] [cursor=pointer]:
+                  - /url: "#/loans?sort_column=&sort_order="
+                  - img [ref=e956]
+                  - generic [ref=e137]: Loans
+              - listitem [ref=e138]:
+                - link "Giving" [ref=e139] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e959]
+                  - generic [ref=e142]: Giving
+              - listitem
+              - listitem [ref=e143]:
+                - link "Documents" [ref=e144] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e961]
+                  - generic [ref=e147]: Documents
+              - listitem [ref=e148]:
+                - link "Reports" [ref=e149] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e963]
+                  - generic [ref=e153]: Reports
+              - listitem [ref=e154]:
+                - link "Settings" [ref=e155] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e966]
+                  - generic [ref=e159]: Settings
+            - link "Contact Support" [ref=e972] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e973]
+          - button "Collapse/Expand" [ref=e166] [cursor=pointer]:
+            - img [ref=e975]
+      - main [ref=e170]:
+        - generic [ref=e978]:
+          - generic [ref=e979]:
+            - heading "Create Loan" [level=3] [ref=e980]
+            - button "Close" [ref=e982] [cursor=pointer]:
+              - img [ref=e983]
+          - form [ref=e987]:
+            - generic [ref=e990]:
+              - button "Close" [ref=e991] [cursor=pointer]:
+                - img [ref=e992]
+              - generic [ref=e994]: Oops! Looks like you missed something...
+              - list [ref=e995]:
+                - listitem [ref=e996]: Please enter the instalment amount
+                - listitem [ref=e997]: Please select a date from which the repayment starts
+                - listitem [ref=e998]: Since the perquisite rate for this loan type is zero, you must select the Exempt this loan from the perquisite calculation option.
+            - generic [ref=e1002]:
+              - generic [ref=e1003]: Loan Name*
+              - generic [ref=e1006]:
+                - combobox [ref=e1008]:
+                  - generic [ref=e1009] [cursor=pointer]:
+                    - generic "Personal Loan" [ref=e1010]
+                    - img [ref=e1013]
+                - button "Clear Selection" [ref=e1015] [cursor=pointer]:
+                  - img [ref=e1016]
+                - status [ref=e1018]
+              - generic [ref=e1020]:
+                - generic [ref=e1021]: "Perquisite Rate:"
+                - generic [ref=e1022]: 0%
+                - button [ref=e1023] [cursor=pointer]:
+                  - img [ref=e1024]
+            - generic [ref=e1027]:
+              - generic [ref=e1028]:
+                - generic [ref=e1029]:
+                  - generic [ref=e1030]: Employee Name*
+                  - generic [ref=e1033]:
+                    - combobox "Employee Name*" [ref=e1035]:
+                      - generic [ref=e1036] [cursor=pointer]:
+                        - generic "Arjun Mehta (EMP001)" [ref=e1037]
+                        - img [ref=e1040]
+                    - button "Clear Selection" [ref=e1042] [cursor=pointer]:
+                      - img [ref=e1043]
+                    - status [ref=e1045]
+                - generic [ref=e1046]:
+                  - generic [ref=e1047]:
+                    - text: Loan Amount*
+                    - img [ref=e1050]
+                  - generic [ref=e1054]:
+                    - generic [ref=e1056]: ₹
+                    - spinbutton "Loan Amount*" [ref=e1057]: "50000"
+              - generic [ref=e1059]:
+                - generic [ref=e1060]: Disbursement Date*
+                - textbox "Disbursement Date*" [ref=e1062]:
+                  - /placeholder: dd/MM/yyyy
+                  - text: 01/05/2025
+              - generic [ref=e1064]:
+                - generic [ref=e1065]: Reason*
+                - textbox "Reason*" [ref=e1067]: Interest-free personal loan - salary deduction
+            - generic [ref=e1070]:
+              - generic [ref=e1071] [cursor=pointer]:
+                - checkbox "Exempt this loan from perquisite calculation" [ref=e1072]
+                - text: Exempt this loan from perquisite calculation
+              - generic [ref=e1073]: According to Rule 15(5) of the Income Tax Rules, 2026, employees availing medical loans (for treatment of diseases specified in Rule 18) or any other loans below ₹2,00,000 in aggregate can be exempted from perquisite calculation.
+            - separator [ref=e1074]
+            - generic [ref=e1077]:
+              - generic [ref=e1079]: Repayments
+              - generic [ref=e1080]:
+                - generic [ref=e1081]:
+                  - generic [ref=e1082]:
+                    - text: EMI Deduction Start Date *
+                    - img [ref=e1084]
+                  - textbox "EMI Deduction Start Date *" [ref=e1088]:
+                    - /placeholder: dd/MM/yyyy
+                - generic [ref=e1089]:
+                  - generic [ref=e1090]: Instalment Amount*
+                  - generic [ref=e1092]:
+                    - generic [ref=e1094]: ₹
+                    - spinbutton [ref=e1095]
+            - separator [ref=e1096]
+            - generic [ref=e1098]:
+              - button "Save" [ref=e1099] [cursor=pointer]
+              - button "Cancel" [ref=e1100] [cursor=pointer]
+              - paragraph [ref=e1102]: "* indicates mandatory fields"
+  - generic [ref=e264] [cursor=pointer]:
+    - generic [ref=e265]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e266]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e268]: Don't show again
+  - status [ref=e269]: Loans page loaded.
+  - text:       Chats  Contacts   

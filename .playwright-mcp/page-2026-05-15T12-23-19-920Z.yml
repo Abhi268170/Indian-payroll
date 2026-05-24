@@ -1,0 +1,138 @@
+- generic:
+  - iframe
+  - generic [ref=e13742]:
+    - generic [ref=e13743]: Please make sure pre-payment is not a date in the future.
+    - button [ref=e14841] [cursor=pointer]:
+      - img [ref=e14842]
+  - generic [ref=e5]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e6] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e7]
+    - generic [ref=e23859]:
+      - generic [ref=e23861]:
+        - generic [ref=e23862]:
+          - button "All Settings" [ref=e23863] [cursor=pointer]:
+            - img [ref=e23864]
+          - button [ref=e23869] [cursor=pointer]:
+            - img [ref=e23870]
+          - generic [ref=e23872]:
+            - generic [ref=e23873]: All Settings
+            - generic [ref=e23874]: lerno
+        - generic [ref=e23876]:
+          - combobox "Search" [ref=e23880]
+          - img [ref=e23881]
+        - button "Close Settings" [ref=e23885] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e23886]
+      - generic [ref=e23888]:
+        - navigation [ref=e23889]:
+          - generic [ref=e23891]:
+            - group [ref=e23892]:
+              - heading "Organisation Settings" [level=2] [ref=e23893]
+              - generic [ref=e23894]:
+                - region "Organisation" [ref=e23896]:
+                  - generic [ref=e23897]:
+                    - heading "Organisation" [level=3] [ref=e23898] [cursor=pointer]:
+                      - button "Organisation" [ref=e23899]:
+                        - img [ref=e23900]
+                        - generic [ref=e23902]: Organisation
+                    - text:      
+                - generic [ref=e23916]:
+                  - region "Users and Roles" [ref=e23917]:
+                    - generic [ref=e23918]:
+                      - heading "Users and Roles" [level=3] [ref=e23919] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e23920]:
+                          - img [ref=e23921]
+                          - generic [ref=e23923]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e23929]:
+                    - generic [ref=e23930]:
+                      - heading "Taxes" [level=3] [ref=e23931] [cursor=pointer]:
+                        - button "Taxes" [ref=e23932]:
+                          - img [ref=e23933]
+                          - generic [ref=e23935]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e23940]:
+                  - generic [ref=e23941]:
+                    - heading "Setup & Configurations" [level=3] [ref=e23942] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e23943]:
+                        - img [ref=e24434]
+                        - generic [ref=e23946]: Setup & Configurations
+                    - text:     
+                - region "Customisations" [ref=e23959]:
+                  - generic [ref=e23960]:
+                    - heading "Customisations" [level=3] [ref=e23961] [cursor=pointer]:
+                      - button "Customisations" [ref=e23962]:
+                        - img [ref=e24281]
+                        - generic [ref=e23965]: Customisations
+                    - text:     
+                - region "Automations" [ref=e23978]:
+                  - generic [ref=e23979]:
+                    - heading "Automations" [level=3] [ref=e23980] [cursor=pointer]:
+                      - button "Automations" [ref=e23981]:
+                        - img [ref=e23982]
+                        - generic [ref=e23984]: Automations
+                    - text:    
+            - group [ref=e23994]:
+              - heading "Module Settings" [level=2] [ref=e23995]
+              - generic [ref=e23996]:
+                - region "General" [ref=e23998]:
+                  - generic [ref=e23999]:
+                    - heading "General" [level=3] [ref=e24000] [cursor=pointer]:
+                      - button "General" [expanded] [ref=e24001]:
+                        - img [ref=e24525]
+                        - generic [ref=e24004]: General
+                    - region "General":
+                      - generic [ref=e24005]:
+                        - link "Employees & Contractors" [ref=e24006] [cursor=pointer]:
+                          - /url: "#/settings/employee/contractor"
+                          - generic [ref=e24007]: Employees & Contractors
+                          - text: 
+                        - link "Pay Runs" [ref=e24008] [cursor=pointer]:
+                          - /url: "#/settings/payrun/custom-approval/list"
+                          - generic [ref=e24009]: Pay Runs
+                          - text: 
+                        - link "Salary Revisions" [ref=e24010] [cursor=pointer]:
+                          - /url: "#/settings/salary-revision/custom-approval/list"
+                          - generic [ref=e24011]: Salary Revisions
+                          - text: 
+                        - link "Leave & Attendance" [ref=e24012] [cursor=pointer]:
+                          - /url: "#/settings/holiday-leave/enable-module"
+                          - generic [ref=e24013]: Leave & Attendance
+                          - text: 
+                        - link "Loans" [ref=e24014] [cursor=pointer]:
+                          - /url: "#/settings/loan/custom-field/list"
+                          - generic [ref=e24015]: Loans
+                          - text: 
+                - region "Payments" [ref=e24017]:
+                  - generic [ref=e24018]:
+                    - heading "Payments" [level=3] [ref=e24019] [cursor=pointer]:
+                      - button "Payments" [ref=e24020]:
+                        - img [ref=e24527]
+                        - generic [ref=e24023]: Payments
+                    - region "Payments" [ref=e24464]:
+                      - link "Direct Deposits" [ref=e24025] [cursor=pointer]:
+                        - /url: "#/settings/direct-deposit"
+                        - generic [ref=e24026]: Direct Deposits
+                        - text: 
+            - group [ref=e24027]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e24028]
+              - generic [ref=e24029]:
+                - region "Integrations" [ref=e24031]:
+                  - generic [ref=e24032]:
+                    - heading "Integrations" [level=3] [ref=e24033] [cursor=pointer]:
+                      - button "Integrations" [ref=e24034]:
+                        - img [ref=e24035]
+                        - generic [ref=e24037]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e24042]:
+                  - generic [ref=e24043]:
+                    - heading "Developer Data" [level=3] [ref=e24044] [cursor=pointer]:
+                      - button "Developer Data" [ref=e24045]:
+                        - img [ref=e24046]
+                        - generic [ref=e24048]: Developer Data
+                    - text:   
+        - main [ref=e24529]
+  - status [ref=e269]: Settings Direct Deposit page loaded.
+  - text:       Chats  Contacts   

@@ -1,0 +1,13 @@
+- generic [ref=e18]:
+  - heading "Indian Payroll" [level=1] [ref=e19]
+  - paragraph [ref=e20]: Sign in to your account
+  - generic [ref=e21]:
+    - generic [ref=e22]:
+      - generic [ref=e23]: Email
+      - textbox "you@company.com" [ref=e24]: demoAdmin@yopmail.com
+    - generic [ref=e25]:
+      - generic [ref=e26]: Password
+      - textbox [ref=e27]: Demo@Corp2024!
+    - button "Sign in" [ref=e28]
+    - link "Forgot password?" [ref=e30] [cursor=pointer]:
+      - /url: /forgot-password

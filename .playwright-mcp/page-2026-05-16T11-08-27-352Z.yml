@@ -1,0 +1,168 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e2524]:
+      - generic [ref=e2526]:
+        - generic [ref=e2527]:
+          - button "All Settings" [ref=e2528] [cursor=pointer]:
+            - img [ref=e2529]
+          - button [ref=e2739] [cursor=pointer]:
+            - img [ref=e2740]
+          - generic [ref=e2534]:
+            - generic [ref=e2535]: All Settings
+            - generic [ref=e2536]: lerno
+        - generic [ref=e2538]:
+          - combobox "Search" [ref=e2542]
+          - img [ref=e2543]
+        - button "Close Settings" [ref=e2547] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e2548]
+      - generic [ref=e2550]:
+        - navigation [ref=e2551]:
+          - generic [ref=e2553]:
+            - group [ref=e2554]:
+              - heading "Organisation Settings" [level=2] [ref=e2555]
+              - generic [ref=e2556]:
+                - region "Organisation" [ref=e2558]:
+                  - generic [ref=e2559]:
+                    - heading "Organisation" [level=3] [ref=e2560] [cursor=pointer]:
+                      - button "Organisation" [ref=e2561]:
+                        - img [ref=e2742]
+                        - generic [ref=e2565]: Organisation
+                    - text:      
+                - generic [ref=e2580]:
+                  - region "Users and Roles" [ref=e2581]:
+                    - generic [ref=e2582]:
+                      - heading "Users and Roles" [level=3] [ref=e2583] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e2584]:
+                          - img [ref=e2750]
+                          - generic [ref=e2588]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e2595]:
+                    - generic [ref=e2596]:
+                      - heading "Taxes" [level=3] [ref=e2597] [cursor=pointer]:
+                        - button "Taxes" [ref=e2598]:
+                          - img [ref=e2754]
+                          - generic [ref=e2602]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e2608]:
+                  - generic [ref=e2609]:
+                    - heading "Setup & Configurations" [level=3] [ref=e2610] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e2611]:
+                        - img [ref=e2757]
+                        - generic [ref=e2615]: Setup & Configurations
+                    - text:     
+                - region "Customisations" [ref=e2629]:
+                  - generic [ref=e2630]:
+                    - heading "Customisations" [level=3] [ref=e2631] [cursor=pointer]:
+                      - button "Customisations" [ref=e2632]:
+                        - img [ref=e2764]
+                        - generic [ref=e2636]: Customisations
+                    - text:     
+                - region "Automations" [ref=e2650]:
+                  - generic [ref=e2651]:
+                    - heading "Automations" [level=3] [ref=e2652] [cursor=pointer]:
+                      - button "Automations" [ref=e2653]:
+                        - img [ref=e2771]
+                        - generic [ref=e2658]: Automations
+                    - text:    
+            - group [ref=e2669]:
+              - heading "Module Settings" [level=2] [ref=e2670]
+              - generic [ref=e2671]:
+                - region "General" [ref=e2673]:
+                  - generic [ref=e2674]:
+                    - heading "General" [level=3] [ref=e2675] [cursor=pointer]:
+                      - button "General" [expanded] [ref=e2676]:
+                        - img [ref=e2777]
+                        - generic [ref=e2680]: General
+                    - region "General" [ref=e2681]:
+                      - generic [ref=e2682]:
+                        - link "Employees & Contractors" [ref=e2683] [cursor=pointer]:
+                          - /url: "#/settings/employee/contractor"
+                          - generic [ref=e2779]: Employees & Contractors
+                          - text: 
+                        - link "Pay Runs" [ref=e2685] [cursor=pointer]:
+                          - /url: "#/settings/payrun/custom-approval/list"
+                          - generic [ref=e2780]: Pay Runs
+                          - text: 
+                        - link "Salary Revisions" [ref=e2687] [cursor=pointer]:
+                          - /url: "#/settings/salary-revision/custom-approval/list"
+                          - generic [ref=e2781]: Salary Revisions
+                          - text: 
+                        - link "Leave & Attendance" [ref=e2689] [cursor=pointer]:
+                          - /url: "#/settings/holiday-leave/enable-module"
+                          - generic [ref=e2782]: Leave & Attendance
+                          - text: 
+                        - link "Loans" [ref=e2691] [cursor=pointer]:
+                          - /url: "#/settings/loan/custom-field/list"
+                          - generic [ref=e2783]: Loans
+                          - text: 
+                - region "Payments" [ref=e2694]:
+                  - generic [ref=e2695]:
+                    - heading "Payments" [level=3] [ref=e2696] [cursor=pointer]:
+                      - button "Payments" [ref=e2697]:
+                        - img [ref=e2784]
+                        - generic [ref=e2701]: Payments
+                    - text: 
+            - group [ref=e2706]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e2707]
+              - generic [ref=e2708]:
+                - region "Integrations" [ref=e2710]:
+                  - generic [ref=e2711]:
+                    - heading "Integrations" [level=3] [ref=e2712] [cursor=pointer]:
+                      - button "Integrations" [ref=e2713]:
+                        - img [ref=e2787]
+                        - generic [ref=e2717]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e2723]:
+                  - generic [ref=e2724]:
+                    - heading "Developer Data" [level=3] [ref=e2725] [cursor=pointer]:
+                      - button "Developer Data" [ref=e2726]:
+                        - img [ref=e2790]
+                        - generic [ref=e2730]: Developer Data
+                    - text:   
+        - main [ref=e2821]:
+          - generic [ref=e2822]:
+            - heading "Salary Revisions" [level=3] [ref=e2824]
+            - navigation [ref=e2826]:
+              - list [ref=e2827]:
+                - listitem [ref=e2828]:
+                  - link "Approvals" [ref=e2829] [cursor=pointer]:
+                    - /url: "#/settings/salary-revision/custom-approval/list"
+          - generic [ref=e2830]:
+            - generic [ref=e2831]:
+              - radiogroup "Select Approval Workflow" [ref=e2833]:
+                - heading "Select Approval Workflow" [level=5] [ref=e2835]
+                - generic [ref=e2836]:
+                  - generic [ref=e2837]:
+                    - radio "Simple Approval In this approval flow, any approver with Salary Revision approval permission can approve." [ref=e2838] [cursor=pointer]
+                    - generic [ref=e2840] [cursor=pointer]:
+                      - text: Simple Approval
+                      - paragraph [ref=e2841]: In this approval flow, any approver with Salary Revision approval permission can approve.
+                  - generic [ref=e2842]:
+                    - radio "Multi-Level Approval Set many levels of approval. The Salary Revision will be approved only when all the approvers approve." [ref=e2843] [cursor=pointer]
+                    - generic [ref=e2845] [cursor=pointer]:
+                      - text: Multi-Level Approval
+                      - paragraph [ref=e2846]: Set many levels of approval. The Salary Revision will be approved only when all the approvers approve.
+                  - generic [ref=e2847]:
+                    - radio "Custom Approval You can set up an approval flow based on one or more criteria. These criteria can be chosen by you." [checked] [active] [ref=e2848] [cursor=pointer]
+                    - generic [ref=e2850] [cursor=pointer]:
+                      - text: Custom Approval
+                      - paragraph [ref=e2851]: You can set up an approval flow based on one or more criteria. These criteria can be chosen by you.
+              - heading "Custom Approval Workflows" [level=5] [ref=e2900]
+              - generic [ref=e2901]:
+                - img [ref=e2902]
+                - generic [ref=e2903]: Tailor your Approval process with Custom Workflows
+                - paragraph [ref=e2904]: Create custom approval workflows based on multiple conditions to suit your business needs.
+                - link "New Custom Approval" [ref=e2905] [cursor=pointer]:
+                  - /url: "#/settings/salary-revision/custom-approval/new?entity_type=salary_revision"
+                  - img [ref=e2906]
+                  - text: New Custom Approval
+              - separator [ref=e2852]
+            - button "Save" [ref=e2854] [cursor=pointer]
+  - status [ref=e381]: Settings Salary Revision | Approvals page loaded.
+  - text:       Chats  Contacts   

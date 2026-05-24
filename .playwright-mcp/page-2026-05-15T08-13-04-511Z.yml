@@ -1,0 +1,246 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e6120]:
+      - generic [ref=e7338]:
+        - generic [ref=e7339]:
+          - generic [ref=e7340]: Elegant Template
+          - generic [ref=e7341]:
+            - generic [ref=e7342]:
+              - generic [ref=e7343]:
+                - generic [ref=e7344]: Organisation Logo
+                - generic [ref=e7347]:
+                  - generic [ref=e7348]:
+                    - img [ref=e7349]
+                    - text: Upload Logo
+                  - button "Choose File" [ref=e7352] [cursor=pointer]
+              - generic [ref=e7354] [cursor=pointer]:
+                - checkbox "Show Organisation Address" [checked] [ref=e7355]
+                - text: Show Organisation Address
+            - generic [ref=e7356]:
+              - generic [ref=e7357]: Payslip Preferences
+              - generic [ref=e7359] [cursor=pointer]:
+                - checkbox "Show PAN" [ref=e7360]
+                - text: Show PAN
+              - generic [ref=e7362] [cursor=pointer]:
+                - checkbox "Show YTD Values" [checked] [ref=e7363]
+                - text: Show YTD Values
+              - generic [ref=e7365] [cursor=pointer]:
+                - checkbox "Show Bank Account Number" [checked] [ref=e7366]
+                - text: Show Bank Account Number
+              - generic [ref=e7368] [cursor=pointer]:
+                - checkbox "Show Work Location" [ref=e7369]
+                - text: Show Work Location
+              - generic [ref=e7371] [cursor=pointer]:
+                - checkbox "Show Department" [ref=e7372]
+                - text: Show Department
+              - generic [ref=e7374] [cursor=pointer]:
+                - checkbox "Show Designation" [checked] [ref=e7375]
+                - text: Show Designation
+              - generic [ref=e7377] [cursor=pointer]:
+                - checkbox "Show Benefits Summary" [ref=e7378]
+                - text: Show Benefits Summary
+                - img [ref=e7380]
+        - generic [ref=e7382]:
+          - button "Save" [ref=e7383] [cursor=pointer]
+          - button "Preview" [ref=e7384] [cursor=pointer]
+      - generic [ref=e7385]:
+        - generic:
+          - link "Close":
+            - /url: "#/settings/templates/regular-payslip"
+            - img [ref=e7386] [cursor=pointer]
+        - generic [ref=e7391]:
+          - table [ref=e7394]:
+            - rowgroup [ref=e7395]:
+              - row "lerno lerno kazhakoottam thiruvananthapuram Kerala 695010 India Payslip For the Month May 2026" [ref=e7396]:
+                - cell [ref=e7397]
+                - cell "lerno lerno kazhakoottam thiruvananthapuram Kerala 695010 India" [ref=e7398]:
+                  - heading "lerno" [level=4] [ref=e7399]
+                  - paragraph [ref=e7400]: lerno kazhakoottam thiruvananthapuram Kerala 695010 India
+                - cell "Payslip For the Month May 2026" [ref=e7401]:
+                  - generic [ref=e7402]:
+                    - text: Payslip For the Month
+                    - generic [ref=e7403]: May 2026
+          - table [ref=e7406]:
+            - rowgroup [ref=e7407]:
+              - 'row "Employee Summary Employee Name : Preet Setty Designation : Software Engineer Employee ID : emp012 Date of Joining : 21-09-2014 Pay Period : May 2026 Pay Date : 31/05/2026 ₹97,870.00 Total Net Pay Paid Days : 28 LOP Days : 3" [ref=e7408]':
+                - 'cell "Employee Summary Employee Name : Preet Setty Designation : Software Engineer Employee ID : emp012 Date of Joining : 21-09-2014 Pay Period : May 2026 Pay Date : 31/05/2026" [ref=e7409]':
+                  - generic [ref=e7410]: Employee Summary
+                  - table [ref=e7411]:
+                    - rowgroup [ref=e7412]:
+                      - 'row "Employee Name : Preet Setty" [ref=e7413]':
+                        - cell "Employee Name :" [ref=e7414]:
+                          - text: Employee Name
+                          - generic [ref=e7415]: ":"
+                        - cell "Preet Setty" [ref=e7416]
+                      - 'row "Designation : Software Engineer" [ref=e7417]':
+                        - cell "Designation :" [ref=e7418]:
+                          - text: Designation
+                          - generic [ref=e7419]: ":"
+                        - cell "Software Engineer" [ref=e7420]
+                      - 'row "Employee ID : emp012" [ref=e7421]':
+                        - cell "Employee ID :" [ref=e7422]:
+                          - text: Employee ID
+                          - generic [ref=e7423]: ":"
+                        - cell "emp012" [ref=e7424]
+                      - 'row "Date of Joining : 21-09-2014" [ref=e7425]':
+                        - cell "Date of Joining :" [ref=e7426]:
+                          - text: Date of Joining
+                          - generic [ref=e7427]: ":"
+                        - cell "21-09-2014" [ref=e7428]
+                      - 'row "Pay Period : May 2026" [ref=e7429]':
+                        - cell "Pay Period :" [ref=e7430]:
+                          - text: Pay Period
+                          - generic [ref=e7431]: ":"
+                        - cell "May 2026" [ref=e7432]
+                      - 'row "Pay Date : 31/05/2026" [ref=e7433]':
+                        - cell "Pay Date :" [ref=e7434]:
+                          - text: Pay Date
+                          - generic [ref=e7435]: ":"
+                        - cell "31/05/2026" [ref=e7436]
+                - 'cell "₹97,870.00 Total Net Pay Paid Days : 28 LOP Days : 3" [ref=e7437]':
+                  - generic [ref=e7438]:
+                    - generic [ref=e7440]:
+                      - generic [ref=e7441]: ₹97,870.00
+                      - generic [ref=e7442]: Total Net Pay
+                    - table [ref=e7444]:
+                      - rowgroup [ref=e7445]:
+                        - 'row "Paid Days : 28" [ref=e7446]':
+                          - cell "Paid Days :" [ref=e7447]:
+                            - text: Paid Days
+                            - generic [ref=e7448]: ":"
+                          - cell "28" [ref=e7449]
+                        - 'row "LOP Days : 3" [ref=e7450]':
+                          - cell "LOP Days :" [ref=e7451]:
+                            - text: LOP Days
+                            - generic [ref=e7452]: ":"
+                          - cell "3" [ref=e7453]
+          - table [ref=e7456]:
+            - rowgroup [ref=e7457]:
+              - 'row "PF A/C Number : AA/AAA/0000000/000/0000000 Bank Account No : 101010101010101 UAN : 101010101010 ESI Number : 1234567890" [ref=e7458]':
+                - 'cell "PF A/C Number : AA/AAA/0000000/000/0000000 Bank Account No : 101010101010101" [ref=e7459]':
+                  - table [ref=e7460]:
+                    - rowgroup [ref=e7461]:
+                      - 'row "PF A/C Number : AA/AAA/0000000/000/0000000" [ref=e7462]':
+                        - cell "PF A/C Number :" [ref=e7463]:
+                          - text: PF A/C Number
+                          - generic [ref=e7464]: ":"
+                        - cell "AA/AAA/0000000/000/0000000" [ref=e7465]
+                      - 'row "Bank Account No : 101010101010101" [ref=e7466]':
+                        - cell "Bank Account No :" [ref=e7467]:
+                          - text: Bank Account No
+                          - generic [ref=e7468]: ":"
+                        - cell "101010101010101" [ref=e7469]
+                - 'cell "UAN : 101010101010 ESI Number : 1234567890" [ref=e7470]':
+                  - table [ref=e7471]:
+                    - rowgroup [ref=e7472]:
+                      - 'row "UAN : 101010101010" [ref=e7473]':
+                        - cell "UAN :" [ref=e7474]:
+                          - text: UAN
+                          - generic [ref=e7475]: ":"
+                        - cell "101010101010" [ref=e7476]
+                      - 'row "ESI Number : 1234567890" [ref=e7477]':
+                        - cell "ESI Number :" [ref=e7478]:
+                          - text: ESI Number
+                          - generic [ref=e7479]: ":"
+                        - cell "1234567890" [ref=e7480]
+          - generic [ref=e7481]:
+            - table [ref=e7482]:
+              - rowgroup [ref=e7483]:
+                - row "Earnings Amount YTD Basic ₹60,000.00 ₹1,20,000.00 House Rent Allowance ₹60,000.00 ₹1,20,000.00 Conveyance Allowance ₹0.00 ₹0.00 Fixed Allowance ₹0.00 ₹0.00 Bonus ₹0.00 ₹0.00 Commission ₹0.00 ₹0.00 Leave Encashment ₹0.00 ₹0.00 Deductions Amount YTD Income Tax ₹22,130.00 ₹2,65,554.00" [ref=e7484]:
+                  - cell [ref=e7485]:
+                    - table
+                  - cell "Earnings Amount YTD Basic ₹60,000.00 ₹1,20,000.00 House Rent Allowance ₹60,000.00 ₹1,20,000.00 Conveyance Allowance ₹0.00 ₹0.00 Fixed Allowance ₹0.00 ₹0.00 Bonus ₹0.00 ₹0.00 Commission ₹0.00 ₹0.00 Leave Encashment ₹0.00 ₹0.00" [ref=e7486]:
+                    - table [ref=e7487]:
+                      - rowgroup [ref=e7488]:
+                        - row "Earnings Amount YTD" [ref=e7489]:
+                          - columnheader "Earnings" [ref=e7490]
+                          - columnheader "Amount" [ref=e7491]
+                          - columnheader "YTD" [ref=e7492]
+                      - rowgroup [ref=e7493]:
+                        - row "Basic ₹60,000.00 ₹1,20,000.00" [ref=e7494]:
+                          - cell "Basic" [ref=e7495]
+                          - cell "₹60,000.00" [ref=e7496]
+                          - cell "₹1,20,000.00" [ref=e7497]
+                        - row "House Rent Allowance ₹60,000.00 ₹1,20,000.00" [ref=e7498]:
+                          - cell "House Rent Allowance" [ref=e7499]
+                          - cell "₹60,000.00" [ref=e7500]
+                          - cell "₹1,20,000.00" [ref=e7501]
+                        - row "Conveyance Allowance ₹0.00 ₹0.00" [ref=e7502]:
+                          - cell "Conveyance Allowance" [ref=e7503]
+                          - cell "₹0.00" [ref=e7504]
+                          - cell "₹0.00" [ref=e7505]
+                        - row "Fixed Allowance ₹0.00 ₹0.00" [ref=e7506]:
+                          - cell "Fixed Allowance" [ref=e7507]
+                          - cell "₹0.00" [ref=e7508]
+                          - cell "₹0.00" [ref=e7509]
+                        - row "Bonus ₹0.00 ₹0.00" [ref=e7510]:
+                          - cell "Bonus" [ref=e7511]
+                          - cell "₹0.00" [ref=e7512]
+                          - cell "₹0.00" [ref=e7513]
+                        - row "Commission ₹0.00 ₹0.00" [ref=e7514]:
+                          - cell "Commission" [ref=e7515]
+                          - cell "₹0.00" [ref=e7516]
+                          - cell "₹0.00" [ref=e7517]
+                        - row "Leave Encashment ₹0.00 ₹0.00" [ref=e7518]:
+                          - cell "Leave Encashment" [ref=e7519]
+                          - cell "₹0.00" [ref=e7520]
+                          - cell "₹0.00" [ref=e7521]
+                  - cell [ref=e7522]:
+                    - table
+                  - cell "Deductions Amount YTD Income Tax ₹22,130.00 ₹2,65,554.00" [ref=e7523]:
+                    - table [ref=e7524]:
+                      - rowgroup [ref=e7525]:
+                        - row "Deductions Amount YTD" [ref=e7526]:
+                          - columnheader "Deductions" [ref=e7527]
+                          - columnheader "Amount" [ref=e7528]
+                          - columnheader "YTD" [ref=e7529]
+                      - rowgroup [ref=e7530]:
+                        - row "Income Tax ₹22,130.00 ₹2,65,554.00" [ref=e7531]:
+                          - cell "Income Tax" [ref=e7532]
+                          - cell "₹22,130.00" [ref=e7533]
+                          - cell "₹2,65,554.00" [ref=e7534]
+                  - cell [ref=e7535]:
+                    - table
+            - table [ref=e7536]:
+              - rowgroup [ref=e7537]:
+                - row "Gross Earnings ₹1,20,000.00 Total Deductions ₹22,130.00" [ref=e7538]:
+                  - cell [ref=e7539]
+                  - cell "Gross Earnings ₹1,20,000.00" [ref=e7540]:
+                    - table [ref=e7541]:
+                      - rowgroup [ref=e7542]:
+                        - row "Gross Earnings ₹1,20,000.00" [ref=e7543]:
+                          - cell "Gross Earnings" [ref=e7544]
+                          - cell "₹1,20,000.00" [ref=e7545]
+                          - cell [ref=e7546]
+                  - cell [ref=e7547]
+                  - cell "Total Deductions ₹22,130.00" [ref=e7548]:
+                    - table [ref=e7549]:
+                      - rowgroup [ref=e7550]:
+                        - row "Total Deductions ₹22,130.00" [ref=e7551]:
+                          - cell "Total Deductions" [ref=e7552]
+                          - cell "₹22,130.00" [ref=e7553]
+                          - cell [ref=e7554]
+                  - cell [ref=e7555]
+          - table [ref=e7557]:
+            - rowgroup [ref=e7558]:
+              - row "Total Net Payable Gross Earnings - Total Deductions ₹97,870.00" [ref=e7559]:
+                - cell [ref=e7560]
+                - cell "Total Net Payable Gross Earnings - Total Deductions" [ref=e7561]:
+                  - generic [ref=e7562]: Total Net Payable
+                  - generic [ref=e7563]: Gross Earnings - Total Deductions
+                - cell "₹97,870.00" [ref=e7564]
+          - generic [ref=e7566]: "Amount In Words : Indian Rupee Ninety-Seven Thousand Eight Hundred Seventy Only"
+          - generic [ref=e7568]: "-- This is a system-generated document. --"
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Settings PDF Templates page loaded.
+  - text:       Chats  Contacts   

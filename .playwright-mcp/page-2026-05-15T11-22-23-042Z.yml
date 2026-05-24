@@ -1,0 +1,179 @@
+- generic:
+  - iframe
+  - generic [ref=e5]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e6] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e7]
+    - banner "Top Band" [ref=e9]:
+      - navigation:
+        - generic [ref=e11]:
+          - img "Zoho Payroll" [ref=e12]
+          - generic [ref=e13]: Payroll
+        - generic [ref=e17]:
+          - button "Advanced Search" [ref=e18] [cursor=pointer]:
+            - img [ref=e19]
+          - textbox "Search in Employee" [ref=e23]
+        - generic [ref=e25]:
+          - generic [ref=e28] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e30] [cursor=pointer]
+          - button "lerno" [ref=e34] [cursor=pointer]:
+            - generic [ref=e35]: lerno
+            - img [ref=e36]
+          - button "Refer and Earn" [ref=e40] [cursor=pointer]:
+            - img [ref=e41]
+          - button "Notifications" [ref=e45] [cursor=pointer]:
+            - generic [ref=e46]:
+              - generic [ref=e47]: "4"
+              - img [ref=e48]
+          - button "Settings" [ref=e51] [cursor=pointer]:
+            - img [ref=e52]
+          - button "A" [ref=e57] [cursor=pointer]:
+            - generic [ref=e58]: A
+          - img [ref=e75] [cursor=pointer]
+    - generic [ref=e78]:
+      - complementary [ref=e79]:
+        - navigation [ref=e80]:
+          - list [ref=e82]:
+            - listitem [ref=e83]:
+              - link "Dashboard" [ref=e84] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - img [ref=e5119]
+                - generic [ref=e88]: Dashboard
+            - listitem [ref=e89]:
+              - link "Employees" [ref=e90] [cursor=pointer]:
+                - /url: "#/people/employees"
+                - img [ref=e5122]
+                - generic [ref=e93]: Employees
+            - listitem [ref=e94]:
+              - link "Pay Runs" [ref=e95] [cursor=pointer]:
+                - /url: "#/payruns"
+                - img [ref=e5124]
+                - generic [ref=e99]: Pay Runs
+            - listitem [ref=e100]:
+              - list [ref=e101]:
+                - listitem [ref=e102]:
+                  - button "Approvals" [ref=e104] [cursor=pointer]:
+                    - heading "Approvals" [level=3] [ref=e105]:
+                      - button "Approvals" [ref=e106]:
+                        - img [ref=e5127]
+                        - generic [ref=e112]: Approvals
+                        - img [ref=e113]
+            - listitem [ref=e115]:
+              - list [ref=e116]:
+                - listitem [ref=e117]:
+                  - button "Taxes & Forms" [ref=e119] [cursor=pointer]:
+                    - heading "Taxes & Forms" [level=3] [ref=e120]:
+                      - button "Taxes & Forms" [ref=e121]:
+                        - img [ref=e5130]
+                        - generic [ref=e129]: Taxes & Forms
+                        - img [ref=e130]
+            - listitem [ref=e132]:
+              - link "Loans" [ref=e133] [cursor=pointer]:
+                - /url: "#/loans?sort_column=&sort_order="
+                - img [ref=e5135]
+                - generic [ref=e137]: Loans
+            - listitem [ref=e138]:
+              - link "Giving" [ref=e139] [cursor=pointer]:
+                - /url: "#/donations"
+                - img [ref=e5138]
+                - generic [ref=e142]: Giving
+            - listitem [ref=e143]:
+              - link "Documents" [ref=e144] [cursor=pointer]:
+                - /url: "#/documents/folder"
+                - img [ref=e5140]
+                - generic [ref=e147]: Documents
+            - listitem [ref=e148]:
+              - link "Reports" [ref=e149] [cursor=pointer]:
+                - /url: "#/reports"
+                - img [ref=e5142]
+                - generic [ref=e153]: Reports
+            - listitem [ref=e154]:
+              - link "Settings" [ref=e155] [cursor=pointer]:
+                - /url: "#/settings"
+                - img [ref=e5145]
+                - generic [ref=e159]: Settings
+          - button "Collapse/Expand" [ref=e166] [cursor=pointer]:
+            - img [ref=e5148]
+      - main [ref=e170]:
+        - generic [ref=e5151]:
+          - button "View the reports sidebar" [ref=e5153] [cursor=pointer]:
+            - img [ref=e5154]
+          - generic [ref=e5162]:
+            - generic [ref=e5163]:
+              - link "Payroll Journal" [ref=e5165] [cursor=pointer]:
+                - /url: "#/reports?selectedGroup=payroll_journal"
+              - heading "Payroll Journal Summary From 01/04/2026 To 30/04/2026" [level=3] [ref=e5168]:
+                - strong [ref=e5169]: Payroll Journal Summary
+                - generic [ref=e5171]: From 01/04/2026 To 30/04/2026
+            - generic [ref=e5172]:
+              - button "Export as" [ref=e5174] [cursor=pointer]
+              - button "Show History" [ref=e5175] [cursor=pointer]:
+                - img [ref=e5176]
+              - button "Close this report." [ref=e5180] [cursor=pointer]:
+                - img [ref=e5181]
+          - generic [ref=e5184]:
+            - generic [ref=e5185]:
+              - img [ref=e5186]
+              - text: "Filters :"
+            - generic [ref=e5188]:
+              - generic [ref=e5189] [cursor=pointer]:
+                - generic [ref=e5190]: "Date Range :"
+                - generic [ref=e5191]: Previous Month
+                - img [ref=e5193]
+              - button "Run Report" [disabled] [ref=e5195]
+          - generic [ref=e5197]:
+            - generic [ref=e5198]:
+              - heading "lerno" [level=4] [ref=e5199]
+              - heading "Payroll Journal Summary" [level=3] [ref=e5200]
+              - generic [ref=e5201]: From 01/04/2026 To 30/04/2026
+            - generic [ref=e5202]:
+              - table [ref=e5203]:
+                - rowgroup [ref=e5204]:
+                  - row "30/04/2026 - Payroll Journal Debit Credit" [ref=e5205]:
+                    - columnheader "30/04/2026 - Payroll Journal" [ref=e5206]
+                    - columnheader "Debit" [ref=e5207]
+                    - columnheader "Credit" [ref=e5208]
+                - rowgroup [ref=e5209]:
+                  - row "Salaries and Employee Wages 92,000.00 0.00" [ref=e5210]:
+                    - cell "Salaries and Employee Wages" [ref=e5211]
+                    - cell "92,000.00" [ref=e5212]
+                    - cell "0.00" [ref=e5213]
+                  - row "Net Salary Payable 0.00 92,000.00" [ref=e5214]:
+                    - cell "Net Salary Payable" [ref=e5215]
+                    - cell "0.00" [ref=e5216]
+                    - cell "92,000.00" [ref=e5217]
+                - rowgroup [ref=e5218]:
+                  - row "92,000.00 92,000.00" [ref=e5219]:
+                    - columnheader [ref=e5220]
+                    - columnheader "92,000.00" [ref=e5221]
+                    - columnheader "92,000.00" [ref=e5222]
+              - table [ref=e5223]:
+                - rowgroup [ref=e5224]:
+                  - row "30/04/2026 - Wage Payment Debit Credit" [ref=e5225]:
+                    - columnheader "30/04/2026 - Wage Payment" [ref=e5226]
+                    - columnheader "Debit" [ref=e5227]
+                    - columnheader "Credit" [ref=e5228]
+                - rowgroup [ref=e5229]:
+                  - row "Net Salary Payable 92,000.00 0.00" [ref=e5230]:
+                    - cell "Net Salary Payable" [ref=e5231]
+                    - cell "92,000.00" [ref=e5232]
+                    - cell "0.00" [ref=e5233]
+                  - row "Zoho Payroll - Bank Account 0.00 92,000.00" [ref=e5234]:
+                    - cell "Zoho Payroll - Bank Account" [ref=e5235]
+                    - cell "0.00" [ref=e5236]
+                    - cell "92,000.00" [ref=e5237]
+                - rowgroup [ref=e5238]:
+                  - row "92,000.00 92,000.00" [ref=e5239]:
+                    - columnheader [ref=e5240]
+                    - columnheader "92,000.00" [ref=e5241]
+                    - columnheader "92,000.00" [ref=e5242]
+    - tooltip "Employees" [ref=e5243]
+  - generic [ref=e264] [cursor=pointer]:
+    - generic [ref=e265]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e266]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e268]: Don't show again
+  - status [ref=e269]: Reports page loaded.
+  - text:       Chats  Contacts   

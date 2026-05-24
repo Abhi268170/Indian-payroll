@@ -1,0 +1,185 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e6283]:
+      - navigation:
+        - generic [ref=e6285]:
+          - img "Zoho Payroll" [ref=e6286]
+          - generic [ref=e6287]: Payroll
+        - generic [ref=e6291]:
+          - button "Advanced Search" [ref=e6292] [cursor=pointer]:
+            - img [ref=e6293]
+          - textbox "Search in Employee" [ref=e6297]
+        - generic [ref=e6299]:
+          - generic [ref=e6302] [cursor=pointer]: Your trial expires in 13 day(s).
+          - button "Upgrade" [ref=e6304] [cursor=pointer]
+          - button "lerno" [ref=e6308] [cursor=pointer]:
+            - generic [ref=e6309]: lerno
+            - img [ref=e6310]
+          - button "Refer and Earn" [ref=e6314] [cursor=pointer]:
+            - img [ref=e6315]
+          - button "Notifications" [ref=e6319] [cursor=pointer]:
+            - generic [ref=e6320]:
+              - generic [ref=e6473]: "4"
+              - img [ref=e6321]
+          - button "Settings" [ref=e6324] [cursor=pointer]:
+            - img [ref=e6325]
+          - button "A" [ref=e6474] [cursor=pointer]:
+            - generic [ref=e6331]: A
+          - img [ref=e6349] [cursor=pointer]
+    - generic [ref=e74]:
+      - complementary [ref=e6352]:
+        - navigation [ref=e6353]:
+          - generic [ref=e6354]:
+            - list [ref=e6355]:
+              - link "Getting Started" [ref=e6356] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e6358]:
+                  - generic [ref=e6359]:
+                    - img [ref=e6361]
+                    - text: Getting Started
+                  - img [ref=e6365]
+              - listitem [ref=e6367]:
+                - link "Dashboard" [ref=e6368] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e6369]
+                  - generic [ref=e6372]: Dashboard
+              - listitem [ref=e6373]:
+                - link "Employees" [ref=e6374] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e6375]
+                  - generic [ref=e6377]: Employees
+              - listitem [ref=e6378]:
+                - link "Pay Runs" [ref=e6379] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e6380]
+                  - generic [ref=e6383]: Pay Runs
+              - listitem [ref=e6384]:
+                - list [ref=e6385]:
+                  - listitem [ref=e6386]:
+                    - button "Approvals" [ref=e6388] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e6389]:
+                        - button "Approvals" [ref=e6390]:
+                          - img [ref=e6391]
+                          - img [ref=e6393]
+                          - generic [ref=e6396]: Approvals
+                          - img [ref=e6397]
+              - listitem [ref=e6405]:
+                - list [ref=e6406]:
+                  - listitem [ref=e6407]:
+                    - button "Taxes & Forms" [ref=e6409] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e6410]:
+                        - button "Taxes & Forms" [ref=e6411]:
+                          - img [ref=e6412]
+                          - img [ref=e6414]
+                          - generic [ref=e6419]: Taxes & Forms
+                          - img [ref=e6420]
+              - listitem [ref=e6430]:
+                - link "Loans" [ref=e6431] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e6432]
+                  - generic [ref=e6435]: Loans
+              - listitem [ref=e6436]:
+                - link "Giving" [ref=e6437] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e6438]
+                  - generic [ref=e6440]: Giving
+              - listitem
+              - listitem [ref=e6441]:
+                - link "Documents" [ref=e6442] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e6443]
+                  - generic [ref=e6445]: Documents
+              - listitem [ref=e6446]:
+                - link "Reports" [ref=e6447] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e6448]
+                  - generic [ref=e6451]: Reports
+              - listitem [ref=e6452]:
+                - link "Settings" [ref=e6453] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e6454]
+                  - generic [ref=e6457]: Settings
+            - link "Contact Support" [ref=e6461] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e6462]
+          - button "Collapse/Expand" [ref=e6464] [cursor=pointer]:
+            - img [ref=e6465]
+      - main [ref=e6468]:
+        - generic [ref=e7315]:
+          - generic [ref=e7316]:
+            - button "All Loans" [ref=e7319] [cursor=pointer]:
+              - text: All Loans
+              - img [ref=e7321]
+            - generic [ref=e7324]:
+              - paragraph [ref=e7327]:
+                - img [ref=e7328]
+                - button "View Loan Repayments" [ref=e7330] [cursor=pointer]
+              - button "Add" [ref=e7332] [cursor=pointer]:
+                - img [ref=e7333]
+                - generic [ref=e7335]: Add
+              - button "Show dropdown menu" [ref=e7337] [cursor=pointer]:
+                - img [ref=e7338]
+              - button [ref=e7341] [cursor=pointer]:
+                - img [ref=e7342]
+              - button "Instant Helper" [ref=e7344] [cursor=pointer]:
+                - img [ref=e7345]
+          - table [ref=e7349]:
+            - rowgroup [ref=e7350]:
+              - row "Employee Name Loan Number Loan Name Status Loan Amount Amount Repaid Remaining Amount" [ref=e7351]:
+                - columnheader "Employee Name" [ref=e7352]:
+                  - button "Employee Name" [ref=e7353] [cursor=pointer]:
+                    - text: Employee Name
+                    - img [ref=e7354]
+                - columnheader "Loan Number" [ref=e7356]:
+                  - button "Loan Number" [ref=e7357] [cursor=pointer]:
+                    - text: Loan Number
+                    - img [ref=e7358]
+                - columnheader "Loan Name" [ref=e7360]:
+                  - button "Loan Name" [ref=e7361] [cursor=pointer]:
+                    - text: Loan Name
+                    - img [ref=e7362]
+                - columnheader "Status" [ref=e7364]:
+                  - generic [ref=e7365]: Status
+                - columnheader "Loan Amount" [ref=e7366]:
+                  - button "Loan Amount" [ref=e7367] [cursor=pointer]:
+                    - text: Loan Amount
+                    - img [ref=e7368]
+                - columnheader "Amount Repaid" [ref=e7370]:
+                  - generic [ref=e7371]: Amount Repaid
+                - columnheader "Remaining Amount" [ref=e7372]:
+                  - generic [ref=e7373]: Remaining Amount
+            - rowgroup [ref=e7374]:
+              - row "Vikram Nair (EMP003) LOAN-00002 Emergency Loan Open ₹1,00,000.00 ₹0.00 ₹1,00,000.00" [ref=e7375] [cursor=pointer]:
+                - cell "Vikram Nair (EMP003)" [ref=e7376]:
+                  - generic [ref=e7378]:
+                    - text: Vikram Nair
+                    - generic [ref=e7379]: (EMP003)
+                - cell "LOAN-00002" [ref=e7380]:
+                  - button "LOAN-00002" [ref=e7381]
+                - cell "Emergency Loan" [ref=e7382]
+                - cell "Open" [ref=e7383]:
+                  - generic [ref=e7384]: Open
+                - cell "₹1,00,000.00" [ref=e7385]
+                - cell "₹0.00" [ref=e7386]
+                - cell "₹1,00,000.00" [ref=e7387]
+              - row "Arjun Mehta (EMP001) LOAN-00001 Personal Loan Open ₹50,000.00 ₹0.00 ₹50,000.00" [ref=e7388] [cursor=pointer]:
+                - cell "Arjun Mehta (EMP001)" [ref=e7389]:
+                  - generic [ref=e7391]:
+                    - text: Arjun Mehta
+                    - generic [ref=e7392]: (EMP001)
+                - cell "LOAN-00001" [ref=e7393]:
+                  - button "LOAN-00001" [ref=e7394]
+                - cell "Personal Loan" [ref=e7395]
+                - cell "Open" [ref=e7396]:
+                  - generic [ref=e7397]: Open
+                - cell "₹50,000.00" [ref=e7398]
+                - cell "₹0.00" [ref=e7399]
+                - cell "₹50,000.00" [ref=e7400]
+  - status [ref=e381]: Loans page loaded.
+  - text:       Chats  Contacts   

@@ -1,0 +1,311 @@
+- generic:
+  - iframe
+  - generic [ref=e5]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e6] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e7]
+    - banner "Top Band" [ref=e9]:
+      - navigation:
+        - generic [ref=e11]:
+          - img "Zoho Payroll" [ref=e12]
+          - generic [ref=e13]: Payroll
+        - generic [ref=e17]:
+          - button "Advanced Search" [ref=e18] [cursor=pointer]:
+            - img [ref=e19]
+          - textbox "Search in Employee" [ref=e23]
+        - generic [ref=e25]:
+          - generic [ref=e28] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e30] [cursor=pointer]
+          - button "lerno" [ref=e34] [cursor=pointer]:
+            - generic [ref=e35]: lerno
+            - img [ref=e36]
+          - button "Refer and Earn" [ref=e40] [cursor=pointer]:
+            - img [ref=e41]
+          - button "Notifications" [ref=e45] [cursor=pointer]:
+            - generic [ref=e46]:
+              - generic [ref=e47]: "4"
+              - img [ref=e48]
+          - button "Settings" [ref=e51] [cursor=pointer]:
+            - img [ref=e52]
+          - button "A" [ref=e57] [cursor=pointer]:
+            - generic [ref=e58]: A
+          - img [ref=e75] [cursor=pointer]
+    - generic [ref=e78]:
+      - complementary [ref=e79]:
+        - navigation [ref=e80]:
+          - generic [ref=e81]:
+            - list [ref=e82]:
+              - listitem [ref=e83]:
+                - link "Dashboard" [ref=e84] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e7853]
+                  - generic [ref=e88]: Dashboard
+              - listitem [ref=e89]:
+                - link "Employees" [ref=e90] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e7856]
+                  - generic [ref=e93]: Employees
+              - listitem [ref=e94]:
+                - link "Pay Runs" [ref=e95] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e7858]
+                  - generic [ref=e99]: Pay Runs
+              - listitem [ref=e100]:
+                - list [ref=e101]:
+                  - listitem [ref=e102]:
+                    - button "Approvals" [ref=e104] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e105]:
+                        - button "Approvals" [ref=e106]:
+                          - img [ref=e8391]
+                          - img [ref=e7863]
+                          - generic [ref=e112]: Approvals
+                          - img [ref=e113]
+              - listitem [ref=e115]:
+                - list [ref=e116]:
+                  - listitem [ref=e117]:
+                    - button "Taxes & Forms" [ref=e119] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e120]:
+                        - button "Taxes & Forms" [ref=e121]:
+                          - img [ref=e8389]
+                          - img [ref=e7868]
+                          - generic [ref=e129]: Taxes & Forms
+                          - img [ref=e130]
+              - listitem [ref=e132]:
+                - link "Loans" [ref=e133] [cursor=pointer]:
+                  - /url: "#/loans?sort_column=&sort_order="
+                  - img [ref=e7873]
+                  - generic [ref=e137]: Loans
+              - listitem [ref=e138]:
+                - link "Giving" [ref=e139] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e7876]
+                  - generic [ref=e142]: Giving
+              - listitem
+              - listitem [ref=e143]:
+                - link "Documents" [ref=e144] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e7878]
+                  - generic [ref=e147]: Documents
+              - listitem [ref=e148]:
+                - link "Reports" [ref=e149] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e7880]
+                  - generic [ref=e153]: Reports
+              - listitem [ref=e154]:
+                - link "Settings" [ref=e155] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e7883]
+                  - generic [ref=e159]: Settings
+            - link "Contact Support" [ref=e7889] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e7890]
+          - button "Collapse/Expand" [ref=e166] [cursor=pointer]:
+            - img [ref=e7892]
+      - main [ref=e170]:
+        - generic [ref=e9028]:
+          - heading "Arjun's IT Declaration" [level=3] [ref=e9030]
+          - generic [ref=e9032]:
+            - generic [ref=e9033]:
+              - img [ref=e9035]
+              - generic [ref=e9037]: Enter your planned investment declarations here and choose the desired regime in the following page.
+            - table [ref=e9038]:
+              - rowgroup [ref=e9039]:
+                - row "Particulars Declared amount" [ref=e9040]:
+                  - columnheader "Particulars" [ref=e9041]
+                  - columnheader "Declared amount" [ref=e9042]
+              - rowgroup [ref=e9043]:
+                - row [ref=e9044]:
+                  - cell [ref=e9045]
+                - row "No Is the employee staying in a rented house?" [ref=e9046]:
+                  - cell "No Is the employee staying in a rented house?" [ref=e9047]:
+                    - generic [ref=e9048]:
+                      - generic [ref=e9049]:
+                        - button [ref=e9050] [cursor=pointer]
+                        - text: "No"
+                      - generic [ref=e9052]: Is the employee staying in a rented house?
+                - row [ref=e9053]:
+                  - cell [ref=e9054]
+                - row "No Is the employee repaying home loan for a self occupied house property?" [ref=e9055]:
+                  - cell "No Is the employee repaying home loan for a self occupied house property?" [ref=e9056]:
+                    - generic [ref=e9057]:
+                      - generic [ref=e9058]:
+                        - button [ref=e9059] [cursor=pointer]
+                        - text: "No"
+                      - generic [ref=e9061]: Is the employee repaying home loan for a self occupied house property?
+                - row [ref=e9062]:
+                  - cell [ref=e9063]
+                - row "No Is the employee receiving rental income from let out property?" [ref=e9064]:
+                  - cell "No Is the employee receiving rental income from let out property?" [ref=e9065]:
+                    - generic [ref=e9066]:
+                      - generic [ref=e9067]:
+                        - button [ref=e9068] [cursor=pointer]
+                        - text: "No"
+                      - generic [ref=e9070]: Is the employee receiving rental income from let out property?
+                - row [ref=e9071]:
+                  - cell [ref=e9072]
+                - row "Other Sources of Income" [ref=e9073]:
+                  - cell "Other Sources of Income" [ref=e9074]:
+                    - list [ref=e9075]:
+                      - listitem [ref=e9076]:
+                        - heading "Other Sources of Income" [level=3] [ref=e9077]:
+                          - button "Other Sources of Income" [ref=e9078] [cursor=pointer]:
+                            - generic [ref=e9080]:
+                              - generic [ref=e9081]:
+                                - img [ref=e9083]
+                                - generic [ref=e9085]: Other Sources of Income
+                              - img [ref=e9087]
+                - row [ref=e9089]:
+                  - cell [ref=e9090]
+                - 'row "Section 123 Investments (Earlier: 80C Investments) Note: This section contains the list of investments including LIC schemes, mutual funds and PPF. The maximum limit for this section is ₹1,50,000.00 ⚲ ₹ Add an Investment" [ref=e9210]':
+                  - 'cell "Section 123 Investments (Earlier: 80C Investments) Note: This section contains the list of investments including LIC schemes, mutual funds and PPF. The maximum limit for this section is ₹1,50,000.00 ⚲ ₹ Add an Investment" [ref=e9211]':
+                    - generic [ref=e9094]:
+                      - img [ref=e9096]
+                      - generic [ref=e9099]:
+                        - text: Section 123 Investments
+                        - generic [ref=e9100]: "(Earlier: 80C Investments)"
+                    - generic [ref=e9101]:
+                      - generic [ref=e9102]:
+                        - paragraph [ref=e9103]: "Note: This section contains the list of investments including LIC schemes, mutual funds and PPF. The maximum limit for this section is ₹1,50,000.00"
+                        - table [ref=e9104]:
+                          - rowgroup [ref=e9105]:
+                            - row "⚲ ₹" [ref=e9212]:
+                              - cell "⚲" [ref=e9213]:
+                                - generic [ref=e9109]:
+                                  - generic [ref=e9110]:
+                                    - combobox [expanded] [ref=e9111]:
+                                      - generic [ref=e9112] [cursor=pointer]:
+                                        - generic [ref=e9113]: Select an Investment
+                                        - img [ref=e9214]
+                                    - generic [ref=e9216]:
+                                      - generic [ref=e9218]:
+                                        - generic [ref=e9220]: ⚲
+                                        - textbox [active] [ref=e9221]
+                                      - listbox "dropdown options" [ref=e9223]:
+                                        - group [ref=e9224]:
+                                          - generic [ref=e9225]: Section 123 (80C)
+                                        - option "Life Insurance Premium" [ref=e9226]:
+                                          - generic "Life Insurance Premium" [ref=e9228] [cursor=pointer]:
+                                            - generic [ref=e9229]: Life Insurance Premium
+                                        - option "Public Provident Fund" [ref=e9230]:
+                                          - generic "Public Provident Fund" [ref=e9232] [cursor=pointer]:
+                                            - generic [ref=e9233]: Public Provident Fund
+                                        - option "Unit-linked insurance plan" [ref=e9234]:
+                                          - generic "Unit-linked insurance plan" [ref=e9236] [cursor=pointer]:
+                                            - generic [ref=e9237]: Unit-linked insurance plan
+                                        - option "National Savings Certificates" [ref=e9238]:
+                                          - generic "National Savings Certificates" [ref=e9240] [cursor=pointer]:
+                                            - generic [ref=e9241]: National Savings Certificates
+                                        - option "ELSS Tax Saving Mutual Fund" [ref=e9242]:
+                                          - generic "ELSS Tax Saving Mutual Fund" [ref=e9244] [cursor=pointer]:
+                                            - generic [ref=e9245]: ELSS Tax Saving Mutual Fund
+                                        - option "Children Tuition Fees" [ref=e9246]:
+                                          - generic "Children Tuition Fees" [ref=e9248] [cursor=pointer]:
+                                            - generic [ref=e9249]: Children Tuition Fees
+                                        - option "Sukanya Samriddhi Deposit Scheme" [ref=e9250]:
+                                          - generic "Sukanya Samriddhi Deposit Scheme" [ref=e9252] [cursor=pointer]:
+                                            - generic [ref=e9253]: Sukanya Samriddhi Deposit Scheme
+                                        - option "5 Year fixed deposit in Scheduled Banks" [ref=e9254]:
+                                          - generic "5 Year fixed deposit in Scheduled Banks" [ref=e9256] [cursor=pointer]:
+                                            - generic [ref=e9257]: 5 Year fixed deposit in Scheduled Banks
+                                        - option "Term deposit in post office" [ref=e9258]:
+                                          - generic "Term deposit in post office" [ref=e9260] [cursor=pointer]:
+                                            - generic [ref=e9261]: Term deposit in post office
+                                        - option "Senior Citizen Savings Scheme" [ref=e9262]:
+                                          - generic "Senior Citizen Savings Scheme" [ref=e9264] [cursor=pointer]:
+                                            - generic [ref=e9265]: Senior Citizen Savings Scheme
+                                        - option "NABARD Rural Bonds" [ref=e9266]:
+                                          - generic "NABARD Rural Bonds" [ref=e9268] [cursor=pointer]:
+                                            - generic [ref=e9269]: NABARD Rural Bonds
+                                        - option "Infrastructure Bonds" [ref=e9270]:
+                                          - generic "Infrastructure Bonds" [ref=e9272] [cursor=pointer]:
+                                            - generic [ref=e9273]: Infrastructure Bonds
+                                        - option "Stamp duty and registration fee on buying house property" [ref=e9274]:
+                                          - generic "Stamp duty and registration fee on buying house property" [ref=e9276] [cursor=pointer]:
+                                            - generic [ref=e9277]: Stamp duty and registration fee on buying house property
+                                        - option "Interest on National Savings Certificates" [ref=e9278]:
+                                          - generic "Interest on National Savings Certificates" [ref=e9280] [cursor=pointer]:
+                                            - generic [ref=e9281]: Interest on National Savings Certificates
+                                        - group [ref=e9282]:
+                                          - generic [ref=e9283]: Section 123 (80CCC)
+                                        - option "Contribution to annuity plan of LIC" [ref=e9284]:
+                                          - generic "Contribution to annuity plan of LIC" [ref=e9286] [cursor=pointer]:
+                                            - generic [ref=e9287]: Contribution to annuity plan of LIC
+                                        - group [ref=e9288]:
+                                          - generic [ref=e9289]: Section 124(1) (80CCD(1))
+                                        - option "National Pension Scheme" [ref=e9290]:
+                                          - generic "National Pension Scheme" [ref=e9292] [cursor=pointer]:
+                                            - generic [ref=e9293]: National Pension Scheme
+                                  - status [ref=e9118]
+                              - cell "₹" [ref=e9119]:
+                                - generic [ref=e9120]:
+                                  - generic [ref=e9122]: ₹
+                                  - spinbutton [ref=e9123]: "0"
+                      - button "Add an Investment" [ref=e9125] [cursor=pointer]:
+                        - img [ref=e9126]
+                        - text: Add an Investment
+                - row [ref=e9128]:
+                  - cell [ref=e9129]
+                - 'row "Section 126 Exemptions (Earlier: 80D Exemptions) Note: This section contains Mediclaim policies for yourself, your children, spouse and parents. The maximum limit for this section is ₹1,00,000.00 ₹ Add an Investment" [ref=e9130]':
+                  - 'cell "Section 126 Exemptions (Earlier: 80D Exemptions) Note: This section contains Mediclaim policies for yourself, your children, spouse and parents. The maximum limit for this section is ₹1,00,000.00 ₹ Add an Investment" [ref=e9131]':
+                    - generic [ref=e9133]:
+                      - img [ref=e9135]
+                      - generic [ref=e9138]:
+                        - text: Section 126 Exemptions
+                        - generic [ref=e9139]: "(Earlier: 80D Exemptions)"
+                    - generic [ref=e9140]:
+                      - generic [ref=e9141]:
+                        - paragraph [ref=e9142]: "Note: This section contains Mediclaim policies for yourself, your children, spouse and parents. The maximum limit for this section is ₹1,00,000.00"
+                        - table [ref=e9143]:
+                          - rowgroup [ref=e9144]:
+                            - row "₹" [ref=e9145]:
+                              - cell [ref=e9146]:
+                                - generic [ref=e9148]:
+                                  - combobox [ref=e9150]:
+                                    - generic [ref=e9151] [cursor=pointer]:
+                                      - generic [ref=e9152]: Select an Investment
+                                      - img [ref=e9155]
+                                  - status [ref=e9157]
+                              - cell "₹" [ref=e9158]:
+                                - generic [ref=e9159]:
+                                  - generic [ref=e9161]: ₹
+                                  - spinbutton [ref=e9162]: "0"
+                      - button "Add an Investment" [ref=e9164] [cursor=pointer]:
+                        - img [ref=e9165]
+                        - text: Add an Investment
+                - row [ref=e9167]:
+                  - cell [ref=e9168]
+                - 'row "Other Investments & Exemptions Note: Declare other investments & exemptions such as Voluntary NPS, Interest Paid on Education Loan and Medical Expenditures under this section ₹ Add an Investment" [ref=e9169]':
+                  - 'cell "Other Investments & Exemptions Note: Declare other investments & exemptions such as Voluntary NPS, Interest Paid on Education Loan and Medical Expenditures under this section ₹ Add an Investment" [ref=e9170]':
+                    - generic [ref=e9172]:
+                      - img [ref=e9174]
+                      - generic [ref=e9177]: Other Investments & Exemptions
+                    - generic [ref=e9178]:
+                      - generic [ref=e9179]:
+                        - paragraph [ref=e9180]: "Note: Declare other investments & exemptions such as Voluntary NPS, Interest Paid on Education Loan and Medical Expenditures under this section"
+                        - table [ref=e9181]:
+                          - rowgroup [ref=e9182]:
+                            - row "₹" [ref=e9183]:
+                              - cell [ref=e9184]:
+                                - generic [ref=e9186]:
+                                  - combobox [ref=e9188]:
+                                    - generic [ref=e9189] [cursor=pointer]:
+                                      - generic [ref=e9190]: Select an Investment
+                                      - img [ref=e9193]
+                                  - status [ref=e9195]
+                              - cell "₹" [ref=e9197]:
+                                - generic [ref=e9198]:
+                                  - generic [ref=e9200]: ₹
+                                  - spinbutton [ref=e9201]: "0"
+                      - button "Add an Investment" [ref=e9203] [cursor=pointer]:
+                        - img [ref=e9204]
+                        - text: Add an Investment
+            - list
+            - generic [ref=e9206]:
+              - button "Submit and Compare" [ref=e9207] [cursor=pointer]
+              - link "Cancel" [ref=e9208] [cursor=pointer]:
+                - /url: "#/people/employees/3848927000000032948/investments-and-proofs"
+    - dialog [ref=e9209]
+  - status [ref=e269]: Employees | Investment Declaration page loaded.
+  - text:       Chats  Contacts   

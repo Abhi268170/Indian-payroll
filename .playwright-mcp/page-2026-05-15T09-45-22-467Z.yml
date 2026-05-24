@@ -1,0 +1,261 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e5]:
+      - navigation:
+        - generic [ref=e7]:
+          - img "Zoho Payroll" [ref=e8]
+          - generic [ref=e9]: Payroll
+        - generic [ref=e13]:
+          - button "Advanced Search" [ref=e14] [cursor=pointer]:
+            - img [ref=e15]
+          - textbox "Search in Employee" [ref=e19]
+        - generic [ref=e21]:
+          - generic [ref=e24] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e26] [cursor=pointer]
+          - button "lerno" [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]: lerno
+            - img [ref=e32]
+          - button "Refer and Earn" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+          - button "Notifications" [ref=e41] [cursor=pointer]:
+            - img [ref=e43]
+          - button "Settings" [ref=e46] [cursor=pointer]:
+            - img [ref=e47]
+          - button "A" [ref=e52] [cursor=pointer]:
+            - generic [ref=e53]: A
+          - img [ref=e70] [cursor=pointer]
+    - generic [ref=e73]:
+      - complementary [ref=e74]:
+        - navigation [ref=e75]:
+          - generic [ref=e76]:
+            - list [ref=e77]:
+              - link "Getting Started" [ref=e78] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e80]:
+                  - generic [ref=e81]:
+                    - img [ref=e83]
+                    - text: Getting Started
+                  - img [ref=e87]
+              - listitem [ref=e89]:
+                - link "Dashboard" [ref=e90] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e91]
+                  - generic [ref=e94]: Dashboard
+              - listitem [ref=e95]:
+                - link "Employees" [ref=e96] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e97]
+                  - generic [ref=e99]: Employees
+              - listitem [ref=e100]:
+                - link "Pay Runs" [ref=e101] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e102]
+                  - generic [ref=e105]: Pay Runs
+              - listitem [ref=e106]:
+                - list [ref=e107]:
+                  - listitem [ref=e108]:
+                    - button "Approvals" [ref=e110] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e111]:
+                        - button "Approvals" [ref=e112]:
+                          - img [ref=e113]
+                          - img [ref=e115]
+                          - generic [ref=e118]: Approvals
+                          - img [ref=e119]
+              - listitem [ref=e121]:
+                - link "Form 16" [ref=e122] [cursor=pointer]:
+                  - /url: "#/taxes-and-forms/form16"
+                  - img [ref=e123]
+                  - generic [ref=e127]: Form 16
+              - listitem [ref=e128]:
+                - link "Loans" [ref=e129] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e130]
+                  - generic [ref=e133]: Loans
+              - listitem [ref=e134]:
+                - link "Giving" [ref=e135] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e136]
+                  - generic [ref=e138]: Giving
+              - listitem
+              - listitem [ref=e139]:
+                - link "Documents" [ref=e140] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e141]
+                  - generic [ref=e143]: Documents
+              - listitem [ref=e144]:
+                - link "Reports" [ref=e145] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e146]
+                  - generic [ref=e149]: Reports
+              - listitem [ref=e150]:
+                - link "Settings" [ref=e151] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e152]
+                  - generic [ref=e155]: Settings
+            - link "Contact Support" [ref=e159] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e160]
+            - generic [ref=e162]:
+              - paragraph [ref=e163]: Track TDS Liabilities and Generate Form 24Q
+              - button "View Details" [ref=e164] [cursor=pointer]
+          - button "Collapse/Expand" [ref=e165] [cursor=pointer]:
+            - img [ref=e166]
+      - main [ref=e169]:
+        - generic [ref=e534]:
+          - generic [ref=e600]:
+            - generic [ref=e601]:
+              - heading "Back Regular Payroll Draft" [level=3] [ref=e602]:
+                - link "Back" [ref=e603] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e604]
+                - text: Regular Payroll
+                - generic [ref=e607]: Draft
+              - generic [ref=e608]:
+                - button "Comments" [ref=e609] [cursor=pointer]:
+                  - img [ref=e610]: 
+                - button "Submit and Approve" [ref=e615] [cursor=pointer]
+                - button "Show dropdown menu" [ref=e617] [cursor=pointer]:
+                  - img [ref=e618]
+            - button "Instant Helper" [ref=e620] [cursor=pointer]:
+              - img [ref=e621]
+          - generic [ref=e624]:
+            - generic [ref=e626]:
+              - img [ref=e628]
+              - generic [ref=e632]: This payment is overdue by 15 day(s).
+            - generic [ref=e634]:
+              - img [ref=e636]
+              - generic [ref=e640]:
+                - generic [ref=e641]: Pending Tasks
+                - generic [ref=e642]:
+                  - generic [ref=e643]: 3 employees are not included in this payroll.
+                  - button "View Employees" [ref=e645] [cursor=pointer]
+                - button "+1 more task(s) to be completed before you approve this payroll." [ref=e647] [cursor=pointer]
+            - generic [ref=e649]:
+              - generic [ref=e650]:
+                - generic [ref=e651]:
+                  - generic [ref=e652]: "Period:"
+                  - generic [ref=e653]: 01/04/2026 - 30/04/2026
+                  - generic [ref=e655]: 30 Base Days
+                  - generic [ref=e656]:
+                    - generic [ref=e657]: "Month:"
+                    - text: April 2026
+                - generic [ref=e658]:
+                  - generic [ref=e659]:
+                    - heading "₹92,000.00" [level=4] [ref=e660]
+                    - generic [ref=e661]: Payroll Cost
+                  - generic [ref=e662]:
+                    - heading "₹92,000.00" [level=4] [ref=e663]
+                    - generic [ref=e664]: Total Net Pay
+              - generic [ref=e665]:
+                - generic [ref=e666]:
+                  - generic [ref=e667]: Pay Day
+                  - generic [ref=e668]: "30"
+                  - generic [ref=e669]: Apr, 2026
+                - generic [ref=e673]: 2 Employees
+              - generic [ref=e674]:
+                - heading "Taxes & Deductions" [level=4] [ref=e675]
+                - table [ref=e676]:
+                  - rowgroup [ref=e677]:
+                    - row "Taxes ₹0.00" [ref=e678]:
+                      - cell "Taxes" [ref=e679]
+                      - cell "₹0.00" [ref=e680]
+                    - row "Benefits ₹0.00" [ref=e681]:
+                      - cell "Benefits" [ref=e682]
+                      - cell "₹0.00" [ref=e683]
+                    - row "Donations ₹0.00" [ref=e684]:
+                      - cell "Donations" [ref=e685]
+                      - cell "₹0.00" [ref=e686]
+                    - row "Total Deductions ₹0.00" [ref=e687]:
+                      - cell "Total Deductions" [ref=e688]
+                      - cell "₹0.00" [ref=e689]
+            - navigation [ref=e690]:
+              - list [ref=e691]:
+                - listitem [ref=e692]:
+                  - button "Employee Summary" [ref=e693] [cursor=pointer]
+                - listitem [ref=e694]:
+                  - button "Taxes & Deductions" [ref=e695] [cursor=pointer]
+                - listitem [ref=e696]:
+                  - button "Overall Insights" [ref=e697] [cursor=pointer]
+            - generic [ref=e700]:
+              - generic [ref=e701]:
+                - button "All Employees" [ref=e705] [cursor=pointer]
+                - generic [ref=e708]:
+                  - combobox "Select an Employee" [ref=e710]:
+                    - generic [ref=e711] [cursor=pointer]:
+                      - generic [ref=e712]: Search Employee
+                      - img [ref=e715]
+                  - status [ref=e717]
+                - generic [ref=e718]:
+                  - button "Filter" [ref=e722] [cursor=pointer]:
+                    - img [ref=e723]
+                  - button "Import / Export" [ref=e726] [cursor=pointer]:
+                    - img [ref=e727]
+                    - text: Import / Export
+              - table [ref=e729]:
+                - rowgroup [ref=e730]:
+                  - row "Select all rows Employee Name Paid Days Gross Pay Deductions Taxes Benefits Reimbursements Net Pay" [ref=e731]:
+                    - columnheader "Select all rows" [ref=e732]:
+                      - checkbox "Select all rows" [ref=e733] [cursor=pointer]
+                    - columnheader "Employee Name" [ref=e734]
+                    - columnheader "Paid Days" [ref=e735]
+                    - columnheader "Gross Pay" [ref=e736]
+                    - columnheader "Deductions" [ref=e737]
+                    - columnheader "Taxes" [ref=e738]
+                    - columnheader "Benefits" [ref=e739]:
+                      - generic [ref=e741]: Benefits
+                    - columnheader "Reimbursements" [ref=e742]
+                    - columnheader "Net Pay" [ref=e743]
+                    - columnheader [ref=e744]
+                - rowgroup [ref=e745]:
+                  - row "Select this row Arjun Mehta (EMP001) 30 ₹70,000.00 ₹0.00 ₹0.00 ₹0.00 ₹0.00 ₹70,000.00 Show dropdown menu" [ref=e746] [cursor=pointer]:
+                    - cell "Select this row" [ref=e747]:
+                      - checkbox "Select this row" [ref=e748]
+                    - cell "Arjun Mehta (EMP001)" [ref=e749]:
+                      - button "Arjun Mehta (EMP001)" [ref=e750]:
+                        - text: Arjun Mehta
+                        - generic [ref=e751]: (EMP001)
+                    - cell "30" [ref=e752]
+                    - cell "₹70,000.00" [ref=e753]
+                    - cell "₹0.00" [ref=e754]
+                    - cell "₹0.00" [ref=e755]
+                    - cell "₹0.00" [ref=e756]
+                    - cell "₹0.00" [ref=e757]
+                    - cell "₹70,000.00" [ref=e758]
+                    - cell "Show dropdown menu" [ref=e759]:
+                      - button "Show dropdown menu" [ref=e761]:
+                        - img [ref=e762]
+                  - row "Select this row Priya Sharma (EMP002) 30 ₹22,000.00 ₹0.00 ₹0.00 ₹0.00 ₹0.00 ₹22,000.00 Show dropdown menu" [ref=e765] [cursor=pointer]:
+                    - cell "Select this row" [ref=e766]:
+                      - checkbox "Select this row" [ref=e767]
+                    - cell "Priya Sharma (EMP002)" [ref=e768]:
+                      - button "Priya Sharma (EMP002)" [ref=e769]:
+                        - text: Priya Sharma
+                        - generic [ref=e770]: (EMP002)
+                    - cell "30" [ref=e771]
+                    - cell "₹22,000.00" [ref=e772]
+                    - cell "₹0.00" [ref=e773]
+                    - cell "₹0.00" [ref=e774]
+                    - cell "₹0.00" [ref=e775]
+                    - cell "₹0.00" [ref=e776]
+                    - cell "₹22,000.00" [ref=e777]
+                    - cell "Show dropdown menu" [ref=e778]:
+                      - button "Show dropdown menu" [ref=e780]:
+                        - img [ref=e781]
+    - generic:
+      - dialog [ref=e784]
+      - dialog [ref=e785]
+      - dialog [ref=e786]
+  - generic [ref=e524] [cursor=pointer]:
+    - generic [ref=e525]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e526]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e528]: Don't show again
+  - status [ref=e529]: Pay Runs | Preview page loaded.
+  - text:       Chats  Contacts   

@@ -1,0 +1,168 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "Settings" [ref=e10] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e11]
+        - text: Settings
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e17]: DE
+        - paragraph [ref=e18]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e19]:
+        - img [ref=e20]
+        - text: Sign out
+  - generic [ref=e23]:
+    - banner [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: demo
+        - generic [ref=e27]: DE
+    - main [ref=e28]:
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e33]: IP
+            - generic [ref=e34]: Settings
+          - button "Close Settings" [ref=e35]:
+            - img [ref=e36]
+            - text: Close Settings
+        - generic [ref=e39]:
+          - navigation [ref=e40]:
+            - generic [ref=e41]:
+              - button "Org Structure" [ref=e42]:
+                - generic [ref=e43]: Org Structure
+                - img [ref=e44]
+              - list [ref=e46]:
+                - listitem [ref=e47]:
+                  - link "Work Locations" [ref=e48] [cursor=pointer]:
+                    - /url: /settings/work-locations
+                - listitem [ref=e49]:
+                  - link "Departments" [ref=e50] [cursor=pointer]:
+                    - /url: /settings/departments
+                - listitem [ref=e51]:
+                  - link "Designations" [ref=e52] [cursor=pointer]:
+                    - /url: /settings/designations
+                - listitem [ref=e53]:
+                  - link "Cost Centres" [ref=e54] [cursor=pointer]:
+                    - /url: /settings/cost-centres
+                - listitem [ref=e55]:
+                  - link "Business Units" [ref=e56] [cursor=pointer]:
+                    - /url: /settings/business-units
+            - generic [ref=e57]:
+              - button "Setup & Configuration" [ref=e58]:
+                - generic [ref=e59]: Setup & Configuration
+                - img [ref=e60]
+              - list [ref=e62]:
+                - listitem [ref=e63]:
+                  - link "Pay Schedule" [ref=e64] [cursor=pointer]:
+                    - /url: /settings/pay-schedule
+                - listitem [ref=e65]:
+                  - link "Salary Components" [ref=e66] [cursor=pointer]:
+                    - /url: /settings/salary-components
+                - listitem [ref=e67]:
+                  - link "Salary Structures" [ref=e68] [cursor=pointer]:
+                    - /url: /settings/salary-structures
+                - listitem [ref=e69]:
+                  - link "Statutory Components" [ref=e70] [cursor=pointer]:
+                    - /url: /settings/statutory
+            - generic [ref=e71]:
+              - button "Taxes" [ref=e72]:
+                - generic [ref=e73]: Taxes
+                - img [ref=e74]
+              - list [ref=e76]:
+                - listitem [ref=e77]:
+                  - link "Tax Details" [ref=e78] [cursor=pointer]:
+                    - /url: /settings/tax-details
+          - generic [ref=e233]:
+            - generic [ref=e234]:
+              - textbox "Structure name..." [ref=e236]: Standard CTC Structure
+              - generic [ref=e237]:
+                - button "Cancel" [ref=e238]
+                - button "Save" [ref=e239]
+            - generic [ref=e240]:
+              - complementary [ref=e241]:
+                - generic [ref=e242]:
+                  - paragraph [ref=e243]: Components
+                  - paragraph [ref=e244]: Click to add to structure
+                - generic [ref=e245]:
+                  - button "Earnings (3)" [ref=e246]:
+                    - text: Earnings (3)
+                    - img [ref=e247]
+                  - button "Basic Salary" [disabled] [ref=e249]:
+                    - generic [ref=e250]: Basic Salary
+                  - button "Fixed Allowance" [disabled] [ref=e251]:
+                    - generic [ref=e252]: Fixed Allowance
+                  - button "House Rent Allowance" [disabled] [ref=e253]:
+                    - generic [ref=e254]: House Rent Allowance
+                - button "Deductions (0)" [ref=e256]:
+                  - text: Deductions (0)
+                  - img [ref=e257]
+                - button "Reimbursements (1)" [ref=e260]:
+                  - text: Reimbursements (1)
+                  - img [ref=e261]
+                - button "Benefits (1)" [ref=e264]:
+                  - text: Benefits (1)
+                  - img [ref=e265]
+              - generic [ref=e267]:
+                - generic [ref=e268]:
+                  - generic [ref=e269]:
+                    - generic [ref=e270]: Description
+                    - textbox "Optional description" [ref=e271]
+                  - generic [ref=e272]:
+                    - generic [ref=e273]: Preview Annual CTC (₹)
+                    - spinbutton [ref=e274]: "600000"
+                - table [ref=e276]:
+                  - rowgroup [ref=e277]:
+                    - row "Component Formula Value Annual Amount" [ref=e278]:
+                      - columnheader "Component" [ref=e279]
+                      - columnheader "Formula" [ref=e280]
+                      - columnheader "Value" [ref=e281]
+                      - columnheader "Annual Amount" [ref=e282]
+                      - columnheader [ref=e283]
+                  - rowgroup [ref=e284]:
+                    - row "Basic Salary % of CTC 40 % ₹2,40,000.00 Remove" [ref=e285]:
+                      - cell "Basic Salary" [ref=e286]
+                      - cell "% of CTC" [ref=e287]:
+                        - combobox [ref=e288]:
+                          - option "Fixed Amount"
+                          - option "% of Basic"
+                          - option "% of Gross"
+                          - option "% of CTC" [selected]
+                      - cell "40 %" [ref=e289]:
+                        - generic [ref=e290]:
+                          - spinbutton [ref=e291]: "40"
+                          - generic [ref=e292]: "%"
+                      - cell "₹2,40,000.00" [ref=e293]
+                      - cell "Remove" [ref=e294]:
+                        - button "Remove" [ref=e295]:
+                          - img [ref=e296]
+                    - row "House Rent Allowance % of CTC 20 % ₹1,20,000.00 Remove" [ref=e299]:
+                      - cell "House Rent Allowance" [ref=e300]
+                      - cell "% of CTC" [ref=e301]:
+                        - combobox [ref=e302]:
+                          - option "Fixed Amount"
+                          - option "% of Basic"
+                          - option "% of Gross"
+                          - option "% of CTC" [selected]
+                      - cell "20 %" [ref=e303]:
+                        - generic [ref=e304]:
+                          - spinbutton [ref=e305]: "20"
+                          - generic [ref=e306]: "%"
+                      - cell "₹1,20,000.00" [ref=e307]
+                      - cell "Remove" [ref=e308]:
+                        - button "Remove" [ref=e309]:
+                          - img [ref=e310]
+                    - row "Fixed AllowanceSystem Residual (auto) auto-calculated ₹2,40,000.00" [ref=e313]:
+                      - cell "Fixed AllowanceSystem" [ref=e314]
+                      - cell "Residual (auto)" [ref=e315]
+                      - cell "auto-calculated" [ref=e316]
+                      - cell "₹2,40,000.00" [ref=e317]
+                      - cell [ref=e318]
+                  - rowgroup [ref=e319]:
+                    - row "Total Annual CTC ₹6,00,000.00" [ref=e320]:
+                      - cell "Total Annual CTC" [ref=e321]
+                      - cell "₹6,00,000.00" [ref=e322]
+                      - cell [ref=e323]

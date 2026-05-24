@@ -1,0 +1,155 @@
+- generic:
+  - iframe
+  - generic [ref=e13742]:
+    - generic [ref=e13743]: Please make sure pre-payment is not a date in the future.
+    - button [ref=e14841] [cursor=pointer]:
+      - img [ref=e14842]
+  - generic [ref=e5]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e6] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e7]
+    - generic [ref=e15399]:
+      - generic [ref=e15401]:
+        - generic [ref=e15402]:
+          - button "All Settings" [ref=e15403] [cursor=pointer]:
+            - img [ref=e15404]
+          - button [ref=e15409] [cursor=pointer]:
+            - img [ref=e15410]
+          - generic [ref=e15412]:
+            - generic [ref=e15413]: All Settings
+            - generic [ref=e15414]: lerno
+        - generic [ref=e15416]:
+          - combobox "Search" [ref=e15420]
+          - img [ref=e15421]
+        - button "Close Settings" [ref=e15425] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e15426]
+      - generic [ref=e15428]:
+        - navigation [ref=e15429]:
+          - generic [ref=e15431]:
+            - group [ref=e15432]:
+              - heading "Organisation Settings" [level=2] [ref=e15433]
+              - generic [ref=e15434]:
+                - region "Organisation" [ref=e15436]:
+                  - generic [ref=e15437]:
+                    - heading "Organisation" [level=3] [ref=e15438] [cursor=pointer]:
+                      - button "Organisation" [ref=e15439]:
+                        - img [ref=e15440]
+                        - generic [ref=e15442]: Organisation
+                    - text:      
+                - generic [ref=e15456]:
+                  - region "Users and Roles" [ref=e15457]:
+                    - generic [ref=e15458]:
+                      - heading "Users and Roles" [level=3] [ref=e15459] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e15460]:
+                          - img [ref=e15461]
+                          - generic [ref=e15463]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e15469]:
+                    - generic [ref=e15470]:
+                      - heading "Taxes" [level=3] [ref=e15471] [cursor=pointer]:
+                        - button "Taxes" [ref=e15472]:
+                          - img [ref=e15473]
+                          - generic [ref=e15475]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e15480]:
+                  - generic [ref=e15481]:
+                    - heading "Setup & Configurations" [level=3] [ref=e15482] [cursor=pointer]:
+                      - button "Setup & Configurations" [expanded] [ref=e15483]:
+                        - img [ref=e15484]
+                        - generic [ref=e15486]: Setup & Configurations
+                    - region "Setup & Configurations" [ref=e15640]:
+                      - generic [ref=e15487]:
+                        - link "Pay Schedule" [ref=e15488] [cursor=pointer]:
+                          - /url: "#/settings/pay-schedules"
+                          - generic [ref=e15489]: Pay Schedule
+                          - text: 
+                        - link "Statutory Components" [ref=e15490] [cursor=pointer]:
+                          - /url: "#/settings/statutory-details/list"
+                          - generic [ref=e15491]: Statutory Components
+                          - text: 
+                        - link "Salary Components" [ref=e15492] [cursor=pointer]:
+                          - /url: "#/settings/salary-components/earnings"
+                          - generic [ref=e15493]: Salary Components
+                          - text: 
+                        - link "Employee Portal" [ref=e15494] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences"
+                          - generic [ref=e15495]: Employee Portal
+                          - text: 
+                        - link "Claims and Declarations" [ref=e15496] [cursor=pointer]:
+                          - /url: "#/settings/preferences/fbp"
+                          - generic [ref=e15497]: Claims and Declarations
+                          - text: 
+                - region "Customisations" [ref=e15499]:
+                  - generic [ref=e15500]:
+                    - heading "Customisations" [level=3] [ref=e15501] [cursor=pointer]:
+                      - button "Customisations" [ref=e15502]:
+                        - img [ref=e15503]
+                        - generic [ref=e15505]: Customisations
+                    - text:     
+                - region "Automations" [ref=e15518]:
+                  - generic [ref=e15519]:
+                    - heading "Automations" [level=3] [ref=e15520] [cursor=pointer]:
+                      - button "Automations" [ref=e15521]:
+                        - img [ref=e15522]
+                        - generic [ref=e15524]: Automations
+                    - text:    
+            - group [ref=e15534]:
+              - heading "Module Settings" [level=2] [ref=e15535]
+              - generic [ref=e15536]:
+                - region "General" [ref=e15538]:
+                  - generic [ref=e15539]:
+                    - heading "General" [level=3] [ref=e15540] [cursor=pointer]:
+                      - button "General" [ref=e15541]:
+                        - img [ref=e15542]
+                        - generic [ref=e15544]: General
+                    - text:     
+                - region "Payments" [ref=e15557]:
+                  - generic [ref=e15558]:
+                    - heading "Payments" [level=3] [ref=e15559] [cursor=pointer]:
+                      - button "Payments" [ref=e15560]:
+                        - img [ref=e15561]
+                        - generic [ref=e15563]: Payments
+                    - text: 
+            - group [ref=e15567]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e15568]
+              - generic [ref=e15569]:
+                - region "Integrations" [ref=e15571]:
+                  - generic [ref=e15572]:
+                    - heading "Integrations" [level=3] [ref=e15573] [cursor=pointer]:
+                      - button "Integrations" [ref=e15574]:
+                        - img [ref=e15575]
+                        - generic [ref=e15577]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e15582]:
+                  - generic [ref=e15583]:
+                    - heading "Developer Data" [level=3] [ref=e15584] [cursor=pointer]:
+                      - button "Developer Data" [ref=e15585]:
+                        - img [ref=e15586]
+                        - generic [ref=e15588]: Developer Data
+                    - text:   
+        - main [ref=e16235]:
+          - generic [ref=e16236]:
+            - heading "Statutory Components" [level=3] [ref=e16237]
+            - button "Instant Helper" [ref=e16238] [cursor=pointer]:
+              - img [ref=e16239]
+            - navigation [ref=e16243]:
+              - list [ref=e16244]:
+                - listitem [ref=e16245]:
+                  - link "EPF" [ref=e16246] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list"
+                - listitem [ref=e16247]:
+                  - link "ESI" [ref=e16248] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/esi"
+                - listitem [ref=e16249]:
+                  - link "Professional Tax" [ref=e16250] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/pt"
+                - listitem [ref=e16251]:
+                  - link "Labour Welfare Fund" [ref=e16252] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/lwf"
+                - listitem [ref=e16253]:
+                  - link "Statutory Bonus" [ref=e16254] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/statutory-bonus"
+  - status [ref=e269]: Settings LWF page loaded.
+  - text:       Chats  Contacts   

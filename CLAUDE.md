@@ -79,6 +79,26 @@ web/
 
 ---
 
+## Design System — MANDATORY
+
+**Before writing any frontend code, read `docs/design-system/DESIGN-SYSTEM.md`.**
+
+All UI work MUST follow the design system exactly:
+- Colors: use CSS custom properties defined in `web/src/index.css` (see token list in design system)
+- Typography: Inter font, exact size/weight scale
+- Components: build from the specs in the design system — no external component libraries (no shadcn, no MUI, no Ant Design, no Radix UI)
+- Icons: Lucide React only (`lucide-react`)
+- Currency: always `formatINR()` from `web/src/lib/format.ts` — Indian lakh/crore grouping
+- Dates: display as `dd/MM/yyyy`, store/send as ISO 8601
+- Layout: dark sidebar (`#1e293b`) + white top bar + `#f8fafc` content bg
+- Sidebar nav: collapsible groups with chevron, `w-56`, icon-only collapse to `w-14`
+
+**Reference product:** Zoho Payroll India. Full audit in `docs/ba-audit/`. Design system extracted in `docs/ba-audit/userflows/DS-01` through `DS-06`.
+
+Do NOT deviate from the design system without explicit user instruction.
+
+---
+
 ## Non-Negotiable Domain Rules
 
 - **Decimal only.** All monetary values, tax amounts, percentages: `decimal`. Never `float` or `double`. Zero exceptions.
@@ -228,6 +248,10 @@ Scopes: `tds`, `pf`, `esi`, `pt`, `lwf`, `auth`, `tenant`, `payslip`, `form16`, 
 - Mid-year onboarding: YTD manual entry supported. Engine must accept prior-employer YTD as input.
 
 ---
+
+## Knowledge Store
+
+Before implementing features, debugging issues, or making decisions, search `docs/solutions/` for documented solutions and learnings. Organized by category (e.g., `build-errors/`, `auth/`, `database/`). Each doc has YAML frontmatter — search by `module`, `tags`, `problem_type`, or `component` to find relevant entries.
 
 ## Skills Index
 

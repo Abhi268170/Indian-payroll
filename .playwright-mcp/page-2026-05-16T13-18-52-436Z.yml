@@ -1,0 +1,114 @@
+- generic:
+  - iframe
+  - generic [ref=e329]:
+    - generic [ref=e333]: Employee not found.
+    - button [ref=e884] [cursor=pointer]:
+      - img [ref=e885]
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e335]:
+      - navigation:
+        - generic [ref=e337]:
+          - img "Zoho Payroll" [ref=e338]
+          - generic [ref=e339]: Payroll
+        - generic [ref=e343]:
+          - button "Advanced Search" [ref=e344] [cursor=pointer]:
+            - img [ref=e345]
+          - textbox "Search in Employee" [ref=e349]
+        - generic [ref=e351]:
+          - generic [ref=e354] [cursor=pointer]: Your trial expires in 13 day(s).
+          - button "Upgrade" [ref=e356] [cursor=pointer]
+          - button "lerno" [ref=e360] [cursor=pointer]:
+            - generic [ref=e361]: lerno
+            - img [ref=e362]
+          - button "Refer and Earn" [ref=e366] [cursor=pointer]:
+            - img [ref=e367]
+          - button "Notifications" [ref=e371] [cursor=pointer]:
+            - generic [ref=e372]:
+              - generic [ref=e514]: "5"
+              - img [ref=e373]
+          - button "Settings" [ref=e376] [cursor=pointer]:
+            - img [ref=e377]
+          - button "A" [ref=e515] [cursor=pointer]:
+            - generic [ref=e383]: A
+          - img [ref=e401] [cursor=pointer]
+    - generic [ref=e5]:
+      - complementary [ref=e404]:
+        - navigation [ref=e405]:
+          - generic [ref=e406]:
+            - list [ref=e407]:
+              - listitem [ref=e408]:
+                - link "Dashboard" [ref=e409] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e410]
+                  - generic [ref=e413]: Dashboard
+              - listitem [ref=e414]:
+                - link "Employees" [ref=e415] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e416]
+                  - generic [ref=e418]: Employees
+              - listitem [ref=e419]:
+                - link "Pay Runs" [ref=e420] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e421]
+                  - generic [ref=e424]: Pay Runs
+              - listitem [ref=e425]:
+                - list [ref=e426]:
+                  - listitem [ref=e427]:
+                    - button "Approvals" [ref=e429] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e430]:
+                        - button "Approvals" [ref=e431]:
+                          - img [ref=e432]
+                          - img [ref=e434]
+                          - generic [ref=e437]: Approvals
+                          - img [ref=e438]
+              - listitem [ref=e446]:
+                - list [ref=e447]:
+                  - listitem [ref=e448]:
+                    - button "Taxes & Forms" [ref=e450] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e451]:
+                        - button "Taxes & Forms" [ref=e452]:
+                          - img [ref=e667]
+                          - img [ref=e455]
+                          - generic [ref=e460]: Taxes & Forms
+                          - img [ref=e461]
+              - listitem [ref=e471]:
+                - link "Loans" [ref=e472] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e473]
+                  - generic [ref=e476]: Loans
+              - listitem [ref=e477]:
+                - link "Giving" [ref=e478] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e479]
+                  - generic [ref=e481]: Giving
+              - listitem
+              - listitem [ref=e482]:
+                - link "Documents" [ref=e483] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e484]
+                  - generic [ref=e486]: Documents
+              - listitem [ref=e487]:
+                - link "Reports" [ref=e488] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e489]
+                  - generic [ref=e492]: Reports
+              - listitem [ref=e493]:
+                - link "Settings" [ref=e494] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e495]
+                  - generic [ref=e498]: Settings
+            - link "Contact Support" [ref=e502] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e503]
+          - button "Collapse/Expand" [ref=e505] [cursor=pointer]:
+            - img [ref=e506]
+      - main [ref=e509]:
+        - alert [ref=e1053]:
+          - generic [ref=e1054]: Loading...
+  - status [ref=e292]: Employees page loaded.
+  - text:       Chats  Contacts   

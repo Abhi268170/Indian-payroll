@@ -1,0 +1,145 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e5]:
+      - navigation:
+        - generic [ref=e7]:
+          - img "Zoho Payroll" [ref=e8]
+          - generic [ref=e9]: Payroll
+        - generic [ref=e13]:
+          - button "Advanced Search" [ref=e14] [cursor=pointer]:
+            - img [ref=e15]
+          - textbox "Search in Employee" [ref=e19]: Arjun
+          - button "Clear Searched Text" [ref=e2304] [cursor=pointer]:
+            - img [ref=e2305]
+        - generic [ref=e21]:
+          - generic [ref=e24] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e26] [cursor=pointer]
+          - button "lerno" [ref=e30] [cursor=pointer]:
+            - generic [ref=e31]: lerno
+            - img [ref=e32]
+          - button "Refer and Earn" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+          - button "Notifications" [ref=e41] [cursor=pointer]:
+            - generic [ref=e42]:
+              - generic [ref=e43]: "4"
+              - img [ref=e44]
+          - button "Settings" [ref=e47] [cursor=pointer]:
+            - img [ref=e48]
+          - button "A" [ref=e53] [cursor=pointer]:
+            - generic [ref=e54]: A
+          - img [ref=e71] [cursor=pointer]
+    - generic [ref=e74]:
+      - complementary [ref=e75]:
+        - navigation [ref=e76]:
+          - generic [ref=e77]:
+            - list [ref=e78]:
+              - link "Getting Started" [ref=e79] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e2489]:
+                  - generic [ref=e2490]:
+                    - img [ref=e2492]
+                    - text: Getting Started
+                  - img [ref=e2496]
+              - listitem [ref=e90]:
+                - link "Dashboard" [ref=e91] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e2498]
+                  - generic [ref=e95]: Dashboard
+              - listitem [ref=e96]:
+                - link "Employees" [ref=e97] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e2501]
+                  - generic [ref=e100]: Employees
+              - listitem [ref=e101]:
+                - link "Pay Runs" [ref=e102] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e2503]
+                  - generic [ref=e106]: Pay Runs
+              - listitem [ref=e107]:
+                - list [ref=e108]:
+                  - listitem [ref=e109]:
+                    - button "Approvals" [ref=e111] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e112]:
+                        - button "Approvals" [ref=e113]:
+                          - img [ref=e2506]
+                          - img [ref=e2508]
+                          - generic [ref=e119]: Approvals
+                          - img [ref=e120]
+              - listitem [ref=e122]:
+                - list [ref=e123]:
+                  - listitem [ref=e124]:
+                    - button "Taxes & Forms" [ref=e126] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e127]:
+                        - button "Taxes & Forms" [ref=e128]:
+                          - img [ref=e2511]
+                          - img [ref=e2513]
+                          - generic [ref=e136]: Taxes & Forms
+                          - img [ref=e137]
+              - listitem [ref=e139]:
+                - link "Loans" [ref=e140] [cursor=pointer]:
+                  - /url: "#/loans?sort_column=&sort_order="
+                  - img [ref=e2518]
+                  - generic [ref=e144]: Loans
+              - listitem [ref=e145]:
+                - link "Giving" [ref=e146] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e2521]
+                  - generic [ref=e149]: Giving
+              - listitem
+              - listitem [ref=e150]:
+                - link "Documents" [ref=e151] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e2523]
+                  - generic [ref=e154]: Documents
+              - listitem [ref=e155]:
+                - link "Reports" [ref=e156] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e2525]
+                  - generic [ref=e160]: Reports
+              - listitem [ref=e161]:
+                - link "Settings" [ref=e162] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e2528]
+                  - generic [ref=e166]: Settings
+            - link "Contact Support" [ref=e2534] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e2535]
+          - button "Collapse/Expand" [ref=e173] [cursor=pointer]:
+            - img [ref=e2537]
+      - main [ref=e177]:
+        - generic [ref=e2653]:
+          - generic [ref=e2654]:
+            - button "All Loans" [ref=e2657] [cursor=pointer]:
+              - text: All Loans
+              - img [ref=e2659]
+            - generic [ref=e2662]:
+              - paragraph [ref=e2665]:
+                - img [ref=e2666]
+                - button "View Loan Repayments" [ref=e2668] [cursor=pointer]
+              - button "Add" [ref=e2670] [cursor=pointer]:
+                - img [ref=e2671]
+                - generic [ref=e2673]: Add
+              - button "Show dropdown menu" [ref=e2675] [cursor=pointer]:
+                - img [ref=e2676]
+              - button "Filter" [ref=e2679] [cursor=pointer]:
+                - img [ref=e2680]
+              - button "Instant Helper" [ref=e2682] [cursor=pointer]:
+                - img [ref=e2683]
+          - generic [ref=e2688]:
+            - img [ref=e2689]
+            - generic [ref=e2690]: You haven't provided any loans to your employees. You can provide loans to your employees and deduct the instalment amount from their salary every month.
+    - tooltip "Filter" [ref=e2691]: Filter
+  - generic [ref=e201] [cursor=pointer]:
+    - generic [ref=e202]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e203]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e205]: Don't show again
+  - status [ref=e206]: Loans page loaded.
+  - text:       Chats  Contacts   

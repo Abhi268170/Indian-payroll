@@ -1,0 +1,192 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e7038]:
+      - navigation:
+        - generic [ref=e7040]:
+          - img "Zoho Payroll" [ref=e7041]
+          - generic [ref=e7042]: Payroll
+        - generic [ref=e7046]:
+          - button "Advanced Search" [ref=e7047] [cursor=pointer]:
+            - img [ref=e7048]
+          - textbox "Search in Employee" [ref=e7052]
+        - generic [ref=e7054]:
+          - generic [ref=e7057] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e7059] [cursor=pointer]
+          - button "lerno" [ref=e7063] [cursor=pointer]:
+            - generic [ref=e7064]: lerno
+            - img [ref=e7065]
+          - button "Refer and Earn" [ref=e7069] [cursor=pointer]:
+            - img [ref=e7070]
+          - button "Notifications" [ref=e7074] [cursor=pointer]:
+            - img [ref=e7076]
+          - button "Settings" [ref=e7079] [cursor=pointer]:
+            - img [ref=e7080]
+          - button "A" [ref=e7218] [cursor=pointer]:
+            - generic [ref=e7086]: A
+          - img [ref=e7104] [cursor=pointer]
+    - generic [ref=e73]:
+      - complementary [ref=e7107]:
+        - navigation [ref=e7108]:
+          - generic [ref=e7109]:
+            - list [ref=e7110]:
+              - link "Getting Started" [ref=e7111] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e7113]:
+                  - generic [ref=e7114]:
+                    - img [ref=e7116]
+                    - text: Getting Started
+                  - img [ref=e7120]
+              - listitem [ref=e7122]:
+                - link "Dashboard" [ref=e7123] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e7124]
+                  - generic [ref=e7127]: Dashboard
+              - listitem [ref=e7128]:
+                - link "Employees" [ref=e7129] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e7130]
+                  - generic [ref=e7132]: Employees
+              - listitem [ref=e7133]:
+                - link "Pay Runs" [ref=e7134] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e7135]
+                  - generic [ref=e7138]: Pay Runs
+              - listitem [ref=e7139]:
+                - list [ref=e7140]:
+                  - listitem [ref=e7141]:
+                    - button "Approvals" [ref=e7143] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e7144]:
+                        - button "Approvals" [ref=e7145]:
+                          - img [ref=e7146]
+                          - img [ref=e7148]
+                          - generic [ref=e7151]: Approvals
+                          - img [ref=e7152]
+              - listitem [ref=e7160]:
+                - link "Form 16" [ref=e7161] [cursor=pointer]:
+                  - /url: "#/taxes-and-forms/form16"
+                  - img [ref=e7162]
+                  - generic [ref=e7166]: Form 16
+              - listitem [ref=e7167]:
+                - link "Loans" [ref=e7168] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e7169]
+                  - generic [ref=e7172]: Loans
+              - listitem [ref=e7173]:
+                - link "Giving" [ref=e7174] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e7175]
+                  - generic [ref=e7177]: Giving
+              - listitem
+              - listitem [ref=e7178]:
+                - link "Documents" [ref=e7179] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e7180]
+                  - generic [ref=e7182]: Documents
+              - listitem [ref=e7183]:
+                - link "Reports" [ref=e7184] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e7185]
+                  - generic [ref=e7188]: Reports
+              - listitem [ref=e7189]:
+                - link "Settings" [ref=e7190] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e7191]
+                  - generic [ref=e7194]: Settings
+            - link "Contact Support" [ref=e7198] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e7199]
+            - generic [ref=e7201]:
+              - paragraph [ref=e7202]: Track TDS Liabilities and Generate Form 24Q
+              - button "View Details" [ref=e7203] [cursor=pointer]
+          - button "Collapse/Expand" [ref=e7204] [cursor=pointer]:
+            - img [ref=e7205]
+      - main [ref=e7208]:
+        - generic [ref=e7219]:
+          - heading "Arjun Mehta's Exit details" [level=3] [ref=e10349]
+          - form [ref=e10351]:
+            - generic [ref=e10352]:
+              - generic [ref=e10353]:
+                - generic [ref=e10354]:
+                  - generic [ref=e10355]: Last Working Day*
+                  - textbox "Last Working Day*" [ref=e10357]:
+                    - /placeholder: dd/MM/yyyy
+                - generic [ref=e10358]:
+                  - generic [ref=e10359]: Reason for Exit*
+                  - generic [ref=e10362]:
+                    - generic [ref=e10363]:
+                      - combobox "Reason for Exit*" [expanded] [ref=e10364]:
+                        - generic [ref=e10365] [cursor=pointer]:
+                          - generic [ref=e10366]: Select
+                          - img [ref=e10422]
+                      - generic [ref=e10424]:
+                        - generic [ref=e10426]:
+                          - generic [ref=e10428]: ⚲
+                          - textbox [active] [ref=e10429]
+                        - listbox "dropdown options" [ref=e10431]:
+                          - option "Terminated By Employer" [ref=e10432]:
+                            - generic "Terminated By Employer" [ref=e10434] [cursor=pointer]:
+                              - generic [ref=e10435]: Terminated By Employer
+                          - option "Termination By Death" [ref=e10436]:
+                            - generic "Termination By Death" [ref=e10438] [cursor=pointer]:
+                              - generic [ref=e10439]: Termination By Death
+                          - option "Termination by Disability" [ref=e10440]:
+                            - generic "Termination by Disability" [ref=e10442] [cursor=pointer]:
+                              - generic [ref=e10443]: Termination by Disability
+                          - option "Resigned By Employee" [ref=e10444]:
+                            - generic "Resigned By Employee" [ref=e10446] [cursor=pointer]:
+                              - generic [ref=e10447]: Resigned By Employee
+                    - status [ref=e10371]
+                - radiogroup "When do you want to settle the final pay ?" [ref=e10373]:
+                  - heading "When do you want to settle the final pay ?" [level=5] [ref=e10375]
+                  - generic [ref=e10376]:
+                    - radio "Pay as per the regular pay schedule" [checked] [ref=e10377] [cursor=pointer]
+                    - generic [ref=e10378] [cursor=pointer]: Pay as per the regular pay schedule
+                  - generic [ref=e10379]:
+                    - radio "Pay on a given date" [ref=e10380] [cursor=pointer]
+                    - generic [ref=e10381] [cursor=pointer]: Pay on a given date
+                - generic [ref=e10382]:
+                  - generic [ref=e10383]:
+                    - text: Personal Email Address
+                    - img [ref=e10386]
+                  - textbox "Personal Email Address" [ref=e10390]
+                - generic [ref=e10391]:
+                  - generic [ref=e10392]: Notes
+                  - textbox "Notes" [ref=e10394]
+              - generic [ref=e10395]:
+                - generic [ref=e10396]:
+                  - generic [ref=e10398]: A
+                  - heading "Arjun Mehta" [level=3] [ref=e10399]
+                  - generic [ref=e10400]: "ID: EMP001"
+                - generic [ref=e10401]:
+                  - generic [ref=e10402]:
+                    - generic [ref=e10403]: Designation
+                    - generic [ref=e10404]: Senior Software Engineer
+                  - generic [ref=e10405]:
+                    - generic [ref=e10406]: Department
+                    - generic [ref=e10407]: Engineering
+                  - generic [ref=e10408]:
+                    - generic [ref=e10409]: Date of Joining
+                    - generic [ref=e10410]: 01/04/2025
+            - generic [ref=e10413]:
+              - generic [ref=e10414]: "Note:"
+              - list [ref=e10415]:
+                - listitem [ref=e10416]: Portal is not enabled for this employee. Kindly collect the proof of investments before processing the payroll.
+            - separator [ref=e10417]
+            - generic [ref=e10419]:
+              - button "Proceed" [ref=e10420] [cursor=pointer]
+              - link "Cancel" [ref=e10421] [cursor=pointer]:
+                - /url: "#/people/employees/3848927000000032948"
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Exit Process page loaded.
+  - text:       Chats  Contacts   

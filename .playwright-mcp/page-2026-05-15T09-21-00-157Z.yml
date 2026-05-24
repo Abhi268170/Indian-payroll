@@ -1,0 +1,294 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e7038]:
+      - navigation:
+        - generic [ref=e7040]:
+          - img "Zoho Payroll" [ref=e7041]
+          - generic [ref=e7042]: Payroll
+        - generic [ref=e7046]:
+          - button "Advanced Search" [ref=e7047] [cursor=pointer]:
+            - img [ref=e7048]
+          - textbox "Search in Employee" [ref=e7052]
+        - generic [ref=e7054]:
+          - generic [ref=e7057] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e7059] [cursor=pointer]
+          - button "lerno" [ref=e7063] [cursor=pointer]:
+            - generic [ref=e7064]: lerno
+            - img [ref=e7065]
+          - button "Refer and Earn" [ref=e7069] [cursor=pointer]:
+            - img [ref=e7070]
+          - button "Notifications" [ref=e7074] [cursor=pointer]:
+            - img [ref=e7076]
+          - button "Settings" [ref=e7079] [cursor=pointer]:
+            - img [ref=e7080]
+          - button "A" [ref=e7218] [cursor=pointer]:
+            - generic [ref=e7086]: A
+          - img [ref=e7104] [cursor=pointer]
+    - generic [ref=e73]:
+      - complementary [ref=e7107]:
+        - navigation [ref=e7108]:
+          - generic [ref=e7109]:
+            - list [ref=e7110]:
+              - link "Getting Started" [ref=e7111] [cursor=pointer]:
+                - /url: "#/home/dashboard"
+                - heading "Getting Started" [level=6] [ref=e7113]:
+                  - generic [ref=e7114]:
+                    - img [ref=e7116]
+                    - text: Getting Started
+                  - img [ref=e7120]
+              - listitem [ref=e7122]:
+                - link "Dashboard" [ref=e7123] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e7124]
+                  - generic [ref=e7127]: Dashboard
+              - listitem [ref=e7128]:
+                - link "Employees" [ref=e7129] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e7130]
+                  - generic [ref=e7132]: Employees
+              - listitem [ref=e7133]:
+                - link "Pay Runs" [ref=e7134] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e7135]
+                  - generic [ref=e7138]: Pay Runs
+              - listitem [ref=e7139]:
+                - list [ref=e7140]:
+                  - listitem [ref=e7141]:
+                    - button "Approvals" [ref=e7143] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e7144]:
+                        - button "Approvals" [ref=e7145]:
+                          - img [ref=e7146]
+                          - img [ref=e7148]
+                          - generic [ref=e7151]: Approvals
+                          - img [ref=e7152]
+              - listitem [ref=e7160]:
+                - link "Form 16" [ref=e7161] [cursor=pointer]:
+                  - /url: "#/taxes-and-forms/form16"
+                  - img [ref=e7162]
+                  - generic [ref=e7166]: Form 16
+              - listitem [ref=e7167]:
+                - link "Loans" [ref=e7168] [cursor=pointer]:
+                  - /url: "#/loans"
+                  - img [ref=e7169]
+                  - generic [ref=e7172]: Loans
+              - listitem [ref=e7173]:
+                - link "Giving" [ref=e7174] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e7175]
+                  - generic [ref=e7177]: Giving
+              - listitem
+              - listitem [ref=e7178]:
+                - link "Documents" [ref=e7179] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e7180]
+                  - generic [ref=e7182]: Documents
+              - listitem [ref=e7183]:
+                - link "Reports" [ref=e7184] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e7185]
+                  - generic [ref=e7188]: Reports
+              - listitem [ref=e7189]:
+                - link "Settings" [ref=e7190] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e7191]
+                  - generic [ref=e7194]: Settings
+            - link "Contact Support" [ref=e7198] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e7199]
+            - generic [ref=e7201]:
+              - paragraph [ref=e7202]: Track TDS Liabilities and Generate Form 24Q
+              - button "View Details" [ref=e7203] [cursor=pointer]
+          - button "Collapse/Expand" [ref=e7204] [cursor=pointer]:
+            - img [ref=e7205]
+      - main [ref=e7208]:
+        - generic [ref=e7220]:
+          - generic [ref=e7222]:
+            - heading "Add Employee" [level=3] [ref=e7223]
+            - list [ref=e7225]:
+              - listitem [ref=e7226]:
+                - generic [ref=e7227]: "1"
+                - link "Basic Details":
+                  - /url: "#"
+              - listitem [ref=e7228]
+              - listitem [ref=e7229]:
+                - generic [ref=e7230]: "2"
+                - link "Salary Details":
+                  - /url: "#"
+              - listitem [ref=e7231]
+              - listitem [ref=e7232]:
+                - generic [ref=e7233]: "3"
+                - link "Personal Details":
+                  - /url: "#"
+              - listitem [ref=e7234]
+              - listitem [ref=e7235]:
+                - generic [ref=e7236]: "4"
+                - link "Payment Information":
+                  - /url: "#"
+              - listitem
+          - generic [ref=e7238]:
+            - generic [ref=e7239]:
+              - generic [ref=e7562]:
+                - button "Close" [ref=e7563] [cursor=pointer]:
+                  - img [ref=e7564]
+                - generic [ref=e7566]: Oops! Looks like you missed something...
+                - list [ref=e7567]:
+                  - listitem [ref=e7568]: Enter a Date of Joining.
+              - generic [ref=e7240]:
+                - generic [ref=e7242]:
+                  - generic [ref=e7243]: Employee Name*
+                  - combobox "Employee Name*" [ref=e7248]: Aisha
+                  - textbox "Employee Name*" [ref=e7250]:
+                    - /placeholder: Middle Name
+                  - textbox "Employee Name*" [ref=e7252]:
+                    - /placeholder: Last Name
+                    - text: Khan
+                - generic [ref=e7253]:
+                  - generic [ref=e7254]: Employee ID*
+                  - textbox "Employee ID*" [ref=e7256]: EMP004
+                - generic [ref=e7257]:
+                  - generic [ref=e7258]: Date of Joining *
+                  - textbox "Date of Joining *" [active] [ref=e7260]:
+                    - /placeholder: dd/MM/yyyy
+                    - text: 01/05/2025
+                - generic [ref=e7261]:
+                  - generic [ref=e7262]: Work Email*
+                  - combobox "abc@xyz.com" [ref=e7267]: aisha.khan@lerno.com
+                - generic [ref=e7268]:
+                  - generic [ref=e7269]: Mobile Number
+                  - textbox "Mobile Number" [ref=e7270]
+                - generic [ref=e7273] [cursor=pointer]:
+                  - checkbox "Employee is a Director/person with substantial interest in the company." [ref=e7274]
+                  - text: Employee is a Director/person with substantial interest in the company.
+                  - img [ref=e7277]
+                - generic [ref=e7279]:
+                  - generic [ref=e7280]: Gender *
+                  - generic [ref=e7283]:
+                    - combobox "Gender *" [ref=e7285]:
+                      - generic [ref=e7286] [cursor=pointer]:
+                        - generic "Female" [ref=e7442]
+                        - img [ref=e7443]
+                    - status [ref=e7292]
+                - generic [ref=e7293]:
+                  - generic [ref=e7294]: Work Location *
+                  - generic [ref=e7297]:
+                    - combobox "Work Location *" [ref=e7299]:
+                      - generic [ref=e7300] [cursor=pointer]:
+                        - generic "Head Office ( lerno,kazhakoottam,thiruvananthapuram,Kerala-695010 )" [ref=e7301]
+                        - img [ref=e7304]
+                    - button "Clear Selection" [ref=e7306] [cursor=pointer]:
+                      - img [ref=e7307]
+                    - status [ref=e7309]
+                - generic [ref=e7310]:
+                  - generic [ref=e7311]: Designation *
+                  - generic [ref=e7314]:
+                    - combobox "Designation *" [ref=e7316]:
+                      - generic [ref=e7317] [cursor=pointer]:
+                        - generic "UX Consultant" [ref=e7498]
+                        - img [ref=e7472]
+                    - button "Clear Selection" [ref=e7499] [cursor=pointer]:
+                      - img [ref=e7500]
+                    - status [ref=e7323]
+                - generic [ref=e7324]:
+                  - generic [ref=e7325]: Department *
+                  - generic [ref=e7328]:
+                    - combobox "Department *" [ref=e7330]:
+                      - generic [ref=e7331] [cursor=pointer]:
+                        - generic "Design" [ref=e7559]
+                        - img [ref=e7525]
+                    - button "Clear Selection" [ref=e7337] [cursor=pointer]:
+                      - img [ref=e7338]
+                    - status [ref=e7340]
+                - generic [ref=e7341]:
+                  - generic [ref=e7342]:
+                    - generic [ref=e7343] [cursor=pointer]:
+                      - checkbox "Enable Portal Access" [ref=e7344]
+                      - text: Enable Portal Access
+                    - button "Preview mail" [ref=e7419] [cursor=pointer]
+                  - generic [ref=e7345]: The employee will be able to view payslips, submit their IT declaration and create reimbursement claims through the employee portal.
+            - separator [ref=e7346]
+            - generic [ref=e7348]:
+              - button "Save and Continue" [ref=e7349] [cursor=pointer]
+              - link "Cancel" [ref=e7350] [cursor=pointer]:
+                - /url: "#/people/employees"
+              - paragraph [ref=e7352]: "* indicates mandatory fields"
+  - generic [ref=e521] [cursor=pointer]:
+    - generic [ref=e522]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e523]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e525]: Don't show again
+  - status [ref=e526]: Employees | New page loaded.
+  - text:       Chats  Contacts   
+  - table [ref=e7355]:
+    - rowgroup [ref=e7356]:
+      - row
+      - row "« May 2025 »" [ref=e7619]:
+        - columnheader "«" [ref=e7358] [cursor=pointer]
+        - columnheader "May 2025" [ref=e7620] [cursor=pointer]
+        - columnheader "»" [ref=e7360] [cursor=pointer]
+      - row "Sun Mon Tue Wed Thu Fri Sat" [ref=e7361]:
+        - columnheader "Sun" [ref=e7362]
+        - columnheader "Mon" [ref=e7363]
+        - columnheader "Tue" [ref=e7364]
+        - columnheader "Wed" [ref=e7365]
+        - columnheader "Thu" [ref=e7366]
+        - columnheader "Fri" [ref=e7367]
+        - columnheader "Sat" [ref=e7368]
+    - rowgroup [ref=e7369]:
+      - row "27 28 29 30 1 2 3" [ref=e7621]:
+        - cell "27" [ref=e7622]
+        - cell "28" [ref=e7623]
+        - cell "29" [ref=e7624]
+        - cell "30" [ref=e7625]
+        - cell "1" [ref=e7626]
+        - cell "2" [ref=e7627]
+        - cell "3" [ref=e7628]
+      - row "4 5 6 7 8 9 10" [ref=e7629]:
+        - cell "4" [ref=e7630]
+        - cell "5" [ref=e7631]
+        - cell "6" [ref=e7632]
+        - cell "7" [ref=e7633]
+        - cell "8" [ref=e7634]
+        - cell "9" [ref=e7635]
+        - cell "10" [ref=e7636]
+      - row "11 12 13 14 15 16 17" [ref=e7637]:
+        - cell "11" [ref=e7638]
+        - cell "12" [ref=e7639]
+        - cell "13" [ref=e7640]
+        - cell "14" [ref=e7641]
+        - cell "15" [ref=e7642]
+        - cell "16" [ref=e7643]
+        - cell "17" [ref=e7644]
+      - row "18 19 20 21 22 23 24" [ref=e7645]:
+        - cell "18" [ref=e7646]
+        - cell "19" [ref=e7647]
+        - cell "20" [ref=e7648]
+        - cell "21" [ref=e7649]
+        - cell "22" [ref=e7650]
+        - cell "23" [ref=e7651]
+        - cell "24" [ref=e7652]
+      - row "25 26 27 28 29 30 31" [ref=e7653]:
+        - cell "25" [ref=e7654]
+        - cell "26" [ref=e7655]
+        - cell "27" [ref=e7656]
+        - cell "28" [ref=e7657]
+        - cell "29" [ref=e7658]
+        - cell "30" [ref=e7659]
+        - cell "31" [ref=e7660]
+      - row "1 2 3 4 5 6 7" [ref=e7661]:
+        - cell "1" [ref=e7662]
+        - cell "2" [ref=e7663]
+        - cell "3" [ref=e7664]
+        - cell "4" [ref=e7665]
+        - cell "5" [ref=e7666]
+        - cell "6" [ref=e7667]
+        - cell "7" [ref=e7668]
+    - rowgroup [ref=e7418]:
+      - row
+      - row

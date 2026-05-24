@@ -1,0 +1,248 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - generic [ref=e2829]:
+      - generic [ref=e2831]:
+        - generic [ref=e2832]:
+          - button "All Settings" [ref=e2833] [cursor=pointer]:
+            - img [ref=e2834]
+          - button [ref=e2839] [cursor=pointer]:
+            - img [ref=e2840]
+          - generic [ref=e2842]:
+            - generic [ref=e2843]: All Settings
+            - generic [ref=e2844]: lerno
+        - generic [ref=e2846]:
+          - combobox "Search" [active] [ref=e2850]
+          - img [ref=e2851]
+        - button "Close Settings" [ref=e2855] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e2856]
+      - generic [ref=e2858]:
+        - navigation [ref=e2859]:
+          - generic [ref=e2861]:
+            - group [ref=e2862]:
+              - heading "Organisation Settings" [level=2] [ref=e2863]
+              - generic [ref=e2864]:
+                - region "Organisation" [ref=e2866]:
+                  - generic [ref=e2867]:
+                    - heading "Organisation" [level=3] [ref=e2868] [cursor=pointer]:
+                      - button "Organisation" [ref=e2869]:
+                        - img [ref=e2870]
+                        - generic [ref=e2872]: Organisation
+                    - region "Organisation":
+                      - generic [ref=e2873]:
+                        - link "Profile" [ref=e2874] [cursor=pointer]:
+                          - /url: "#/settings/orgprofile"
+                          - generic [ref=e2875]: Profile
+                          - text: 
+                        - link "Branding" [ref=e2876] [cursor=pointer]:
+                          - /url: "#/settings/branding"
+                          - generic [ref=e2877]: Branding
+                          - text: 
+                        - link "Work Locations" [ref=e2878] [cursor=pointer]:
+                          - /url: "#/settings/work-locations"
+                          - generic [ref=e2879]: Work Locations
+                          - text: 
+                        - link "Departments" [ref=e2880] [cursor=pointer]:
+                          - /url: "#/settings/departments"
+                          - generic [ref=e2881]: Departments
+                          - text: 
+                        - link "Designations" [ref=e2882] [cursor=pointer]:
+                          - /url: "#/settings/designations"
+                          - generic [ref=e2883]: Designations
+                          - text: 
+                        - link "Subscriptions" [ref=e2884] [cursor=pointer]:
+                          - /url: "#/settings/subscription-details"
+                          - generic [ref=e2885]: Subscriptions
+                          - text: 
+                - generic [ref=e2886]:
+                  - region "Users and Roles" [ref=e2887]:
+                    - generic [ref=e2888]:
+                      - heading "Users and Roles" [level=3] [ref=e2889] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e2890]:
+                          - img [ref=e2891]
+                          - generic [ref=e2893]: Users and Roles
+                      - region "Users and Roles":
+                        - generic [ref=e2894]:
+                          - link "Users" [ref=e2895] [cursor=pointer]:
+                            - /url: "#/settings/users-roles/users"
+                            - generic [ref=e2896]: Users
+                            - text: 
+                          - link "Roles" [ref=e2897] [cursor=pointer]:
+                            - /url: "#/settings/users-roles/roles"
+                            - generic [ref=e2898]: Roles
+                            - text: 
+                  - region "Taxes" [ref=e2899]:
+                    - generic [ref=e2900]:
+                      - heading "Taxes" [level=3] [ref=e2901] [cursor=pointer]:
+                        - button "Taxes" [ref=e2902]:
+                          - img [ref=e2903]
+                          - generic [ref=e2905]: Taxes
+                      - region "Taxes":
+                        - link "Tax Details" [ref=e2907] [cursor=pointer]:
+                          - /url: "#/settings/taxes"
+                          - generic [ref=e2908]: Tax Details
+                          - text: 
+                - region "Setup & Configurations" [ref=e2910]:
+                  - generic [ref=e2911]:
+                    - heading "Setup & Configurations" [level=3] [ref=e2912] [cursor=pointer]:
+                      - button "Setup & Configurations" [ref=e2913]:
+                        - img [ref=e2914]
+                        - generic [ref=e2916]: Setup & Configurations
+                    - region "Setup & Configurations":
+                      - generic [ref=e2917]:
+                        - link "Pay Schedule" [ref=e2918] [cursor=pointer]:
+                          - /url: "#/settings/pay-schedules"
+                          - generic [ref=e2919]: Pay Schedule
+                          - text: 
+                        - link "Statutory Components" [ref=e2920] [cursor=pointer]:
+                          - /url: "#/settings/statutory-details/list"
+                          - generic [ref=e2921]: Statutory Components
+                          - text: 
+                        - link "Salary Components" [ref=e2922] [cursor=pointer]:
+                          - /url: "#/settings/salary-components/earnings"
+                          - generic [ref=e2923]: Salary Components
+                          - text: 
+                        - link "Employee Portal" [ref=e2924] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences"
+                          - generic [ref=e2925]: Employee Portal
+                          - text: 
+                        - link "Claims and Declarations" [ref=e2926] [cursor=pointer]:
+                          - /url: "#/settings/preferences/fbp"
+                          - generic [ref=e2927]: Claims and Declarations
+                          - text: 
+                - region "Customisations" [ref=e2929]:
+                  - generic [ref=e2930]:
+                    - heading "Customisations" [level=3] [ref=e2931] [cursor=pointer]:
+                      - button "Customisations" [expanded] [ref=e2932]:
+                        - img [ref=e2933]
+                        - generic [ref=e2935]: Customisations
+                    - region "Customisations":
+                      - generic [ref=e2936]:
+                        - link "Email Templates" [ref=e2937] [cursor=pointer]:
+                          - /url: "#/settings/email-templates"
+                          - generic [ref=e2938]: Email Templates
+                          - text: 
+                        - link "Sender Email Preferences" [ref=e2939] [cursor=pointer]:
+                          - /url: "#/settings/email-preference"
+                          - generic [ref=e2940]: Sender Email Preferences
+                          - text: 
+                        - link "Salary Templates" [ref=e2941] [cursor=pointer]:
+                          - /url: "#/settings/salary-templates"
+                          - generic [ref=e2942]: Salary Templates
+                          - text: 
+                        - link "PDF Templates" [ref=e2943] [cursor=pointer]:
+                          - /url: "#/settings/templates/regular-payslip"
+                          - generic [ref=e2944]: PDF Templates
+                          - text: 
+                        - link "Reporting Tags" [ref=e2945] [cursor=pointer]:
+                          - /url: "#/settings/advanced-reportingtags"
+                          - generic [ref=e2946]: Reporting Tags
+                          - text: 
+                - region "Automations" [ref=e2948]:
+                  - generic [ref=e2949]:
+                    - heading "Automations" [level=3] [ref=e2950] [cursor=pointer]:
+                      - button "Automations" [ref=e2951]:
+                        - img [ref=e2952]
+                        - generic [ref=e2954]: Automations
+                    - region "Automations":
+                      - generic [ref=e2955]:
+                        - link "Workflow Rules" [ref=e2956] [cursor=pointer]:
+                          - /url: "#/settings/automation/workflows"
+                          - generic [ref=e2957]: Workflow Rules
+                          - text: 
+                        - link "Actions" [ref=e2958] [cursor=pointer]:
+                          - /url: "#/settings/automation/actions/alerts"
+                          - generic [ref=e2959]: Actions
+                          - text: 
+                        - link "Schedules" [ref=e2960] [cursor=pointer]:
+                          - /url: "#/settings/automation/schedules"
+                          - generic [ref=e2961]: Schedules
+                          - text: 
+                        - link "Workflow Logs" [ref=e2962] [cursor=pointer]:
+                          - /url: "#/settings/automation/logs/alerts"
+                          - generic [ref=e2963]: Workflow Logs
+                          - text: 
+            - group [ref=e2964]:
+              - heading "Module Settings" [level=2] [ref=e2965]
+              - generic [ref=e2966]:
+                - region "General" [ref=e2968]:
+                  - generic [ref=e2969]:
+                    - heading "General" [level=3] [ref=e2970] [cursor=pointer]:
+                      - button "General" [ref=e2971]:
+                        - img [ref=e2972]
+                        - generic [ref=e2974]: General
+                    - region "General":
+                      - generic [ref=e2975]:
+                        - link "Employees & Contractors" [ref=e2976] [cursor=pointer]:
+                          - /url: "#/settings/employee/contractor"
+                          - generic [ref=e2977]: Employees & Contractors
+                          - text: 
+                        - link "Pay Runs" [ref=e2978] [cursor=pointer]:
+                          - /url: "#/settings/payrun/custom-approval/list"
+                          - generic [ref=e2979]: Pay Runs
+                          - text: 
+                        - link "Salary Revisions" [ref=e2980] [cursor=pointer]:
+                          - /url: "#/settings/salary-revision/custom-approval/list"
+                          - generic [ref=e2981]: Salary Revisions
+                          - text: 
+                        - link "Leave & Attendance" [ref=e2982] [cursor=pointer]:
+                          - /url: "#/settings/holiday-leave/enable-module"
+                          - generic [ref=e2983]: Leave & Attendance
+                          - text: 
+                        - link "Loans" [ref=e2984] [cursor=pointer]:
+                          - /url: "#/settings/loan/custom-field/list"
+                          - generic [ref=e2985]: Loans
+                          - text: 
+                - region "Payments" [ref=e2987]:
+                  - generic [ref=e2988]:
+                    - heading "Payments" [level=3] [ref=e2989] [cursor=pointer]:
+                      - button "Payments" [ref=e2990]:
+                        - img [ref=e2991]
+                        - generic [ref=e2993]: Payments
+                    - region "Payments":
+                      - link "Direct Deposits" [ref=e2995] [cursor=pointer]:
+                        - /url: "#/settings/direct-deposit"
+                        - generic [ref=e2996]: Direct Deposits
+                        - text: 
+            - group [ref=e2997]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e2998]
+              - generic [ref=e2999]:
+                - region "Integrations" [ref=e3001]:
+                  - generic [ref=e3002]:
+                    - heading "Integrations" [level=3] [ref=e3003] [cursor=pointer]:
+                      - button "Integrations" [ref=e3004]:
+                        - img [ref=e3005]
+                        - generic [ref=e3007]: Integrations
+                    - region "Integrations":
+                      - link "Zoho Apps" [ref=e3009] [cursor=pointer]:
+                        - /url: "#/settings/integrations/zoho"
+                        - generic [ref=e3010]: Zoho Apps
+                        - text: 
+                - region "Developer Data" [ref=e3012]:
+                  - generic [ref=e3013]:
+                    - heading "Developer Data" [level=3] [ref=e3014] [cursor=pointer]:
+                      - button "Developer Data" [ref=e3015]:
+                        - img [ref=e3016]
+                        - generic [ref=e3018]: Developer Data
+                    - region "Developer Data":
+                      - generic [ref=e3019]:
+                        - link "Connections" [ref=e3020] [cursor=pointer]:
+                          - /url: "#/settings/developer-space/connections"
+                          - generic [ref=e3021]: Connections
+                          - text: 
+                        - link "Incoming Webhooks" [ref=e3022] [cursor=pointer]:
+                          - /url: "#/settings/developer-space/incomingwebhooks"
+                          - generic [ref=e3023]: Incoming Webhooks
+                          - text: 
+                        - link "Data Backup" [ref=e3024] [cursor=pointer]:
+                          - /url: "#/settings/data-backup"
+                          - generic [ref=e3025]: Data Backup
+                          - text: 
+        - main [ref=e3026]
+  - status [ref=e225]: page loaded.
+  - text:       Chats  Contacts   

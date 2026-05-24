@@ -1,0 +1,173 @@
+- generic:
+  - iframe
+  - generic [ref=e5]:
+    - navigation "Navigate To" [active]:
+      - button "Navigate To" [ref=e6] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e7]
+    - generic [ref=e12978]:
+      - generic [ref=e12980]:
+        - generic [ref=e12981]:
+          - button "All Settings" [ref=e12982] [cursor=pointer]:
+            - img [ref=e12983]
+          - button [ref=e12988] [cursor=pointer]:
+            - img [ref=e12989]
+          - generic [ref=e12991]:
+            - generic [ref=e12992]: All Settings
+            - generic [ref=e12993]: lerno
+        - generic [ref=e12995]:
+          - combobox "Search" [ref=e12999]
+          - img [ref=e13000]
+        - button "Close Settings" [ref=e13004] [cursor=pointer]:
+          - text: Close Settings
+          - img [ref=e13005]
+      - generic [ref=e13007]:
+        - navigation [ref=e13008]:
+          - generic [ref=e13010]:
+            - group [ref=e13011]:
+              - heading "Organisation Settings" [level=2] [ref=e13012]
+              - generic [ref=e13013]:
+                - region "Organisation" [ref=e13015]:
+                  - generic [ref=e13016]:
+                    - heading "Organisation" [level=3] [ref=e13017] [cursor=pointer]:
+                      - button "Organisation" [ref=e13018]:
+                        - img [ref=e13019]
+                        - generic [ref=e13021]: Organisation
+                    - text:      
+                - generic [ref=e13022]:
+                  - region "Users and Roles" [ref=e13023]:
+                    - generic [ref=e13024]:
+                      - heading "Users and Roles" [level=3] [ref=e13025] [cursor=pointer]:
+                        - button "Users and Roles" [ref=e13026]:
+                          - img [ref=e13027]
+                          - generic [ref=e13029]: Users and Roles
+                      - text:  
+                  - region "Taxes" [ref=e13030]:
+                    - generic [ref=e13031]:
+                      - heading "Taxes" [level=3] [ref=e13032] [cursor=pointer]:
+                        - button "Taxes" [ref=e13033]:
+                          - img [ref=e13034]
+                          - generic [ref=e13036]: Taxes
+                      - text: 
+                - region "Setup & Configurations" [ref=e13038]:
+                  - generic [ref=e13039]:
+                    - heading "Setup & Configurations" [level=3] [ref=e13040] [cursor=pointer]:
+                      - button "Setup & Configurations" [expanded] [ref=e13041]:
+                        - img [ref=e13042]
+                        - generic [ref=e13044]: Setup & Configurations
+                    - region "Setup & Configurations" [ref=e13045]:
+                      - generic [ref=e13046]:
+                        - link "Pay Schedule" [ref=e13047] [cursor=pointer]:
+                          - /url: "#/settings/pay-schedules"
+                          - generic [ref=e13048]: Pay Schedule
+                          - text: 
+                        - link "Statutory Components" [ref=e13049] [cursor=pointer]:
+                          - /url: "#/settings/statutory-details/list"
+                          - generic [ref=e13050]: Statutory Components
+                          - text: 
+                        - link "Salary Components" [ref=e13051] [cursor=pointer]:
+                          - /url: "#/settings/salary-components/earnings"
+                          - generic [ref=e13052]: Salary Components
+                          - text: 
+                        - link "Employee Portal" [ref=e13053] [cursor=pointer]:
+                          - /url: "#/settings/portal/preferences"
+                          - generic [ref=e13054]: Employee Portal
+                          - text: 
+                        - link "Claims and Declarations" [ref=e13055] [cursor=pointer]:
+                          - /url: "#/settings/preferences/fbp"
+                          - generic [ref=e13056]: Claims and Declarations
+                          - text: 
+                - region "Customisations" [ref=e13058]:
+                  - generic [ref=e13059]:
+                    - heading "Customisations" [level=3] [ref=e13060] [cursor=pointer]:
+                      - button "Customisations" [ref=e13061]:
+                        - img [ref=e13062]
+                        - generic [ref=e13064]: Customisations
+                    - text:     
+                - region "Automations" [ref=e13066]:
+                  - generic [ref=e13067]:
+                    - heading "Automations" [level=3] [ref=e13068] [cursor=pointer]:
+                      - button "Automations" [ref=e13069]:
+                        - img [ref=e13070]
+                        - generic [ref=e13072]: Automations
+                    - text:    
+            - group [ref=e13073]:
+              - heading "Module Settings" [level=2] [ref=e13074]
+              - generic [ref=e13075]:
+                - region "General" [ref=e13077]:
+                  - generic [ref=e13078]:
+                    - heading "General" [level=3] [ref=e13079] [cursor=pointer]:
+                      - button "General" [ref=e13080]:
+                        - img [ref=e13081]
+                        - generic [ref=e13083]: General
+                    - text:     
+                - region "Payments" [ref=e13085]:
+                  - generic [ref=e13086]:
+                    - heading "Payments" [level=3] [ref=e13087] [cursor=pointer]:
+                      - button "Payments" [ref=e13088]:
+                        - img [ref=e13089]
+                        - generic [ref=e13091]: Payments
+                    - text: 
+            - group [ref=e13092]:
+              - heading "Extensions & Developer Data" [level=2] [ref=e13093]
+              - generic [ref=e13094]:
+                - region "Integrations" [ref=e13096]:
+                  - generic [ref=e13097]:
+                    - heading "Integrations" [level=3] [ref=e13098] [cursor=pointer]:
+                      - button "Integrations" [ref=e13099]:
+                        - img [ref=e13100]
+                        - generic [ref=e13102]: Integrations
+                    - text: 
+                - region "Developer Data" [ref=e13104]:
+                  - generic [ref=e13105]:
+                    - heading "Developer Data" [level=3] [ref=e13106] [cursor=pointer]:
+                      - button "Developer Data" [ref=e13107]:
+                        - img [ref=e13108]
+                        - generic [ref=e13110]: Developer Data
+                    - text:   
+        - main [ref=e13111]:
+          - generic [ref=e13112]:
+            - heading "Statutory Components" [level=3] [ref=e13113]
+            - button "Instant Helper" [ref=e13114] [cursor=pointer]:
+              - img [ref=e13115]
+            - navigation [ref=e13119]:
+              - list [ref=e13120]:
+                - listitem [ref=e13121]:
+                  - link "EPF" [ref=e13122] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list"
+                - listitem [ref=e13123]:
+                  - link "ESI" [ref=e13124] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/esi"
+                - listitem [ref=e13125]:
+                  - link "Professional Tax" [ref=e13126] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/pt"
+                - listitem [ref=e13127]:
+                  - link "Labour Welfare Fund" [ref=e13128] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/lwf"
+                - listitem [ref=e13129]:
+                  - link "Statutory Bonus" [ref=e13130] [cursor=pointer]:
+                    - /url: "#/settings/statutory-details/list/statutory-bonus"
+          - generic [ref=e13131]:
+            - generic [ref=e13133]:
+              - heading "Professional Tax" [level=5] [ref=e13134]
+              - generic [ref=e13135]: This tax is levied on an employee’s income by the State Government. Tax slabs differ in each state.
+            - generic [ref=e13137]:
+              - generic [ref=e13140]: Head Office
+              - generic [ref=e13141]:
+                - generic [ref=e13142]:
+                  - generic [ref=e13143]: PT Number
+                  - button "Update PT Number" [ref=e13145] [cursor=pointer]
+                - generic [ref=e13146]:
+                  - generic [ref=e13147]: State
+                  - generic [ref=e13148]: Kerala
+                - generic [ref=e13149]:
+                  - generic [ref=e13150]: Deduction Cycle
+                  - generic [ref=e13151]: Half Yearly
+                - generic [ref=e13152]:
+                  - generic [ref=e13153]: PT Slabs
+                  - generic [ref=e13154]:
+                    - button "View Tax Slabs" [ref=e13155] [cursor=pointer]
+                    - button "(Revise)" [ref=e13156] [cursor=pointer]:
+                      - generic [ref=e13157]: (Revise)
+  - status [ref=e269]: Settings PT page loaded.
+  - text:       Chats  Contacts   

@@ -1,0 +1,124 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "People" [ref=e10] [cursor=pointer]:
+        - /url: /employees
+        - img [ref=e11]
+        - text: People
+      - link "Settings" [ref=e16] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e17]
+        - text: Settings
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e23]: DE
+        - paragraph [ref=e24]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e25]:
+        - img [ref=e26]
+        - text: Sign out
+  - generic [ref=e29]:
+    - banner [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]: demo
+        - generic [ref=e33]: DE
+    - main [ref=e34]:
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - heading "Add Employee" [level=1] [ref=e37]
+          - paragraph [ref=e38]: Complete all steps or skip individual sections — you can fill details from the employee profile later.
+        - generic [ref=e39]:
+          - generic [ref=e41]:
+            - img [ref=e43]
+            - generic [ref=e45]: Basic Details
+          - generic [ref=e48]:
+            - img [ref=e120]
+            - generic [ref=e50]: Salary Details
+          - generic [ref=e53]:
+            - generic [ref=e54]: "3"
+            - generic [ref=e55]: Personal Details
+          - generic [ref=e58]:
+            - generic [ref=e59]: "4"
+            - generic [ref=e60]: Payment Information
+        - generic [ref=e122]:
+          - generic [ref=e123]:
+            - generic [ref=e124]:
+              - generic [ref=e125]: Father's Name *
+              - textbox [ref=e126]: Rajesh Sharma
+            - generic [ref=e127]:
+              - generic [ref=e128]: PAN
+              - textbox "ABCDE1234F" [ref=e129]: ABCPS1234F
+              - paragraph [ref=e130]: Required for TDS computation and Form 16
+          - generic [ref=e131]:
+            - generic [ref=e132]:
+              - generic [ref=e133]: Personal Email
+              - textbox [ref=e134]: priya.sharma.personal@gmail.com
+            - generic [ref=e135]:
+              - generic [ref=e136]: Differently Abled Type
+              - combobox [ref=e137]:
+                - option "None" [selected]
+                - option "Visual Impairment"
+                - option "Hearing Impairment"
+                - option "Locomotive Disability"
+                - option "Other"
+          - generic [ref=e138]:
+            - generic [ref=e139]: Address Line 1
+            - textbox [ref=e140]: 42, Lotus Apartment, MG Road
+          - generic [ref=e141]:
+            - generic [ref=e142]: Address Line 2
+            - textbox [ref=e143]: Koramangala
+          - generic [ref=e144]:
+            - generic [ref=e145]:
+              - generic [ref=e146]: City
+              - textbox [ref=e147]: Bengaluru
+            - generic [ref=e148]:
+              - generic [ref=e149]: State
+              - combobox [ref=e150]:
+                - option "Select state"
+                - option "Andhra Pradesh"
+                - option "Arunachal Pradesh"
+                - option "Assam"
+                - option "Bihar"
+                - option "Chhattisgarh"
+                - option "Goa"
+                - option "Gujarat"
+                - option "Haryana"
+                - option "Himachal Pradesh"
+                - option "Jharkhand"
+                - option "Karnataka" [selected]
+                - option "Kerala"
+                - option "Madhya Pradesh"
+                - option "Maharashtra"
+                - option "Manipur"
+                - option "Meghalaya"
+                - option "Mizoram"
+                - option "Nagaland"
+                - option "Odisha"
+                - option "Punjab"
+                - option "Rajasthan"
+                - option "Sikkim"
+                - option "Tamil Nadu"
+                - option "Telangana"
+                - option "Tripura"
+                - option "Uttar Pradesh"
+                - option "Uttarakhand"
+                - option "West Bengal"
+                - option "Andaman and Nicobar Islands"
+                - option "Chandigarh"
+                - option "Dadra and Nagar Haveli and Daman and Diu"
+                - option "Delhi"
+                - option "Jammu and Kashmir"
+                - option "Ladakh"
+                - option "Lakshadweep"
+                - option "Puducherry"
+            - generic [ref=e151]:
+              - generic [ref=e152]: PIN Code
+              - textbox [active] [ref=e153]: "560034"
+          - generic [ref=e154] [cursor=pointer]:
+            - checkbox "Person with Disability (PWD)" [ref=e155]
+            - generic [ref=e156]: Person with Disability (PWD)
+          - generic [ref=e157]:
+            - button "Save and Continue" [ref=e158]
+            - button "Skip" [ref=e159]

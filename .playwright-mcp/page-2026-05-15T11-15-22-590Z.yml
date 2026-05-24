@@ -1,0 +1,190 @@
+- generic:
+  - iframe
+  - generic [ref=e1]:
+    - navigation "Navigate To":
+      - button "Navigate To" [ref=e2] [cursor=pointer]:
+        - text: Navigate To
+        - img [ref=e3]
+    - banner "Top Band" [ref=e1275]:
+      - navigation:
+        - generic [ref=e1277]:
+          - img "Zoho Payroll" [ref=e1278]
+          - generic [ref=e1279]: Payroll
+        - generic [ref=e1283]:
+          - button "Advanced Search" [ref=e1284] [cursor=pointer]:
+            - img [ref=e1285]
+          - textbox "Search in Employee" [ref=e1289]
+        - generic [ref=e1291]:
+          - generic [ref=e1294] [cursor=pointer]: Your trial expires in 14 day(s).
+          - button "Upgrade" [ref=e1296] [cursor=pointer]
+          - button "lerno" [ref=e1300] [cursor=pointer]:
+            - generic [ref=e1301]: lerno
+            - img [ref=e1302]
+          - button "Refer and Earn" [ref=e1306] [cursor=pointer]:
+            - img [ref=e1307]
+          - button "Notifications" [ref=e1311] [cursor=pointer]:
+            - generic [ref=e1312]:
+              - generic [ref=e1313]: "4"
+              - img [ref=e1314]
+          - button "Settings" [ref=e1317] [cursor=pointer]:
+            - img [ref=e1318]
+          - button "A" [ref=e1323] [cursor=pointer]:
+            - generic [ref=e1324]: A
+          - img [ref=e1341] [cursor=pointer]
+    - generic [ref=e74]:
+      - complementary [ref=e1344]:
+        - navigation [ref=e1345]:
+          - generic [ref=e1346]:
+            - list [ref=e1347]:
+              - listitem [ref=e1348]:
+                - link "Dashboard" [ref=e1349] [cursor=pointer]:
+                  - /url: "#/home/dashboard"
+                  - img [ref=e3646]
+                  - generic [ref=e1353]: Dashboard
+              - listitem [ref=e1354]:
+                - link "Employees" [ref=e1355] [cursor=pointer]:
+                  - /url: "#/people/employees"
+                  - img [ref=e3649]
+                  - generic [ref=e1358]: Employees
+              - listitem [ref=e1359]:
+                - link "Pay Runs" [ref=e1360] [cursor=pointer]:
+                  - /url: "#/payruns"
+                  - img [ref=e3651]
+                  - generic [ref=e1364]: Pay Runs
+              - listitem [ref=e1365]:
+                - list [ref=e1366]:
+                  - listitem [ref=e1367]:
+                    - button "Approvals" [ref=e1369] [cursor=pointer]:
+                      - heading "Approvals" [level=3] [ref=e1370]:
+                        - button "Approvals" [ref=e1371]:
+                          - img [ref=e3654]
+                          - img [ref=e3656]
+                          - generic [ref=e1377]: Approvals
+                          - img [ref=e1378]
+              - listitem [ref=e1380]:
+                - list [ref=e1381]:
+                  - listitem [ref=e1382]:
+                    - button "Taxes & Forms" [ref=e1384] [cursor=pointer]:
+                      - heading "Taxes & Forms" [level=3] [ref=e1385]:
+                        - button "Taxes & Forms" [ref=e1386]:
+                          - img [ref=e3659]
+                          - img [ref=e3661]
+                          - generic [ref=e1394]: Taxes & Forms
+                          - img [ref=e1395]
+              - listitem [ref=e1397]:
+                - link "Loans" [ref=e1398] [cursor=pointer]:
+                  - /url: "#/loans?sort_column=&sort_order="
+                  - img [ref=e3666]
+                  - generic [ref=e1402]: Loans
+              - listitem [ref=e1403]:
+                - link "Giving" [ref=e1404] [cursor=pointer]:
+                  - /url: "#/donations"
+                  - img [ref=e3669]
+                  - generic [ref=e1407]: Giving
+              - listitem
+              - listitem [ref=e1408]:
+                - link "Documents" [ref=e1409] [cursor=pointer]:
+                  - /url: "#/documents/folder"
+                  - img [ref=e3671]
+                  - generic [ref=e1412]: Documents
+              - listitem [ref=e1413]:
+                - link "Reports" [ref=e1414] [cursor=pointer]:
+                  - /url: "#/reports"
+                  - img [ref=e3673]
+                  - generic [ref=e1418]: Reports
+              - listitem [ref=e1419]:
+                - link "Settings" [ref=e1420] [cursor=pointer]:
+                  - /url: "#/settings"
+                  - img [ref=e3676]
+                  - generic [ref=e1424]: Settings
+            - link "Contact Support" [ref=e3682] [cursor=pointer]:
+              - /url: "#/support"
+              - text: Contact Support
+              - img [ref=e3683]
+          - button "Collapse/Expand" [ref=e1431] [cursor=pointer]:
+            - img [ref=e3685]
+      - main [ref=e1435]:
+        - generic [ref=e3688]:
+          - generic [ref=e3689]:
+            - heading "Create Loan" [level=3] [ref=e3690]
+            - button "Close" [ref=e3692] [cursor=pointer]:
+              - img [ref=e3693]
+          - form [ref=e3697]:
+            - generic [ref=e3701]:
+              - generic [ref=e3702]: Loan Name*
+              - generic [ref=e3705]:
+                - combobox [ref=e3707]:
+                  - generic [ref=e3708] [cursor=pointer]:
+                    - generic "Personal Loan" [ref=e3709]
+                    - img [ref=e3712]
+                - button "Clear Selection" [ref=e3714] [cursor=pointer]:
+                  - img [ref=e3715]
+                - status [ref=e3717]
+              - generic [ref=e3719]:
+                - generic [ref=e3720]: "Perquisite Rate:"
+                - generic [ref=e3721]: 0%
+                - button [ref=e3722] [cursor=pointer]:
+                  - img [ref=e3723]
+            - generic [ref=e3726]:
+              - generic [ref=e3727]:
+                - generic [ref=e3728]:
+                  - generic [ref=e3729]: Employee Name*
+                  - generic [ref=e3732]:
+                    - generic [ref=e3733]:
+                      - combobox "Employee Name*" [expanded] [ref=e3734]:
+                        - generic [ref=e3735] [cursor=pointer]:
+                          - generic [ref=e3736]: Search Employee
+                          - img [ref=e3739]
+                      - generic [ref=e3741]:
+                        - generic [ref=e3743]:
+                          - generic [ref=e3745]: ⚲
+                          - textbox [active] [ref=e3746]
+                        - listbox "dropdown options" [ref=e3748]:
+                          - option "Arjun Mehta (EMP001)" [ref=e3749]:
+                            - generic "Arjun Mehta (EMP001)" [ref=e3751] [cursor=pointer]:
+                              - generic [ref=e3752]: Arjun Mehta (EMP001)
+                          - option "Priya Sharma (EMP002)" [ref=e3753]:
+                            - generic "Priya Sharma (EMP002)" [ref=e3755] [cursor=pointer]:
+                              - generic [ref=e3756]: Priya Sharma (EMP002)
+                          - option "Vikram Nair (EMP003)" [ref=e3757]:
+                            - generic "Vikram Nair (EMP003)" [ref=e3759] [cursor=pointer]:
+                              - generic [ref=e3760]: Vikram Nair (EMP003)
+                          - option "Aisha Khan (EMP004)" [ref=e3761]:
+                            - generic "Aisha Khan (EMP004)" [ref=e3763] [cursor=pointer]:
+                              - generic [ref=e3764]: Aisha Khan (EMP004)
+                          - option "Rahul Desai (EMP005)" [ref=e3765]:
+                            - generic "Rahul Desai (EMP005)" [ref=e3767] [cursor=pointer]:
+                              - generic [ref=e3768]: Rahul Desai (EMP005)
+                    - status [ref=e3769]
+                - generic [ref=e3770]:
+                  - generic [ref=e3771]:
+                    - text: Loan Amount*
+                    - img [ref=e3774]
+                  - generic [ref=e3778]:
+                    - generic [ref=e3780]: ₹
+                    - spinbutton "Loan Amount*" [ref=e3781]
+              - generic [ref=e3783]:
+                - generic [ref=e3784]: Disbursement Date*
+                - textbox "Disbursement Date*" [ref=e3786]:
+                  - /placeholder: dd/MM/yyyy
+              - generic [ref=e3788]:
+                - generic [ref=e3789]: Reason*
+                - textbox "Reason*" [ref=e3791]
+            - generic [ref=e3794]:
+              - generic [ref=e3795] [cursor=pointer]:
+                - checkbox "Exempt this loan from perquisite calculation" [ref=e3796]
+                - text: Exempt this loan from perquisite calculation
+              - generic [ref=e3797]: According to Rule 15(5) of the Income Tax Rules, 2026, employees availing medical loans (for treatment of diseases specified in Rule 18) or any other loans below ₹2,00,000 in aggregate can be exempted from perquisite calculation.
+            - separator [ref=e3798]
+            - generic [ref=e3800]:
+              - button "Save" [ref=e3801] [cursor=pointer]
+              - button "Cancel" [ref=e3802] [cursor=pointer]
+              - paragraph [ref=e3804]: "* indicates mandatory fields"
+  - generic [ref=e271] [cursor=pointer]:
+    - generic [ref=e272]:
+      - text: Planned India Data Center Maintenance on 10th May 2026 and 17th May 2026, between 06.30AM to 09.30AM IST.
+      - link "Know more" [ref=e273]:
+        - /url: https://blog.zoho.com/general/maintenance%20may%202026.html
+    - generic [ref=e275]: Don't show again
+  - status [ref=e276]: Loans page loaded.
+  - text:       Chats  Contacts   

@@ -1,0 +1,10 @@
+- generic [ref=e4]:
+  - heading "Set Your Password" [level=1] [ref=e5]
+  - generic [ref=e6]:
+    - generic [ref=e7]:
+      - generic [ref=e8]: New Password
+      - textbox [ref=e9]
+    - generic [ref=e10]:
+      - generic [ref=e11]: Confirm Password
+      - textbox [ref=e12]
+    - button "Set Password" [ref=e13]

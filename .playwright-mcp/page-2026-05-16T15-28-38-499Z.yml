@@ -1,0 +1,70 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "MailHog MailHog" [ref=e6] [cursor=pointer]:
+        - /url: "#"
+        - img "MailHog" [ref=e7]
+        - text: MailHog
+      - generic [ref=e8]:
+        - search [ref=e9]:
+          - generic [ref=e10]:
+            - generic: 
+            - textbox "Search" [ref=e11]
+        - list [ref=e12]:
+          - listitem [ref=e13]:
+            - link "GitHub GitHub" [ref=e14] [cursor=pointer]:
+              - /url: https://github.com/mailhog/MailHog
+              - img "GitHub" [ref=e15]
+              - text: GitHub
+  - generic [ref=e17]:
+    - generic [ref=e18]:
+      - list [ref=e19]:
+        - listitem [ref=e20]:
+          - link " Connected" [ref=e21] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e22]: 
+            - text: Connected
+        - listitem [ref=e23]:
+          - link "Inbox (1)" [ref=e24] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=e25]:
+          - link " Delete all messages" [ref=e26] [cursor=pointer]:
+            - /url: "#"
+            - generic [ref=e27]: 
+            - text: Delete all messages
+      - generic [ref=e28]:
+        - heading "Jim" [level=3] [ref=e29]
+        - paragraph [ref=e30]:
+          - text: Jim is a chaos monkey.
+          - link "Find out more at GitHub" [ref=e31] [cursor=pointer]:
+            - /url: https://github.com/mailhog/MailHog/blob/master/docs/JIM.md
+          - text: .
+        - link "Enable Jim" [ref=e33] [cursor=pointer]:
+          - /url: "#"
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - button "" [ref=e36] [cursor=pointer]:
+          - generic [ref=e37]: 
+        - generic [ref=e38]:
+          - generic [ref=e39]:
+            - combobox [ref=e40]:
+              - option "10"
+              - option "25"
+              - option "50" [selected]
+              - option "75"
+              - option "100"
+            - strong [ref=e41]: 1-1
+            - text: of
+            - strong [ref=e42]: "1"
+          - button "":
+            - generic: 
+          - button "":
+            - generic: 
+      - generic [ref=e44] [cursor=pointer]:
+        - generic [ref=e45]:
+          - text: noreply@payroll.local
+          - generic [ref=e47]: demoAdmin@yopmail.com
+        - generic [ref=e48]: Welcome to Indian Payroll — Set Your Password
+        - generic [ref=e50]:
+          - generic [ref=e51]: a few seconds ago
+          - generic [ref=e52]: 1.28 kB

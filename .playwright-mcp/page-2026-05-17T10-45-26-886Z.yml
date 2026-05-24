@@ -1,0 +1,97 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "People" [ref=e10] [cursor=pointer]:
+        - /url: /employees
+        - img [ref=e11]
+        - text: People
+      - link "Settings" [ref=e16] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e17]
+        - text: Settings
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e23]: DE
+        - paragraph [ref=e24]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e25]:
+        - img [ref=e26]
+        - text: Sign out
+  - generic [ref=e29]:
+    - banner [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]: demo
+        - generic [ref=e33]: DE
+    - main [ref=e34]:
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - heading "Add Employee" [level=1] [ref=e37]
+          - paragraph [ref=e38]: Almost done — add payment details or skip to finish.
+        - generic [ref=e39]:
+          - generic [ref=e41]:
+            - img [ref=e43]
+            - generic [ref=e45]: Basic Details
+          - generic [ref=e48]:
+            - img [ref=e120]
+            - generic [ref=e50]: Salary Details
+          - generic [ref=e53]:
+            - img [ref=e160]
+            - generic [ref=e55]: Personal Details
+          - generic [ref=e58]:
+            - generic [ref=e59]: "4"
+            - generic [ref=e60]: Payment Information
+        - generic [ref=e162]:
+          - generic [ref=e163]:
+            - paragraph [ref=e164]: Payment Mode
+            - generic [ref=e165]:
+              - generic [ref=e166] [cursor=pointer]:
+                - radio "Direct Deposit Automated NEFT/RTGS transfer" [checked] [ref=e167]
+                - generic [ref=e168]:
+                  - paragraph [ref=e169]: Direct Deposit
+                  - paragraph [ref=e170]: Automated NEFT/RTGS transfer
+              - generic [ref=e171] [cursor=pointer]:
+                - radio "Bank Transfer Manual bank transfer" [ref=e172]
+                - generic [ref=e173]:
+                  - paragraph [ref=e174]: Bank Transfer
+                  - paragraph [ref=e175]: Manual bank transfer
+              - generic [ref=e176] [cursor=pointer]:
+                - radio "Cheque Physical cheque payment" [ref=e177]
+                - generic [ref=e178]:
+                  - paragraph [ref=e179]: Cheque
+                  - paragraph [ref=e180]: Physical cheque payment
+              - generic [ref=e181] [cursor=pointer]:
+                - radio "Cash Cash payment" [ref=e182]
+                - generic [ref=e183]:
+                  - paragraph [ref=e184]: Cash
+                  - paragraph [ref=e185]: Cash payment
+          - generic [ref=e186]:
+            - generic [ref=e187]:
+              - generic [ref=e188]:
+                - generic [ref=e189]: Account Holder Name
+                - textbox [ref=e190]
+              - generic [ref=e191]:
+                - generic [ref=e192]: Bank Name
+                - textbox [ref=e193]
+            - generic [ref=e194]:
+              - generic [ref=e195]:
+                - generic [ref=e196]: Account Number *
+                - textbox [ref=e197]
+              - generic [ref=e198]:
+                - generic [ref=e199]: Re-enter Account Number
+                - textbox [ref=e200]
+            - generic [ref=e201]:
+              - generic [ref=e202]:
+                - generic [ref=e203]: Account Type
+                - combobox [ref=e204]:
+                  - option "Select" [selected]
+                  - option "Savings"
+                  - option "Current"
+                  - option "Salary"
+              - generic [ref=e205]:
+                - generic [ref=e206]: IFSC Code
+                - textbox "HDFC0001234" [ref=e207]
+          - generic [ref=e208]:
+            - button "Save and Finish" [ref=e209]
+            - button "Skip" [ref=e210]

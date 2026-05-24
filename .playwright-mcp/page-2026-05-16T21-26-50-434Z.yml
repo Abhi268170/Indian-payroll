@@ -1,0 +1,120 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "Settings" [ref=e10] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e11]
+        - text: Settings
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e17]: DE
+        - paragraph [ref=e18]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e19]:
+        - img [ref=e20]
+        - text: Sign out
+  - generic [ref=e23]:
+    - banner [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: demo
+        - generic [ref=e27]: DE
+    - main [ref=e28]:
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e33]: IP
+            - generic [ref=e34]: Settings
+          - button "Close Settings" [ref=e35]:
+            - img [ref=e36]
+            - text: Close Settings
+        - generic [ref=e39]:
+          - navigation [ref=e40]:
+            - generic [ref=e41]:
+              - button "Org Structure" [ref=e42]:
+                - generic [ref=e43]: Org Structure
+                - img [ref=e44]
+              - list [ref=e46]:
+                - listitem [ref=e47]:
+                  - link "Work Locations" [ref=e48] [cursor=pointer]:
+                    - /url: /settings/work-locations
+                - listitem [ref=e49]:
+                  - link "Departments" [ref=e50] [cursor=pointer]:
+                    - /url: /settings/departments
+                - listitem [ref=e51]:
+                  - link "Designations" [ref=e52] [cursor=pointer]:
+                    - /url: /settings/designations
+                - listitem [ref=e53]:
+                  - link "Cost Centres" [ref=e54] [cursor=pointer]:
+                    - /url: /settings/cost-centres
+                - listitem [ref=e55]:
+                  - link "Business Units" [ref=e56] [cursor=pointer]:
+                    - /url: /settings/business-units
+            - generic [ref=e57]:
+              - button "Setup & Configuration" [ref=e58]:
+                - generic [ref=e59]: Setup & Configuration
+                - img [ref=e60]
+              - list [ref=e62]:
+                - listitem [ref=e63]:
+                  - link "Pay Schedule" [ref=e64] [cursor=pointer]:
+                    - /url: /settings/pay-schedule
+                - listitem [ref=e65]:
+                  - link "Salary Components" [ref=e66] [cursor=pointer]:
+                    - /url: /settings/salary-components
+                - listitem [ref=e67]:
+                  - link "Salary Structures" [ref=e68] [cursor=pointer]:
+                    - /url: /settings/salary-structures
+                - listitem [ref=e69]:
+                  - link "Statutory Components" [ref=e70] [cursor=pointer]:
+                    - /url: /settings/statutory
+            - generic [ref=e71]:
+              - button "Taxes" [ref=e72]:
+                - generic [ref=e73]: Taxes
+                - img [ref=e74]
+              - list [ref=e76]:
+                - listitem [ref=e77]:
+                  - link "Tax Details" [ref=e78] [cursor=pointer]:
+                    - /url: /settings/tax-details
+          - generic [ref=e80]:
+            - generic [ref=e81]:
+              - heading "Salary Components" [level=1] [ref=e82]
+              - button "Add Component" [ref=e84]:
+                - img [ref=e85]
+                - text: Add Component
+                - img [ref=e86]
+            - generic [ref=e88]:
+              - button "All" [ref=e89]
+              - button "Earnings" [ref=e90]
+              - button "Deductions" [ref=e91]
+              - button "Reimbursements" [ref=e92]
+              - button "Benefits" [ref=e93]
+              - button "Corrections" [ref=e94]
+            - table [ref=e166]:
+              - rowgroup [ref=e167]:
+                - row "Name Code Type Status" [ref=e168]:
+                  - columnheader "Name" [ref=e169]
+                  - columnheader "Code" [ref=e170]
+                  - columnheader "Type" [ref=e171]
+                  - columnheader "Status" [ref=e172]
+                  - columnheader [ref=e173]
+              - rowgroup [ref=e174]:
+                - 'row "Basic Salary Payslip: Basic BASICSALARY Earning Active Deactivate" [ref=e175]':
+                  - 'cell "Basic Salary Payslip: Basic" [ref=e176]':
+                    - generic [ref=e177]: Basic Salary
+                    - generic [ref=e178]: "Payslip: Basic"
+                  - cell "BASICSALARY" [ref=e179]
+                  - cell "Earning" [ref=e180]
+                  - cell "Active" [ref=e181]:
+                    - generic [ref=e182]: Active
+                  - cell "Deactivate" [ref=e183]:
+                    - button "Deactivate" [ref=e184]
+                - row "House Rent Allowance HOUSERENTALLOWANCE Earning Active Deactivate" [ref=e243]:
+                  - cell "House Rent Allowance" [ref=e244]:
+                    - generic [ref=e245]: House Rent Allowance
+                  - cell "HOUSERENTALLOWANCE" [ref=e246]
+                  - cell "Earning" [ref=e247]
+                  - cell "Active" [ref=e248]:
+                    - generic [ref=e249]: Active
+                  - cell "Deactivate" [ref=e250]:
+                    - button "Deactivate" [ref=e251]

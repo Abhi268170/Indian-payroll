@@ -1,0 +1,229 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e7]: IP
+      - generic [ref=e8]: Indian Payroll
+    - navigation [ref=e9]:
+      - link "Settings" [ref=e10] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e11]
+        - text: Settings
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e17]: DE
+        - paragraph [ref=e18]: demoAdmin@yopmail.com
+      - button "Sign out" [ref=e19]:
+        - img [ref=e20]
+        - text: Sign out
+  - generic [ref=e23]:
+    - banner [ref=e24]:
+      - generic [ref=e25]:
+        - generic [ref=e26]: demo
+        - generic [ref=e27]: DE
+    - main [ref=e28]:
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e33]: IP
+            - generic [ref=e34]: Settings
+          - button "Close Settings" [ref=e35]:
+            - img [ref=e36]
+            - text: Close Settings
+        - generic [ref=e39]:
+          - navigation [ref=e40]:
+            - generic [ref=e41]:
+              - button "Org Structure" [ref=e42]:
+                - generic [ref=e43]: Org Structure
+                - img [ref=e44]
+              - list [ref=e46]:
+                - listitem [ref=e47]:
+                  - link "Work Locations" [ref=e48] [cursor=pointer]:
+                    - /url: /settings/work-locations
+                - listitem [ref=e49]:
+                  - link "Departments" [ref=e50] [cursor=pointer]:
+                    - /url: /settings/departments
+                - listitem [ref=e51]:
+                  - link "Designations" [ref=e52] [cursor=pointer]:
+                    - /url: /settings/designations
+                - listitem [ref=e53]:
+                  - link "Cost Centres" [ref=e54] [cursor=pointer]:
+                    - /url: /settings/cost-centres
+                - listitem [ref=e55]:
+                  - link "Business Units" [ref=e56] [cursor=pointer]:
+                    - /url: /settings/business-units
+            - generic [ref=e57]:
+              - button "Setup & Configuration" [ref=e58]:
+                - generic [ref=e59]: Setup & Configuration
+                - img [ref=e60]
+              - list [ref=e62]:
+                - listitem [ref=e63]:
+                  - link "Pay Schedule" [ref=e64] [cursor=pointer]:
+                    - /url: /settings/pay-schedule
+                - listitem [ref=e65]:
+                  - link "Salary Components" [ref=e66] [cursor=pointer]:
+                    - /url: /settings/salary-components
+                - listitem [ref=e67]:
+                  - link "Salary Structures" [ref=e68] [cursor=pointer]:
+                    - /url: /settings/salary-structures
+                - listitem [ref=e69]:
+                  - link "Statutory Components" [ref=e70] [cursor=pointer]:
+                    - /url: /settings/statutory
+            - generic [ref=e71]:
+              - button "Taxes" [ref=e72]:
+                - generic [ref=e73]: Taxes
+                - img [ref=e74]
+              - list [ref=e76]:
+                - listitem [ref=e77]:
+                  - link "Tax Details" [ref=e78] [cursor=pointer]:
+                    - /url: /settings/tax-details
+          - generic [ref=e80]:
+            - generic [ref=e81]:
+              - heading "Statutory Components" [level=2] [ref=e82]
+              - paragraph [ref=e83]: Configure mandatory statutory deductions — EPF, ESI, Professional Tax, LWF, and Statutory Bonus.
+            - generic [ref=e84]:
+              - button "EPF" [ref=e85]
+              - button "ESI" [ref=e86]
+              - button "Professional Tax" [ref=e87]
+              - button "Labour Welfare Fund" [ref=e88]
+              - button "Statutory Bonus" [ref=e89]
+            - generic [ref=e117]:
+              - generic [ref=e118]:
+                - heading "Professional Tax" [level=3] [ref=e119]
+                - paragraph [ref=e120]: PT is determined by employee's work location state. Configure work locations to enable PT.
+              - generic [ref=e93]:
+                - generic [ref=e95]:
+                  - generic [ref=e96]:
+                    - generic [ref=e97]: Maharashtra
+                    - generic [ref=e98]: Mumbai Head Office
+                  - generic [ref=e99]:
+                    - button "View Slabs" [ref=e100]
+                    - button "Revise Slabs" [active] [ref=e101]:
+                      - img [ref=e102]
+                      - text: Revise Slabs
+                - generic [ref=e106]:
+                  - generic [ref=e107]:
+                    - generic [ref=e108]: Kerala
+                    - generic [ref=e109]: tvm
+                  - generic [ref=e110]:
+                    - button "View Slabs" [ref=e111]
+                    - button "Revise Slabs" [ref=e112]:
+                      - img [ref=e113]
+                      - text: Revise Slabs
+              - generic [ref=e122]:
+                - generic [ref=e123]:
+                  - heading "Maharashtra — Revise PT Slabs" [level=3] [ref=e124]
+                  - button "×" [ref=e125]
+                - generic [ref=e126]:
+                  - generic [ref=e127]:
+                    - generic [ref=e128]:
+                      - generic [ref=e129]: Effective Date
+                      - textbox [ref=e130]: 2026-05-17
+                    - generic [ref=e131]:
+                      - generic [ref=e132]: Frequency
+                      - combobox [ref=e133]:
+                        - option "Monthly" [selected]
+                        - option "Half-Yearly"
+                        - option "Annual"
+                  - generic [ref=e134]:
+                    - paragraph [ref=e135]: New slabs apply from the effective date. Existing slabs are retained for historical pay run reproducibility.
+                    - table [ref=e136]:
+                      - rowgroup [ref=e137]:
+                        - row "Min Gross (₹) Max Gross (₹) Gender PT Amount (₹) +Feb" [ref=e138]:
+                          - columnheader "Min Gross (₹)" [ref=e139]
+                          - columnheader "Max Gross (₹)" [ref=e140]
+                          - columnheader "Gender" [ref=e141]
+                          - columnheader "PT Amount (₹)" [ref=e142]
+                          - columnheader "+Feb" [ref=e143]
+                          - columnheader [ref=e144]
+                      - rowgroup [ref=e145]:
+                        - row "0 7499 Male 0" [ref=e146]:
+                          - cell "0" [ref=e147]:
+                            - spinbutton [ref=e148]: "0"
+                          - cell "7499" [ref=e149]:
+                            - spinbutton [ref=e150]: "7499"
+                          - cell "Male" [ref=e151]:
+                            - combobox [ref=e152]:
+                              - option "All"
+                              - option "Male" [selected]
+                              - option "Female"
+                          - cell "0" [ref=e153]:
+                            - spinbutton [ref=e154]: "0"
+                          - cell [ref=e155]:
+                            - checkbox [ref=e156]
+                          - cell [ref=e157]:
+                            - button [ref=e158]:
+                              - img [ref=e159]
+                        - row "0 9999 Female 0" [ref=e162]:
+                          - cell "0" [ref=e163]:
+                            - spinbutton [ref=e164]: "0"
+                          - cell "9999" [ref=e165]:
+                            - spinbutton [ref=e166]: "9999"
+                          - cell "Female" [ref=e167]:
+                            - combobox [ref=e168]:
+                              - option "All"
+                              - option "Male"
+                              - option "Female" [selected]
+                          - cell "0" [ref=e169]:
+                            - spinbutton [ref=e170]: "0"
+                          - cell [ref=e171]:
+                            - checkbox [ref=e172]
+                          - cell [ref=e173]:
+                            - button [ref=e174]:
+                              - img [ref=e175]
+                        - row "7500 9999 Male 175" [ref=e178]:
+                          - cell "7500" [ref=e179]:
+                            - spinbutton [ref=e180]: "7500"
+                          - cell "9999" [ref=e181]:
+                            - spinbutton [ref=e182]: "9999"
+                          - cell "Male" [ref=e183]:
+                            - combobox [ref=e184]:
+                              - option "All"
+                              - option "Male" [selected]
+                              - option "Female"
+                          - cell "175" [ref=e185]:
+                            - spinbutton [ref=e186]: "175"
+                          - cell [ref=e187]:
+                            - checkbox [ref=e188]
+                          - cell [ref=e189]:
+                            - button [ref=e190]:
+                              - img [ref=e191]
+                        - row "10000 Male 200" [ref=e194]:
+                          - cell "10000" [ref=e195]:
+                            - spinbutton [ref=e196]: "10000"
+                          - cell [ref=e197]:
+                            - spinbutton [ref=e198]
+                          - cell "Male" [ref=e199]:
+                            - combobox [ref=e200]:
+                              - option "All"
+                              - option "Male" [selected]
+                              - option "Female"
+                          - cell "200" [ref=e201]:
+                            - spinbutton [ref=e202]: "200"
+                          - cell [ref=e203]:
+                            - checkbox [checked] [ref=e204]
+                          - cell [ref=e205]:
+                            - button [ref=e206]:
+                              - img [ref=e207]
+                        - row "10000 Female 200" [ref=e210]:
+                          - cell "10000" [ref=e211]:
+                            - spinbutton [ref=e212]: "10000"
+                          - cell [ref=e213]:
+                            - spinbutton [ref=e214]
+                          - cell "Female" [ref=e215]:
+                            - combobox [ref=e216]:
+                              - option "All"
+                              - option "Male"
+                              - option "Female" [selected]
+                          - cell "200" [ref=e217]:
+                            - spinbutton [ref=e218]: "200"
+                          - cell [ref=e219]:
+                            - checkbox [checked] [ref=e220]
+                          - cell [ref=e221]:
+                            - button [ref=e222]:
+                              - img [ref=e223]
+                    - button "Add row" [ref=e226]:
+                      - img [ref=e227]
+                      - text: Add row
+                - generic [ref=e228]:
+                  - button "Cancel" [ref=e229]
+                  - button "Save Slabs" [ref=e230]
