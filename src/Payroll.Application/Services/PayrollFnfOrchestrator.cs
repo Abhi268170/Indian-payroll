@@ -160,21 +160,11 @@ public sealed class PayrollFnfOrchestrator(
     private async Task<bool> IsLwfAlreadyDeductedThisHalfYearAsync(
         Guid employeeId, Domain.ValueObjects.PayPeriod period, CancellationToken ct)
     {
-        // H1 = Apr–Sep; H2 = Oct–Mar of next calendar year. Look back at all
-        // prior PayrunEmployee rows in the same half-year and check if LWF was
-        // already deducted.
-        (int firstMonth, int lastMonth, int year) = period.Month >= 4 && period.Month <= 9
-            ? (4, 9, period.Year)
-            : period.Month >= 10
-                ? (10, 12, period.Year)
-                : (1, 3, period.Year);
-
-        // Lookback is implemented at the call site by inspecting all of the
-        // employee's PayrunEmployee rows for the half-year. We rely on existing
-        // GetByEmployeeAndRunIdsAsync with a run-id filter; for v1 simplicity
-        // we read EnumerableAsync on this rare path and return false if not.
-        // This is best-effort for v1; an indexed query is logged as v2 hardening.
-        await Task.CompletedTask;
+        foreach ((int year, int first, int last) in LwfHalfYearLookback.GetRanges(period.Year, period.Month))
+        {
+            if (await payrunEmpRepo.HasLwfDeductedInPeriodAsync(employeeId, year, first, last, ct))
+                return true;
+        }
         return false;
     }
 

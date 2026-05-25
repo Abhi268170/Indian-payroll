@@ -14,4 +14,10 @@ public interface IPayrunEmployeeRepository
     Task<IReadOnlyList<PayrunEmployee>> GetByRunIdWithStatusAsync(Guid payrollRunId, PayrunEmployeeStatus status, CancellationToken ct = default);
     Task<IReadOnlyList<PayrunEmployee>> GetByEmployeeAndRunIdsAsync(Guid employeeId, IEnumerable<Guid> runIds, CancellationToken ct = default);
     Task<Dictionary<Guid, (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds)>> GetCurrentEmployerYtdAsync(IEnumerable<Guid> employeeIds, int fiscalYear, CancellationToken ct = default);
+
+    // Returns true if any Approved/Paid run between [firstMonth..lastMonth] of `year`
+    // recorded a non-zero LWF amount for the employee. Drives FnF's half-year
+    // duplicate-protection: LWF that already hit a prior month must not be deducted
+    // again in the closing run.
+    Task<bool> HasLwfDeductedInPeriodAsync(Guid employeeId, int year, int firstMonth, int lastMonth, CancellationToken ct = default);
 }

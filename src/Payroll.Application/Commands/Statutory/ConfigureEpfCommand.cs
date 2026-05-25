@@ -18,9 +18,12 @@ public sealed record ConfigureEpfCommand(
 
 public sealed class ConfigureEpfCommandValidator : AbstractValidator<ConfigureEpfCommand>
 {
+    // "Gross12" was previously accepted but never honored by PFCalculator (StatutoryConfigBuilder
+    // only branches on RestrictedWage12 vs anything-else). Removed to stop misleading the
+    // operator into thinking the choice has any effect on the calculation.
     private static readonly HashSet<string> ValidRates =
     [
-        "ActualPfWage12", "RestrictedWage12", "Gross12"
+        "ActualPfWage12", "RestrictedWage12"
     ];
 
     public ConfigureEpfCommandValidator()
