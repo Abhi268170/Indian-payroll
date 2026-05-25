@@ -44,6 +44,13 @@ Thumbs.db
 # Playwright MCP screenshots
 .playwright-mcp/
 
+# Stray screenshots / CSVs at repo root — accumulate during Playwright sessions
+# and ad-hoc browser audits. Permanent artifacts belong in docs/ba-audit/screenshots.
+/*.png
+/*.jpg
+/*.jpeg
+/*.csv
+
 # JetBrains / Rider
 .idea/
 **/*.iml
