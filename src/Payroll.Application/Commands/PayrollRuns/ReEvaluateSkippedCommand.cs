@@ -90,9 +90,11 @@ public sealed class ReEvaluateSkippedHandler(
             await priorYtdRepo.GetByEmployeesAndFiscalYearAsync([.. targetIds], period.FiscalYear, ct);
         Dictionary<Guid, PriorEmployerYtd> priorYtdByEmployee = priorYtdList.ToDictionary(p => p.EmployeeId);
 
-        Dictionary<Guid, (decimal YtdGross, decimal YtdTds)> currentYtdByEmployee =
+        Dictionary<Guid, (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds)> currentYtdByEmployee =
             await payrunEmployeeRepo.GetCurrentEmployerYtdAsync([.. targetIds], period.FiscalYear, ct);
 
+        // Opening doesn't carry a taxable-gross figure (no breakdown captured pre-system),
+        // so treat the full opening gross as taxable. Matches Initiate handler.
         IReadOnlyList<EmployeeFyOpening> openings =
             await fyOpeningRepo.GetByEmployeesAndFiscalYearAsync(targetIds, period.FiscalYear, ct);
         foreach (EmployeeFyOpening opening in openings)
@@ -100,6 +102,7 @@ public sealed class ReEvaluateSkippedHandler(
             currentYtdByEmployee.TryGetValue(opening.EmployeeId, out var existing);
             currentYtdByEmployee[opening.EmployeeId] = (
                 existing.YtdGross + opening.GrossSalary,
+                existing.YtdTaxableGross + opening.GrossSalary,
                 existing.YtdTds + opening.TdsDeducted);
         }
 
@@ -174,6 +177,8 @@ public sealed class ReEvaluateSkippedHandler(
             string workState = workLocationStateMap.TryGetValue(emp.WorkLocationId, out string? wls) ? wls : "MH";
             (int hyIndex, int hyTotal) = period.HalfYearPosition(emp.DateOfJoining);
 
+            priorYtdByEmployee.TryGetValue(emp.Id, out var ytd);
+            currentYtdByEmployee.TryGetValue(emp.Id, out var curYtd);
             engineInputs.Add(new EmployeeInput(
                 EmployeeId: emp.Id,
                 EmployeeCode: emp.EmployeeCode,
@@ -186,15 +191,16 @@ public sealed class ReEvaluateSkippedHandler(
                 LOPDays: 0,
                 WorkingDaysInMonth: workingDaysInMonth,
                 VPFAmount: 0,
-                PriorEmployerYTDTaxableIncome: priorYtdByEmployee.TryGetValue(emp.Id, out var ytd) ? ytd.GrossSalary : 0m,
+                PriorEmployerYTDTaxableIncome: PriorEmployerYtdMapper.TaxableIncomeFor(ytd),
                 PriorEmployerYTDTDSDeducted: ytd?.TdsDeducted ?? 0m,
                 PriorEmployerYTDPF: 0m,
                 HalfYearMonthIndex: hyIndex,
                 HalfYearTotalMonths: hyTotal,
                 BasicWage: basicWage,
                 HasPan: hasPan,
-                CurrentEmployerYTDGross: currentYtdByEmployee.TryGetValue(emp.Id, out var curYtd) ? curYtd.YtdGross : 0m,
-                CurrentEmployerYTDTDSDeducted: curYtd.YtdTds));
+                CurrentEmployerYTDGross: curYtd.YtdGross,
+                CurrentEmployerYTDTDSDeducted: curYtd.YtdTds,
+                CurrentEmployerYTDTaxable: curYtd.YtdTaxableGross));
         }
 
         var runInput = new PayrollRunInput(
@@ -229,6 +235,7 @@ public sealed class ReEvaluateSkippedHandler(
             payrunEmp.UndoSkip(req.ActorId);
             payrunEmp.UpdateComputedAmounts(
                 grossPay: result.Gross.GrossWage,
+                taxableGrossPay: result.Gross.TaxableGrossWage,
                 netPay: result.NetPay,
                 taxesAmount: result.TDS.MonthlyTDS + result.PT.Amount,
                 benefitsAmount: result.PF.EPFEmployerContribution + result.ESI.EmployerContribution,
@@ -251,6 +258,7 @@ public sealed class ReEvaluateSkippedHandler(
             // Upsert TDS worksheet
             await tdsWorksheetRepo.DeleteByRunAndEmployeeAsync(req.PayrollRunId, empId, ct);
             priorYtdByEmployee.TryGetValue(empId, out var empYtd);
+            currentYtdByEmployee.TryGetValue(empId, out var wsCurYtd);
             await tdsWorksheetRepo.AddAsync(TdsWorksheet.Create(
                 payrollRunId: req.PayrollRunId,
                 employeeId: empId,
@@ -264,7 +272,7 @@ public sealed class ReEvaluateSkippedHandler(
                 surcharge: result.TDS.Surcharge,
                 cess: result.TDS.Cess,
                 annualTaxLiability: result.TDS.AnnualProjectedTax,
-                ytdTdsDeducted: empYtd?.TdsDeducted ?? 0m,
+                ytdTdsDeducted: (empYtd?.TdsDeducted ?? 0m) + wsCurYtd.YtdTds,
                 remainingMonthsInFy: runInput.MonthsRemainingInFY,
                 tdsThisMonth: result.TDS.MonthlyTDS,
                 hasPanOverride: result.TDS.HasPanOverride,

@@ -25,6 +25,7 @@ public class PayrollCostCalculatorTests
         var emp = PayrunEmployee.Create(RunId, Guid.NewGuid(), TenantId, 31, Actor);
         emp.UpdateComputedAmounts(
             grossPay: gross,
+            taxableGrossPay: gross,
             netPay: net,
             taxesAmount: tds + pt,
             benefitsAmount: employerPf + employerEsi,

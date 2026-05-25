@@ -15,6 +15,7 @@ internal sealed class PayrunEmployeeConfiguration : IEntityTypeConfiguration<Pay
         builder.Property(e => e.Status).IsRequired().HasConversion<string>();
 
         builder.Property(e => e.GrossPay).HasColumnType("numeric(18,2)");
+        builder.Property(e => e.TaxableGrossPay).HasColumnType("numeric(18,2)");
         builder.Property(e => e.NetPay).HasColumnType("numeric(18,2)");
         builder.Property(e => e.TaxesAmount).HasColumnType("numeric(18,2)");
         builder.Property(e => e.BenefitsAmount).HasColumnType("numeric(18,2)");

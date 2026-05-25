@@ -29,7 +29,8 @@ public sealed class PayrollFnfOrchestrator(
     IEmployeeRepository employeeRepo,
     IEmployeeExitRepository exitRepo,
     IWorkLocationRepository workLocationRepo,
-    IPayScheduleRepository payScheduleRepo)
+    IPayScheduleRepository payScheduleRepo,
+    IPriorEmployerYtdRepository priorYtdRepo)
     : IPayrollFnfOrchestrator
 {
     public async Task<FnfEngineResult> ComputeAsync(Guid fnfRunId, Guid employeeId, CancellationToken ct = default)
@@ -91,7 +92,16 @@ public sealed class PayrollFnfOrchestrator(
 
         bool hasPan = !string.IsNullOrWhiteSpace(employee.EncryptedPAN);
         var (hyIndex, hyTotal) = run.PayPeriod.HalfYearPosition(employee.DateOfJoining);
-        (decimal ytdGross, decimal ytdTds) = await LoadCurrentYtdAsync(employeeId, run.PayPeriod.FiscalYear, ct);
+        (decimal ytdGross, decimal ytdTaxableGross, decimal ytdTds) = await LoadCurrentYtdAsync(employeeId, run.PayPeriod.FiscalYear, ct);
+
+        // FnF closes the FY for this employee. Prior-employer YTD must be included
+        // for mid-year joiners so the final TDS sweep accounts for the full year's
+        // taxable income, not just current-employer earnings.
+        IReadOnlyList<PriorEmployerYtd> priorList = await priorYtdRepo
+            .GetByEmployeesAndFiscalYearAsync([employeeId], run.PayPeriod.FiscalYear, ct);
+        PriorEmployerYtd? priorYtd = priorList.FirstOrDefault();
+        decimal priorTaxable = PriorEmployerYtdMapper.TaxableIncomeFor(priorYtd);
+        decimal priorTds = priorYtd?.TdsDeducted ?? 0m;
 
         bool lwfAlreadyDeducted = await IsLwfAlreadyDeductedThisHalfYearAsync(employeeId, run.PayPeriod, ct);
 
@@ -107,8 +117,8 @@ public sealed class PayrollFnfOrchestrator(
             LOPDays: payrunEmp.LopDays,
             WorkingDaysInMonth: workedDays,
             VPFAmount: 0m,
-            PriorEmployerYTDTaxableIncome: 0m,
-            PriorEmployerYTDTDSDeducted: 0m,
+            PriorEmployerYTDTaxableIncome: priorTaxable,
+            PriorEmployerYTDTDSDeducted: priorTds,
             PriorEmployerYTDPF: 0m,
             HalfYearMonthIndex: hyIndex,
             HalfYearTotalMonths: hyTotal,
@@ -116,7 +126,8 @@ public sealed class PayrollFnfOrchestrator(
             GratuityEnabled: false, // gratuity goes in as an IsFlat earning component instead
             HasPan: hasPan,
             CurrentEmployerYTDGross: ytdGross,
-            CurrentEmployerYTDTDSDeducted: ytdTds);
+            CurrentEmployerYTDTDSDeducted: ytdTds,
+            CurrentEmployerYTDTaxable: ytdTaxableGross);
 
         var runInput = new PayrollRunInput(
             Year: run.PayPeriod.Year,
@@ -137,13 +148,13 @@ public sealed class PayrollFnfOrchestrator(
             NetPayWithAdjustments: result.NetPay + reimbursementsAmount);
     }
 
-    private async Task<(decimal Gross, decimal Tds)> LoadCurrentYtdAsync(
+    private async Task<(decimal Gross, decimal TaxableGross, decimal Tds)> LoadCurrentYtdAsync(
         Guid employeeId, int fiscalYear, CancellationToken ct)
     {
-        Dictionary<Guid, (decimal YtdGross, decimal YtdTds)> ytdMap =
+        Dictionary<Guid, (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds)> ytdMap =
             await payrunEmpRepo.GetCurrentEmployerYtdAsync([employeeId], fiscalYear, ct);
         ytdMap.TryGetValue(employeeId, out var ytd);
-        return (ytd.YtdGross, ytd.YtdTds);
+        return (ytd.YtdGross, ytd.YtdTaxableGross, ytd.YtdTds);
     }
 
     private async Task<bool> IsLwfAlreadyDeductedThisHalfYearAsync(

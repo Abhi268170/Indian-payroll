@@ -19,6 +19,10 @@ public sealed class PayrunEmployee : AuditableEntity
 
     // Computed amounts
     public decimal GrossPay { get; private set; }
+    // Sum of prorated taxable component amounts for the period. Used by next month's
+    // TDS projection (engine reads CurrentEmployerYTDTaxable). Distinct from GrossPay
+    // because non-taxable components inflate gross but must not inflate taxable income.
+    public decimal TaxableGrossPay { get; private set; }
     public decimal NetPay { get; private set; }
     public decimal TaxesAmount { get; private set; }
     public decimal BenefitsAmount { get; private set; }
@@ -74,6 +78,7 @@ public sealed class PayrunEmployee : AuditableEntity
 
     public void UpdateComputedAmounts(
         decimal grossPay,
+        decimal taxableGrossPay,
         decimal netPay,
         decimal taxesAmount,
         decimal benefitsAmount,
@@ -92,6 +97,7 @@ public sealed class PayrunEmployee : AuditableEntity
         Guid actorId)
     {
         GrossPay = grossPay;
+        TaxableGrossPay = taxableGrossPay;
         NetPay = netPay;
         TaxesAmount = taxesAmount;
         BenefitsAmount = benefitsAmount;

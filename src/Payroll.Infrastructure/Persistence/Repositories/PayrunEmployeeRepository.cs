@@ -43,7 +43,7 @@ internal sealed class PayrunEmployeeRepository(PayrollDbContext db) : IPayrunEmp
             .ContinueWith<IReadOnlyList<PayrunEmployee>>(t => t.Result, ct);
     }
 
-    public async Task<Dictionary<Guid, (decimal YtdGross, decimal YtdTds)>> GetCurrentEmployerYtdAsync(
+    public async Task<Dictionary<Guid, (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds)>> GetCurrentEmployerYtdAsync(
         IEnumerable<Guid> employeeIds, int fiscalYear, CancellationToken ct = default)
     {
         var empIds = employeeIds.ToList();
@@ -55,9 +55,15 @@ internal sealed class PayrunEmployeeRepository(PayrollDbContext db) : IPayrunEmp
                 && ((run.PayPeriod.Year == fiscalYear && run.PayPeriod.Month >= 4)
                     || (run.PayPeriod.Year == fiscalYear + 1 && run.PayPeriod.Month <= 3))
             group pe by pe.EmployeeId into g
-            select new { EmployeeId = g.Key, YtdGross = g.Sum(x => x.GrossPay), YtdTds = g.Sum(x => x.TdsAmount) }
+            select new
+            {
+                EmployeeId = g.Key,
+                YtdGross = g.Sum(x => x.GrossPay),
+                YtdTaxableGross = g.Sum(x => x.TaxableGrossPay),
+                YtdTds = g.Sum(x => x.TdsAmount),
+            }
         ).ToListAsync(ct);
 
-        return rows.ToDictionary(r => r.EmployeeId, r => (r.YtdGross, r.YtdTds));
+        return rows.ToDictionary(r => r.EmployeeId, r => (r.YtdGross, r.YtdTaxableGross, r.YtdTds));
     }
 }

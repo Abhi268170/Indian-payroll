@@ -131,6 +131,7 @@ public sealed class UpdateFnfRunHandler(
 
         payrunEmp.UpdateComputedAmounts(
             grossPay: result.Gross.GrossWage,
+            taxableGrossPay: result.Gross.TaxableGrossWage,
             netPay: fnf.NetPayWithAdjustments,
             taxesAmount: result.TDS.MonthlyTDS + result.PT.Amount,
             benefitsAmount: result.PF.EPFEmployerContribution + result.ESI.EmployerContribution,
