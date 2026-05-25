@@ -62,14 +62,20 @@ export default function EmployeesPage(): React.ReactElement {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = usePersistedPageSize('employees', 25)
   // People nav-gate: depts + desigs + work-locations + salary-structure must all
-  // exist before an employee can be created (CreateEmployeeCommand validates FK
-  // refs server-side; this disables the button up front for a friendlier UX).
-  const { data: onboardingStatus } = useOnboardingStatus()
+  // exist before an employee can be created. CreateEmployeeCommand validates FK
+  // refs server-side; this disables the button up front for a friendlier UX.
+  // Fail-closed on loading/error: with no signal we cannot confirm the gate is
+  // open, so we treat the button as blocked rather than letting it through.
+  const { data: onboardingStatus, isLoading: gateLoading, isError: gateError } = useOnboardingStatus()
   const peopleGate = onboardingStatus?.navGates.people
-  const addEmployeeBlocked = peopleGate ? !peopleGate.enabled : false
-  const addEmployeeTooltip = addEmployeeBlocked
-    ? `Complete first: ${(peopleGate?.missing ?? []).map(navMissingLabel).join(', ')}`
-    : undefined
+  const addEmployeeBlocked = peopleGate ? !peopleGate.enabled : (gateLoading || gateError || !onboardingStatus)
+  const addEmployeeTooltip = !addEmployeeBlocked
+    ? undefined
+    : peopleGate
+      ? `Complete first: ${peopleGate.missing.map(navMissingLabel).join(', ')}`
+      : gateError
+        ? 'Cannot verify setup status right now. Refresh in a moment.'
+        : 'Checking setup status…'
 
   const { data, isLoading } = useQuery<PagedResult<EmployeeListItemDto>>({
     queryKey: ['employees', page, pageSize, statusFilter, search],
