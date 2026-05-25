@@ -1,11 +1,18 @@
 namespace Payroll.Application.DTOs;
 
+public sealed record OnboardingSubStepDto(
+    string Id,
+    string Label,
+    bool Complete,
+    string? Hint = null);
+
 public sealed record OnboardingStepDto(
     string Id,
     bool Complete,
     bool Required,
     bool Skippable,
-    IReadOnlyDictionary<string, object>? Details = null);
+    IReadOnlyDictionary<string, object>? Details = null,
+    IReadOnlyList<OnboardingSubStepDto>? SubSteps = null);
 
 public sealed record NavGateDto(bool Enabled, IReadOnlyList<string> Missing);
 

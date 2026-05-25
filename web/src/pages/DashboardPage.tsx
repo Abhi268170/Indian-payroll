@@ -7,6 +7,7 @@ import { formatINR } from '@/lib/format'
 import type { CurrentPayPeriodDto, EmployeeListItemDto, PayrollHistoryItemDto } from '@/types/api'
 import { usePayrollRunPreflight } from '@/hooks/useOnboardingStatus'
 import SetupChecklistCard from './dashboard/components/SetupChecklistCard'
+import WelcomeBanner from './dashboard/components/WelcomeBanner'
 
 interface PagedResult<T> {
   items: T[]
@@ -71,6 +72,9 @@ export default function DashboardPage(): ReactElement {
         <h1 className="text-[20px] font-semibold text-[var(--color-text-primary)]">Dashboard</h1>
         <p className="mt-0.5 text-[13px] text-[var(--color-text-secondary)]">Current payroll state at a glance.</p>
       </div>
+
+      {/* Welcome banner — dismissible, shows once per user while setup is incomplete */}
+      <WelcomeBanner />
 
       {/* Setup checklist — disappears once setupComplete is true */}
       <SetupChecklistCard />

@@ -141,6 +141,23 @@ function SetupStepRow({ meta, step }: RowProps): ReactElement {
               Add your first employee before assigning a Tax Deductor.
             </p>
           )}
+          {step.subSteps && step.subSteps.length > 0 && (
+            <ul className="mt-2 ml-2 space-y-1">
+              {step.subSteps.map(s => (
+                <li key={s.id} className="flex items-start gap-2 text-[12px]">
+                  {s.complete
+                    ? <Check className="w-3 h-3 text-emerald-600 mt-0.5 flex-shrink-0" />
+                    : <Circle className="w-3 h-3 text-[var(--color-text-secondary)] mt-0.5 flex-shrink-0" />}
+                  <span className={s.complete ? 'text-[var(--color-text-secondary)]' : 'text-[var(--color-text-primary)]'}>
+                    {s.label}
+                  </span>
+                  {!s.complete && s.hint && (
+                    <span className="text-[11px] text-[var(--color-text-secondary)]">— {s.hint}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         {/* Right-aligned actions */}
