@@ -1,5 +1,5 @@
 import { useState, type ReactElement } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { Navigate, useParams, useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import { formatINR } from '@/lib/format'
@@ -46,11 +46,22 @@ export default function FnfSettlementPage(): ReactElement {
   const [deductions, setDeductions] = useState<AdhocDeductionForm[]>([])
   const [error, setError] = useState<string | null>(null)
 
-  const { data: run } = useQuery<PayrollRunDto>({
+  const { data: run, error: runError } = useQuery<PayrollRunDto>({
     queryKey: ['payroll-run', runId],
     queryFn: () => api.get<PayrollRunDto>(`/api/v1/payroll-runs/${runId}`).then(r => r.data),
     enabled: Boolean(runId),
+    retry: false,
   })
+
+  // Deep-link safety net (plan §4.5): GET /api/v1/payroll-runs/{id} returns 404
+  // for run ids absent from this tenant (cross-tenant access surfaces as 404
+  // too — schema-per-tenant + JWT tenant_id binding routes the query through
+  // the wrong schema and finds nothing). Bounce to the list rather than
+  // rendering a broken FnF shell.
+  const runStatusCode = (runError as { response?: { status?: number } } | null)?.response?.status
+  if (runStatusCode === 404) {
+    return <Navigate to="/pay-runs" replace />
+  }
 
   const { data: rows = [] } = useQuery<EmployeeRowDto[]>({
     queryKey: ['fnf-rows', runId],

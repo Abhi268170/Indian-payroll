@@ -12,12 +12,20 @@ export type OnboardingStepId =
   | 'deductor-employee'
   | 'first-employee'
 
+export interface OnboardingSubStepDto {
+  id: string
+  label: string
+  complete: boolean
+  hint?: string | null
+}
+
 export interface OnboardingStepDto {
   id: OnboardingStepId
   complete: boolean
   required: boolean
   skippable: boolean
   details?: Record<string, unknown>
+  subSteps?: OnboardingSubStepDto[]
 }
 
 export interface NavGateDto {

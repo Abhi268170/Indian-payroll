@@ -79,18 +79,21 @@ export default function SettingsLayout(): ReactElement {
   // into a settings page), surface a banner that takes the user back to the wizard step
   // instead of leaving them stranded in Settings.
   const returnTo = search.get('return')
-  const wizardStep = search.get('step')
-  const fromOnboarding = returnTo === 'onboarding'
-  const onboardingHref = wizardStep ? `/onboarding/${wizardStep}` : '/onboarding'
-  // Preserve ?return=onboarding (and the originating step) when navigating between
-  // settings pages so the return banner stays sticky after a sidebar click. Without
-  // this the user loses the "Back to setup" context after one navigation.
-  const sidebarQuery = fromOnboarding
-    ? `?return=onboarding${wizardStep ? `&step=${encodeURIComponent(wizardStep)}` : ''}`
+  const stepHint = search.get('step')
+  // Accept both ?return=dashboard (Phase 1 redesign — checklist on dashboard)
+  // and ?return=onboarding (legacy wizard deep-links). Both route back to the
+  // dashboard now; the legacy value is kept so stale tabs / bookmarks still work.
+  const fromSetup = returnTo === 'dashboard' || returnTo === 'onboarding'
+  const returnHref = '/dashboard'
+  // Preserve return-context (and the originating step hint) when navigating
+  // between settings pages so the return banner stays sticky after a sidebar
+  // click. Without this the user loses the "Back to setup" context.
+  const sidebarQuery = fromSetup
+    ? `?return=dashboard${stepHint ? `&step=${encodeURIComponent(stepHint)}` : ''}`
     : ''
 
   function handleClose(): void {
-    void navigate(fromOnboarding ? onboardingHref : '/dashboard')
+    void navigate(fromSetup ? returnHref : '/dashboard')
   }
 
   return (
@@ -116,17 +119,17 @@ export default function SettingsLayout(): ReactElement {
           className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[13px] text-[var(--color-text-secondary)] hover:bg-gray-100 transition-colors"
         >
           <X className="w-4 h-4" />
-          {fromOnboarding ? 'Back to setup' : 'Close Settings'}
+          {fromSetup ? 'Back to setup' : 'Close Settings'}
         </button>
       </header>
 
-      {fromOnboarding && (
+      {fromSetup && (
         <div className="flex-shrink-0 bg-[var(--color-primary)]/5 border-b border-[var(--color-primary)]/20 px-6 py-2 flex items-center justify-between">
           <p className="text-[12px] text-[var(--color-text-primary)]">
-            Configuring this from the setup wizard. Save here, then return to continue.
+            Configuring this from the setup checklist. Save here, then return to continue.
           </p>
-          <Link to={onboardingHref} className="text-[12px] font-medium text-[var(--color-primary)] hover:underline">
-            Return to setup →
+          <Link to={returnHref} className="text-[12px] font-medium text-[var(--color-primary)] hover:underline">
+            Back to dashboard →
           </Link>
         </div>
       )}

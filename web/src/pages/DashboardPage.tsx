@@ -5,7 +5,10 @@ import { Users, Calendar, CheckCircle2, AlertCircle, ChevronRight, AlertTriangle
 import { api } from '@/lib/api'
 import { formatINR } from '@/lib/format'
 import type { CurrentPayPeriodDto, EmployeeListItemDto, PayrollHistoryItemDto } from '@/types/api'
-import { usePayrollRunPreflight } from '@/hooks/useOnboardingStatus'
+import { useOnboardingStatus, usePayrollRunPreflight } from '@/hooks/useOnboardingStatus'
+import SetupChecklistCard from './dashboard/components/SetupChecklistCard'
+import WelcomeBanner from './dashboard/components/WelcomeBanner'
+import HelpResourcesCard from './dashboard/components/HelpResourcesCard'
 
 interface PagedResult<T> {
   items: T[]
@@ -15,20 +18,35 @@ interface PagedResult<T> {
 }
 
 function Kpi({
-  icon, label, value, tone,
-}: { icon: ReactElement; label: string; value: string; tone: 'neutral' | 'good' | 'warn' }): ReactElement {
-  const toneCls = tone === 'good'
-    ? 'bg-emerald-50 text-emerald-700'
-    : tone === 'warn'
-      ? 'bg-amber-50 text-amber-700'
-      : 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
+  icon, label, value, tone, dim = false, subtitle,
+}: {
+  icon: ReactElement
+  label: string
+  value: string
+  tone: 'neutral' | 'good' | 'warn'
+  dim?: boolean
+  subtitle?: string
+}): ReactElement {
+  // dim = true mutes the tile while setup is incomplete (the number is irrelevant
+  // until the user has actually configured anything). Keeps the dashboard from
+  // looking empty/broken on day 0.
+  const toneCls = dim
+    ? 'bg-[var(--color-page-bg)] text-[var(--color-text-secondary)]'
+    : tone === 'good'
+      ? 'bg-emerald-50 text-emerald-700'
+      : tone === 'warn'
+        ? 'bg-amber-50 text-amber-700'
+        : 'bg-[var(--color-primary-light)] text-[var(--color-primary)]'
   return (
-    <div className="bg-white rounded-xl border border-[var(--color-border)] px-5 py-4">
+    <div className={`bg-white rounded-xl border border-[var(--color-border)] px-5 py-4 ${dim ? 'opacity-70' : ''}`}>
       <div className="flex items-center gap-3">
         <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${toneCls}`}>{icon}</div>
-        <div>
+        <div className="min-w-0">
           <p className="text-[11px] uppercase tracking-wide text-[var(--color-text-secondary)] font-medium">{label}</p>
-          <p className="text-[18px] font-semibold text-[var(--color-text-primary)] mt-0.5">{value}</p>
+          <p className={`text-[18px] font-semibold mt-0.5 ${dim ? 'text-[var(--color-text-secondary)]' : 'text-[var(--color-text-primary)]'}`}>{value}</p>
+          {subtitle && (
+            <p className="text-[11px] text-[var(--color-text-secondary)] mt-0.5 truncate">{subtitle}</p>
+          )}
         </div>
       </div>
     </div>
@@ -37,6 +55,8 @@ function Kpi({
 
 export default function DashboardPage(): ReactElement {
   const { data: preflight } = usePayrollRunPreflight()
+  const { data: onboardingStatus } = useOnboardingStatus()
+  const setupComplete = onboardingStatus?.setupComplete ?? false
 
   const { data: period } = useQuery<CurrentPayPeriodDto | null>({
     queryKey: ['current-period'],
@@ -71,6 +91,12 @@ export default function DashboardPage(): ReactElement {
         <p className="mt-0.5 text-[13px] text-[var(--color-text-secondary)]">Current payroll state at a glance.</p>
       </div>
 
+      {/* Welcome banner — dismissible, shows once per user while setup is incomplete */}
+      <WelcomeBanner />
+
+      {/* Setup checklist — disappears once setupComplete is true */}
+      <SetupChecklistCard />
+
       {/* Non-blocking warnings from preflight (e.g. Tax Details / Deductor incomplete).
           Hard blockers gate the Pay Runs nav item and the Process Payroll button — they
           don't appear here. */}
@@ -90,28 +116,44 @@ export default function DashboardPage(): ReactElement {
         <Kpi
           icon={<Users className="w-4 h-4" />}
           label="Active Employees"
-          value={activeCount.toString()}
+          value={setupComplete || activeCount > 0 ? activeCount.toString() : 'Setup needed'}
+          subtitle={!setupComplete && activeCount === 0 ? 'Add your first employee' : undefined}
           tone="neutral"
+          dim={!setupComplete && activeCount === 0}
         />
         <Kpi
           icon={<Calendar className="w-4 h-4" />}
           label="Current Period"
-          value={period?.periodLabel ?? '—'}
+          value={period?.periodLabel ?? (setupComplete ? '—' : 'Setup needed')}
+          subtitle={!setupComplete && !period ? 'Configure Pay Schedule' : undefined}
           tone="neutral"
+          dim={!setupComplete && !period}
         />
         <Kpi
           icon={period?.hasOutstandingRun
             ? <AlertCircle className="w-4 h-4" />
             : <CheckCircle2 className="w-4 h-4" />}
           label="Pay Run Status"
-          value={period?.hasOutstandingRun ? (period.outstandingRunStatus ?? 'In Progress') : 'Not Started'}
+          value={
+            period?.hasOutstandingRun
+              ? (period.outstandingRunStatus ?? 'In Progress')
+              : period
+                ? 'Not Started'
+                : setupComplete
+                  ? '—'
+                  : 'Setup needed'
+          }
           tone={period?.hasOutstandingRun ? 'warn' : 'good'}
+          // Flip on this tile's own signal (period), not on lastRun.
+          // Stays dim only when we have no period data AND setup isn't done.
+          dim={!period && !setupComplete}
         />
         <Kpi
           icon={<CheckCircle2 className="w-4 h-4" />}
           label="Last Paid Run"
-          value={lastRun ? lastRun.periodLabel : '—'}
+          value={lastRun ? lastRun.periodLabel : (setupComplete ? '—' : 'No runs yet')}
           tone="neutral"
+          dim={!setupComplete && !lastRun}
         />
       </div>
 
@@ -152,6 +194,9 @@ export default function DashboardPage(): ReactElement {
           </div>
         </Link>
       )}
+
+      {/* Help block at the very bottom — always visible. */}
+      <HelpResourcesCard />
     </div>
   )
 }
