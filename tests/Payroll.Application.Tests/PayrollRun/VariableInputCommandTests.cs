@@ -96,7 +96,7 @@ public class VariableInputCommandTests
 
         // Set initial computed amounts
         payrunEmp.UpdateComputedAmounts(
-            grossPay: 50_000m, netPay: 44_000m,
+            grossPay: 50_000m, taxableGrossPay: 50_000m, netPay: 44_000m,
             taxesAmount: 6_000m, benefitsAmount: 0m, reimbursementsAmount: 0m,
             employeePf: 0m, employerPf: 0m, employeeEsi: 0m, employerEsi: 0m,
             ptAmount: 0m, tdsAmount: 6_000m, lwfEmployeeAmount: 0m, lwfEmployerAmount: 0m, gratuityAmount: 0m,

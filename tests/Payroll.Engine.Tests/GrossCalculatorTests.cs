@@ -17,7 +17,8 @@ public class GrossCalculatorTests
         decimal lop = 0,
         decimal calendarDays = 31,
         IReadOnlyList<SalaryComponentInput>? components = null,
-        decimal currentEmployerYTDGross = 0m) =>
+        decimal currentEmployerYTDGross = 0m,
+        decimal currentEmployerYTDTaxable = 0m) =>
         new(
             EmployeeId: Guid.NewGuid(),
             EmployeeCode: "EMP001",
@@ -35,7 +36,8 @@ public class GrossCalculatorTests
             PriorEmployerYTDPF: 0,
             HalfYearMonthIndex: 1,
             HalfYearTotalMonths: 6,
-            CurrentEmployerYTDGross: currentEmployerYTDGross);
+            CurrentEmployerYTDGross: currentEmployerYTDGross,
+            CurrentEmployerYTDTaxable: currentEmployerYTDTaxable);
 
     private static IReadOnlyList<SalaryComponentInput> DefaultComponents() =>
     [
@@ -298,13 +300,34 @@ public class GrossCalculatorTests
     }
 
     [Fact]
-    public void AnnualProjectedTaxableGross_WithYtd_YtdAddedToTaxableProjection()
+    public void AnnualProjectedTaxableGross_WithTaxableYtd_TaxableYtdAddedToProjection()
     {
-        // YTD gross = 3,50,000 (shared), taxable monthly = 56,000 (BASIC+FIXED, no HRA)
-        // projected = 350000 + 56000 × 10 = 910000
+        // Taxable YTD = 2,80,000 (sum of taxable components from prior months),
+        // taxable monthly = 56,000 (BASIC+FIXED, no HRA).
+        // projected = 280000 + 56000 × 10 = 840000
         GrossResult result = GrossCalculator.Compute(
-            MakeEmployee(currentEmployerYTDGross: 3_50_000m), Run31());
+            MakeEmployee(
+                currentEmployerYTDGross: 3_50_000m,
+                currentEmployerYTDTaxable: 2_80_000m),
+            Run31());
 
-        result.AnnualProjectedTaxableGross.Should().Be(9_10_000m);
+        result.AnnualProjectedTaxableGross.Should().Be(8_40_000m);
+        // Gross projection still uses gross YTD — the two are independent.
+        result.AnnualProjectedGross.Should().Be(3_50_000m + 70_000m * 10);
+    }
+
+    [Fact]
+    public void AnnualProjectedTaxableGross_GrossYtdDoesNotInflateTaxableProjection()
+    {
+        // Regression for the prior bug where GrossCalculator used CurrentEmployerYTDGross
+        // for the taxable projection. With gross YTD set but taxable YTD = 0, the
+        // taxable projection must only reflect the current-month taxable amount × remaining.
+        GrossResult result = GrossCalculator.Compute(
+            MakeEmployee(
+                currentEmployerYTDGross: 3_50_000m,
+                currentEmployerYTDTaxable: 0m),
+            Run31());
+
+        result.AnnualProjectedTaxableGross.Should().Be(56_000m * 10);
     }
 }

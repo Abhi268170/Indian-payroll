@@ -25,7 +25,7 @@ public class SkipEmployeeCommandTests
     private static PayrunEmployee CreateActiveEmployee(decimal grossPay = 50_000m, decimal netPay = 44_000m)
     {
         var emp = PayrunEmployee.Create(RunId, EmpId, TenantId, 31, ActorId);
-        emp.UpdateComputedAmounts(grossPay, netPay, 6_000m, 0m, 0m, 0m, 0m, 0m, 0m, 0m, 6_000m, 0m, 0m, 0m, 0m, 0m, ActorId);
+        emp.UpdateComputedAmounts(grossPay, grossPay, netPay, 6_000m, 0m, 0m, 0m, 0m, 0m, 0m, 0m, 6_000m, 0m, 0m, 0m, 0m, 0m, ActorId);
         return emp;
     }
 

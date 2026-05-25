@@ -43,7 +43,7 @@ public static class GrossCalculator
         }
 
         decimal annualProjected = employee.CurrentEmployerYTDGross + grossWage * run.MonthsRemainingInFY;
-        decimal annualProjectedTaxable = employee.CurrentEmployerYTDGross + taxableWage * run.MonthsRemainingInFY;
+        decimal annualProjectedTaxable = employee.CurrentEmployerYTDTaxable + taxableWage * run.MonthsRemainingInFY;
 
         return new GrossResult(
             GrossWage: grossWage,

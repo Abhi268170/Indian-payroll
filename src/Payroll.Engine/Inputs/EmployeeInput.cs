@@ -25,4 +25,8 @@ public sealed record EmployeeInput(
     bool HasPan = true,
     // YTD from current employer (approved runs this FY in this system)
     decimal CurrentEmployerYTDGross = 0m,
-    decimal CurrentEmployerYTDTDSDeducted = 0m);
+    decimal CurrentEmployerYTDTDSDeducted = 0m,
+    // Sum of prorated taxable component amounts from approved runs this FY.
+    // Distinct from gross because non-taxable components inflate gross but must not
+    // inflate the annualised taxable projection used by TDS.
+    decimal CurrentEmployerYTDTaxable = 0m);

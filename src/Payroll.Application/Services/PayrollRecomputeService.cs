@@ -19,6 +19,7 @@ public sealed class PayrollRecomputeService(
     IWorkLocationRepository workLocationRepo,
     IPayScheduleRepository payScheduleRepo,
     IEmployeeFyOpeningRepository fyOpeningRepo,
+    IPriorEmployerYtdRepository priorYtdRepo,
     ITdsWorksheetRepository tdsWorksheetRepo,
     ISalaryComponentRepository salaryComponentRepo)
     : IPayrollRecomputeService
@@ -60,7 +61,16 @@ public sealed class PayrollRecomputeService(
             engineCalcMethod, paySchedule.FixedWorkingDaysPerMonth,
             run.PayPeriod.Year, run.PayPeriod.Month);
 
-        (decimal currentYtdGross, decimal currentYtdTds) = await LoadCurrentYtdAsync(employeeId, run.PayPeriod.FiscalYear, ct);
+        (decimal currentYtdGross, decimal currentYtdTaxableGross, decimal currentYtdTds) =
+            await LoadCurrentYtdAsync(employeeId, run.PayPeriod.FiscalYear, ct);
+
+        // Prior-employer YTD must round-trip identically between initial run and
+        // recompute, otherwise LOP corrections silently drift the employee's TDS.
+        IReadOnlyList<PriorEmployerYtd> priorList = await priorYtdRepo
+            .GetByEmployeesAndFiscalYearAsync([employeeId], run.PayPeriod.FiscalYear, ct);
+        PriorEmployerYtd? priorYtd = priorList.FirstOrDefault();
+        decimal priorTaxable = PriorEmployerYtdMapper.TaxableIncomeFor(priorYtd);
+        decimal priorTds = priorYtd?.TdsDeducted ?? 0m;
 
         // Partition breakdowns by role. Classification by linked component's
         // Category avoids depending on a flag column.
@@ -114,15 +124,16 @@ public sealed class PayrollRecomputeService(
             LOPDays: payrunEmp.LopDays,
             WorkingDaysInMonth: payrunEmp.BaseDays,
             VPFAmount: 0m,
-            PriorEmployerYTDTaxableIncome: 0m,
-            PriorEmployerYTDTDSDeducted: 0m,
+            PriorEmployerYTDTaxableIncome: priorTaxable,
+            PriorEmployerYTDTDSDeducted: priorTds,
             PriorEmployerYTDPF: 0m,
             HalfYearMonthIndex: hyIndex,
             HalfYearTotalMonths: hyTotal,
             BasicWage: basicWage,
             HasPan: hasPan,
             CurrentEmployerYTDGross: currentYtdGross,
-            CurrentEmployerYTDTDSDeducted: currentYtdTds);
+            CurrentEmployerYTDTDSDeducted: currentYtdTds,
+            CurrentEmployerYTDTaxable: currentYtdTaxableGross);
 
         var runInput = new PayrollRunInput(
             Year: run.PayPeriod.Year,
@@ -144,7 +155,7 @@ public sealed class PayrollRecomputeService(
                 bd.UpdateAmounts(computed.FullAmount, computed.ProratedAmount);
         }
 
-        await UpsertTdsWorksheetAsync(run, payrunEmp, result, staticConfig, currentYtdTds, ct);
+        await UpsertTdsWorksheetAsync(run, payrunEmp, result, staticConfig, priorTds + currentYtdTds, ct);
 
         return new RecomputeResult(
             Engine: result,
@@ -153,23 +164,25 @@ public sealed class PayrollRecomputeService(
             NetPayWithAdjustments: result.NetPay + reimbursementsAmount - deductionsAmount);
     }
 
-    private async Task<(decimal Gross, decimal Tds)> LoadCurrentYtdAsync(
+    private async Task<(decimal Gross, decimal TaxableGross, decimal Tds)> LoadCurrentYtdAsync(
         Guid employeeId, int fiscalYear, CancellationToken ct)
     {
-        Dictionary<Guid, (decimal YtdGross, decimal YtdTds)> ytdMap =
+        Dictionary<Guid, (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds)> ytdMap =
             await payrunEmployeeRepo.GetCurrentEmployerYtdAsync([employeeId], fiscalYear, ct);
 
+        // Opening's gross is also treated as taxable — see Initiate handler for rationale.
         EmployeeFyOpening? opening = await fyOpeningRepo.GetAsync(employeeId, fiscalYear, ct);
         if (opening is not null)
         {
             ytdMap.TryGetValue(employeeId, out var existing);
             ytdMap[employeeId] = (
                 existing.YtdGross + opening.GrossSalary,
+                existing.YtdTaxableGross + opening.GrossSalary,
                 existing.YtdTds + opening.TdsDeducted);
         }
 
         ytdMap.TryGetValue(employeeId, out var ytd);
-        return (ytd.YtdGross, ytd.YtdTds);
+        return (ytd.YtdGross, ytd.YtdTaxableGross, ytd.YtdTds);
     }
 
     private async Task UpsertTdsWorksheetAsync(

@@ -140,10 +140,13 @@ public sealed class InitiatePayrollRunHandler(
             priorYtdList.ToDictionary(p => p.EmployeeId);
 
         // Load current-employer YTD from approved/paid runs this FY in this system
-        Dictionary<Guid, (decimal YtdGross, decimal YtdTds)> currentYtdByEmployee =
+        Dictionary<Guid, (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds)> currentYtdByEmployee =
             await payrunEmployeeRepo.GetCurrentEmployerYtdAsync(employeeIds, period.FiscalYear, ct);
 
-        // Merge opening balances (pre-system months, same employer) into current-employer YTD
+        // Merge opening balances (pre-system months, same employer) into current-employer YTD.
+        // Opening doesn't carry a taxable-gross figure (no breakdown captured pre-system),
+        // so treat the full opening gross as taxable. Tightening this requires the operator
+        // to enter a separate non-taxable opening figure, which v1 does not collect.
         IReadOnlyList<EmployeeFyOpening> openings =
             await fyOpeningRepo.GetByEmployeesAndFiscalYearAsync(employeeIds, period.FiscalYear, ct);
         foreach (EmployeeFyOpening opening in openings)
@@ -151,6 +154,7 @@ public sealed class InitiatePayrollRunHandler(
             currentYtdByEmployee.TryGetValue(opening.EmployeeId, out var existing);
             currentYtdByEmployee[opening.EmployeeId] = (
                 existing.YtdGross + opening.GrossSalary,
+                existing.YtdTaxableGross + opening.GrossSalary,
                 existing.YtdTds + opening.TdsDeducted);
         }
 
@@ -216,6 +220,7 @@ public sealed class InitiatePayrollRunHandler(
                 string workState = workLocationStateMap.TryGetValue(emp.WorkLocationId, out string? wls) ? wls : "MH";
                 var (hyIndex, hyTotal) = period.HalfYearPosition(emp.DateOfJoining);
                 currentYtdByEmployee.TryGetValue(emp.Id, out var curYtd);
+                priorYtdByEmployee.TryGetValue(emp.Id, out var ytd);
                 engineInputs.Add(new EmployeeInput(
                     EmployeeId: emp.Id,
                     EmployeeCode: emp.EmployeeCode,
@@ -228,7 +233,7 @@ public sealed class InitiatePayrollRunHandler(
                     LOPDays: 0,
                     WorkingDaysInMonth: workingDaysInMonth,
                     VPFAmount: 0,
-                    PriorEmployerYTDTaxableIncome: priorYtdByEmployee.TryGetValue(emp.Id, out var ytd) ? ytd.GrossSalary : 0m,
+                    PriorEmployerYTDTaxableIncome: PriorEmployerYtdMapper.TaxableIncomeFor(ytd),
                     PriorEmployerYTDTDSDeducted: ytd?.TdsDeducted ?? 0m,
                     PriorEmployerYTDPF: 0m,
                     HalfYearMonthIndex: hyIndex,
@@ -236,7 +241,8 @@ public sealed class InitiatePayrollRunHandler(
                     BasicWage: basicWage,
                     HasPan: hasPan,
                     CurrentEmployerYTDGross: curYtd.YtdGross,
-                    CurrentEmployerYTDTDSDeducted: curYtd.YtdTds));
+                    CurrentEmployerYTDTDSDeducted: curYtd.YtdTds,
+                    CurrentEmployerYTDTaxable: curYtd.YtdTaxableGross));
             }
         }
 
@@ -295,6 +301,7 @@ public sealed class InitiatePayrollRunHandler(
             {
                 payrunEmp.UpdateComputedAmounts(
                     grossPay: result.Gross.GrossWage,
+                    taxableGrossPay: result.Gross.TaxableGrossWage,
                     netPay: result.NetPay,
                     taxesAmount: result.TDS.MonthlyTDS + result.PT.Amount,
                     benefitsAmount: result.PF.EPFEmployerContribution + result.ESI.EmployerContribution,

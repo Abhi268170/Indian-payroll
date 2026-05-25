@@ -48,6 +48,7 @@ public sealed class OverrideTdsHandler(
         decimal netPayDelta = previousTds - req.OverrideAmount;
         payrunEmp.UpdateComputedAmounts(
             grossPay: payrunEmp.GrossPay,
+            taxableGrossPay: payrunEmp.TaxableGrossPay,
             netPay: payrunEmp.NetPay + netPayDelta,
             taxesAmount: payrunEmp.TaxesAmount - (previousTds - req.OverrideAmount),
             benefitsAmount: payrunEmp.BenefitsAmount,
