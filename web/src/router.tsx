@@ -51,6 +51,20 @@ function RequireSuperAdmin({ children }: { children: React.ReactElement }): Reac
   return children
 }
 
+// SuperAdmin has no tenant_id claim, so TenantResolutionMiddleware never binds a tenant
+// context. Every tenant-scoped query then throws "Tenant context not resolved". Bounce
+// SuperAdmin out of any tenant route (settings, employees, pay runs, dashboard,
+// onboarding) so they only reach the platform-admin surface.
+function RequireTenantUser({ children }: { children: React.ReactElement }): React.ReactElement {
+  const token = useAuthStore(s => s.token)
+  const user = useAuthStore(s => s.user)
+  const isAuth = token !== null && user !== null && user.exp * 1000 > Date.now()
+  if (!isAuth) return <Navigate to="/login" replace />
+  const roles = Array.isArray(user.role) ? user.role : [user.role]
+  if (roles.includes('SuperAdmin')) return <Navigate to="/platform/orgs" replace />
+  return children
+}
+
 function RootRedirect(): React.ReactElement {
   const user = useAuthStore(s => s.user)
   const token = useAuthStore(s => s.token)
@@ -114,15 +128,15 @@ export const router = createBrowserRouter([
   // the wizard itself decides whether setup is complete and redirects to /dashboard.
   {
     path: '/onboarding',
-    element: <RequireAuth><OnboardingWizardPage /></RequireAuth>,
+    element: <RequireAuth><RequireTenantUser><OnboardingWizardPage /></RequireTenantUser></RequireAuth>,
   },
   {
     path: '/onboarding/:stepId',
-    element: <RequireAuth><OnboardingWizardPage /></RequireAuth>,
+    element: <RequireAuth><RequireTenantUser><OnboardingWizardPage /></RequireTenantUser></RequireAuth>,
   },
   {
     path: '/',
-    element: <RequireAuth><AppLayout /></RequireAuth>,
+    element: <RequireAuth><RequireTenantUser><AppLayout /></RequireTenantUser></RequireAuth>,
     children: [
       { path: 'dashboard', element: <DashboardPage /> },
       { path: 'employees', element: <RequireNavGate gate="people"><EmployeesPage /></RequireNavGate> },

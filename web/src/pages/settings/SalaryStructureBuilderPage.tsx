@@ -112,12 +112,18 @@ export default function SalaryStructureBuilderPage(): ReactElement {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(['Earnings']))
   const [initialized, setInitialized] = useState(false)
 
-  // Load all components for the picker
+  // Load all components for the picker.
+  // GET /api/v1/salary-components returns a PagedResult<T> ({items,total,page,pageSize})
+  // after pagination shipped. Pull a large page so the builder sees every component
+  // and unwrap .items for the picker.
   const { data: allComponents = [] } = useQuery<SalaryComponentSummary[]>({
-    queryKey: ['salary-components', null],
+    queryKey: ['salary-components', 'builder-all'],
     queryFn: async () => {
-      const res = await api.get<SalaryComponentSummary[]>('/api/v1/salary-components')
-      return res.data
+      const res = await api.get<{ items: SalaryComponentSummary[]; total: number }>(
+        '/api/v1/salary-components',
+        { params: { page: 1, pageSize: 200 } },
+      )
+      return res.data.items
     },
   })
 
