@@ -135,14 +135,18 @@ export default function DashboardPage(): ReactElement {
             : <CheckCircle2 className="w-4 h-4" />}
           label="Pay Run Status"
           value={
-            !setupComplete && !lastRun
-              ? 'Setup needed'
-              : period?.hasOutstandingRun
-                ? (period.outstandingRunStatus ?? 'In Progress')
-                : 'Not Started'
+            period?.hasOutstandingRun
+              ? (period.outstandingRunStatus ?? 'In Progress')
+              : period
+                ? 'Not Started'
+                : setupComplete
+                  ? '—'
+                  : 'Setup needed'
           }
           tone={period?.hasOutstandingRun ? 'warn' : 'good'}
-          dim={!setupComplete && !lastRun}
+          // Flip on this tile's own signal (period), not on lastRun.
+          // Stays dim only when we have no period data AND setup isn't done.
+          dim={!period && !setupComplete}
         />
         <Kpi
           icon={<CheckCircle2 className="w-4 h-4" />}

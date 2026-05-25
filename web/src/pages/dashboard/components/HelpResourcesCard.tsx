@@ -10,18 +10,22 @@ interface Resource {
 }
 
 // Tasteful help block — no walkthrough video / phone yet (we don't have those
-// assets), but covers the realistic Day-0 channels: docs, support email, the
-// public issue tracker, and the local MailHog inbox so dev/test users can find
+// assets), but covers the realistic Day-0 channels: docs (GitHub), forum,
+// support email, and the local MailHog inbox (dev only) so test users can find
 // welcome emails.
 //
-// MailHog tile is only useful in dev; for now we render it always since this
-// repo is dev-only. Production deployment will swap the URL or hide the tile
-// via a build flag.
+// IS_DEV controls the MailHog tile so it never ships in production builds.
+// Vite injects import.meta.env.DEV at build time.
+const IS_DEV = import.meta.env.DEV
+
 const RESOURCES: Resource[] = [
   {
     icon: <BookOpen className="w-4 h-4" />,
     label: 'Documentation',
-    href: '/docs',
+    // Point at the repo's docs/ tree on GitHub until an in-app /docs route exists.
+    // The SPA wildcard would otherwise eat /docs and bounce to /.
+    href: 'https://github.com/Abhi268170/Indian-payroll/tree/master/docs',
+    external: true,
     description: 'Setup guides, payroll concepts, and API reference.',
   },
   {
@@ -37,13 +41,15 @@ const RESOURCES: Resource[] = [
     href: 'mailto:support@indianpayroll.local',
     description: "Reach the team directly — we reply within one business day.",
   },
-  {
-    icon: <Inbox className="w-4 h-4" />,
-    label: 'Test inbox (MailHog)',
-    href: 'http://localhost:8025',
-    external: true,
-    description: 'Dev: welcome emails, payslips, and notifications land here.',
-  },
+  ...(IS_DEV
+    ? [{
+        icon: <Inbox className="w-4 h-4" />,
+        label: 'Test inbox (MailHog)',
+        href: 'http://localhost:8025',
+        external: true,
+        description: 'Dev: welcome emails, payslips, and notifications land here.',
+      } satisfies Resource]
+    : []),
 ]
 
 export default function HelpResourcesCard(): ReactElement {
