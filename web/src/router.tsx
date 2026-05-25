@@ -31,7 +31,6 @@ import OrgDetailPage from '@/pages/platform/OrgDetailPage'
 import SetPasswordPage from '@/pages/auth/SetPasswordPage'
 import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage'
 import OnboardingWizardPage from '@/pages/onboarding/OnboardingWizardPage'
-import { useOnboardingStatus } from '@/hooks/useOnboardingStatus'
 
 function RequireAuth({ children }: { children: React.ReactElement }): React.ReactElement {
   const token = useAuthStore(s => s.token)
@@ -72,40 +71,10 @@ function RootRedirect(): React.ReactElement {
   if (!isAuth) return <Navigate to="/login" replace />
   const roles = Array.isArray(user.role) ? user.role : [user.role]
   if (roles.includes('SuperAdmin')) return <Navigate to="/platform/orgs" replace />
-  return <OnboardingAwareRedirect />
-}
-
-// For non-SuperAdmin tenant users: query setup status and route to /onboarding while
-// the tenant is incomplete, otherwise to /dashboard. While the status request is in
-// flight we render nothing — fast, no flicker, no flash of dashboard.
-//
-// Fail-closed on error: if the status request fails (transient API outage, network
-// blip), assume incomplete and route to /onboarding rather than leaking access to
-// the dashboard. The wizard itself surfaces a retry path.
-function OnboardingAwareRedirect(): React.ReactElement {
-  const { data, isLoading, isError } = useOnboardingStatus()
-  if (isLoading) return <></>
-  if (isError || !data) return <Navigate to="/onboarding" replace />
-  if (!data.setupComplete) return <Navigate to="/onboarding" replace />
+  // Phase 1 redesign: every tenant user lands on /dashboard. The setup checklist
+  // lives ON the dashboard (SetupChecklistCard) — no more hard-redirect-to-wizard.
+  // Pay-runs / people surfaces have their own per-action guards.
   return <Navigate to="/dashboard" replace />
-}
-
-// Guard for People / Pay Runs deep links so direct navigation respects the
-// navGate that the sidebar enforces. Settings remains reachable so the user
-// can still edit existing values.
-//
-// Fail-closed on error: missing data means we cannot confirm the gate is open, so
-// we send the user to /onboarding instead of allowing through. This matches the
-// "hard redirect while incomplete" intent.
-function RequireNavGate({
-  gate,
-  children,
-}: { gate: 'people' | 'payRuns'; children: React.ReactElement }): React.ReactElement {
-  const { data, isLoading, isError } = useOnboardingStatus()
-  if (isLoading) return <></>
-  if (isError || !data) return <Navigate to="/onboarding" replace />
-  if (data.navGates[gate].enabled) return children
-  return <Navigate to="/onboarding" replace />
 }
 
 export const router = createBrowserRouter([
@@ -139,15 +108,15 @@ export const router = createBrowserRouter([
     element: <RequireAuth><RequireTenantUser><AppLayout /></RequireTenantUser></RequireAuth>,
     children: [
       { path: 'dashboard', element: <DashboardPage /> },
-      { path: 'employees', element: <RequireNavGate gate="people"><EmployeesPage /></RequireNavGate> },
-      { path: 'employees/import', element: <RequireNavGate gate="people"><ImportEmployeesPage /></RequireNavGate> },
-      { path: 'employees/new', element: <RequireNavGate gate="people"><AddEmployeeWizard /></RequireNavGate> },
-      { path: 'employees/:id/wizard/:step', element: <RequireNavGate gate="people"><AddEmployeeWizard /></RequireNavGate> },
-      { path: 'employees/:id', element: <RequireNavGate gate="people"><EmployeeDetailPage /></RequireNavGate> },
-      { path: 'employees/:id/exit/initiate', element: <RequireNavGate gate="people"><ExitInitiationPage /></RequireNavGate> },
-      { path: 'pay-runs', element: <RequireNavGate gate="payRuns"><PayRunsPage /></RequireNavGate> },
-      { path: 'pay-runs/:id', element: <RequireNavGate gate="payRuns"><PayRunDetailPage /></RequireNavGate> },
-      { path: 'pay-runs/:id/fnf', element: <RequireNavGate gate="payRuns"><FnfSettlementPage /></RequireNavGate> },
+      { path: 'employees', element: <EmployeesPage /> },
+      { path: 'employees/import', element: <ImportEmployeesPage /> },
+      { path: 'employees/new', element: <AddEmployeeWizard /> },
+      { path: 'employees/:id/wizard/:step', element: <AddEmployeeWizard /> },
+      { path: 'employees/:id', element: <EmployeeDetailPage /> },
+      { path: 'employees/:id/exit/initiate', element: <ExitInitiationPage /> },
+      { path: 'pay-runs', element: <PayRunsPage /> },
+      { path: 'pay-runs/:id', element: <PayRunDetailPage /> },
+      { path: 'pay-runs/:id/fnf', element: <FnfSettlementPage /> },
       {
         path: 'settings',
         element: <SettingsLayout />,

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { Navigate, useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { api } from '@/lib/api'
 import type { PayrollRunSummaryDto, PayrunEmployeeDto, PendingTasksDto } from '@/types/api'
@@ -69,11 +69,21 @@ export default function PayRunDetailPage(): React.ReactElement {
 
   const runId = id ?? ''
 
-  const { data: run, isLoading: runLoading } = useQuery<PayrollRunSummaryDto>({
+  const { data: run, isLoading: runLoading, error: runError } = useQuery<PayrollRunSummaryDto>({
     queryKey: ['payroll-run', runId],
     queryFn: () => api.get<PayrollRunSummaryDto>(`/api/v1/payroll-runs/${runId}`).then(r => r.data),
     enabled: runId !== '',
+    retry: false,
   })
+
+  // Deep-link safety net (plan §4.5): API returns 404 for run ids absent from this
+  // tenant — cross-tenant access surfaces as 404 too because schema-per-tenant +
+  // JWT tenant_id binding routes the query through the wrong schema and finds
+  // nothing. Bounce to the list rather than showing a broken detail shell.
+  const runStatusCode = (runError as { response?: { status?: number } } | null)?.response?.status
+  if (runStatusCode === 404) {
+    return <Navigate to="/pay-runs" replace />
+  }
 
   const [empPage, setEmpPage] = useState(1)
   const [empPageSize, setEmpPageSize] = usePersistedPageSize('payrun-employees', 25)

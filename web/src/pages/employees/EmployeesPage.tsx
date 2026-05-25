@@ -5,6 +5,7 @@ import { UserPlus, AlertCircle, Upload } from 'lucide-react'
 import { api } from '@/lib/api'
 import type { EmployeeListItemDto } from '@/types/api'
 import { Pagination, usePersistedPageSize } from '@/components/ui/Pagination'
+import { useOnboardingStatus, navMissingLabel } from '@/hooks/useOnboardingStatus'
 
 interface PagedResult<T> {
   items: T[]
@@ -60,6 +61,15 @@ export default function EmployeesPage(): React.ReactElement {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = usePersistedPageSize('employees', 25)
+  // People nav-gate: depts + desigs + work-locations + salary-structure must all
+  // exist before an employee can be created (CreateEmployeeCommand validates FK
+  // refs server-side; this disables the button up front for a friendlier UX).
+  const { data: onboardingStatus } = useOnboardingStatus()
+  const peopleGate = onboardingStatus?.navGates.people
+  const addEmployeeBlocked = peopleGate ? !peopleGate.enabled : false
+  const addEmployeeTooltip = addEmployeeBlocked
+    ? `Complete first: ${(peopleGate?.missing ?? []).map(navMissingLabel).join(', ')}`
+    : undefined
 
   const { data, isLoading } = useQuery<PagedResult<EmployeeListItemDto>>({
     queryKey: ['employees', page, pageSize, statusFilter, search],
@@ -97,7 +107,9 @@ export default function EmployeesPage(): React.ReactElement {
           </button>
           <button
             onClick={() => navigate('/employees/new')}
-            className="inline-flex items-center gap-1.5 h-9 px-4 bg-[var(--color-primary)] text-white text-[13px] font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors"
+            disabled={addEmployeeBlocked}
+            title={addEmployeeTooltip}
+            className="inline-flex items-center gap-1.5 h-9 px-4 bg-[var(--color-primary)] text-white text-[13px] font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[var(--color-primary)]"
           >
             <UserPlus className="w-3.5 h-3.5" />
             Add Employee
