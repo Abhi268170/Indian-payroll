@@ -66,4 +66,16 @@ internal sealed class PayrunEmployeeRepository(PayrollDbContext db) : IPayrunEmp
 
         return rows.ToDictionary(r => r.EmployeeId, r => (r.YtdGross, r.YtdTaxableGross, r.YtdTds));
     }
+
+    public Task<bool> HasLwfDeductedInPeriodAsync(
+        Guid employeeId, int year, int firstMonth, int lastMonth, CancellationToken ct = default) =>
+        (from pe in db.PayrunEmployees
+         join run in db.PayrollRuns on pe.PayrollRunId equals run.Id
+         where pe.EmployeeId == employeeId
+            && (run.Status == PayrollRunStatus.Approved || run.Status == PayrollRunStatus.Paid)
+            && run.PayPeriod.Year == year
+            && run.PayPeriod.Month >= firstMonth
+            && run.PayPeriod.Month <= lastMonth
+            && (pe.LwfEmployeeAmount > 0m || pe.LwfEmployerAmount > 0m)
+         select pe.Id).AnyAsync(ct);
 }
