@@ -168,16 +168,53 @@ public class StatutorySubStepRulesTests
     }
 
     [Fact]
-    public async Task StateWithoutLwfSeed_AutoCompletesLwf()
+    public async Task StateNotInLwfApplicableSet_AutoCompletesLwf()
     {
+        // Tamil Nadu is NOT in StatutoryReference.LwfApplicableStates today, so absence
+        // of a config row for TN is "LWF does not apply", not drift.
+        var handler = BuildHandler(
+            MakeConfig(true, "EPF", true, "ESI"),
+            new[] { MakeLocation(IndianState.TamilNadu) },
+            new Dictionary<string, IReadOnlyList<ProfessionalTaxSlab>>(),
+            Array.Empty<LwfStateConfig>());
+
+        var subs = await RunAsync(handler);
+        subs.First(s => s.Id == "lwf").Complete.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task StateInLwfApplicableSet_MissingConfig_FlagsDrift()
+    {
+        // Kerala IS on the LWF list (StatutoryReference) — if the seeded config row
+        // is missing from this tenant (data drift, manual delete, provisioner bug),
+        // the sub-step must be Incomplete with a per-state hint. Without this
+        // regression case the dead-code path silently passes.
         var handler = BuildHandler(
             MakeConfig(true, "EPF", true, "ESI"),
             new[] { MakeLocation(IndianState.Kerala) },
             new Dictionary<string, IReadOnlyList<ProfessionalTaxSlab>>(),
-            Array.Empty<LwfStateConfig>());  // no LWF seed in this tenant
+            Array.Empty<LwfStateConfig>());  // KL is regulated but config missing
 
         var subs = await RunAsync(handler);
-        subs.First(s => s.Id == "lwf").Complete.Should().BeTrue();
+        var lwf = subs.First(s => s.Id == "lwf");
+        lwf.Complete.Should().BeFalse();
+        lwf.Hint.Should().Contain("Kerala");
+    }
+
+    [Fact]
+    public async Task MixedStates_OneLwfDrift_FlagsOnlyThatState()
+    {
+        // KA seeded; KL regulated but missing → only KL appears in the hint.
+        var handler = BuildHandler(
+            MakeConfig(true, "EPF", true, "ESI"),
+            new[] { MakeLocation(IndianState.Karnataka), MakeLocation(IndianState.Kerala) },
+            new Dictionary<string, IReadOnlyList<ProfessionalTaxSlab>>(),
+            new[] { MakeLwfConfig("KA") });
+
+        var subs = await RunAsync(handler);
+        var lwf = subs.First(s => s.Id == "lwf");
+        lwf.Complete.Should().BeFalse();
+        lwf.Hint.Should().Contain("Kerala").And.NotContain("Karnataka");
     }
 
     [Fact]

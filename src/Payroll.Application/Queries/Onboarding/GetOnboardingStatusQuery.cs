@@ -3,6 +3,7 @@ using Payroll.Application.DTOs;
 using Payroll.Domain.Enums;
 using Payroll.Domain.Extensions;
 using Payroll.Domain.Interfaces;
+using Payroll.Domain.Statutory;
 using OrgProfileEntity = Payroll.Domain.Entities.OrgProfile;
 using EmployeeEntity = Payroll.Domain.Entities.Employee;
 using StatutoryOrgConfigEntity = Payroll.Domain.Entities.StatutoryOrgConfig;
@@ -220,6 +221,14 @@ internal sealed class GetOnboardingStatusHandler(
         }
 
         // LWF — per unique work-location state.
+        //
+        // Two-part check:
+        //   1. Is the state on the regulated-LWF list (StatutoryReference)? If no,
+        //      LWF does not apply → auto-complete for that state.
+        //   2. If yes, is the seed-expected LwfStateConfig row present in the
+        //      tenant schema? Missing row = drift (provisioner failed, manual
+        //      delete, etc.) → incomplete with a per-state hint so the operator
+        //      knows exactly which state to fix.
         if (states.Count == 0)
         {
             rows.Add(new OnboardingSubStepDto("lwf", "Labour Welfare Fund", Complete: false,
@@ -230,19 +239,20 @@ internal sealed class GetOnboardingStatusHandler(
             var stateCodes = states.Select(s => s.ToIsoCode()).Distinct().ToList();
             var configs = await statutoryRepo.GetLwfConfigsAsync(stateCodes, ct);
             var configuredStates = configs.Select(c => c.StateCode).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            // For LWF the seed itself owns the per-state configs. If a state had LWF
-            // seeded, the row is present → complete. If the state has no seed config,
-            // LWF does not apply → also complete. So LWF is incomplete only when the
-            // seed expected a config for a state and it's missing in this tenant
-            // (data drift). We approximate "expected" as "any seeded LWF config row
-            // for a state our employees live in"; missing rows surface as a hint.
-            var lwfMissing = stateCodes.Where(c => !configuredStates.Contains(c)).ToList();
-            // Cross-check against a "do we know LWF applies to this state at all?"
-            // signal — for now, the absence of a config row is treated as "LWF does
-            // not apply in this state" (consistent with the engine, which silently
-            // skips LWF for states with no config). So all states are complete.
-            _ = lwfMissing;
-            rows.Add(new OnboardingSubStepDto("lwf", "Labour Welfare Fund", Complete: true));
+            var driftStates = states
+                .Where(s => StatutoryReference.LwfApplicableStates.Contains(s.ToIsoCode()))
+                .Where(s => !configuredStates.Contains(s.ToIsoCode()))
+                .Select(s => s.ToString())
+                .ToList();
+            if (driftStates.Count == 0)
+            {
+                rows.Add(new OnboardingSubStepDto("lwf", "Labour Welfare Fund", Complete: true));
+            }
+            else
+            {
+                rows.Add(new OnboardingSubStepDto("lwf", "Labour Welfare Fund", Complete: false,
+                    Hint: $"Configure LWF for: {string.Join(", ", driftStates)}."));
+            }
         }
 
         // Statutory Bonus — boolean toggle on org config.
