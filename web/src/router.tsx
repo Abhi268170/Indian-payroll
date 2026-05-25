@@ -30,7 +30,6 @@ import ProvisionOrgPage from '@/pages/platform/ProvisionOrgPage'
 import OrgDetailPage from '@/pages/platform/OrgDetailPage'
 import SetPasswordPage from '@/pages/auth/SetPasswordPage'
 import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage'
-import OnboardingWizardPage from '@/pages/onboarding/OnboardingWizardPage'
 
 function RequireAuth({ children }: { children: React.ReactElement }): React.ReactElement {
   const token = useAuthStore(s => s.token)
@@ -91,17 +90,6 @@ export const router = createBrowserRouter([
       { path: 'orgs/new', element: <ProvisionOrgPage /> },
       { path: 'orgs/:id', element: <OrgDetailPage /> },
     ],
-  },
-  // Onboarding wizard — full-screen, no AppLayout sidebar. Settings deep-links open in a
-  // new tab; the wizard stays open in the original tab. Guarded by RequireAuth only —
-  // the wizard itself decides whether setup is complete and redirects to /dashboard.
-  {
-    path: '/onboarding',
-    element: <RequireAuth><RequireTenantUser><OnboardingWizardPage /></RequireTenantUser></RequireAuth>,
-  },
-  {
-    path: '/onboarding/:stepId',
-    element: <RequireAuth><RequireTenantUser><OnboardingWizardPage /></RequireTenantUser></RequireAuth>,
   },
   {
     path: '/',

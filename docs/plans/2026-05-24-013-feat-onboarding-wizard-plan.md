@@ -1,5 +1,30 @@
 # Onboarding Wizard — Plan (2026-05-24)
 
+> ## ⚠️ SUPERSEDED by plan 014 (`2026-05-25-014-onboarding-ux-redesign-plan.md`)
+>
+> This plan shipped (Phases A–D, merged to master) but the resulting full-screen
+> hard-redirect wizard tested poorly against Zoho Payroll's dashboard-checklist
+> pattern. Plan 014 replaced the wizard with a `SetupChecklistCard` on the
+> Dashboard, dropped the `/onboarding*` routes (Phase 4, commit ca3eb60+),
+> and kept the backend status/preflight/seed-defaults endpoints from this plan.
+>
+> **What still applies from this plan:**
+> - `GET /api/v1/onboarding/status` (+ `subSteps` extension in plan 014 Phase 2)
+> - `GET /api/v1/payroll-runs/preflight`
+> - `POST /api/v1/onboarding/seed-defaults/{step}`
+> - `TenantSchemaProvisioner` seeding `OrgProfile` + `StatutoryOrgConfig`
+> - Validator tightening (`FathersName`, bank fields)
+> - `Employee.RecomputeProfileComplete` wiring
+> - SuperAdmin route guard (`RequireTenantUser`)
+>
+> **What was removed by plan 014:**
+> - `/onboarding` and `/onboarding/:stepId` routes
+> - `OnboardingWizardPage.tsx`
+> - `OnboardingAwareRedirect` (RootRedirect now goes straight to `/dashboard`)
+> - `RequireNavGate` + sidebar lock icons (per-action gates replaced them)
+>
+> Read plan 014 for the current UX shape.
+
 **Branch:** `onboarding` (from `master @ 29b5092`)
 **Author:** Claude (Opus 4.7) under abhijith.sa
 **Status:** Plan only — no code yet. **Revision 2** (2026-05-24): incorporates user's review findings (preflight readiness vs 422, field-based completeness instead of `ProfileComplete`, lightweight embedded employee step instead of mounting `AddEmployeeWizard`, explicit existing-tenant backfill, lock-on-Paid not Approved, validator scope expanded to Create + Update + Import).

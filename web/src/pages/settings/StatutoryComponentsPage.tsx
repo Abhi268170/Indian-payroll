@@ -52,7 +52,9 @@ export default function StatutoryComponentsPage(): ReactElement {
   // instead of showing a hard error.
   const status = (error as { response?: { status?: number } } | null)?.response?.status
   if (status === 404) {
-    return <Navigate to="/onboarding/statutory" replace />
+    // Phase 4 of the onboarding UX redesign removed /onboarding routes; the setup
+    // checklist on /dashboard now owns the Statutory step.
+    return <Navigate to="/dashboard" replace />
   }
 
   function setTab(id: string): void {
