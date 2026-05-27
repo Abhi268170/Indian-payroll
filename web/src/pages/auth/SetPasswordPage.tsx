@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { api } from '@/lib/api'
+import AuthLayout from '@/components/layout/AuthLayout'
 
 const schema = z.object({
   newPassword: z.string().min(8, 'Minimum 8 characters')
@@ -18,6 +19,9 @@ const schema = z.object({
 })
 type FormValues = z.infer<typeof schema>
 
+const inputCls = 'w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]'
+const errorCls = 'mt-1 text-xs text-[var(--color-error)]'
+
 export default function SetPasswordPage(): React.ReactElement {
   const [params] = useSearchParams()
   const token = params.get('token') ?? ''
@@ -29,29 +33,43 @@ export default function SetPasswordPage(): React.ReactElement {
     resolver: zodResolver(schema),
   })
 
-  const inputCls = 'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900'
-  const errorCls = 'mt-1 text-xs text-red-500'
-
   if (!token || !email) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white border border-gray-200 rounded-xl p-8 max-w-sm w-full text-center">
-          <p className="text-sm text-red-600 mb-4">Invalid or missing link parameters.</p>
-          <Link to="/login" className="text-sm text-gray-700 underline">Back to login</Link>
+      <AuthLayout title="Set password" subtitle="Reset link is invalid or expired.">
+        <div className="space-y-4">
+          <div className="bg-[var(--color-error-bg)] border border-[var(--color-error)]/20 rounded-lg p-4">
+            <p className="text-[13px] text-[var(--color-text-primary)]">
+              Invalid or missing link parameters. Request a new reset link from the login page.
+            </p>
+          </div>
+          <Link
+            to="/login"
+            className="block text-center text-[13px] text-[var(--color-primary)] hover:underline"
+          >
+            Back to login
+          </Link>
         </div>
-      </div>
+      </AuthLayout>
     )
   }
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white border border-gray-200 rounded-xl p-8 max-w-sm w-full text-center">
-          <p className="text-sm text-gray-900 font-medium mb-2">Password set successfully.</p>
-          <p className="text-sm text-gray-500 mb-4">You can now log in with your new password.</p>
-          <Link to="/login" className="text-sm text-gray-700 underline">Go to login</Link>
+      <AuthLayout title="Password set" subtitle="You can now sign in with your new password.">
+        <div className="space-y-4">
+          <div className="bg-[var(--color-success-bg)] border border-[var(--color-success)]/20 rounded-lg p-4">
+            <p className="text-[13px] text-[var(--color-text-primary)]">
+              Your password has been updated.
+            </p>
+          </div>
+          <Link
+            to="/login"
+            className="block w-full text-center bg-[var(--color-primary)] text-white rounded-lg py-2 text-[13px] font-medium hover:bg-[var(--color-primary-hover)] transition-colors"
+          >
+            Go to login
+          </Link>
         </div>
-      </div>
+      </AuthLayout>
     )
   }
 
@@ -71,47 +89,43 @@ export default function SetPasswordPage(): React.ReactElement {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="max-w-sm w-full">
-        <h1 className="text-xl font-semibold text-gray-900 mb-6 text-center">Set Your Password</h1>
+    <AuthLayout
+      title="Set your password"
+      subtitle={`For ${email}. Minimum 8 characters, mixed case, digit + special character.`}
+    >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <label className="block text-[13px] font-medium text-[var(--color-text-primary)] mb-1">New Password</label>
+          <input
+            {...register('newPassword')}
+            type="password"
+            className={inputCls}
+            autoComplete="new-password"
+          />
+          {errors.newPassword && <p className={errorCls}>{errors.newPassword.message}</p>}
+        </div>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="bg-white border border-gray-200 rounded-xl p-6 space-y-4"
+        <div>
+          <label className="block text-[13px] font-medium text-[var(--color-text-primary)] mb-1">Confirm Password</label>
+          <input
+            {...register('confirmPassword')}
+            type="password"
+            className={inputCls}
+            autoComplete="new-password"
+          />
+          {errors.confirmPassword && <p className={errorCls}>{errors.confirmPassword.message}</p>}
+        </div>
+
+        {apiError && <p className="text-[13px] text-[var(--color-error)] bg-[var(--color-error-bg)] rounded-lg px-3 py-2">{apiError}</p>}
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-[var(--color-primary)] text-white rounded-lg py-2 text-[13px] font-medium hover:bg-[var(--color-primary-hover)] disabled:opacity-50 transition-colors"
         >
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-            <input
-              {...register('newPassword')}
-              type="password"
-              className={inputCls}
-              autoComplete="new-password"
-            />
-            {errors.newPassword && <p className={errorCls}>{errors.newPassword.message}</p>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-            <input
-              {...register('confirmPassword')}
-              type="password"
-              className={inputCls}
-              autoComplete="new-password"
-            />
-            {errors.confirmPassword && <p className={errorCls}>{errors.confirmPassword.message}</p>}
-          </div>
-
-          {apiError && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{apiError}</p>}
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-gray-900 text-white rounded-lg py-2 text-sm font-medium hover:bg-gray-700 disabled:opacity-50 transition-colors"
-          >
-            {isSubmitting ? 'Setting password…' : 'Set Password'}
-          </button>
-        </form>
-      </div>
-    </div>
+          {isSubmitting ? 'Setting password…' : 'Set Password'}
+        </button>
+      </form>
+    </AuthLayout>
   )
 }
