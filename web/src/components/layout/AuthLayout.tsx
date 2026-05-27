@@ -1,5 +1,7 @@
 import { type ReactElement, type ReactNode } from 'react'
 import { ShieldCheck, FileText, Calculator } from 'lucide-react'
+import authBgUrl from '@/assets/auth-bg.webp'
+import BrandMark from '@/components/BrandMark'
 
 interface AuthLayoutProps {
   // Right-column heading (e.g. "Sign in", "Forgot password").
@@ -15,11 +17,16 @@ export default function AuthLayout({ title, subtitle, children }: AuthLayoutProp
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[var(--color-page-bg)]">
       {/* Brand / marketing column */}
-      <aside className="md:w-1/2 lg:w-2/5 bg-[var(--color-sidebar-bg)] text-white px-6 py-8 md:p-12 flex flex-col">
+      <aside
+        className="md:w-1/2 lg:w-2/5 text-white px-6 py-8 md:p-12 flex flex-col"
+        style={{
+          backgroundImage: `linear-gradient(rgba(15,23,42,0.35), rgba(15,23,42,0.65)), url(${authBgUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
         <div className="flex items-center gap-3 mb-12">
-          <div className="w-10 h-10 rounded-xl bg-[var(--color-primary)] flex items-center justify-center">
-            <span className="text-[15px] font-bold">IP</span>
-          </div>
+          <BrandMark size="lg" />
           <span className="text-[17px] font-semibold">Indian Payroll</span>
         </div>
 

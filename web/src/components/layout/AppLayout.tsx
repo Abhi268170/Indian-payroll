@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
 import { LogOut, Settings, Users, CreditCard } from 'lucide-react'
 import { clsx } from 'clsx'
+import BrandMark from '@/components/BrandMark'
 
 function navItemCls(isActive: boolean): string {
   return clsx(
@@ -31,9 +32,7 @@ export default function AppLayout(): ReactElement {
       <aside className="w-56 flex-shrink-0 flex flex-col h-screen bg-[var(--color-sidebar-bg)]">
         {/* Logo */}
         <div className="h-14 flex items-center gap-2.5 px-4 border-b border-white/10 flex-shrink-0">
-          <div className="w-7 h-7 rounded-lg bg-[var(--color-sidebar-active)] flex items-center justify-center flex-shrink-0">
-            <span className="text-[11px] font-bold text-white">IP</span>
-          </div>
+          <BrandMark size="sm" />
           <span className="text-[13px] font-semibold text-white tracking-tight">Indian Payroll</span>
         </div>
 
