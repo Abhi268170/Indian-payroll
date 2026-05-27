@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
 import { clsx } from 'clsx'
+import BrandMark from '@/components/BrandMark'
 
 export default function PlatformLayout(): React.ReactElement {
   const navigate = useNavigate()
@@ -15,8 +16,11 @@ export default function PlatformLayout(): React.ReactElement {
     <div className="flex h-screen bg-gray-50">
       <aside className="w-56 flex-shrink-0 bg-gray-900 flex flex-col">
         <div className="px-5 py-4 border-b border-gray-700">
-          <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">Platform Admin</span>
-          <p className="text-sm font-semibold text-white mt-0.5">Indian Payroll</p>
+          <div className="flex items-center gap-2.5 mb-1">
+            <BrandMark size="sm" />
+            <p className="text-sm font-semibold text-white">Indian Payroll</p>
+          </div>
+          <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">Platform Admin</span>
         </div>
 
         <nav className="flex-1 px-3 py-3 space-y-0.5">

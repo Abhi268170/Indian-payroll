@@ -2,6 +2,7 @@ import { type ReactElement } from 'react'
 import { Outlet, useNavigate, useSearchParams, NavLink, Link } from 'react-router-dom'
 import { X, ArrowLeft } from 'lucide-react'
 import { clsx } from 'clsx'
+import BrandMark from '@/components/BrandMark'
 
 interface NavItem {
   label: string
@@ -108,10 +109,11 @@ export default function SettingsLayout(): ReactElement {
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-[var(--color-primary)] flex items-center justify-center flex-shrink-0">
-              <span className="text-[11px] font-bold text-white">IP</span>
-            </div>
-            <span className="text-[15px] font-semibold text-[var(--color-text-primary)]">Settings</span>
+            <BrandMark size="sm" />
+            <span className="text-[15px] font-semibold text-[var(--color-text-primary)]">
+              Indian Payroll
+              <span className="text-[var(--color-text-secondary)] font-normal"> · Settings</span>
+            </span>
           </div>
         </div>
         <button
