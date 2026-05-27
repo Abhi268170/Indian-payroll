@@ -5,6 +5,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { getToken } from '@/lib/api'
 import { useAuthStore } from '@/stores/authStore'
+import AuthLayout from '@/components/layout/AuthLayout'
 
 const schema = z.object({
   username: z.string().email('Enter a valid email'),
@@ -12,6 +13,9 @@ const schema = z.object({
 })
 
 type FormValues = z.infer<typeof schema>
+
+const inputCls = 'w-full border border-[var(--color-border)] rounded-lg px-3 py-2 text-[13px] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]'
+const errorCls = 'mt-1 text-xs text-[var(--color-error)]'
 
 export default function LoginPage(): React.ReactElement {
   const navigate = useNavigate()
@@ -34,52 +38,47 @@ export default function LoginPage(): React.ReactElement {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm bg-white rounded-xl shadow p-8">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-1">Indian Payroll</h1>
-        <p className="text-sm text-gray-500 mb-6">Sign in to your account</p>
+    <AuthLayout title="Sign in" subtitle="Sign in to your account">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          <label className="block text-[13px] font-medium text-[var(--color-text-primary)] mb-1">Email</label>
+          <input
+            {...register('username')}
+            type="email"
+            autoComplete="username"
+            className={inputCls}
+            placeholder="you@company.com"
+          />
+          {errors.username && <p className={errorCls}>{errors.username.message}</p>}
+        </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              {...register('username')}
-              type="email"
-              autoComplete="username"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-              placeholder="you@company.com"
-            />
-            {errors.username && <p className="mt-1 text-xs text-red-500">{errors.username.message}</p>}
-          </div>
+        <div>
+          <label className="block text-[13px] font-medium text-[var(--color-text-primary)] mb-1">Password</label>
+          <input
+            {...register('password')}
+            type="password"
+            autoComplete="current-password"
+            className={inputCls}
+          />
+          {errors.password && <p className={errorCls}>{errors.password.message}</p>}
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              {...register('password')}
-              type="password"
-              autoComplete="current-password"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-            />
-            {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>}
-          </div>
+        {error && <p className="text-[13px] text-[var(--color-error)] bg-[var(--color-error-bg)] rounded-lg px-3 py-2">{error}</p>}
 
-          {error && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-[var(--color-primary)] text-white rounded-lg py-2 text-[13px] font-medium hover:bg-[var(--color-primary-hover)] disabled:opacity-50 transition-colors"
+        >
+          {isSubmitting ? 'Signing in…' : 'Sign in'}
+        </button>
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-violet-600 text-white rounded-lg py-2 text-sm font-medium hover:bg-violet-700 disabled:opacity-50 transition-colors"
-          >
-            {isSubmitting ? 'Signing in…' : 'Sign in'}
-          </button>
-
-          <div className="text-center">
-            <Link to="/forgot-password" className="text-xs text-gray-500 hover:text-gray-700">
-              Forgot password?
-            </Link>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className="text-center">
+          <Link to="/forgot-password" className="text-[12px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
+            Forgot password?
+          </Link>
+        </div>
+      </form>
+    </AuthLayout>
   )
 }
