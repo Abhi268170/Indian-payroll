@@ -646,7 +646,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                 <tbody className="bg-[var(--color-page-bg)] border-t border-[var(--color-border)]">
                   <tr>
                     <td colSpan={6} className="px-4 pt-2 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
-                      Benefits (not in monthly gross)
+                      Benefits (in CTC, not in monthly gross)
                     </td>
                   </tr>
                   {benefitsRows.map(b => (

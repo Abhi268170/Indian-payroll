@@ -292,19 +292,29 @@ public class SalaryStructurePreviewCalculatorTests
     }
 
     [Fact]
-    public void Benefits_RenderedSeparately_NotInGross()
+    public void Benefits_RenderedSeparately_ButSubtractFromResidual()
     {
-        SalaryStructurePreviewCalculator.BenefitInput lta = new(
-            Guid.NewGuid(), "LTA", "Leave Travel Allowance", AnnualAmount: 50_000m);
+        // Benefits operator added (health insurance, NPS, etc.) are employer-funded
+        // costs inside CTC. They should shrink the residual just like employer EPF
+        // does — otherwise the operator allocates ₹50k/yr of benefits and the
+        // residual still shows the full ₹X without accounting for them.
+        SalaryStructurePreviewCalculator.BenefitInput insurance = new(
+            Guid.NewGuid(), "HEALTH", "Health Insurance", AnnualAmount: 48_000m);
 
-        SalaryStructurePreviewCalculator.Output output = SalaryStructurePreviewCalculator.Compute(
+        SalaryStructurePreviewCalculator.Output withBenefit = SalaryStructurePreviewCalculator.Compute(
             MakeInputs(annualCtc: 6_00_000m, templateComponents: SimpleTemplate(),
-                benefits: new[] { lta }));
+                benefits: new[] { insurance }));
+        SalaryStructurePreviewCalculator.Output without = SalaryStructurePreviewCalculator.Compute(
+            MakeInputs(annualCtc: 6_00_000m, templateComponents: SimpleTemplate()));
 
-        output.Benefits.Should().HaveCount(1);
-        output.Benefits.First().AnnualAmount.Should().Be(50_000m);
-        output.Benefits.First().MonthlyAmount.Should().Be(4_166.67m);  // 50000/12 rounded AwayFromZero
-        // Benefits don't change residual or net pay
-        output.NetPayMonthly.Should().Be(50_000m - output.EmployeeDeductions.Sum(d => d.MonthlyAmount));
+        // Benefit rendered in its own section
+        withBenefit.Benefits.Should().HaveCount(1);
+        withBenefit.Benefits.First().MonthlyAmount.Should().Be(4_000m);
+        withBenefit.Benefits.First().AnnualAmount.Should().Be(48_000m);
+
+        // Residual drops by exactly the benefit monthly cost
+        decimal residualWith = withBenefit.Rows.First(r => r.IsResidual).MonthlyAmount;
+        decimal residualWithout = without.Rows.First(r => r.IsResidual).MonthlyAmount;
+        (residualWithout - residualWith).Should().Be(4_000m);
     }
 }

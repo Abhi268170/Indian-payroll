@@ -145,7 +145,7 @@ export default function EmployeeSalaryTab({ employeeId }: Props): React.ReactEle
               <tbody className="bg-[var(--color-page-bg)] border-t border-[var(--color-border)]">
                 <tr>
                   <td colSpan={4} className="px-5 pt-2 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
-                    Benefits (not in monthly gross)
+                    Benefits (in CTC, not in monthly gross)
                   </td>
                 </tr>
                 {data.benefits.map(b => (
