@@ -142,14 +142,32 @@ export interface EmployeeSalaryStructureDto {
   id: string
   annualCTC: number
   monthlyGross: number
+  // Net take-home per month after employee statutory deductions.
+  netPayMonthly: number
   templateId: string | null
   templateName: string | null
   effectiveFrom: string
   components: EmployeeSalaryComponentBreakdownDto[]
   employerContributions: EmployerContributionDto[]
+  employeeDeductions: EmployeeDeductionDto[]
+  benefits: BenefitDto[]
 }
 
 export interface EmployerContributionDto {
+  code: string
+  name: string
+  monthlyAmount: number
+  annualAmount: number
+}
+
+export interface EmployeeDeductionDto {
+  code: string
+  name: string
+  monthlyAmount: number
+  annualAmount: number
+}
+
+export interface BenefitDto {
   code: string
   name: string
   monthlyAmount: number

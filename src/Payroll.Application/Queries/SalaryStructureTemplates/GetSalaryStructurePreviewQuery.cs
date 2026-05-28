@@ -3,26 +3,31 @@ using Payroll.Application.Services;
 using Payroll.Domain.Entities;
 using Payroll.Domain.Enums;
 using Payroll.Domain.Interfaces;
+using EngineInputs = Payroll.Engine.Inputs;
 
 namespace Payroll.Application.Queries.SalaryStructureTemplates;
 
-// Backend-authoritative preview of a salary structure. Replaces the per-page
-// client-side calculators with a single source of truth — the same
-// SalaryStructurePreviewCalculator the persisted-employee query already uses.
+// Backend-authoritative preview of a salary structure.
 //
 // Accepts inline template components so the settings builder can preview
 // unsaved drafts. For the wizard, the caller passes the same template
 // components it already has loaded plus any added/override entries.
 //
-// Returns the row breakdown + the employer-contribution lines (employer EPF,
-// gratuity) that the org's StatutoryOrgConfig says belong in CTC.
+// Returns the row breakdown + employer-contribution lines (in CTC) +
+// employee-side deductions + net pay + benefits. WorkStateCode opt-in:
+// builder previews without state context get earnings + employer cost lines
+// but PT/LWF deductions are skipped (state-dependent).
 
 public sealed record SalaryStructurePreviewQuery(
     decimal AnnualCtc,
     IReadOnlyList<PreviewTemplateComponentInput> TemplateComponents,
     IReadOnlyList<PreviewOverrideInput> Overrides,
     IReadOnlyList<PreviewAddedComponentInput> AddedComponents,
-    PreviewEmployeeFlagsInput EmployeeFlags
+    IReadOnlyList<PreviewBenefitInput> Benefits,
+    PreviewEmployeeFlagsInput EmployeeFlags,
+    string? WorkStateCode,
+    int? Year,
+    int? Month
 ) : IRequest<SalaryStructurePreviewDto>;
 
 public sealed record PreviewTemplateComponentInput(
@@ -44,16 +49,24 @@ public sealed record PreviewAddedComponentInput(
     decimal? FixedAmount,
     decimal? Percentage);
 
+public sealed record PreviewBenefitInput(
+    Guid ComponentId,
+    decimal AnnualAmount);
+
 public sealed record PreviewEmployeeFlagsInput(
     bool EpfEnabled = true,
     bool EsiEnabled = true,
     bool PtEnabled = true,
     bool LwfEnabled = true,
-    bool GratuityEnabled = true);
+    bool GratuityEnabled = true,
+    bool IsPwd = false);
 
 public sealed record SalaryStructurePreviewDto(
     IReadOnlyList<PreviewRowDto> Rows,
-    IReadOnlyList<PreviewEmployerContributionDto> EmployerContributions);
+    IReadOnlyList<PreviewEmployerContributionDto> EmployerContributions,
+    IReadOnlyList<PreviewEmployeeDeductionDto> EmployeeDeductions,
+    decimal NetPayMonthly,
+    IReadOnlyList<PreviewBenefitDto> Benefits);
 
 public sealed record PreviewRowDto(
     Guid ComponentId,
@@ -74,6 +87,19 @@ public sealed record PreviewEmployerContributionDto(
     decimal MonthlyAmount,
     decimal AnnualAmount);
 
+public sealed record PreviewEmployeeDeductionDto(
+    string Code,
+    string Name,
+    decimal MonthlyAmount,
+    decimal AnnualAmount);
+
+public sealed record PreviewBenefitDto(
+    Guid ComponentId,
+    string Code,
+    string Name,
+    decimal MonthlyAmount,
+    decimal AnnualAmount);
+
 internal sealed class GetSalaryStructurePreviewHandler(
     ISalaryComponentRepository componentRepo,
     IStatutoryConfigRepository statutoryRepo,
@@ -85,13 +111,11 @@ internal sealed class GetSalaryStructurePreviewHandler(
         // Bulk-load every referenced SalaryComponent in a single round-trip.
         IEnumerable<Guid> referencedIds = request.TemplateComponents.Select(c => c.ComponentId)
             .Concat(request.AddedComponents.Select(a => a.ComponentId))
+            .Concat(request.Benefits.Select(b => b.ComponentId))
             .Distinct();
         IReadOnlyList<SalaryComponent> components = await componentRepo.GetByIdsAsync(referencedIds.ToList(), ct);
         Dictionary<Guid, SalaryComponent> componentMap = components.ToDictionary(c => c.Id);
 
-        // Build the in-memory SalaryStructureComponent rows the calculator expects.
-        // These are transient — never persisted — but must carry the SalaryComponent
-        // navigation so the calculator can read EarningType + ConsiderForEpf.
         Guid syntheticTemplateId = Guid.NewGuid();
         List<SalaryStructureComponent> templateRows = [];
         foreach (PreviewTemplateComponentInput input in request.TemplateComponents)
@@ -108,8 +132,6 @@ internal sealed class GetSalaryStructurePreviewHandler(
             templateRows.Add(slot);
         }
 
-        // Overrides — apply on top of template rows. Wizard passes employee-level
-        // edits; builder always passes empty (no employee context yet).
         Dictionary<Guid, EmployeeSalaryComponentOverride> overrideMap = [];
         foreach (PreviewOverrideInput ov in request.Overrides)
         {
@@ -124,7 +146,6 @@ internal sealed class GetSalaryStructurePreviewHandler(
             overrideMap[ov.SalaryComponentId] = entity;
         }
 
-        // Added components (not in template) — typically employee-level extra earnings.
         List<SalaryStructurePreviewCalculator.AddedComponent> addedForCalc = [];
         foreach (PreviewAddedComponentInput added in request.AddedComponents)
         {
@@ -142,32 +163,82 @@ internal sealed class GetSalaryStructurePreviewHandler(
             addedForCalc.Add(new SalaryStructurePreviewCalculator.AddedComponent(
                 added.ComponentId, component.Code, component.Name, component.EarningType,
                 ConsiderForEpf: component.ConsiderForEpf == true,
+                ConsiderForEsi: component.ConsiderForEsi == true,
                 Override: ov));
         }
 
-        // Org config — load fresh from DB so the preview reflects the tenant's
-        // current employer-EPF-in-CTC + gratuity-in-CTC settings. Falls back to a
-        // default config if not yet set (preserves the historical permissive stance).
-        StatutoryOrgConfig orgConfig = await statutoryRepo.GetByTenantAsync(ct)
-            ?? StatutoryOrgConfig.CreateDefault(tenantContext.TenantId, Guid.Empty);
+        // Benefits — separate display section.
+        List<SalaryStructurePreviewCalculator.BenefitInput> benefitsForCalc = [];
+        foreach (PreviewBenefitInput b in request.Benefits)
+        {
+            if (!componentMap.TryGetValue(b.ComponentId, out SalaryComponent? component)) continue;
+            if (component.TenantId != tenantContext.TenantId) continue;
+            benefitsForCalc.Add(new SalaryStructurePreviewCalculator.BenefitInput(
+                b.ComponentId, component.Code, component.Name, b.AnnualAmount));
+        }
+
+        // Build engine StatutoryConfig from real DB rows so the calculator can
+        // delegate to engine PFCalculator / ESICalculator / PTCalculator /
+        // LWFCalculator. Single source of statutory truth across preview + payroll.
+        EngineInputs.StatutoryConfig engineConfig = await BuildEngineConfigAsync(
+            request.WorkStateCode, ct);
 
         SalaryStructurePreviewCalculator.EmployeeStatutoryFlags flags = new(
             EpfEnabled: request.EmployeeFlags.EpfEnabled,
             EsiEnabled: request.EmployeeFlags.EsiEnabled,
             PtEnabled: request.EmployeeFlags.PtEnabled,
             LwfEnabled: request.EmployeeFlags.LwfEnabled,
-            GratuityEnabled: request.EmployeeFlags.GratuityEnabled);
+            GratuityEnabled: request.EmployeeFlags.GratuityEnabled,
+            IsPwd: request.EmployeeFlags.IsPwd);
 
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
         SalaryStructurePreviewCalculator.Output result = SalaryStructurePreviewCalculator.Compute(
             new SalaryStructurePreviewCalculator.Inputs(
                 AnnualCtc: request.AnnualCtc,
                 TemplateComponents: templateRows,
                 Overrides: overrideMap,
                 AddedComponents: addedForCalc,
+                Benefits: benefitsForCalc,
                 EmployeeFlags: flags,
-                OrgConfig: orgConfig,
-                Caps: new SalaryStructurePreviewCalculator.StatutoryCaps()));
+                EngineConfig: engineConfig,
+                WorkStateCode: request.WorkStateCode,
+                Year: request.Year ?? today.Year,
+                Month: request.Month ?? today.Month));
 
+        return MapToDto(result);
+    }
+
+    private async Task<EngineInputs.StatutoryConfig> BuildEngineConfigAsync(
+        string? workStateCode, CancellationToken ct)
+    {
+        StatutoryOrgConfig orgConfig = await statutoryRepo.GetByTenantAsync(ct)
+            ?? StatutoryOrgConfig.CreateDefault(tenantContext.TenantId, Guid.Empty);
+
+        DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+        int fiscalYear = today.Month >= 4 ? today.Year : today.Year - 1;
+        string fyKey = (fiscalYear + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        IncomeTaxConfig? taxConfig = await statutoryRepo.GetIncomeTaxConfigAsync(fyKey, "New", ct);
+        IReadOnlyList<IncomeTaxSlab> taxSlabs = await statutoryRepo.GetIncomeTaxSlabsAsync(fyKey, "New", ct);
+        IReadOnlyList<IncomeTaxSurchargeSlab> surchargeSlabs = await statutoryRepo.GetSurchargeSlabsAsync(fyKey, "New", ct);
+
+        // PT slabs are state-keyed. Only load for the relevant state to keep
+        // the payload small; preview only uses one state per call.
+        IReadOnlyList<ProfessionalTaxSlab> ptSlabs = !string.IsNullOrWhiteSpace(workStateCode)
+            ? await statutoryRepo.GetPtSlabsAsync(workStateCode, today, ct)
+            : [];
+
+        // LWF: load all so engine calculator can filter by state internally.
+        IReadOnlyList<LwfStateConfig> lwfConfigs = !string.IsNullOrWhiteSpace(workStateCode)
+            ? await statutoryRepo.GetLwfConfigsAsync([workStateCode], ct)
+            : [];
+
+        return StatutoryConfigBuilder.Build(
+            orgConfig, taxConfig, taxSlabs, surchargeSlabs, ptSlabs, lwfConfigs);
+    }
+
+    private static SalaryStructurePreviewDto MapToDto(SalaryStructurePreviewCalculator.Output result)
+    {
         List<PreviewRowDto> rows = result.Rows.Select(r => new PreviewRowDto(
             r.ComponentId, r.Code, r.Name, r.FormulaType.ToString(),
             r.Percentage, r.FixedAmount, r.MonthlyAmount, r.AnnualAmount,
@@ -177,6 +248,14 @@ internal sealed class GetSalaryStructurePreviewHandler(
             .Select(e => new PreviewEmployerContributionDto(e.Code, e.Name, e.MonthlyAmount, e.AnnualAmount))
             .ToList();
 
-        return new SalaryStructurePreviewDto(rows, employerContributions);
+        List<PreviewEmployeeDeductionDto> employeeDeductions = result.EmployeeDeductions
+            .Select(d => new PreviewEmployeeDeductionDto(d.Code, d.Name, d.MonthlyAmount, d.AnnualAmount))
+            .ToList();
+
+        List<PreviewBenefitDto> benefits = result.Benefits
+            .Select(b => new PreviewBenefitDto(Guid.Empty, b.Code, b.Name, b.MonthlyAmount, b.AnnualAmount))
+            .ToList();
+
+        return new SalaryStructurePreviewDto(rows, employerContributions, employeeDeductions, result.NetPayMonthly, benefits);
     }
 }

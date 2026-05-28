@@ -104,7 +104,28 @@ export default function EmployeeSalaryTab({ employeeId }: Props): React.ReactEle
                 </tr>
               ))}
             </tbody>
-            {data.employerContributions.length > 0 && (
+            {(data.employeeDeductions ?? []).length > 0 && (
+              <tbody className="bg-[var(--color-page-bg)] border-t border-[var(--color-border)]">
+                <tr>
+                  <td colSpan={4} className="px-5 pt-2 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
+                    Employee deductions
+                  </td>
+                </tr>
+                {data.employeeDeductions.map(d => (
+                  <tr key={d.code} className="text-[var(--color-text-secondary)]">
+                    <td className="px-5 py-1.5" colSpan={2}>{d.name}</td>
+                    <td className="px-5 py-1.5 text-right">−{formatINR(d.monthlyAmount)}</td>
+                    <td className="px-5 py-1.5 text-right">−{formatINR(d.annualAmount)}</td>
+                  </tr>
+                ))}
+                <tr className="font-semibold text-[var(--color-text-primary)] border-t border-[var(--color-border)]">
+                  <td className="px-5 py-2" colSpan={2}>Take-home (net pay)</td>
+                  <td className="px-5 py-2 text-right">{formatINR(data.netPayMonthly ?? 0)}</td>
+                  <td className="px-5 py-2 text-right">{formatINR((data.netPayMonthly ?? 0) * 12)}</td>
+                </tr>
+              </tbody>
+            )}
+            {(data.employerContributions ?? []).length > 0 && (
               <tbody className="bg-[var(--color-page-bg)] border-t border-[var(--color-border)]">
                 <tr>
                   <td colSpan={4} className="px-5 pt-2 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
@@ -116,6 +137,22 @@ export default function EmployeeSalaryTab({ employeeId }: Props): React.ReactEle
                     <td className="px-5 py-1.5" colSpan={2}>{ec.name}</td>
                     <td className="px-5 py-1.5 text-right">{formatINR(ec.monthlyAmount)}</td>
                     <td className="px-5 py-1.5 text-right">{formatINR(ec.annualAmount)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            )}
+            {(data.benefits ?? []).length > 0 && (
+              <tbody className="bg-[var(--color-page-bg)] border-t border-[var(--color-border)]">
+                <tr>
+                  <td colSpan={4} className="px-5 pt-2 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
+                    Benefits (not in monthly gross)
+                  </td>
+                </tr>
+                {data.benefits.map(b => (
+                  <tr key={b.code} className="text-[var(--color-text-secondary)]">
+                    <td className="px-5 py-1.5" colSpan={2}>{b.name}</td>
+                    <td className="px-5 py-1.5 text-right">{formatINR(b.monthlyAmount)}</td>
+                    <td className="px-5 py-1.5 text-right">{formatINR(b.annualAmount)}</td>
                   </tr>
                 ))}
               </tbody>
