@@ -141,7 +141,9 @@ export default function VariableInputsPanel({ runId, employeeId, employeeName, o
           </div>
         )}
 
-        {data && (
+        {data && (() => {
+          const benefitsTotal = buildBenefits(data).reduce((s, r) => s + r.amount, 0)
+          return (
           <>
             {/* Summary strip */}
             <div className="grid grid-cols-3 divide-x divide-[var(--color-border)] border-b border-[var(--color-border)] bg-[var(--color-page-bg)]">
@@ -158,6 +160,17 @@ export default function VariableInputsPanel({ runId, employeeId, employeeName, o
               <div className="px-4 py-3 text-center">
                 <p className="text-[11px] text-[var(--color-text-secondary)] mb-0.5">Net Pay</p>
                 <p className="text-[14px] font-semibold text-[var(--color-primary)]">{formatINR(data.netPay)}</p>
+              </div>
+            </div>
+            {/* CTC strip */}
+            <div className="grid grid-cols-2 divide-x divide-[var(--color-border)] border-b border-[var(--color-border)] bg-white">
+              <div className="px-4 py-2.5 text-center" title="Employer cost on top of Gross Pay — EPF/EPS/Gratuity/LWF + configured benefits">
+                <p className="text-[11px] text-[var(--color-text-secondary)] mb-0.5">Employer Cost</p>
+                <p className="text-[13px] font-semibold text-[var(--color-text-primary)]">+ {formatINR(benefitsTotal)}</p>
+              </div>
+              <div className="px-4 py-2.5 text-center" title="Monthly CTC = Gross Pay + Employer Cost">
+                <p className="text-[11px] text-[var(--color-text-secondary)] mb-0.5">Monthly CTC</p>
+                <p className="text-[13px] font-semibold text-[var(--color-text-primary)]">{formatINR(data.monthlyCTC)}</p>
               </div>
             </div>
 
@@ -415,7 +428,8 @@ export default function VariableInputsPanel({ runId, employeeId, employeeName, o
               </div>
             </div>
           </>
-        )}
+          )
+        })()}
       </div>
       {addModalCategory != null && (
         <AddOneTimeEntryModal
