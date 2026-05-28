@@ -25,6 +25,11 @@ public sealed class PayrunComponentBreakdown : AuditableEntity
     public bool CalculateOnProRata { get; private set; }
     public EpfInclusionRule EpfInclusionRule { get; private set; }
     public bool ShowInPayslip { get; private set; }
+    // True for employer-borne benefit rows (health insurance, NPS employer match,
+    // etc.). These are part of CTC, surfaced on the payslip in a separate
+    // "Employer benefits" section, and never roll into gross / net / PF / ESI /
+    // taxable wage. Engine never touches them; persisted for audit + display only.
+    public bool IsBenefit { get; private set; }
 
     public static PayrunComponentBreakdown Create(
         Guid payrollRunId,
@@ -41,7 +46,8 @@ public sealed class PayrunComponentBreakdown : AuditableEntity
         bool considerForEsi = false,
         bool calculateOnProRata = true,
         EpfInclusionRule epfInclusionRule = EpfInclusionRule.Always,
-        bool showInPayslip = true) =>
+        bool showInPayslip = true,
+        bool isBenefit = false) =>
         new()
         {
             PayrollRunId = payrollRunId,
@@ -58,7 +64,8 @@ public sealed class PayrunComponentBreakdown : AuditableEntity
             ConsiderForEsi = considerForEsi,
             CalculateOnProRata = calculateOnProRata,
             EpfInclusionRule = epfInclusionRule,
-            ShowInPayslip = showInPayslip
+            ShowInPayslip = showInPayslip,
+            IsBenefit = isBenefit
         };
 
     public void UpdateAmounts(decimal fullAmount, decimal proratedAmount)

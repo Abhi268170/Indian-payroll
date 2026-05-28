@@ -26,7 +26,8 @@ export default function PayslipPanel({ runId, employeeId, employeeName, onClose 
   })
 
   const earnings = data?.components.filter((c: PayslipComponentDto) => c.isEarning) ?? []
-  const deductions = data?.components.filter((c: PayslipComponentDto) => !c.isEarning) ?? []
+  const benefits = data?.components.filter((c: PayslipComponentDto) => c.isBenefit) ?? []
+  const deductions = data?.components.filter((c: PayslipComponentDto) => !c.isEarning && !c.isBenefit) ?? []
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -213,6 +214,38 @@ export default function PayslipPanel({ runId, employeeId, employeeName, onClose 
                   </table>
                 </div>
               </section>
+
+              {/* Employer benefits (in CTC, not in gross/net) */}
+              {benefits.length > 0 && (
+                <section className="mt-5">
+                  <h4 className="text-[12px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide mb-2">
+                    Employer Benefits
+                    <span className="ml-1.5 text-[11px] font-normal text-[var(--color-text-muted)] normal-case tracking-normal">
+                      (in CTC, not added to gross or net)
+                    </span>
+                  </h4>
+                  <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="bg-[var(--color-page-bg)] border-b border-[var(--color-border)]">
+                          <th className="px-3 py-2 text-left text-[11px] font-semibold text-[var(--color-text-secondary)]">Component</th>
+                          <th className="px-3 py-2 text-right text-[11px] font-semibold text-[var(--color-text-secondary)]">Amount</th>
+                          <th className="px-3 py-2 text-right text-[11px] font-semibold text-[var(--color-text-secondary)]">YTD</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[var(--color-border)]">
+                        {benefits.map((c: PayslipComponentDto) => (
+                          <tr key={c.componentCode}>
+                            <td className="px-3 py-2 text-[13px] text-[var(--color-text-primary)]">{c.componentName}</td>
+                            <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-primary)]">{formatINR(c.amount)}</td>
+                            <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-secondary)]">{formatINR(c.ytdAmount)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              )}
             </div>
           </div>
         )}

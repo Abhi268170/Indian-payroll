@@ -69,9 +69,10 @@ public sealed class GetPayslipDataHandler(
             b.ComponentName,
             b.ProratedAmount,
             ytdByComponent.GetValueOrDefault(b.ComponentCode, 0m),
-            IsEarning: b.SalaryComponentId is null
-                ? false  // reimbursement — show in deductions/reimbursements column
-                : !deductionIds.Contains(b.SalaryComponentId.Value)))
+            IsEarning: !b.IsBenefit && (b.SalaryComponentId is null
+                ? false
+                : !deductionIds.Contains(b.SalaryComponentId.Value)),
+            IsBenefit: b.IsBenefit))
             .ToList();
 
         // FnF context: an exit may exist for this employee. PayslipPdfGenerator

@@ -354,6 +354,47 @@ public sealed class InitiatePayrollRunHandler(
                         showInPayslip: showInPayslipByComponent.GetValueOrDefault(comp.ComponentId, true));
                     await breakdownRepo.AddAsync(breakdown, ct);
                 }
+
+                // Benefit-category overrides — persist as breakdown rows flagged
+                // IsBenefit=true so the payslip + pay-run-detail UI can render
+                // them under a separate "Employer benefits" section. Engine never
+                // saw these rows (Pass 3 skips Benefit category); we re-derive
+                // each row's monthly amount the same way BuildComponentInputs
+                // computed `benefitsMonthlyTotal` for the CTC subtraction.
+                HashSet<Guid> benefitTemplateCompIds = info.template?.Components
+                    .Select(c => c.ComponentId).ToHashSet() ?? [];
+                foreach (EmployeeSalaryComponentOverride ov in info.structure.ComponentOverrides)
+                {
+                    if (benefitTemplateCompIds.Contains(ov.SalaryComponentId)) continue;
+                    if (!addedCompDetails.TryGetValue(ov.SalaryComponentId, out SalaryComponent? sc)) continue;
+                    if (sc.Category != ComponentCategory.Benefit) continue;
+
+                    decimal basicForBenefit = result.Gross.ComponentBreakdown
+                        .FirstOrDefault(c => c.Code == "BASICSALARY")?.ProratedAmount ?? 0m;
+                    decimal benefitMonthly = ov.FormulaType switch
+                    {
+                        ComponentFormulaType.Fixed => ov.FixedAmount ?? 0m,
+                        ComponentFormulaType.PercentOfCTC =>
+                            Math.Round(info.structure.AnnualCTC * (ov.Percentage ?? 0m) / 100m / 12m, 2, MidpointRounding.AwayFromZero),
+                        ComponentFormulaType.PercentOfBasic =>
+                            Math.Round(basicForBenefit * (ov.Percentage ?? 0m) / 100m, 2, MidpointRounding.AwayFromZero),
+                        _ => 0m,
+                    };
+                    if (benefitMonthly <= 0m) continue;
+
+                    PayrunComponentBreakdown benefitRow = PayrunComponentBreakdown.Create(
+                        payrollRun.Id, emp.Id, tenantContext.TenantId,
+                        sc.Id, sc.Code, sc.NameInPayslip,
+                        benefitMonthly, benefitMonthly,
+                        isOneTimeEarning: false,
+                        isTaxable: false,
+                        considerForEpf: false,
+                        considerForEsi: false,
+                        calculateOnProRata: false,
+                        showInPayslip: sc.ShowInPayslip ?? true,
+                        isBenefit: true);
+                    await breakdownRepo.AddAsync(benefitRow, ct);
+                }
             }
 
             await payrunEmployeeRepo.AddAsync(payrunEmp, ct);
