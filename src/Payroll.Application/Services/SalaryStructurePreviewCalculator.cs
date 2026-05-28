@@ -204,7 +204,16 @@ public static class SalaryStructurePreviewCalculator
             gratuityMonthly = RoundUp(basicMonthly * 15m / 26m / 12m);
         }
 
-        decimal employerStatutoryMonthly = employerEpfMonthly + gratuityMonthly;
+        // Benefits the operator added (health insurance, NPS employer match, etc.)
+        // are employer-funded costs that sit inside CTC, even though they don't
+        // hit the monthly gross. Treat them like other in-CTC employer outflows
+        // so residual (Special Allowance) shrinks by their total. Engine handles
+        // benefit tax treatment at run time — preview just gets the CTC math right.
+        decimal benefitsMonthlyTotal = 0m;
+        foreach (BenefitInput b in inputs.Benefits)
+            benefitsMonthlyTotal += b.AnnualAmount / 12m;
+
+        decimal employerStatutoryMonthly = employerEpfMonthly + gratuityMonthly + benefitsMonthlyTotal;
 
         // ── Residual (Special Allowance) ─────────────────────────────────────
         if (residual?.Component is not null)
