@@ -40,7 +40,11 @@ public sealed class SalaryStructureTemplatesController(ISender sender) : Control
                 req.Components.Select(c => new TemplateComponentInput(
                     c.ComponentId, c.FormulaType, c.FixedAmount, c.Percentage, c.DisplayOrder))
                 .ToList(),
-                GetActorId()), ct);
+                GetActorId(),
+                EpfEnabled: req.EpfEnabled,
+                EsiEnabled: req.EsiEnabled,
+                PtEnabled: req.PtEnabled,
+                LwfEnabled: req.LwfEnabled), ct);
             return CreatedAtAction(nameof(Get), new { id }, new { id });
         }
         catch (FluentValidation.ValidationException ex)
@@ -64,7 +68,11 @@ public sealed class SalaryStructureTemplatesController(ISender sender) : Control
                 req.Components.Select(c => new TemplateComponentInput(
                     c.ComponentId, c.FormulaType, c.FixedAmount, c.Percentage, c.DisplayOrder))
                 .ToList(),
-                GetActorId()), ct);
+                GetActorId(),
+                EpfEnabled: req.EpfEnabled,
+                EsiEnabled: req.EsiEnabled,
+                PtEnabled: req.PtEnabled,
+                LwfEnabled: req.LwfEnabled), ct);
             return NoContent();
         }
         catch (FluentValidation.ValidationException ex)
@@ -75,6 +83,30 @@ public sealed class SalaryStructureTemplatesController(ISender sender) : Control
         {
             return Conflict(new { error = ex.Message });
         }
+    }
+
+    // Backend-authoritative preview of an unsaved or saved salary structure.
+    // Replaces three drifted client-side calculators with one round trip.
+    [HttpPost("preview")]
+    public async Task<IActionResult> Preview(
+        [FromBody] SalaryStructurePreviewRequest req, CancellationToken ct)
+    {
+        SalaryStructurePreviewDto result = await sender.Send(new SalaryStructurePreviewQuery(
+            AnnualCtc: req.AnnualCtc,
+            TemplateComponents: req.TemplateComponents.Select(c => new PreviewTemplateComponentInput(
+                c.ComponentId, c.FormulaType, c.FixedAmount, c.Percentage, c.DisplayOrder)).ToList(),
+            Overrides: (req.Overrides ?? []).Select(o => new PreviewOverrideInput(
+                o.SalaryComponentId, o.FormulaType, o.FixedAmount, o.Percentage)).ToList(),
+            AddedComponents: (req.AddedComponents ?? []).Select(a => new PreviewAddedComponentInput(
+                a.ComponentId, a.FormulaType, a.FixedAmount, a.Percentage)).ToList(),
+            EmployeeFlags: new PreviewEmployeeFlagsInput(
+                EpfEnabled: req.EmployeeFlags?.EpfEnabled ?? true,
+                EsiEnabled: req.EmployeeFlags?.EsiEnabled ?? true,
+                PtEnabled: req.EmployeeFlags?.PtEnabled ?? true,
+                LwfEnabled: req.EmployeeFlags?.LwfEnabled ?? true,
+                GratuityEnabled: req.EmployeeFlags?.GratuityEnabled ?? true)
+        ), ct);
+        return Ok(result);
     }
 
     [HttpPut("{id:guid}/active")]
@@ -103,7 +135,11 @@ public sealed class SalaryStructureTemplatesController(ISender sender) : Control
 public record CreateSalaryStructureTemplateRequest(
     string Name,
     string? Description,
-    List<TemplateComponentInputRequest> Components);
+    List<TemplateComponentInputRequest> Components,
+    bool EpfEnabled = true,
+    bool EsiEnabled = true,
+    bool PtEnabled = true,
+    bool LwfEnabled = true);
 
 public record TemplateComponentInputRequest(
     Guid ComponentId,
@@ -111,3 +147,29 @@ public record TemplateComponentInputRequest(
     decimal? FixedAmount,
     decimal? Percentage,
     int DisplayOrder);
+
+public sealed record SalaryStructurePreviewRequest(
+    decimal AnnualCtc,
+    List<TemplateComponentInputRequest> TemplateComponents,
+    List<PreviewOverrideRequest>? Overrides,
+    List<PreviewAddedComponentRequest>? AddedComponents,
+    PreviewEmployeeFlagsRequest? EmployeeFlags);
+
+public sealed record PreviewOverrideRequest(
+    Guid SalaryComponentId,
+    string FormulaType,
+    decimal? FixedAmount,
+    decimal? Percentage);
+
+public sealed record PreviewAddedComponentRequest(
+    Guid ComponentId,
+    string FormulaType,
+    decimal? FixedAmount,
+    decimal? Percentage);
+
+public sealed record PreviewEmployeeFlagsRequest(
+    bool EpfEnabled = true,
+    bool EsiEnabled = true,
+    bool PtEnabled = true,
+    bool LwfEnabled = true,
+    bool GratuityEnabled = true);

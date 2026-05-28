@@ -136,6 +136,20 @@ function evaluateMonthly(
   return 0
 }
 
+// API request/response — mirror of backend SalaryStructurePreviewRequest/Dto.
+export interface PreviewApiRequest {
+  annualCtc: number
+  templateComponents: { componentId: string; formulaType: FormulaType; fixedAmount: number | null; percentage: number | null; displayOrder: number }[]
+  overrides: { salaryComponentId: string; formulaType: FormulaType; fixedAmount: number | null; percentage: number | null }[]
+  addedComponents: { componentId: string; formulaType: FormulaType; fixedAmount: number | null; percentage: number | null }[]
+  employeeFlags: EmployeeStatutoryFlags
+}
+
+export interface PreviewApiResponse {
+  rows: PreviewRow[]
+  employerContributions: EmployerContribution[]
+}
+
 export function computePreview(inputs: PreviewInputs): PreviewOutput {
   const annualCtc = inputs.annualCtc
   const monthlyGross = annualCtc / 12
