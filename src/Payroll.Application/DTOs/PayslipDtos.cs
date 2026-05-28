@@ -5,7 +5,8 @@ public sealed record PayslipComponentDto(
     string ComponentName,
     decimal Amount,
     decimal YtdAmount,
-    bool IsEarning);
+    bool IsEarning,
+    bool IsBenefit);
 
 public sealed record PayslipData(
     Guid PayrollRunId,

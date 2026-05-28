@@ -22,6 +22,7 @@ internal sealed class PayrunComponentBreakdownConfiguration : IEntityTypeConfigu
         builder.Property(e => e.CalculateOnProRata).IsRequired().HasDefaultValue(true);
         builder.Property(e => e.EpfInclusionRule).IsRequired().HasConversion<string>().HasMaxLength(40).HasDefaultValue(Payroll.Domain.Enums.EpfInclusionRule.Always);
         builder.Property(e => e.ShowInPayslip).IsRequired().HasDefaultValue(true);
+        builder.Property(e => e.IsBenefit).IsRequired().HasDefaultValue(false);
 
         builder.Property(e => e.CreatedAt).HasColumnType("timestamptz").IsRequired();
         builder.Property(e => e.UpdatedAt).HasColumnType("timestamptz");

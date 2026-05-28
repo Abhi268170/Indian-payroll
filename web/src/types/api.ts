@@ -353,6 +353,9 @@ export interface PayslipComponentDto {
   amount: number
   ytdAmount: number
   isEarning: boolean
+  // True for employer-paid benefit rows (health insurance, NPS employer match).
+  // Rendered in a separate "Employer benefits" section on the payslip.
+  isBenefit: boolean
 }
 
 export interface PayslipData {
