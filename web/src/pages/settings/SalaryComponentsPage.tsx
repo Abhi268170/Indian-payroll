@@ -40,6 +40,9 @@ export interface SalaryComponentSummary {
   deductionFrequency: string | null
   reimbursementAmount: number | null
   benefitPercentage: number | null
+  // Required by salary-structure preview math (residual + employer EPF).
+  earningType: string | null
+  considerForEpf: boolean
 }
 
 type ModalType = ComponentCategory | null

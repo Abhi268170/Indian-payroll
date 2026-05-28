@@ -4,6 +4,14 @@ import { Plus, RotateCcw, Trash2 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { formatINR } from '@/lib/format'
 import type { SalaryStructureTemplateSummaryDto, SalaryStructureTemplateDetailDto, ComponentOverrideRequest, EmployeeSalaryStructureDto, EmployeeDto } from '@/types/api'
+import {
+  computePreview,
+  type PreviewComponent,
+  type AddedComponent as PreviewAddedComponent,
+  type EmployeeStatutoryFlags,
+  type EmployerContribution,
+  type FormulaType,
+} from '@/lib/salaryStructurePreview'
 
 interface Props {
   employeeId: string
@@ -22,6 +30,8 @@ interface SalaryComponentSummary {
   formulaType: string
   fixedAmount: number | null
   percentage: number | null
+  earningType: string | null
+  considerForEpf: boolean
 }
 
 interface Override {
@@ -46,108 +56,74 @@ interface ComponentRow {
   isAdded: boolean  // true for override-only (added earning)
 }
 
+// Thin wrapper around the shared `computePreview` calculator so the wizard renders
+// the same residual + employer-statutory math the backend uses.
 function computeRows(
   template: SalaryStructureTemplateDetailDto,
   annualCTC: number,
   overrides: OverrideMap,
-  addedComps: SalaryComponentSummary[]
-): ComponentRow[] {
-  if (!annualCTC || annualCTC <= 0) return []
+  addedComps: SalaryComponentSummary[],
+  flags: EmployeeStatutoryFlags,
+): { rows: ComponentRow[]; employerContributions: EmployerContribution[] } {
+  if (!annualCTC || annualCTC <= 0) return { rows: [], employerContributions: [] }
 
-  const monthlyGross = annualCTC / 12
-  const rows: ComponentRow[] = []
-  let basicMonthly = 0
-  let basicMonthlySet = false
-  let nonResidualSum = 0
+  const templateComponents: PreviewComponent[] = template.components.map(c => ({
+    componentId: c.componentId,
+    code: c.componentCode,
+    name: c.componentName,
+    earningType: c.earningType,
+    considerForEpf: c.considerForEpf,
+    formulaType: c.formulaType as FormulaType,
+    percentage: c.percentage,
+    fixedAmount: c.fixedAmount,
+    displayOrder: c.displayOrder,
+  }))
 
-  const sorted = [...template.components].sort((a, b) => a.displayOrder - b.displayOrder)
-
-  for (const c of sorted) {
-    if (c.formulaType === 'ResidualCTC') continue
-
-    const ov = overrides[c.componentId]
-    const ft = ov?.formulaType ?? c.formulaType
-    const pct = ov?.percentage ?? c.percentage
-    const fixed = ov?.fixedAmount ?? c.fixedAmount
-
-    let monthly = 0
-    if (ft === 'PercentOfCTC' && pct != null) {
-      monthly = Math.round((annualCTC * (pct / 100) / 12) * 100) / 100
-    } else if (ft === 'PercentOfBasic' && pct != null) {
-      monthly = Math.round(basicMonthly * (pct / 100) * 100) / 100
-    } else if (ft === 'PercentOfGross' && pct != null) {
-      monthly = Math.round(monthlyGross * (pct / 100) * 100) / 100
-    } else if (ft === 'Fixed') {
-      monthly = fixed ?? 0
-    }
-
-    if (!basicMonthlySet && ft === 'PercentOfCTC') { basicMonthly = monthly; basicMonthlySet = true }
-    nonResidualSum += monthly
-
-    rows.push({
-      componentId: c.componentId,
-      name: c.componentName,
-      code: c.componentCode,
-      formulaType: ft,
-      percentage: pct ?? null,
-      fixedAmount: fixed ?? null,
-      monthlyAmount: monthly,
-      annualAmount: Math.round(monthly * 12 * 100) / 100,
-      isResidual: false,
-      isAdded: false,
-    })
-  }
-
-  const residual = sorted.find(c => c.formulaType === 'ResidualCTC')
-  if (residual) {
-    const residualMonthly = Math.round((monthlyGross - nonResidualSum) * 100) / 100
-    rows.push({
-      componentId: residual.componentId,
-      name: residual.componentName,
-      code: residual.componentCode,
-      formulaType: 'ResidualCTC',
-      percentage: null,
-      fixedAmount: null,
-      monthlyAmount: residualMonthly,
-      annualAmount: Math.round(residualMonthly * 12 * 100) / 100,
-      isResidual: true,
-      isAdded: false,
-    })
-  }
-
-  // Added earnings (override-only)
-  for (const sc of addedComps) {
+  const previewAdded: PreviewAddedComponent[] = addedComps.map(sc => {
     const ov = overrides[sc.id]
-    const ft = ov?.formulaType ?? sc.formulaType
-    const pct = ov?.percentage ?? sc.percentage
-    const fixed = ov?.fixedAmount ?? sc.fixedAmount
-
-    let monthly = 0
-    if (ft === 'PercentOfCTC' && pct != null) {
-      monthly = Math.round((annualCTC * (pct / 100) / 12) * 100) / 100
-    } else if (ft === 'PercentOfBasic' && pct != null) {
-      monthly = Math.round(basicMonthly * (pct / 100) * 100) / 100
-    } else if (ft === 'PercentOfGross' && pct != null) {
-      monthly = Math.round(monthlyGross * (pct / 100) * 100) / 100
-    } else {
-      monthly = fixed ?? 0
-    }
-
-    rows.push({
+    return {
       componentId: sc.id,
-      name: sc.name,
       code: sc.code,
-      formulaType: ft,
-      percentage: pct ?? null,
-      fixedAmount: fixed ?? null,
-      monthlyAmount: monthly,
-      annualAmount: Math.round(monthly * 12 * 100) / 100,
-      isResidual: false,
-      isAdded: true,
-    })
+      name: sc.name,
+      earningType: sc.earningType,
+      considerForEpf: sc.considerForEpf,
+      formulaType: (ov?.formulaType ?? sc.formulaType) as FormulaType,
+      percentage: ov?.percentage ?? sc.percentage,
+      fixedAmount: ov?.fixedAmount ?? sc.fixedAmount,
+    }
+  })
+
+  const previewOverrides: Record<string, { formulaType: FormulaType; percentage: number | null; fixedAmount: number | null }> = {}
+  for (const [k, v] of Object.entries(overrides)) {
+    previewOverrides[k] = {
+      formulaType: v.formulaType as FormulaType,
+      percentage: v.percentage,
+      fixedAmount: v.fixedAmount,
+    }
   }
 
-  return rows
+  const out = computePreview({
+    annualCtc: annualCTC,
+    templateComponents,
+    overrides: previewOverrides,
+    addedComponents: previewAdded,
+    employeeFlags: flags,
+  })
+
+  const rows: ComponentRow[] = out.rows.map(r => ({
+    componentId: r.componentId,
+    name: r.name,
+    code: r.code,
+    formulaType: r.formulaType,
+    percentage: r.percentage,
+    fixedAmount: r.fixedAmount,
+    monthlyAmount: r.monthlyAmount,
+    annualAmount: r.annualAmount,
+    isResidual: r.isResidual,
+    isAdded: r.isAdded,
+  }))
+
+  return { rows, employerContributions: out.employerContributions }
 }
 
 export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRevise = false }: Props): React.ReactElement {
@@ -231,9 +207,14 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
   }, [existingSalary, employeeDetail, prefilled])
 
   const ctcNum = parseFloat(annualCTC.replace(/,/g, '')) || 0
-  const rows = templateDetail && ctcNum > 0
-    ? computeRows(templateDetail, ctcNum, overrides, addedComps)
-    : []
+  const employeeFlags: EmployeeStatutoryFlags = {
+    epfEnabled, esiEnabled, ptEnabled, lwfEnabled, gratuityEnabled: true,
+  }
+  const previewOutput = templateDetail && ctcNum > 0
+    ? computeRows(templateDetail, ctcNum, overrides, addedComps, employeeFlags)
+    : { rows: [], employerContributions: [] }
+  const rows = previewOutput.rows
+  const employerContributions = previewOutput.employerContributions
   const monthlyGross = ctcNum > 0 ? ctcNum / 12 : 0
 
   const templateCompIds = new Set(templateDetail?.components.map(c => c.componentId) ?? [])
@@ -542,6 +523,23 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                   )
                 })}
               </tbody>
+              {employerContributions.length > 0 && (
+                <tbody className="bg-[var(--color-page-bg)] border-t border-[var(--color-border)]">
+                  <tr>
+                    <td colSpan={6} className="px-4 pt-2 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
+                      Employer contributions (included in CTC)
+                    </td>
+                  </tr>
+                  {employerContributions.map(ec => (
+                    <tr key={ec.code} className="text-[var(--color-text-secondary)]">
+                      <td className="px-4 py-1.5 text-[12px]" colSpan={3}>{ec.name}</td>
+                      <td className="px-4 py-1.5 text-right text-[12px]">{formatINR(ec.monthlyAmount)}</td>
+                      <td className="px-4 py-1.5 text-right text-[12px]">{formatINR(ec.annualAmount)}</td>
+                      <td></td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
               <tfoot>
                 <tr className="bg-[var(--color-page-bg)] font-semibold">
                   <td className="px-4 py-2.5 text-[var(--color-text-primary)]" colSpan={3}>Cost to Company</td>

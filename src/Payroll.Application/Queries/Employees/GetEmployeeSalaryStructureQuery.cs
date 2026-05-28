@@ -1,4 +1,5 @@
 using MediatR;
+using Payroll.Application.Services;
 using Payroll.Domain.Entities;
 using Payroll.Domain.Enums;
 using Payroll.Domain.Interfaces;
@@ -14,7 +15,8 @@ public sealed record EmployeeSalaryStructureDto(
     Guid? TemplateId,
     string? TemplateName,
     DateOnly EffectiveFrom,
-    IReadOnlyList<SalaryComponentBreakdownDto> Components);
+    IReadOnlyList<SalaryComponentBreakdownDto> Components,
+    IReadOnlyList<EmployerContributionDto> EmployerContributions);
 
 public sealed record SalaryComponentBreakdownDto(
     Guid ComponentId,
@@ -27,10 +29,18 @@ public sealed record SalaryComponentBreakdownDto(
     bool IsResidual,
     bool IsOverride);
 
+public sealed record EmployerContributionDto(
+    string Code,
+    string Name,
+    decimal MonthlyAmount,
+    decimal AnnualAmount);
+
 public sealed class GetEmployeeSalaryStructureHandler(
     IEmployeeSalaryStructureRepository salaryRepo,
     ISalaryStructureTemplateRepository templateRepo,
-    ISalaryComponentRepository componentRepo)
+    ISalaryComponentRepository componentRepo,
+    IEmployeeRepository employeeRepo,
+    IStatutoryConfigRepository statutoryRepo)
     : IRequestHandler<GetEmployeeSalaryStructureQuery, EmployeeSalaryStructureDto?>
 {
     public async Task<EmployeeSalaryStructureDto?> Handle(
@@ -46,109 +56,68 @@ public sealed class GetEmployeeSalaryStructureHandler(
         Dictionary<Guid, EmployeeSalaryComponentOverride> overrideMap =
             structure.ComponentOverrides.ToDictionary(o => o.SalaryComponentId);
 
-        List<SalaryComponentBreakdownDto> components = [];
         decimal monthlyGross = structure.AnnualCTC / 12m;
 
-        HashSet<Guid> templateComponentIds = [];
+        // Pull employee statutory flags + org config so the preview matches what
+        // the engine will actually produce at run time. Falls back to a permissive
+        // "all on" stance if either is missing (legacy data) — that preserves the
+        // pre-fix behaviour rather than mis-stating the residual the other way.
+        Employee? employee = await employeeRepo.GetByIdAsync(request.EmployeeId, ct);
+        StatutoryOrgConfig? orgConfig = await statutoryRepo.GetByTenantAsync(ct);
 
-        if (template is not null)
+        SalaryStructurePreviewCalculator.EmployeeStatutoryFlags employeeFlags = new(
+            EpfEnabled: employee?.EpfEnabled ?? true,
+            EsiEnabled: employee?.EsiEnabled ?? true,
+            PtEnabled: employee?.PtEnabled ?? true,
+            LwfEnabled: employee?.LwfEnabled ?? true,
+            GratuityEnabled: true);
+
+        StatutoryOrgConfig effectiveOrgConfig = orgConfig
+            ?? StatutoryOrgConfig.CreateDefault(Guid.Empty, Guid.Empty);
+
+        // Identify added (override-only, not in template) components so we can load
+        // their EarningType + ConsiderForEpf flags (needed for residual + employer
+        // statutory math). Bulk load in one round-trip.
+        HashSet<Guid> templateComponentIds = template?.Components
+            .Select(c => c.ComponentId).ToHashSet() ?? [];
+        List<Guid> addedComponentIds = overrideMap.Keys
+            .Where(id => !templateComponentIds.Contains(id))
+            .ToList();
+        Dictionary<Guid, SalaryComponent> addedComponentMap = addedComponentIds.Count > 0
+            ? (await componentRepo.GetByIdsAsync(addedComponentIds, ct)).ToDictionary(c => c.Id)
+            : [];
+
+        List<SalaryStructurePreviewCalculator.AddedComponent> addedForCalc = [];
+        foreach (EmployeeSalaryComponentOverride ov in structure.ComponentOverrides
+            .Where(o => addedComponentIds.Contains(o.SalaryComponentId)))
         {
-            decimal basicMonthly = 0m;
-            decimal nonResidualSum = 0m;
-
-            IOrderedEnumerable<SalaryStructureComponent> ordered =
-                template.Components.OrderBy(c => c.DisplayOrder);
-
-            foreach (SalaryStructureComponent comp in ordered)
-            {
-                if (comp.Component is null) continue;
-                templateComponentIds.Add(comp.ComponentId);
-                if (comp.FormulaType == ComponentFormulaType.ResidualCTC) continue;
-
-                bool hasOverride = overrideMap.TryGetValue(comp.ComponentId, out EmployeeSalaryComponentOverride? ov);
-                ComponentFormulaType effectiveType = hasOverride ? ov!.FormulaType : comp.FormulaType;
-                decimal? effectivePct = hasOverride ? ov!.Percentage : comp.Percentage;
-                decimal? effectiveFixed = hasOverride ? ov!.FixedAmount : comp.FixedAmount;
-
-                decimal monthly = effectiveType switch
-                {
-                    ComponentFormulaType.PercentOfCTC =>
-                        Math.Round(structure.AnnualCTC * (effectivePct!.Value / 100m) / 12m, 2),
-                    ComponentFormulaType.PercentOfBasic =>
-                        Math.Round(basicMonthly * (effectivePct!.Value / 100m), 2),
-                    ComponentFormulaType.PercentOfGross =>
-                        Math.Round(monthlyGross * (effectivePct!.Value / 100m), 2),
-                    ComponentFormulaType.Fixed =>
-                        effectiveFixed ?? 0m,
-                    _ => 0m,
-                };
-
-                if (comp.Component.EarningType == EarningType.Basic)
-                    basicMonthly = monthly;
-
-                nonResidualSum += monthly;
-
-                components.Add(new SalaryComponentBreakdownDto(
-                    comp.ComponentId,
-                    comp.Component.Name,
-                    comp.Component.Code,
-                    effectiveType.ToString(),
-                    effectivePct,
-                    monthly,
-                    Math.Round(monthly * 12m, 2),
-                    false,
-                    hasOverride));
-            }
-
-            // Residual component (Fixed Allowance)
-            SalaryStructureComponent? residual = template.Components
-                .FirstOrDefault(c => c.FormulaType == ComponentFormulaType.ResidualCTC);
-            if (residual?.Component is not null)
-            {
-                templateComponentIds.Add(residual.ComponentId);
-                decimal residualMonthly = Math.Round(monthlyGross - nonResidualSum, 2);
-                components.Add(new SalaryComponentBreakdownDto(
-                    residual.ComponentId,
-                    residual.Component.Name,
-                    residual.Component.Code,
-                    residual.FormulaType.ToString(),
-                    null,
-                    residualMonthly,
-                    Math.Round(residualMonthly * 12m, 2),
-                    true,
-                    false));
-            }
+            if (!addedComponentMap.TryGetValue(ov.SalaryComponentId, out SalaryComponent? sc)) continue;
+            addedForCalc.Add(new SalaryStructurePreviewCalculator.AddedComponent(
+                ov.SalaryComponentId, sc.Code, sc.Name, sc.EarningType,
+                ConsiderForEpf: sc.ConsiderForEpf == true,
+                Override: ov));
         }
 
-        // Pass 2: override-only (added earnings not in template)
-        List<Guid> addedIds = overrideMap.Keys.Where(id => !templateComponentIds.Contains(id)).ToList();
-        if (addedIds.Count > 0)
-        {
-            List<SalaryComponent> addedComponents = await componentRepo.GetByIdsAsync(addedIds, ct);
-            Dictionary<Guid, SalaryComponent> addedMap = addedComponents.ToDictionary(c => c.Id);
-            foreach (EmployeeSalaryComponentOverride ov in structure.ComponentOverrides
-                .Where(o => addedIds.Contains(o.SalaryComponentId)))
-            {
-                if (!addedMap.TryGetValue(ov.SalaryComponentId, out SalaryComponent? sc)) continue;
+        SalaryStructurePreviewCalculator.Output preview = SalaryStructurePreviewCalculator.Compute(
+            new SalaryStructurePreviewCalculator.Inputs(
+                AnnualCtc: structure.AnnualCTC,
+                TemplateComponents: template?.Components ?? [],
+                Overrides: overrideMap,
+                AddedComponents: addedForCalc,
+                EmployeeFlags: employeeFlags,
+                OrgConfig: effectiveOrgConfig,
+                Caps: new SalaryStructurePreviewCalculator.StatutoryCaps()));
 
-                decimal monthly = ov.FormulaType switch
-                {
-                    ComponentFormulaType.Fixed => ov.FixedAmount ?? 0m,
-                    _ => 0m,
-                };
+        List<SalaryComponentBreakdownDto> components = preview.Rows
+            .Select(r => new SalaryComponentBreakdownDto(
+                r.ComponentId, r.Name, r.Code,
+                r.FormulaType.ToString(), r.Percentage,
+                r.MonthlyAmount, r.AnnualAmount, r.IsResidual, r.IsOverride || r.IsAdded))
+            .ToList();
 
-                components.Add(new SalaryComponentBreakdownDto(
-                    ov.SalaryComponentId,
-                    sc.Name,
-                    sc.Code,
-                    ov.FormulaType.ToString(),
-                    ov.Percentage,
-                    monthly,
-                    Math.Round(monthly * 12m, 2),
-                    false,
-                    true));
-            }
-        }
+        List<EmployerContributionDto> employerContributions = preview.EmployerContributions
+            .Select(e => new EmployerContributionDto(e.Code, e.Name, e.MonthlyAmount, e.AnnualAmount))
+            .ToList();
 
         return new EmployeeSalaryStructureDto(
             structure.Id,
@@ -157,6 +126,7 @@ public sealed class GetEmployeeSalaryStructureHandler(
             template?.Id,
             template?.Name,
             structure.EffectiveFrom,
-            components);
+            components,
+            employerContributions);
     }
 }

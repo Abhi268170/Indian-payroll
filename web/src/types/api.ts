@@ -127,6 +127,10 @@ export interface SalaryStructureComponentDto {
   fixedAmount: number | null
   percentage: number | null
   displayOrder: number
+  // Surfaced for client-side preview math (Special Allowance residual + employer
+  // EPF subtraction). Match backend SalaryStructureComponentDto.
+  earningType: string | null
+  considerForEpf: boolean
 }
 
 export interface EmployeeSalaryStructureDto {
@@ -137,6 +141,14 @@ export interface EmployeeSalaryStructureDto {
   templateName: string | null
   effectiveFrom: string
   components: EmployeeSalaryComponentBreakdownDto[]
+  employerContributions: EmployerContributionDto[]
+}
+
+export interface EmployerContributionDto {
+  code: string
+  name: string
+  monthlyAmount: number
+  annualAmount: number
 }
 
 export interface EmployeeSalaryComponentBreakdownDto {

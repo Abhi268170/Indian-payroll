@@ -30,7 +30,9 @@ public sealed class GetSalaryStructureTemplateHandler(
                 c.FormulaType,
                 c.FixedAmount,
                 c.Percentage,
-                c.DisplayOrder))
+                c.DisplayOrder,
+                c.Component?.EarningType,
+                c.Component?.ConsiderForEpf == true))
             .ToList();
 
         return new SalaryStructureTemplateDetailDto(
