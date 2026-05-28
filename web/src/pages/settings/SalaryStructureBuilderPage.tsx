@@ -8,7 +8,8 @@ import { Spinner } from '@/components/ui/Spinner'
 import { useToast } from '@/components/ui/useToast'
 import { formatINR } from '@/lib/format'
 import type { SalaryComponentSummary } from './SalaryComponentsPage'
-import { computePreview, type EmployerContribution, type PreviewComponent, type StatutoryOrgFlags } from '@/lib/salaryStructurePreview'
+import type { EmployerContribution, PreviewComponent, StatutoryOrgFlags } from '@/lib/salaryStructurePreview'
+import { useSalaryStructurePreview } from '@/lib/useSalaryStructurePreview'
 import type { StatutoryConfig } from './StatutoryComponentsPage'
 
 type ComponentCategory = 'Earning' | 'Deduction' | 'Reimbursement' | 'Benefit' | 'Correction'
@@ -71,24 +72,12 @@ const CATEGORY_GROUPS: { label: string; category: ComponentCategory }[] = [
   { label: 'Benefits', category: 'Benefit' },
 ]
 
-// Thin adapter over the shared computePreview() so the settings builder uses
-// the same residual + employer-statutory math as the wizard + employee detail
-// page. No per-employee flags here — templates are tenant-wide. Org flags come
-// from the live StatutoryOrgConfig so the preview reflects what this specific
-// tenant has actually enabled (e.g. employer-EPF-in-CTC off).
-function computeAmounts(
-  rows: TemplateRow[],
-  previewCtc: number,
-  orgFlags: StatutoryOrgFlags | undefined,
-): {
-  amounts: Map<string, number>
-  employerContributions: EmployerContribution[]
-} {
-  if (!previewCtc || previewCtc <= 0) {
-    return { amounts: new Map(), employerContributions: [] }
-  }
-
-  const templateComponents: PreviewComponent[] = rows.map(r => ({
+// Convert builder TemplateRow state to the PreviewComponent shape the
+// useSalaryStructurePreview hook (and the backend) expects. Computation moved
+// off this function — the hook handles both the API call and the local
+// fallback in a single source of truth.
+function toPreviewComponents(rows: TemplateRow[]): PreviewComponent[] {
+  return rows.map(r => ({
     componentId: r.componentId,
     code: r.componentCode,
     name: r.componentName,
@@ -99,18 +88,6 @@ function computeAmounts(
     fixedAmount: r.fixedAmount ? parseFloat(r.fixedAmount) || null : null,
     displayOrder: r.displayOrder,
   }))
-
-  const out = computePreview({
-    annualCtc: previewCtc,
-    templateComponents,
-    overrides: {},
-    addedComponents: [],
-    orgFlags,
-  })
-
-  const amounts = new Map<string, number>()
-  for (const r of out.rows) amounts.set(r.componentId, r.annualAmount)
-  return { amounts, employerContributions: out.employerContributions }
 }
 
 export default function SalaryStructureBuilderPage(): ReactElement {
@@ -242,10 +219,20 @@ export default function SalaryStructureBuilderPage(): ReactElement {
     gratuityIncludedInCtc: statutoryConfig.gratuityIncludedInCtc,
   } : undefined
 
-  const { amounts, employerContributions } = useMemo(
-    () => computeAmounts(rows, parseFloat(previewCtc) || 0, orgFlags),
-    [rows, previewCtc, orgFlags],
-  )
+  const previewComponents = useMemo(() => toPreviewComponents(rows), [rows])
+  const preview = useSalaryStructurePreview({
+    annualCtc: parseFloat(previewCtc) || 0,
+    templateComponents: previewComponents,
+    overrides: {},
+    addedComponents: [],
+    orgFlags,
+  })
+  const amounts = useMemo(() => {
+    const m = new Map<string, number>()
+    for (const r of preview.data.rows) m.set(r.componentId, r.annualAmount)
+    return m
+  }, [preview.data.rows])
+  const employerContributions: EmployerContribution[] = preview.data.employerContributions
 
   const alreadyAdded = new Set(rows.map(r => r.componentId))
 

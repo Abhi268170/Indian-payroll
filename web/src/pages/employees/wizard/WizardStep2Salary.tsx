@@ -4,15 +4,15 @@ import { Plus, RotateCcw, Trash2 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { formatINR } from '@/lib/format'
 import type { SalaryStructureTemplateSummaryDto, SalaryStructureTemplateDetailDto, ComponentOverrideRequest, EmployeeSalaryStructureDto, EmployeeDto } from '@/types/api'
-import {
-  computePreview,
-  type PreviewComponent,
-  type AddedComponent as PreviewAddedComponent,
-  type EmployeeStatutoryFlags,
-  type EmployerContribution,
-  type FormulaType,
-  type StatutoryOrgFlags,
+import type {
+  PreviewComponent,
+  AddedComponent as PreviewAddedComponent,
+  EmployeeStatutoryFlags,
+  EmployerContribution,
+  FormulaType,
+  StatutoryOrgFlags,
 } from '@/lib/salaryStructurePreview'
+import { useSalaryStructurePreview } from '@/lib/useSalaryStructurePreview'
 import type { StatutoryConfig } from '@/pages/settings/StatutoryComponentsPage'
 
 interface Props {
@@ -58,29 +58,36 @@ interface ComponentRow {
   isAdded: boolean  // true for override-only (added earning)
 }
 
-// Thin wrapper around the shared `computePreview` calculator so the wizard renders
-// the same residual + employer-statutory math the backend uses.
-function computeRows(
-  template: SalaryStructureTemplateDetailDto,
+// Build the inputs the preview hook needs. The hook itself owns both the API
+// call and the local fallback — no math lives here anymore.
+function buildPreviewInputs(
+  template: SalaryStructureTemplateDetailDto | undefined,
   annualCTC: number,
   overrides: OverrideMap,
   addedComps: SalaryComponentSummary[],
   flags: EmployeeStatutoryFlags,
   orgFlags: StatutoryOrgFlags | undefined,
-): { rows: ComponentRow[]; employerContributions: EmployerContribution[] } {
-  if (!annualCTC || annualCTC <= 0) return { rows: [], employerContributions: [] }
-
-  const templateComponents: PreviewComponent[] = template.components.map(c => ({
-    componentId: c.componentId,
-    code: c.componentCode,
-    name: c.componentName,
-    earningType: c.earningType,
-    considerForEpf: c.considerForEpf,
-    formulaType: c.formulaType as FormulaType,
-    percentage: c.percentage,
-    fixedAmount: c.fixedAmount,
-    displayOrder: c.displayOrder,
-  }))
+): {
+  annualCtc: number
+  templateComponents: PreviewComponent[]
+  overrides: Record<string, { formulaType: FormulaType; percentage: number | null; fixedAmount: number | null }>
+  addedComponents: PreviewAddedComponent[]
+  employeeFlags: EmployeeStatutoryFlags
+  orgFlags: StatutoryOrgFlags | undefined
+} {
+  const templateComponents: PreviewComponent[] = template
+    ? template.components.map(c => ({
+        componentId: c.componentId,
+        code: c.componentCode,
+        name: c.componentName,
+        earningType: c.earningType,
+        considerForEpf: c.considerForEpf,
+        formulaType: c.formulaType as FormulaType,
+        percentage: c.percentage,
+        fixedAmount: c.fixedAmount,
+        displayOrder: c.displayOrder,
+      }))
+    : []
 
   const previewAdded: PreviewAddedComponent[] = addedComps.map(sc => {
     const ov = overrides[sc.id]
@@ -105,29 +112,14 @@ function computeRows(
     }
   }
 
-  const out = computePreview({
+  return {
     annualCtc: annualCTC,
     templateComponents,
     overrides: previewOverrides,
     addedComponents: previewAdded,
     employeeFlags: flags,
     orgFlags,
-  })
-
-  const rows: ComponentRow[] = out.rows.map(r => ({
-    componentId: r.componentId,
-    name: r.name,
-    code: r.code,
-    formulaType: r.formulaType,
-    percentage: r.percentage,
-    fixedAmount: r.fixedAmount,
-    monthlyAmount: r.monthlyAmount,
-    annualAmount: r.annualAmount,
-    isResidual: r.isResidual,
-    isAdded: r.isAdded,
-  }))
-
-  return { rows, employerContributions: out.employerContributions }
+  }
 }
 
 export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRevise = false }: Props): React.ReactElement {
@@ -244,11 +236,22 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
     epfIncludeEmployerInCtc: statutoryConfig.epfIncludeEmployerInCtc,
     gratuityIncludedInCtc: statutoryConfig.gratuityIncludedInCtc,
   } : undefined
-  const previewOutput = templateDetail && ctcNum > 0
-    ? computeRows(templateDetail, ctcNum, overrides, addedComps, employeeFlags, orgFlags)
-    : { rows: [], employerContributions: [] }
-  const rows = previewOutput.rows
-  const employerContributions = previewOutput.employerContributions
+  const previewInputs = buildPreviewInputs(
+    templateDetail, ctcNum, overrides, addedComps, employeeFlags, orgFlags)
+  const preview = useSalaryStructurePreview(previewInputs)
+  const rows: ComponentRow[] = preview.data.rows.map(r => ({
+    componentId: r.componentId,
+    name: r.name,
+    code: r.code,
+    formulaType: r.formulaType,
+    percentage: r.percentage,
+    fixedAmount: r.fixedAmount,
+    monthlyAmount: r.monthlyAmount,
+    annualAmount: r.annualAmount,
+    isResidual: r.isResidual,
+    isAdded: r.isAdded,
+  }))
+  const employerContributions: EmployerContribution[] = preview.data.employerContributions
   const monthlyGross = ctcNum > 0 ? ctcNum / 12 : 0
 
   const templateCompIds = new Set(templateDetail?.components.map(c => c.componentId) ?? [])
