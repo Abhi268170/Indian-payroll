@@ -145,6 +145,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IBankAdviceGenerator, BankAdviceGenerator>();
         services.AddScoped<IPayrollExportService, PayrollExportService>();
         services.AddScoped<IPayrollDetailsExportService, PayrollDetailsExportService>();
+        services.AddScoped<ITdsBreakupExportService, TdsBreakupExportService>();
         services.AddScoped<IEmployeeImportParser, EmployeeImportParser>();
         services.AddSingleton<IEmployeeImportTemplateGenerator, EmployeeImportTemplateGenerator>();
 
