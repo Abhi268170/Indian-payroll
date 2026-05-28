@@ -8,7 +8,8 @@ public sealed record ComponentBreakdownDto(
     decimal FullAmount,
     decimal ProratedAmount,
     bool IsOneTimeEarning,
-    bool IsDeduction);
+    bool IsDeduction,
+    bool IsBenefit);
 
 public sealed record PendingTaskItemDto(Guid EmployeeId, string EmployeeCode, string Reason);
 

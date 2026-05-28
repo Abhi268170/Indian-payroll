@@ -111,6 +111,11 @@ export default function VariableInputsPanel({ runId, employeeId, employeeName, o
     if (d.employerEsi > 0) rows.push({ label: 'ESI (Employer)', amount: d.employerEsi })
     if (d.gratuityAmount > 0) rows.push({ label: 'Gratuity Accrual', amount: d.gratuityAmount })
     if (d.lwfEmployerAmount > 0) rows.push({ label: 'Labour Welfare Fund (Employer)', amount: d.lwfEmployerAmount })
+    for (const c of d.components) {
+      if (c.isBenefit && c.proratedAmount > 0) {
+        rows.push({ label: c.componentName, amount: c.proratedAmount })
+      }
+    }
     return rows
   }
 
@@ -372,9 +377,9 @@ export default function VariableInputsPanel({ runId, employeeId, employeeName, o
                 const total = benefits.reduce((s, r) => s + r.amount, 0)
                 return (
                   <section>
-                    <SectionHeader title="Benefits (Employer Cost)" />
+                    <SectionHeader title="Employer Cost (paid by employer, in CTC)" />
                     <p className="text-[11px] text-[var(--color-text-secondary)] mb-2">
-                      These are included in CTC but not deducted from your gross pay.
+                      Costs the employer bears on top of take-home — counted in CTC, not paid to the employee. Doesn&apos;t change gross or net pay.
                     </p>
                     <div className="rounded-lg border border-[var(--color-border)] overflow-hidden">
                       <table className="w-full">
