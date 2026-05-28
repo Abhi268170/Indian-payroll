@@ -15,6 +15,10 @@ internal sealed class SalaryStructureTemplateConfiguration : IEntityTypeConfigur
         builder.Property(t => t.Description).HasMaxLength(500);
         builder.Property(t => t.TenantId).IsRequired();
         builder.Property(t => t.IsActive).IsRequired();
+        builder.Property(t => t.EpfEnabled).IsRequired().HasDefaultValue(true);
+        builder.Property(t => t.EsiEnabled).IsRequired().HasDefaultValue(true);
+        builder.Property(t => t.PtEnabled).IsRequired().HasDefaultValue(true);
+        builder.Property(t => t.LwfEnabled).IsRequired().HasDefaultValue(true);
 
         builder.HasMany(t => t.Components)
                .WithOne()

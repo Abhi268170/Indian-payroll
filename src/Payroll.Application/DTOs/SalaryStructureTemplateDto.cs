@@ -14,6 +14,10 @@ public sealed record SalaryStructureTemplateDetailDto(
     string Name,
     string? Description,
     bool IsActive,
+    bool EpfEnabled,
+    bool EsiEnabled,
+    bool PtEnabled,
+    bool LwfEnabled,
     IReadOnlyList<SalaryStructureComponentDto> Components);
 
 public sealed record SalaryStructureComponentDto(

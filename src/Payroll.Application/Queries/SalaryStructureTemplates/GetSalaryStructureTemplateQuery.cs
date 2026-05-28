@@ -36,6 +36,8 @@ public sealed class GetSalaryStructureTemplateHandler(
             .ToList();
 
         return new SalaryStructureTemplateDetailDto(
-            template.Id, template.Name, template.Description, template.IsActive, components);
+            template.Id, template.Name, template.Description, template.IsActive,
+            template.EpfEnabled, template.EsiEnabled, template.PtEnabled, template.LwfEnabled,
+            components);
     }
 }

@@ -33,6 +33,10 @@ interface TemplateDetail {
   name: string
   description: string | null
   isActive: boolean
+  epfEnabled: boolean
+  esiEnabled: boolean
+  ptEnabled: boolean
+  lwfEnabled: boolean
   components: DetailComponent[]
 }
 
@@ -122,6 +126,12 @@ export default function SalaryStructureBuilderPage(): ReactElement {
   const [previewCtc, setPreviewCtc] = useState('600000')
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(['Earnings']))
   const [initialized, setInitialized] = useState(false)
+  // Template-level statutory defaults — used to pre-fill employee toggles at hire.
+  // Save with the template; engine still reads per-employee flags at run time.
+  const [templateEpfEnabled, setTemplateEpfEnabled] = useState(true)
+  const [templateEsiEnabled, setTemplateEsiEnabled] = useState(true)
+  const [templatePtEnabled, setTemplatePtEnabled] = useState(true)
+  const [templateLwfEnabled, setTemplateLwfEnabled] = useState(true)
 
   // Load tenant statutory config so the residual preview reflects what this
   // tenant has actually enabled (employer-EPF-in-CTC, gratuity-in-CTC). Without
@@ -172,6 +182,10 @@ export default function SalaryStructureBuilderPage(): ReactElement {
   if (!initialized && templateData) {
     setTemplateName(templateData.name)
     setDescription(templateData.description ?? '')
+    setTemplateEpfEnabled(templateData.epfEnabled)
+    setTemplateEsiEnabled(templateData.esiEnabled)
+    setTemplatePtEnabled(templateData.ptEnabled)
+    setTemplateLwfEnabled(templateData.lwfEnabled)
     setRows(templateData.components.map(c => ({
       componentId: c.componentId,
       componentName: c.componentName,
@@ -193,6 +207,10 @@ export default function SalaryStructureBuilderPage(): ReactElement {
       const payload = {
         name: templateName,
         description: description || null,
+        epfEnabled: templateEpfEnabled,
+        esiEnabled: templateEsiEnabled,
+        ptEnabled: templatePtEnabled,
+        lwfEnabled: templateLwfEnabled,
         components: rows.map((r, i) => ({
           componentId: r.componentId,
           formulaType: r.formulaType,
@@ -383,6 +401,35 @@ export default function SalaryStructureBuilderPage(): ReactElement {
                 value={previewCtc}
                 onChange={e => { setPreviewCtc(e.target.value) }}
               />
+            </div>
+          </div>
+
+          {/* Statutory defaults — pre-fill employee toggles at hire. Per-employee
+              override still possible in the hire wizard. */}
+          <div className="border border-[var(--color-border)] rounded-xl px-4 py-3 mb-4 bg-[var(--color-page-bg)]">
+            <p className="text-[12px] font-medium text-[var(--color-text-primary)] mb-2">
+              Statutory defaults
+              <span className="ml-1.5 text-[11px] font-normal text-[var(--color-text-secondary)]">
+                (pre-fill employee toggles at hire; operator can override per employee)
+              </span>
+            </p>
+            <div className="flex flex-wrap gap-4">
+              {([
+                { label: 'EPF', value: templateEpfEnabled, set: setTemplateEpfEnabled },
+                { label: 'ESI', value: templateEsiEnabled, set: setTemplateEsiEnabled },
+                { label: 'Professional Tax', value: templatePtEnabled, set: setTemplatePtEnabled },
+                { label: 'Labour Welfare Fund', value: templateLwfEnabled, set: setTemplateLwfEnabled },
+              ]).map(t => (
+                <label key={t.label} className="inline-flex items-center gap-2 text-[13px] text-[var(--color-text-primary)] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={t.value}
+                    onChange={e => { t.set(e.target.checked) }}
+                    className="w-4 h-4 rounded border-[var(--color-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
+                  />
+                  {t.label}
+                </label>
+              ))}
             </div>
           </div>
 

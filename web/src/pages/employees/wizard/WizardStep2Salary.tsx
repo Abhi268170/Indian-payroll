@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Plus, RotateCcw, Trash2 } from 'lucide-react'
 import { api } from '@/lib/api'
@@ -217,6 +217,23 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
     setLwfEnabled(employeeDetail.lwfEnabled)
     setPrefilled(true)
   }, [existingSalary, employeeDetail, prefilled])
+
+  // Apply template-level statutory defaults to employee flags ONCE per template
+  // selection in fresh-hire mode (no existing salary). Doesn't run when the wizard
+  // pre-fills from an existing structure (`prefilled` already true), so an operator
+  // editing an employee with template X assigned won't have their per-employee
+  // overrides clobbered on re-render.
+  const lastDefaultsAppliedFor = useRef<string | null>(null)
+  useEffect(() => {
+    if (prefilled) return
+    if (!templateDetail) return
+    if (lastDefaultsAppliedFor.current === templateDetail.id) return
+    setEpfEnabled(templateDetail.epfEnabled)
+    setEsiEnabled(templateDetail.esiEnabled)
+    setPtEnabled(templateDetail.ptEnabled)
+    setLwfEnabled(templateDetail.lwfEnabled)
+    lastDefaultsAppliedFor.current = templateDetail.id
+  }, [templateDetail, prefilled])
 
   const ctcNum = parseFloat(annualCTC.replace(/,/g, '')) || 0
   const employeeFlags: EmployeeStatutoryFlags = {
