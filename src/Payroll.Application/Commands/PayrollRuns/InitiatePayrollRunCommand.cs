@@ -480,6 +480,30 @@ public sealed class InitiatePayrollRunHandler(
         if (config.GratuityIncludedInCtc && basicMonthly > 0m)
             employerCtcDeductions += Math.Round(basicMonthly * 15m / 26m / 12m, 2, MidpointRounding.AwayFromZero);
 
+        // Benefit-category overrides (health insurance, NPS employer match, employer-funded
+        // perks) are employer-borne costs inside CTC, not employee earnings. They shrink the
+        // residual the same way employer EPF + gratuity do, and they MUST be excluded from
+        // the gross/payslip pass below — adding them as earnings would both inflate the
+        // employee's gross and double-count them against CTC.
+        decimal benefitsMonthlyTotal = 0m;
+        foreach (EmployeeSalaryComponentOverride ov in structure.ComponentOverrides)
+        {
+            if (templateCompIds.Contains(ov.SalaryComponentId)) continue;
+            if (!addedCompDetails.TryGetValue(ov.SalaryComponentId, out SalaryComponent? sc)) continue;
+            if (sc.Category != ComponentCategory.Benefit) continue;
+
+            benefitsMonthlyTotal += ov.FormulaType switch
+            {
+                ComponentFormulaType.Fixed => ov.FixedAmount ?? 0m,
+                ComponentFormulaType.PercentOfCTC =>
+                    Math.Round(structure.AnnualCTC * (ov.Percentage ?? 0m) / 100m / 12m, 2, MidpointRounding.AwayFromZero),
+                ComponentFormulaType.PercentOfBasic =>
+                    Math.Round(basicMonthly * (ov.Percentage ?? 0m) / 100m, 2, MidpointRounding.AwayFromZero),
+                _ => 0m,
+            };
+        }
+        employerCtcDeductions += benefitsMonthlyTotal;
+
         decimal monthlyGross = Math.Max(0m, monthlyCTC - employerCtcDeductions);
 
         // Pass 2: PercentOfGross components (now Gross is known)
@@ -521,11 +545,14 @@ public sealed class InitiatePayrollRunHandler(
                 residual.Component.ShowInPayslip ?? true));
         }
 
-        // Pass 3: override-only components (not in template)
+        // Pass 3: override-only components (not in template). Skip Benefit-category
+        // rows — they're employer-borne (already netted out of monthlyGross above)
+        // and must not flow into the payslip as employee earnings.
         foreach (EmployeeSalaryComponentOverride ov in structure.ComponentOverrides)
         {
             if (templateCompIds.Contains(ov.SalaryComponentId)) continue;
             if (!addedCompDetails.TryGetValue(ov.SalaryComponentId, out SalaryComponent? sc)) continue;
+            if (sc.Category == ComponentCategory.Benefit) continue;
 
             decimal monthly = ov.FormulaType switch
             {
