@@ -22,6 +22,7 @@ export interface StatutoryConfig {
   esiEnabled: boolean
   esiEstablishmentCode: string | null
   esiNotifiedArea: boolean
+  gratuityIncludedInCtc: boolean
   statutoryBonusEnabled: boolean
   bonusRate: number
   bonusMode: string

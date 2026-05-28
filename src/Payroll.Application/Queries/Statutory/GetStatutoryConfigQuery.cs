@@ -27,6 +27,7 @@ internal sealed class GetStatutoryConfigHandler(IStatutoryConfigRepository repo)
             config.EsiEnabled,
             config.EsiEstablishmentCode,
             config.EsiNotifiedArea,
+            config.GratuityIncludedInCtc,
             config.StatutoryBonusEnabled,
             config.BonusRate,
             config.BonusMode,
