@@ -114,6 +114,11 @@ export interface SalaryStructureTemplateDetailDto {
   name: string
   description: string | null
   isActive: boolean
+  // Template-level statutory defaults. Pre-fill employee toggles at hire.
+  epfEnabled: boolean
+  esiEnabled: boolean
+  ptEnabled: boolean
+  lwfEnabled: boolean
   components: SalaryStructureComponentDto[]
 }
 
