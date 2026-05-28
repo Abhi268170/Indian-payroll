@@ -8,28 +8,44 @@ interface ExportModalProps {
   onClose: () => void
 }
 
-type Format = 'csv' | 'xls'
+type ExportType = 'payroll-details' | 'tds-breakup'
+type Format = 'csv' | 'xlsx'
+
+const EXPORT_TYPES: { value: ExportType; label: string; description: string }[] = [
+  {
+    value: 'payroll-details',
+    label: 'Payroll Details',
+    description: 'Salary breakup per employee — earnings, benefits, deductions, gross, net, CTC.',
+  },
+  {
+    value: 'tds-breakup',
+    label: 'TDS Breakup',
+    description: 'Per-employee TDS working — slab-wise tax, 87A rebate, surcharge, cess, monthly TDS.',
+  },
+]
 
 const FORMATS: { value: Format; label: string }[] = [
+  { value: 'xlsx', label: 'XLSX (Microsoft Excel)' },
   { value: 'csv', label: 'CSV (Comma Separated Values)' },
-  { value: 'xls', label: 'XLS (Microsoft Excel)' },
 ]
 
 export default function ExportModal({ runId, periodLabel, onClose }: ExportModalProps): React.ReactElement {
-  const [format, setFormat] = useState<Format>('csv')
+  const [exportType, setExportType] = useState<ExportType>('payroll-details')
+  const [format, setFormat] = useState<Format>('xlsx')
   const [downloading, setDownloading] = useState(false)
 
   async function handleDownload(): Promise<void> {
     setDownloading(true)
     try {
       const res = await api.get<Blob>(
-        `/api/v1/payroll-runs/${runId}/export?format=${format}`,
+        `/api/v1/payroll-runs/${runId}/export/${exportType}?format=${format}`,
         { responseType: 'blob' },
       )
       const url = URL.createObjectURL(res.data)
       const a = document.createElement('a')
       a.href = url
-      a.download = `Payroll_${periodLabel.replace(/\s/g, '-')}.${format}`
+      const prefix = exportType === 'payroll-details' ? 'PayrollDetails' : 'TDSBreakup'
+      a.download = `${prefix}_${periodLabel.replace(/\s/g, '-')}.${format}`
       a.click()
       URL.revokeObjectURL(url)
       onClose()
@@ -41,13 +57,12 @@ export default function ExportModal({ runId, periodLabel, onClose }: ExportModal
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
-      <div className="relative w-[420px] bg-white rounded-xl shadow-xl flex flex-col overflow-hidden">
+      <div className="relative w-[460px] bg-white rounded-xl shadow-xl flex flex-col overflow-hidden">
 
-        {/* Header */}
         <div className="px-6 py-5 border-b border-[var(--color-border)] flex items-start justify-between">
           <div>
             <h2 className="text-[16px] font-semibold text-[var(--color-text-primary)]">Export Payroll Data</h2>
-            <p className="text-[13px] text-[var(--color-text-secondary)] mt-0.5">{periodLabel} — Employee Pay Run Details</p>
+            <p className="text-[13px] text-[var(--color-text-secondary)] mt-0.5">{periodLabel}</p>
           </div>
           <button
             onClick={onClose}
@@ -57,25 +72,48 @@ export default function ExportModal({ runId, periodLabel, onClose }: ExportModal
           </button>
         </div>
 
-        {/* Body */}
-        <div className="px-6 py-5 space-y-3">
-          <p className="text-[12px] font-medium text-[var(--color-text-secondary)]">Export format</p>
-          {FORMATS.map(f => (
-            <label key={f.value} className="flex items-center gap-2.5 cursor-pointer">
-              <input
-                type="radio"
-                name="format"
-                value={f.value}
-                checked={format === f.value}
-                onChange={() => { setFormat(f.value) }}
-                className="accent-[var(--color-primary)]"
-              />
-              <span className="text-[13px] text-[var(--color-text-primary)]">{f.label}</span>
-            </label>
-          ))}
+        <div className="px-6 py-5 space-y-5">
+          <div className="space-y-2.5">
+            <p className="text-[12px] font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">Export type</p>
+            {EXPORT_TYPES.map(t => (
+              <label
+                key={t.value}
+                className="flex items-start gap-2.5 cursor-pointer p-2.5 rounded-lg border border-[var(--color-border)] hover:bg-[var(--color-page-bg)] transition-colors"
+              >
+                <input
+                  type="radio"
+                  name="export-type"
+                  value={t.value}
+                  checked={exportType === t.value}
+                  onChange={() => { setExportType(t.value) }}
+                  className="mt-0.5 accent-[var(--color-primary)]"
+                />
+                <span>
+                  <span className="block text-[13px] font-medium text-[var(--color-text-primary)]">{t.label}</span>
+                  <span className="block text-[11px] text-[var(--color-text-secondary)] mt-0.5">{t.description}</span>
+                </span>
+              </label>
+            ))}
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-[12px] font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">Format</p>
+            {FORMATS.map(f => (
+              <label key={f.value} className="flex items-center gap-2.5 cursor-pointer">
+                <input
+                  type="radio"
+                  name="format"
+                  value={f.value}
+                  checked={format === f.value}
+                  onChange={() => { setFormat(f.value) }}
+                  className="accent-[var(--color-primary)]"
+                />
+                <span className="text-[13px] text-[var(--color-text-primary)]">{f.label}</span>
+              </label>
+            ))}
+          </div>
         </div>
 
-        {/* Footer */}
         <div className="px-6 py-4 border-t border-[var(--color-border)] flex justify-end gap-2">
           <button
             onClick={onClose}
