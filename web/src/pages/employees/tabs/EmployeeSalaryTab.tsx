@@ -104,6 +104,22 @@ export default function EmployeeSalaryTab({ employeeId }: Props): React.ReactEle
                 </tr>
               ))}
             </tbody>
+            {data.employerContributions.length > 0 && (
+              <tbody className="bg-[var(--color-page-bg)] border-t border-[var(--color-border)]">
+                <tr>
+                  <td colSpan={4} className="px-5 pt-2 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
+                    Employer contributions (included in CTC)
+                  </td>
+                </tr>
+                {data.employerContributions.map(ec => (
+                  <tr key={ec.code} className="text-[var(--color-text-secondary)]">
+                    <td className="px-5 py-1.5" colSpan={2}>{ec.name}</td>
+                    <td className="px-5 py-1.5 text-right">{formatINR(ec.monthlyAmount)}</td>
+                    <td className="px-5 py-1.5 text-right">{formatINR(ec.annualAmount)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            )}
             <tfoot>
               <tr className="bg-[var(--color-page-bg)] font-semibold border-t border-[var(--color-border)]">
                 <td className="px-5 py-3 text-[var(--color-text-primary)]" colSpan={2}>Cost to Company</td>

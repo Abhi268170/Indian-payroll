@@ -11,7 +11,9 @@ import {
   type EmployeeStatutoryFlags,
   type EmployerContribution,
   type FormulaType,
+  type StatutoryOrgFlags,
 } from '@/lib/salaryStructurePreview'
+import type { StatutoryConfig } from '@/pages/settings/StatutoryComponentsPage'
 
 interface Props {
   employeeId: string
@@ -64,6 +66,7 @@ function computeRows(
   overrides: OverrideMap,
   addedComps: SalaryComponentSummary[],
   flags: EmployeeStatutoryFlags,
+  orgFlags: StatutoryOrgFlags | undefined,
 ): { rows: ComponentRow[]; employerContributions: EmployerContribution[] } {
   if (!annualCTC || annualCTC <= 0) return { rows: [], employerContributions: [] }
 
@@ -108,6 +111,7 @@ function computeRows(
     overrides: previewOverrides,
     addedComponents: previewAdded,
     employeeFlags: flags,
+    orgFlags,
   })
 
   const rows: ComponentRow[] = out.rows.map(r => ({
@@ -169,6 +173,14 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
     queryFn: () => api.get<SalaryComponentSummary[]>('/api/v1/salary-components/active-benefits').then(r => r.data),
   })
 
+  // Tenant statutory config — drives the orgFlags passed to the preview so
+  // the residual reflects what this tenant has actually configured.
+  const { data: statutoryConfig } = useQuery<StatutoryConfig>({
+    queryKey: ['statutory-config'],
+    queryFn: () => api.get<StatutoryConfig>('/api/v1/statutory/config').then(r => r.data),
+    retry: false,
+  })
+
   useEffect(() => {
     if (templates.length > 0 && !templateId) {
       const active = templates.find(t => t.isActive) ?? templates[0]
@@ -210,8 +222,13 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
   const employeeFlags: EmployeeStatutoryFlags = {
     epfEnabled, esiEnabled, ptEnabled, lwfEnabled, gratuityEnabled: true,
   }
+  const orgFlags: StatutoryOrgFlags | undefined = statutoryConfig ? {
+    epfEnabled: statutoryConfig.epfEnabled,
+    epfIncludeEmployerInCtc: statutoryConfig.epfIncludeEmployerInCtc,
+    gratuityIncludedInCtc: statutoryConfig.gratuityIncludedInCtc,
+  } : undefined
   const previewOutput = templateDetail && ctcNum > 0
-    ? computeRows(templateDetail, ctcNum, overrides, addedComps, employeeFlags)
+    ? computeRows(templateDetail, ctcNum, overrides, addedComps, employeeFlags, orgFlags)
     : { rows: [], employerContributions: [] }
   const rows = previewOutput.rows
   const employerContributions = previewOutput.employerContributions

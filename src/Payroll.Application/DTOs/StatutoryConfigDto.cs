@@ -16,6 +16,10 @@ public sealed record StatutoryConfigDto(
     string? EsiEstablishmentCode,
     bool EsiNotifiedArea,
 
+    // Gratuity — drives whether the salary-structure preview subtracts gratuity
+    // accrual from the residual. The engine reads this same flag at run time.
+    bool GratuityIncludedInCtc,
+
     // Statutory Bonus
     bool StatutoryBonusEnabled,
     decimal BonusRate,

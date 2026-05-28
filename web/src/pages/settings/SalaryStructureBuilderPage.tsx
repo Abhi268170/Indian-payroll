@@ -8,7 +8,8 @@ import { Spinner } from '@/components/ui/Spinner'
 import { useToast } from '@/components/ui/useToast'
 import { formatINR } from '@/lib/format'
 import type { SalaryComponentSummary } from './SalaryComponentsPage'
-import { computePreview, type EmployerContribution, type PreviewComponent } from '@/lib/salaryStructurePreview'
+import { computePreview, type EmployerContribution, type PreviewComponent, type StatutoryOrgFlags } from '@/lib/salaryStructurePreview'
+import type { StatutoryConfig } from './StatutoryComponentsPage'
 
 type ComponentCategory = 'Earning' | 'Deduction' | 'Reimbursement' | 'Benefit' | 'Correction'
 type FormulaType = 'Fixed' | 'PercentOfBasic' | 'PercentOfGross' | 'PercentOfCTC' | 'ResidualCTC'
@@ -68,8 +69,14 @@ const CATEGORY_GROUPS: { label: string; category: ComponentCategory }[] = [
 
 // Thin adapter over the shared computePreview() so the settings builder uses
 // the same residual + employer-statutory math as the wizard + employee detail
-// page. No per-employee flags here — templates are tenant-wide.
-function computeAmounts(rows: TemplateRow[], previewCtc: number): {
+// page. No per-employee flags here — templates are tenant-wide. Org flags come
+// from the live StatutoryOrgConfig so the preview reflects what this specific
+// tenant has actually enabled (e.g. employer-EPF-in-CTC off).
+function computeAmounts(
+  rows: TemplateRow[],
+  previewCtc: number,
+  orgFlags: StatutoryOrgFlags | undefined,
+): {
   amounts: Map<string, number>
   employerContributions: EmployerContribution[]
 } {
@@ -94,6 +101,7 @@ function computeAmounts(rows: TemplateRow[], previewCtc: number): {
     templateComponents,
     overrides: {},
     addedComponents: [],
+    orgFlags,
   })
 
   const amounts = new Map<string, number>()
@@ -114,6 +122,15 @@ export default function SalaryStructureBuilderPage(): ReactElement {
   const [previewCtc, setPreviewCtc] = useState('600000')
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(['Earnings']))
   const [initialized, setInitialized] = useState(false)
+
+  // Load tenant statutory config so the residual preview reflects what this
+  // tenant has actually enabled (employer-EPF-in-CTC, gratuity-in-CTC). Without
+  // this the preview falls back to defaults and over- or under-states the residual.
+  const { data: statutoryConfig } = useQuery<StatutoryConfig>({
+    queryKey: ['statutory-config'],
+    queryFn: () => api.get<StatutoryConfig>('/api/v1/statutory/config').then(r => r.data),
+    retry: false,
+  })
 
   // Load all components for the picker.
   // GET /api/v1/salary-components returns a PagedResult<T> ({items,total,page,pageSize})
@@ -201,9 +218,15 @@ export default function SalaryStructureBuilderPage(): ReactElement {
     },
   })
 
+  const orgFlags: StatutoryOrgFlags | undefined = statutoryConfig ? {
+    epfEnabled: statutoryConfig.epfEnabled,
+    epfIncludeEmployerInCtc: statutoryConfig.epfIncludeEmployerInCtc,
+    gratuityIncludedInCtc: statutoryConfig.gratuityIncludedInCtc,
+  } : undefined
+
   const { amounts, employerContributions } = useMemo(
-    () => computeAmounts(rows, parseFloat(previewCtc) || 0),
-    [rows, previewCtc],
+    () => computeAmounts(rows, parseFloat(previewCtc) || 0, orgFlags),
+    [rows, previewCtc, orgFlags],
   )
 
   const alreadyAdded = new Set(rows.map(r => r.componentId))
