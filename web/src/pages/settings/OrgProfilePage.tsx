@@ -48,7 +48,7 @@ const INDUSTRIES = [
 const schema = z.object({
   companyName: z.string().min(1, 'Company name is required').max(200),
   legalName: z.string().max(200).optional().or(z.literal('')),
-  pan: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]$/, 'Format: AAAAA9999A').optional().or(z.literal('')),
+  pan: z.string().min(1, 'Company PAN is required for tax filings').regex(/^[A-Z]{5}[0-9]{4}[A-Z]$/, 'Format: AAAAA9999A'),
   gstin: z.string().optional().or(z.literal('')),
   website: z.string().max(500).optional().or(z.literal('')),
   industry: z.string().optional().or(z.literal('')),
@@ -275,8 +275,9 @@ export default function OrgProfilePage(): ReactElement {
               {...register('legalName')}
             />
             <Input
-              label="Company PAN"
+              label="Company PAN *"
               placeholder="AAAAA9999A"
+              helpText="Required for Form 24Q + Form 16 filings."
               error={errors.pan?.message}
               {...register('pan')}
             />

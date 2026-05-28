@@ -8,7 +8,6 @@ import type { CurrentPayPeriodDto, EmployeeListItemDto, PayrollHistoryItemDto } 
 import { useOnboardingStatus, usePayrollRunPreflight } from '@/hooks/useOnboardingStatus'
 import SetupChecklistCard from './dashboard/components/SetupChecklistCard'
 import WelcomeBanner from './dashboard/components/WelcomeBanner'
-import HelpResourcesCard from './dashboard/components/HelpResourcesCard'
 
 interface PagedResult<T> {
   items: T[]
@@ -195,8 +194,6 @@ export default function DashboardPage(): ReactElement {
         </Link>
       )}
 
-      {/* Help block at the very bottom — always visible. */}
-      <HelpResourcesCard />
     </div>
   )
 }
