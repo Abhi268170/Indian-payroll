@@ -18,7 +18,10 @@ public sealed record SalaryComponentSummaryDto(
     decimal? Percentage,
     DeductionFrequency? DeductionFrequency,
     decimal? ReimbursementAmount,
-    decimal? BenefitPercentage);
+    decimal? BenefitPercentage,
+    // Preview math needs these. Same rationale as the template DTO.
+    EarningType? EarningType,
+    bool ConsiderForEpf);
 
 public sealed record SalaryComponentDetailDto(
     Guid Id,

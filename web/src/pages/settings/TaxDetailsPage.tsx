@@ -1,6 +1,7 @@
 import { useState, type ReactElement } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Pencil } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Pencil, ExternalLink } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/Spinner'
@@ -101,7 +102,22 @@ export default function TaxDetailsPage(): ReactElement {
         <section className="bg-white border border-[var(--color-border)] rounded-xl p-6">
           <h2 className="text-[14px] font-semibold text-[var(--color-text-primary)] mb-4">Registration Numbers</h2>
           <div className="grid grid-cols-2 gap-x-12 gap-y-4">
-            <ViewRow label="PAN" value={data?.pan ?? null} />
+            <div>
+              <dt className="text-[12px] text-[var(--color-text-muted)] mb-0.5">PAN</dt>
+              {data?.pan ? (
+                <dd className="text-[13px] text-[var(--color-text-primary)]">{data.pan}</dd>
+              ) : (
+                <dd>
+                  <Link
+                    to="/settings/org-profile"
+                    className="inline-flex items-center gap-1 text-[13px] text-[var(--color-primary)] hover:underline"
+                  >
+                    Set in Company Profile
+                    <ExternalLink className="w-3 h-3" />
+                  </Link>
+                </dd>
+              )}
+            </div>
             <ViewRow label="TAN (Tax Deduction Account Number)" value={data?.tan ?? null} />
           </div>
         </section>
@@ -244,9 +260,15 @@ function TaxDetailsForm({
             <div>
               <label className="block text-[13px] font-medium text-[var(--color-text-muted)] mb-1">PAN</label>
               <div className="h-9 px-3 flex items-center border border-[var(--color-border)] rounded-lg bg-gray-50 text-[13px] text-[var(--color-text-muted)]">
-                {data.pan ?? 'Set in Company Profile'}
+                {data.pan ?? 'Not set'}
               </div>
-              <p className="text-[11px] text-[var(--color-text-muted)] mt-1">Edit PAN via Settings → Company Profile</p>
+              <Link
+                to="/settings/org-profile"
+                className="inline-flex items-center gap-1 mt-1 text-[11px] text-[var(--color-primary)] hover:underline"
+              >
+                Edit in Company Profile
+                <ExternalLink className="w-3 h-3" />
+              </Link>
             </div>
           </div>
         </section>

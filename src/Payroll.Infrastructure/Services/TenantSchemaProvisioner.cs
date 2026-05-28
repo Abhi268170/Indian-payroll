@@ -330,13 +330,43 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
 
     private static async Task SeedStatutorySlabsAsync(PayrollDbContext db, CancellationToken ct)
     {
-        bool hasSlabs = await db.ProfessionalTaxSlabs.AnyAsync(ct);
-        if (!hasSlabs)
-        {
-            DateOnly eff = new(2025, 4, 1);
-            Guid sys = Guid.Empty;
+        // Per-table idempotency. The previous single guard (`ProfessionalTaxSlabs.AnyAsync`)
+        // skipped LWF + IT seeding for any tenant that already had PT rows — which left
+        // tenants provisioned on older code permanently missing LWF state configs even after
+        // a rebuild. Each table now seeds independently so backfill happens automatically.
+        DateOnly eff = new(2025, 4, 1);
+        Guid sys = Guid.Empty;
+        bool changed = false;
 
-            // Professional Tax slabs (FY2025-26, monthly states only for v1)
+        if (!await db.ProfessionalTaxSlabs.AnyAsync(ct))
+        {
+            SeedProfessionalTaxSlabs(db, eff, sys);
+            changed = true;
+        }
+
+        if (!await db.LwfStateConfigs.AnyAsync(ct))
+        {
+            SeedLwfStateConfigs(db, eff, sys);
+            changed = true;
+        }
+
+        string[] fyKeys = ["2026", "2027"];
+        foreach (string fy in fyKeys)
+        {
+            if (!await db.IncomeTaxSlabs.AnyAsync(s => s.FiscalYear == fy, ct))
+            {
+                SeedIncomeTaxForFy(db, fy, sys);
+                changed = true;
+            }
+        }
+
+        if (changed)
+            await db.SaveChangesAsync(ct);
+    }
+
+    private static void SeedProfessionalTaxSlabs(PayrollDbContext db, DateOnly eff, Guid sys)
+    {
+        // Professional Tax slabs (FY2025-26, monthly states only for v1)
             // Maharashtra — monthly, gender-split, Feb surcharge in top bracket
             db.ProfessionalTaxSlabs.AddRange(
                 Payroll.Domain.Entities.ProfessionalTaxSlab.Create("MH", eff, "Monthly", "Male",    0m,      7499m,   0m,    false, sys),
@@ -378,63 +408,61 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
                 Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 75000m,   99999m,   750m,  false, sys),
                 Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 100000m,  124999m,  1000m, false, sys),
                 Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 125000m,  null,     1250m, false, sys));
+    }
 
-            // LWF state configs (select active states)
-            db.LwfStateConfigs.AddRange(
-                Payroll.Domain.Entities.LwfStateConfig.Create("MH", eff, 6m,  12m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
-                Payroll.Domain.Entities.LwfStateConfig.Create("KA", eff, 20m, 40m,  false, null, null, null, null, "Annual",    12,   31,   null,   sys),
-                Payroll.Domain.Entities.LwfStateConfig.Create("AP", eff, 20m, 40m,  false, null, null, null, null, "Annual",    12,   31,   null,   sys),
-                Payroll.Domain.Entities.LwfStateConfig.Create("TS", eff, 20m, 40m,  false, null, null, null, null, "Annual",    12,   31,   null,   sys),
-                Payroll.Domain.Entities.LwfStateConfig.Create("WB", eff, 3m,  15m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
-                Payroll.Domain.Entities.LwfStateConfig.Create("GJ", eff, 6m,  12m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
-                Payroll.Domain.Entities.LwfStateConfig.Create("MP", eff, 10m, 10m,  false, null, null, null, null, "Monthly",   null, null, 10000m, sys),
-                Payroll.Domain.Entities.LwfStateConfig.Create("CH", eff, 25m, 25m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
-                Payroll.Domain.Entities.LwfStateConfig.Create("HR", eff, 0m,  0m,   true,  0.002m, 0.002m, 25m, 25m, "Monthly", null, null, 25000m, sys),
-                Payroll.Domain.Entities.LwfStateConfig.Create("KL", eff, 50m, 0m,   false, null, null, null, null, "Monthly",    null, null, null,   sys));
+    private static void SeedLwfStateConfigs(PayrollDbContext db, DateOnly eff, Guid sys)
+    {
+        // LWF state configs (select active states)
+        db.LwfStateConfigs.AddRange(
+            Payroll.Domain.Entities.LwfStateConfig.Create("MH", eff, 6m,  12m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
+            Payroll.Domain.Entities.LwfStateConfig.Create("KA", eff, 20m, 40m,  false, null, null, null, null, "Annual",    12,   31,   null,   sys),
+            Payroll.Domain.Entities.LwfStateConfig.Create("AP", eff, 20m, 40m,  false, null, null, null, null, "Annual",    12,   31,   null,   sys),
+            Payroll.Domain.Entities.LwfStateConfig.Create("TS", eff, 20m, 40m,  false, null, null, null, null, "Annual",    12,   31,   null,   sys),
+            Payroll.Domain.Entities.LwfStateConfig.Create("WB", eff, 3m,  15m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
+            Payroll.Domain.Entities.LwfStateConfig.Create("GJ", eff, 6m,  12m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
+            Payroll.Domain.Entities.LwfStateConfig.Create("MP", eff, 10m, 10m,  false, null, null, null, null, "Monthly",   null, null, 10000m, sys),
+            Payroll.Domain.Entities.LwfStateConfig.Create("CH", eff, 25m, 25m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
+            Payroll.Domain.Entities.LwfStateConfig.Create("HR", eff, 0m,  0m,   true,  0.002m, 0.002m, 25m, 25m, "Monthly", null, null, 25000m, sys),
+            Payroll.Domain.Entities.LwfStateConfig.Create("KL", eff, 50m, 0m,   false, null, null, null, null, "Monthly",    null, null, null,   sys));
+    }
 
-            // Income Tax — FY2026-27 (key="2027") and FY2025-26 (key="2026"), New Regime.
-            // Key format: FiscalYearLabel.Replace("FY","") — e.g. April 2026 → FY2027 → "2027".
-            // Same Budget-2025 slabs apply to both fiscal years.
-            string[] fyKeys = ["2026", "2027"];
-            foreach (string fy in fyKeys)
-            {
-                db.IncomeTaxSlabs.AddRange(
-                    Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 0m,       400000m,    0m,     sys),
-                    Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 400000m,  800000m,    0.05m,  sys),
-                    Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 800000m,  1200000m,   0.10m,  sys),
-                    Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 1200000m, 1600000m,   0.15m,  sys),
-                    Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 1600000m, 2000000m,   0.20m,  sys),
-                    Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 2000000m, 2400000m,   0.25m,  sys),
-                    Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 2400000m, null,       0.30m,  sys));
+    private static void SeedIncomeTaxForFy(PayrollDbContext db, string fy, Guid sys)
+    {
+        // Income Tax — keyed by FiscalYearLabel.Replace("FY","") — e.g. April 2026 → FY2027 → "2027".
+        // Same Budget-2025 New Regime slabs apply to FY2026 (2025-26) and FY2027 (2026-27).
+        db.IncomeTaxSlabs.AddRange(
+            Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 0m,       400000m,    0m,     sys),
+            Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 400000m,  800000m,    0.05m,  sys),
+            Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 800000m,  1200000m,   0.10m,  sys),
+            Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 1200000m, 1600000m,   0.15m,  sys),
+            Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 1600000m, 2000000m,   0.20m,  sys),
+            Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 2000000m, 2400000m,   0.25m,  sys),
+            Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 2400000m, null,       0.30m,  sys));
 
-                db.IncomeTaxSurchargeSlabs.AddRange(
-                    Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create(fy, "New", 5000000m,   10000000m, 0.10m, sys),
-                    Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create(fy, "New", 10000000m,  20000000m, 0.15m, sys),
-                    Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create(fy, "New", 20000000m,  50000000m, 0.25m, sys),
-                    Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create(fy, "New", 50000000m,  null,      0.25m, sys));
+        db.IncomeTaxSurchargeSlabs.AddRange(
+            Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create(fy, "New", 5000000m,   10000000m, 0.10m, sys),
+            Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create(fy, "New", 10000000m,  20000000m, 0.15m, sys),
+            Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create(fy, "New", 20000000m,  50000000m, 0.25m, sys),
+            Payroll.Domain.Entities.IncomeTaxSurchargeSlab.Create(fy, "New", 50000000m,  null,      0.25m, sys));
 
-                db.IncomeTaxConfigs.Add(
-                    Payroll.Domain.Entities.IncomeTaxConfig.Create(
-                        fy, "New",
-                    standardDeduction: 75000m,
-                    rebate87ALimit: 1200000m,
-                    rebate87AAmount: 60000m,
-                    employerStatutoryCap: 750000m,
-                    npsEmployerMaxRate: 0.14m,
-                    cessRate: 0.04m,
-                    pfWageCap: 15000m,
-                    epfEmployeeRate: 0.12m,
-                    epsEmployerRate: 0.0833m,
-                    epsCap: 1250m,
-                    esiWageLimit: 21000m,
-                    esiPwdWageLimit: 25000m,
-                    esiEmployeeRate: 0.0075m,
-                    esiEmployerRate: 0.0325m,
-                    createdBy: sys));
-            }
-
-            await db.SaveChangesAsync(ct);
-        }
+        db.IncomeTaxConfigs.Add(
+            Payroll.Domain.Entities.IncomeTaxConfig.Create(
+                fy, "New",
+                standardDeduction: 75000m,
+                rebate87ALimit: 1200000m,
+                rebate87AAmount: 60000m,
+                employerStatutoryCap: 750000m,
+                npsEmployerMaxRate: 0.14m,
+                cessRate: 0.04m,
+                pfWageCap: 15000m,
+                epfEmployeeRate: 0.12m,
+                epsEmployerRate: 0.0833m,
+                epsCap: 1250m,
+                esiWageLimit: 21000m,
+                esiPwdWageLimit: 25000m,
+                esiEmployeeRate: 0.0075m,
+                esiEmployerRate: 0.0325m,
+                createdBy: sys));
     }
 
     public async Task DropAsync(string schemaName, CancellationToken cancellationToken = default)

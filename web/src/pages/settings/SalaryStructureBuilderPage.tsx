@@ -8,6 +8,7 @@ import { Spinner } from '@/components/ui/Spinner'
 import { useToast } from '@/components/ui/useToast'
 import { formatINR } from '@/lib/format'
 import type { SalaryComponentSummary } from './SalaryComponentsPage'
+import { computePreview, type EmployerContribution, type PreviewComponent } from '@/lib/salaryStructurePreview'
 
 type ComponentCategory = 'Earning' | 'Deduction' | 'Reimbursement' | 'Benefit' | 'Correction'
 type FormulaType = 'Fixed' | 'PercentOfBasic' | 'PercentOfGross' | 'PercentOfCTC' | 'ResidualCTC'
@@ -22,6 +23,8 @@ interface DetailComponent {
   fixedAmount: number | null
   percentage: number | null
   displayOrder: number
+  earningType: string | null
+  considerForEpf: boolean
 }
 
 interface TemplateDetail {
@@ -35,12 +38,17 @@ interface TemplateDetail {
 interface TemplateRow {
   componentId: string
   componentName: string
+  componentCode: string
   category: ComponentCategory
   isSystemComponent: boolean
   formulaType: FormulaType
   fixedAmount: string
   percentage: string
   displayOrder: number
+  // Carried through so the preview calculator can identify Basic (gratuity driver)
+  // and PF-eligible components (employer EPF subtraction from residual).
+  earningType: string | null
+  considerForEpf: boolean
 }
 
 const FORMULA_LABELS: Record<FormulaType, string> = {
@@ -58,44 +66,39 @@ const CATEGORY_GROUPS: { label: string; category: ComponentCategory }[] = [
   { label: 'Benefits', category: 'Benefit' },
 ]
 
-function computeAmounts(rows: TemplateRow[], previewCtc: number): Map<string, number> {
-  const annualCtc = previewCtc
-  const result = new Map<string, number>()
-
-  const basicRow = rows.find(r => r.componentName.toLowerCase() === 'basic' || r.componentName.toLowerCase() === 'basic salary')
-  const basicAnnual = basicRow
-    ? (basicRow.formulaType === 'PercentOfCTC'
-        ? (parseFloat(basicRow.percentage) / 100) * annualCtc
-        : basicRow.formulaType === 'Fixed'
-          ? parseFloat(basicRow.fixedAmount) * 12
-          : 0)
-    : 0
-
-  let allocated = 0
-
-  for (const row of rows) {
-    if (row.formulaType === 'ResidualCTC') continue
-    let annual = 0
-    if (row.formulaType === 'Fixed') {
-      annual = (parseFloat(row.fixedAmount) || 0) * 12
-    } else if (row.formulaType === 'PercentOfCTC') {
-      annual = ((parseFloat(row.percentage) || 0) / 100) * annualCtc
-    } else if (row.formulaType === 'PercentOfBasic') {
-      annual = ((parseFloat(row.percentage) || 0) / 100) * basicAnnual
-    } else if (row.formulaType === 'PercentOfGross') {
-      annual = 0 // gross not computable without full pass; approximate
-    }
-    result.set(row.componentId, annual)
-    allocated += annual
+// Thin adapter over the shared computePreview() so the settings builder uses
+// the same residual + employer-statutory math as the wizard + employee detail
+// page. No per-employee flags here — templates are tenant-wide.
+function computeAmounts(rows: TemplateRow[], previewCtc: number): {
+  amounts: Map<string, number>
+  employerContributions: EmployerContribution[]
+} {
+  if (!previewCtc || previewCtc <= 0) {
+    return { amounts: new Map(), employerContributions: [] }
   }
 
-  // Fixed Allowance gets the remainder
-  const residualRow = rows.find(r => r.formulaType === 'ResidualCTC')
-  if (residualRow) {
-    result.set(residualRow.componentId, Math.max(0, annualCtc - allocated))
-  }
+  const templateComponents: PreviewComponent[] = rows.map(r => ({
+    componentId: r.componentId,
+    code: r.componentCode,
+    name: r.componentName,
+    earningType: r.earningType,
+    considerForEpf: r.considerForEpf,
+    formulaType: r.formulaType,
+    percentage: r.percentage ? parseFloat(r.percentage) || null : null,
+    fixedAmount: r.fixedAmount ? parseFloat(r.fixedAmount) || null : null,
+    displayOrder: r.displayOrder,
+  }))
 
-  return result
+  const out = computePreview({
+    annualCtc: previewCtc,
+    templateComponents,
+    overrides: {},
+    addedComponents: [],
+  })
+
+  const amounts = new Map<string, number>()
+  for (const r of out.rows) amounts.set(r.componentId, r.annualAmount)
+  return { amounts, employerContributions: out.employerContributions }
 }
 
 export default function SalaryStructureBuilderPage(): ReactElement {
@@ -155,12 +158,15 @@ export default function SalaryStructureBuilderPage(): ReactElement {
     setRows(templateData.components.map(c => ({
       componentId: c.componentId,
       componentName: c.componentName,
+      componentCode: c.componentCode,
       category: c.category,
       isSystemComponent: c.isSystemComponent,
       formulaType: c.formulaType,
       fixedAmount: c.fixedAmount?.toString() ?? '',
       percentage: c.percentage?.toString() ?? '',
       displayOrder: c.displayOrder,
+      earningType: c.earningType,
+      considerForEpf: c.considerForEpf,
     })))
     setInitialized(true)
   }
@@ -195,7 +201,7 @@ export default function SalaryStructureBuilderPage(): ReactElement {
     },
   })
 
-  const amounts = useMemo(
+  const { amounts, employerContributions } = useMemo(
     () => computeAmounts(rows, parseFloat(previewCtc) || 0),
     [rows, previewCtc],
   )
@@ -210,12 +216,15 @@ export default function SalaryStructureBuilderPage(): ReactElement {
       {
         componentId: comp.id,
         componentName: comp.name,
+        componentCode: comp.code,
         category: comp.category,
         isSystemComponent: comp.isSystemComponent,
         formulaType,
         fixedAmount: '',
         percentage: '',
         displayOrder: prev.length,
+        earningType: comp.earningType,
+        considerForEpf: comp.considerForEpf,
       },
     ])
   }
@@ -459,6 +468,22 @@ export default function SalaryStructureBuilderPage(): ReactElement {
                     )
                   })}
                 </tbody>
+                {employerContributions.length > 0 && (
+                  <tbody className="border-t border-[var(--color-border)] bg-gray-50">
+                    <tr>
+                      <td colSpan={4} className="px-4 pt-2 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
+                        Employer contributions (included in CTC)
+                      </td>
+                    </tr>
+                    {employerContributions.map(ec => (
+                      <tr key={ec.code} className="text-[var(--color-text-secondary)]">
+                        <td className="px-4 py-1.5 text-[12px]" colSpan={3}>{ec.name}</td>
+                        <td className="px-4 py-1.5 text-right text-[12px]">{formatINR(ec.annualAmount)}</td>
+                        <td />
+                      </tr>
+                    ))}
+                  </tbody>
+                )}
                 <tfoot>
                   <tr className="border-t-2 border-[var(--color-border)] bg-gray-50">
                     <td colSpan={3} className="px-4 py-3 font-semibold text-[var(--color-text-primary)]">

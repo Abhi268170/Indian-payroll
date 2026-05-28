@@ -61,6 +61,17 @@ internal sealed class GetPayrollRunPreflightHandler(
         }
 
         OrgProfileEntity? org = await orgProfileRepo.GetAsync(ct);
+        // Company PAN lives on OrgProfile (single source of truth), but it's required for
+        // Form 24Q / Form 16 just as much as TAN and AO code — surface the gap here so the
+        // operator sees one consolidated tax-readiness warning instead of having to discover
+        // the PAN field is missing only when filing.
+        if (string.IsNullOrWhiteSpace(org?.Pan))
+        {
+            warnings.Add(new PreflightWarningDto(
+                Code: "ORG_PAN_MISSING",
+                Message: "Company PAN is not set. Form 24Q and Form 16 cannot be filed without it.",
+                FixUrl: "/settings/org-profile"));
+        }
         bool taxDetailsComplete = !string.IsNullOrWhiteSpace(org?.Tan)
             && !string.IsNullOrWhiteSpace(org?.AoAreaCode)
             && !string.IsNullOrWhiteSpace(org?.DeductorType);

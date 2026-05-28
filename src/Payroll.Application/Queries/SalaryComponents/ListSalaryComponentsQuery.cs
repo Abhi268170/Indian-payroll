@@ -30,7 +30,7 @@ public sealed class ListSalaryComponentsHandler(
                 c.Id, c.Name, c.NameInPayslip, c.Code, c.Category,
                 c.IsActive, c.IsSystemComponent, c.IsAssociatedWithEmployee, c.IsOneTime,
                 c.FormulaType, c.FixedAmount, c.Percentage,
-                c.DeductionFrequency, c.ReimbursementAmount, c.BenefitPercentage))
+                c.DeductionFrequency, c.ReimbursementAmount, c.BenefitPercentage, c.EarningType, c.ConsiderForEpf == true))
             .ToList();
 
         return new PagedResult<SalaryComponentSummaryDto>(

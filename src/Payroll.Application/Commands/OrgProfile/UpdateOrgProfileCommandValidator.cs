@@ -9,7 +9,12 @@ internal sealed class UpdateOrgProfileCommandValidator : AbstractValidator<Updat
     {
         RuleFor(x => x.CompanyName).NotEmpty().MaximumLength(200);
         RuleFor(x => x.LegalName).MaximumLength(200).When(x => x.LegalName is not null);
+        // PAN is mandatory: Form 24Q quarterly returns and Form 16 issuance both require the
+        // deductor's PAN. A nullable PAN at the org level would let an operator run payroll
+        // they cannot legally file. Tighten at command level so the gap surfaces on save.
         RuleFor(x => x.Pan)
+            .NotEmpty()
+            .WithMessage("Company PAN is required for tax filings (Form 24Q, Form 16).")
             .Matches(@"^[A-Z]{5}[0-9]{4}[A-Z]$")
             .When(x => !string.IsNullOrEmpty(x.Pan))
             .WithMessage("PAN must be in format AAAAA9999A.");
