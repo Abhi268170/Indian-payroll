@@ -255,4 +255,125 @@ public sealed class TDSCalculatorTests
         result.TaxBeforeRebate.Should().Be(10_80_000.30m);
         result.Surcharge.Should().Be(0.70m);
     }
+
+    [Fact]
+    public void Verbose_SlabBreakdown_SumsToTaxBeforeRebate()
+    {
+        TDSWorkingResult v = TDSCalculator.ComputeVerbose(
+            annualProjectedGross: 18_00_000m,
+            priorEmployerYTDTaxableIncome: 0m,
+            priorEmployerYTDTDSDeducted: 0m,
+            currentEmployerYTDTDSDeducted: 0m,
+            hasPan: true, Config, monthsRemainingInFY: 12);
+
+        v.SlabBreakdown.Sum(s => s.Tax).Should().Be(v.TaxBeforeRebate);
+        v.SlabBreakdown.Should().HaveCount(7);
+        v.SlabBreakdown[0].Tax.Should().Be(0m);
+        v.SlabBreakdown[1].Tax.Should().Be(20_000m);
+        v.SlabBreakdown[2].Tax.Should().Be(40_000m);
+        v.SlabBreakdown[3].Tax.Should().Be(60_000m);
+        v.SlabBreakdown[4].Tax.Should().Be(25_000m);
+        v.SlabBreakdown[5].Tax.Should().Be(0m);
+        v.SlabBreakdown[6].Tax.Should().Be(0m);
+        v.SlabBreakdown[4].SlabIncome.Should().Be(1_25_000m);
+        v.TaxBeforeRebate.Should().Be(1_45_000m);
+    }
+
+    [Fact]
+    public void Verbose_ZeroIncome_ReturnsEmptySlabRowsWithZeroTax()
+    {
+        TDSWorkingResult v = TDSCalculator.ComputeVerbose(
+            annualProjectedGross: 50_000m,
+            priorEmployerYTDTaxableIncome: 0m,
+            priorEmployerYTDTDSDeducted: 0m,
+            currentEmployerYTDTDSDeducted: 0m,
+            hasPan: true, Config, monthsRemainingInFY: 12);
+
+        v.TaxableIncome.Should().Be(0m);
+        v.SlabBreakdown.Should().HaveCount(7);
+        v.SlabBreakdown.Should().OnlyContain(s => s.Tax == 0m && s.SlabIncome == 0m);
+        v.MonthlyTDS.Should().Be(0m);
+    }
+
+    [Fact]
+    public void Verbose_Under87AThreshold_ExposesRebateAmount()
+    {
+        TDSWorkingResult v = TDSCalculator.ComputeVerbose(
+            annualProjectedGross: 12_44_162m,
+            priorEmployerYTDTaxableIncome: 0m,
+            priorEmployerYTDTDSDeducted: 0m,
+            currentEmployerYTDTDSDeducted: 0m,
+            hasPan: true, Config, monthsRemainingInFY: 12);
+
+        v.TaxableIncome.Should().Be(11_69_162m);
+        v.TaxBeforeRebate.Should().BeGreaterThan(0m);
+        v.Rebate87AApplied.Should().BeTrue();
+        v.Rebate87AAmount.Should().Be(v.TaxBeforeRebate);
+        v.TaxAfterRebate.Should().Be(0m);
+        v.MonthlyTDS.Should().Be(0m);
+    }
+
+    [Fact]
+    public void Verbose_NoPan_PopulatesSection206AAFields()
+    {
+        TDSWorkingResult v = TDSCalculator.ComputeVerbose(
+            annualProjectedGross: 12_00_000m,
+            priorEmployerYTDTaxableIncome: 0m,
+            priorEmployerYTDTDSDeducted: 0m,
+            currentEmployerYTDTDSDeducted: 0m,
+            hasPan: false, Config, monthsRemainingInFY: 12);
+
+        v.HasPanOverride.Should().BeTrue();
+        v.Pan206AAAnnual.Should().Be(2_40_000m);
+        v.Pan206AAMonthly.Should().Be(20_000m);
+        v.SlabBreakdown.Should().BeEmpty();
+        v.TaxableIncome.Should().Be(0m);
+    }
+
+    [Fact]
+    public void Verbose_SurchargeAt60L_ExposesRawAndAdjustedSeparately()
+    {
+        TDSWorkingResult v = TDSCalculator.ComputeVerbose(
+            annualProjectedGross: 60_75_000m,
+            priorEmployerYTDTaxableIncome: 0m,
+            priorEmployerYTDTDSDeducted: 0m,
+            currentEmployerYTDTDSDeducted: 0m,
+            hasPan: true, Config, monthsRemainingInFY: 12);
+
+        v.SurchargeRate.Should().Be(0.10m);
+        v.RawSurcharge.Should().BeGreaterThan(0m);
+        v.MarginalReliefApplied.Should().BeFalse();
+        v.SurchargeAfterRelief.Should().Be(v.RawSurcharge);
+    }
+
+    [Fact]
+    public void Verbose_MarginalRelief_RawDifferentFromAdjusted()
+    {
+        TDSWorkingResult v = TDSCalculator.ComputeVerbose(
+            annualProjectedGross: 50_75_001m,
+            priorEmployerYTDTaxableIncome: 0m,
+            priorEmployerYTDTDSDeducted: 0m,
+            currentEmployerYTDTDSDeducted: 0m,
+            hasPan: true, Config, monthsRemainingInFY: 12);
+
+        v.MarginalReliefApplied.Should().BeTrue();
+        v.RawSurcharge.Should().BeGreaterThan(v.SurchargeAfterRelief);
+        v.SurchargeAfterRelief.Should().Be(0.70m);
+    }
+
+    [Fact]
+    public void Verbose_Compute_ReturnsSameAggregatesAsLegacy()
+    {
+        TDSResult legacy = TDSCalculator.Compute(
+            18_00_000m, 0m, 0m, 0m, hasPan: true, Config, 12);
+        TDSWorkingResult verbose = TDSCalculator.ComputeVerbose(
+            18_00_000m, 0m, 0m, 0m, hasPan: true, Config, 12);
+
+        verbose.MonthlyTDS.Should().Be(legacy.MonthlyTDS);
+        verbose.AnnualProjectedTax.Should().Be(legacy.AnnualProjectedTax);
+        verbose.SurchargeAfterRelief.Should().Be(legacy.Surcharge);
+        verbose.CessAmount.Should().Be(legacy.Cess);
+        verbose.TaxableIncome.Should().Be(legacy.TaxableIncome);
+        verbose.TaxBeforeRebate.Should().Be(legacy.TaxBeforeRebate);
+    }
 }
