@@ -25,6 +25,18 @@ interface Props {
 const inputCls = 'w-full h-9 px-3 text-[13px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]'
 const labelCls = 'block text-[12px] font-medium text-[var(--color-text-secondary)] mb-1'
 
+// Map IndianState enum names (returned by /work-locations) → ISO 2-letter codes
+// the engine slab-lookup uses. Kept here next to the preview wiring so the
+// mapping is obvious at the call site.
+const STATE_NAME_TO_ISO: Record<string, string> = {
+  Maharashtra: 'MH', Karnataka: 'KA', AndhraPradesh: 'AP', Telangana: 'TS',
+  WestBengal: 'WB', Gujarat: 'GJ', MadhyaPradesh: 'MP', Chandigarh: 'CH',
+  Haryana: 'HR', Kerala: 'KL', TamilNadu: 'TN', Odisha: 'OR',
+  Delhi: 'DL', Rajasthan: 'RJ', UttarPradesh: 'UP', Bihar: 'BR',
+  Punjab: 'PB', Jharkhand: 'JH', Chhattisgarh: 'CG', Uttarakhand: 'UK',
+  Assam: 'AS', Goa: 'GA',
+}
+
 interface SalaryComponentSummary {
   id: string
   name: string
@@ -67,13 +79,17 @@ function buildPreviewInputs(
   addedComps: SalaryComponentSummary[],
   flags: EmployeeStatutoryFlags,
   orgFlags: StatutoryOrgFlags | undefined,
+  workStateCode: string | null,
+  benefits: { componentId: string; annualAmount: number }[],
 ): {
   annualCtc: number
   templateComponents: PreviewComponent[]
   overrides: Record<string, { formulaType: FormulaType; percentage: number | null; fixedAmount: number | null }>
   addedComponents: PreviewAddedComponent[]
+  benefits: { componentId: string; annualAmount: number }[]
   employeeFlags: EmployeeStatutoryFlags
   orgFlags: StatutoryOrgFlags | undefined
+  workStateCode: string | null
 } {
   const templateComponents: PreviewComponent[] = template
     ? template.components.map(c => ({
@@ -117,8 +133,10 @@ function buildPreviewInputs(
     templateComponents,
     overrides: previewOverrides,
     addedComponents: previewAdded,
+    benefits,
     employeeFlags: flags,
     orgFlags,
+    workStateCode,
   }
 }
 
@@ -236,9 +254,33 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
     epfIncludeEmployerInCtc: statutoryConfig.epfIncludeEmployerInCtc,
     gratuityIncludedInCtc: statutoryConfig.gratuityIncludedInCtc,
   } : undefined
+
+  // Resolve employee's work-location state for PT + LWF preview deductions.
+  // Engine reads work_locations.state as an enum; map enum name to ISO code
+  // (the calculator's slab-lookup key). Falls back to null when the employee
+  // hasn't been placed yet — preview then skips state-keyed deductions.
+  const { data: workLocations = [] } = useQuery<{ id: string; state: string }[]>({
+    queryKey: ['work-locations'],
+    queryFn: () => api.get<{ id: string; state: string }[]>('/api/v1/work-locations').then(r => r.data),
+  })
+  const workLocation = workLocations.find(wl => wl.id === employeeDetail?.workLocationId)
+  const workStateCode = workLocation ? STATE_NAME_TO_ISO[workLocation.state] ?? null : null
+
+  // Thread addedBenefits into the preview as annual amounts. Wizard tracks
+  // benefits separately from earnings; preview needs them for the Benefits
+  // section render.
+  const benefitsForPreview = addedBenefits.map(b => ({
+    componentId: b.id,
+    annualAmount: (benefitOverrides[b.id] ?? b.fixedAmount ?? 0) * 12,
+  }))
+
   const previewInputs = buildPreviewInputs(
-    templateDetail, ctcNum, overrides, addedComps, employeeFlags, orgFlags)
+    templateDetail, ctcNum, overrides, addedComps, employeeFlags, orgFlags,
+    workStateCode, benefitsForPreview)
   const preview = useSalaryStructurePreview(previewInputs)
+  const employeeDeductions = preview.data.employeeDeductions
+  const benefitsRows = preview.data.benefits
+  const netPayMonthly = preview.data.netPayMonthly
   const rows: ComponentRow[] = preview.data.rows.map(r => ({
     componentId: r.componentId,
     name: r.name,
@@ -560,6 +602,29 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                   )
                 })}
               </tbody>
+              {employeeDeductions.length > 0 && (
+                <tbody className="bg-[var(--color-page-bg)] border-t border-[var(--color-border)]">
+                  <tr>
+                    <td colSpan={6} className="px-4 pt-2 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
+                      Employee deductions
+                    </td>
+                  </tr>
+                  {employeeDeductions.map(d => (
+                    <tr key={d.code} className="text-[var(--color-text-secondary)]">
+                      <td className="px-4 py-1.5 text-[12px]" colSpan={3}>{d.name}</td>
+                      <td className="px-4 py-1.5 text-right text-[12px]">−{formatINR(d.monthlyAmount)}</td>
+                      <td className="px-4 py-1.5 text-right text-[12px]">−{formatINR(d.annualAmount)}</td>
+                      <td></td>
+                    </tr>
+                  ))}
+                  <tr className="font-semibold text-[var(--color-text-primary)] border-t border-[var(--color-border)]">
+                    <td className="px-4 py-2 text-[12px]" colSpan={3}>Take-home (net pay)</td>
+                    <td className="px-4 py-2 text-right text-[12px]">{formatINR(netPayMonthly)}</td>
+                    <td className="px-4 py-2 text-right text-[12px]">{formatINR(netPayMonthly * 12)}</td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              )}
               {employerContributions.length > 0 && (
                 <tbody className="bg-[var(--color-page-bg)] border-t border-[var(--color-border)]">
                   <tr>
@@ -572,6 +637,23 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                       <td className="px-4 py-1.5 text-[12px]" colSpan={3}>{ec.name}</td>
                       <td className="px-4 py-1.5 text-right text-[12px]">{formatINR(ec.monthlyAmount)}</td>
                       <td className="px-4 py-1.5 text-right text-[12px]">{formatINR(ec.annualAmount)}</td>
+                      <td></td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
+              {benefitsRows.length > 0 && (
+                <tbody className="bg-[var(--color-page-bg)] border-t border-[var(--color-border)]">
+                  <tr>
+                    <td colSpan={6} className="px-4 pt-2 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
+                      Benefits (not in monthly gross)
+                    </td>
+                  </tr>
+                  {benefitsRows.map(b => (
+                    <tr key={b.code} className="text-[var(--color-text-secondary)]">
+                      <td className="px-4 py-1.5 text-[12px]" colSpan={3}>{b.name}</td>
+                      <td className="px-4 py-1.5 text-right text-[12px]">{formatINR(b.monthlyAmount)}</td>
+                      <td className="px-4 py-1.5 text-right text-[12px]">{formatINR(b.annualAmount)}</td>
                       <td></td>
                     </tr>
                   ))}

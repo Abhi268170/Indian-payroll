@@ -99,12 +99,18 @@ public sealed class SalaryStructureTemplatesController(ISender sender) : Control
                 o.SalaryComponentId, o.FormulaType, o.FixedAmount, o.Percentage)).ToList(),
             AddedComponents: (req.AddedComponents ?? []).Select(a => new PreviewAddedComponentInput(
                 a.ComponentId, a.FormulaType, a.FixedAmount, a.Percentage)).ToList(),
+            Benefits: (req.Benefits ?? []).Select(b => new PreviewBenefitInput(
+                b.ComponentId, b.AnnualAmount)).ToList(),
             EmployeeFlags: new PreviewEmployeeFlagsInput(
                 EpfEnabled: req.EmployeeFlags?.EpfEnabled ?? true,
                 EsiEnabled: req.EmployeeFlags?.EsiEnabled ?? true,
                 PtEnabled: req.EmployeeFlags?.PtEnabled ?? true,
                 LwfEnabled: req.EmployeeFlags?.LwfEnabled ?? true,
-                GratuityEnabled: req.EmployeeFlags?.GratuityEnabled ?? true)
+                GratuityEnabled: req.EmployeeFlags?.GratuityEnabled ?? true,
+                IsPwd: req.EmployeeFlags?.IsPwd ?? false),
+            WorkStateCode: req.WorkStateCode,
+            Year: req.Year,
+            Month: req.Month
         ), ct);
         return Ok(result);
     }
@@ -153,7 +159,15 @@ public sealed record SalaryStructurePreviewRequest(
     List<TemplateComponentInputRequest> TemplateComponents,
     List<PreviewOverrideRequest>? Overrides,
     List<PreviewAddedComponentRequest>? AddedComponents,
-    PreviewEmployeeFlagsRequest? EmployeeFlags);
+    List<PreviewBenefitRequest>? Benefits,
+    PreviewEmployeeFlagsRequest? EmployeeFlags,
+    string? WorkStateCode,
+    int? Year,
+    int? Month);
+
+public sealed record PreviewBenefitRequest(
+    Guid ComponentId,
+    decimal AnnualAmount);
 
 public sealed record PreviewOverrideRequest(
     Guid SalaryComponentId,
@@ -172,4 +186,5 @@ public sealed record PreviewEmployeeFlagsRequest(
     bool EsiEnabled = true,
     bool PtEnabled = true,
     bool LwfEnabled = true,
-    bool GratuityEnabled = true);
+    bool GratuityEnabled = true,
+    bool IsPwd = false);

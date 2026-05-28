@@ -44,9 +44,16 @@ export function useSalaryStructurePreview(inputs: PreviewInputs): {
       fixedAmount: a.fixedAmount,
       percentage: a.percentage,
     })),
+    benefits: (inputs.benefits ?? []).map(b => ({
+      componentId: b.componentId,
+      annualAmount: b.annualAmount,
+    })),
     employeeFlags: inputs.employeeFlags ?? {
       epfEnabled: true, esiEnabled: true, ptEnabled: true, lwfEnabled: true, gratuityEnabled: true,
     },
+    workStateCode: inputs.workStateCode,
+    year: inputs.year,
+    month: inputs.month,
   }
 
   const query = useQuery<PreviewApiResponse>({
@@ -59,12 +66,19 @@ export function useSalaryStructurePreview(inputs: PreviewInputs): {
     staleTime: 5_000,  // small window of caching for repeated keystrokes that produce identical payloads
   })
 
-  // Fallback to local compute while pending — keeps the table populated as the
-  // user types instead of flashing empty. The TS calculator is the same logic
-  // as the backend, so the brief desync is invisible in practice.
+  // Fallback to local compute while pending. The local TS calculator covers
+  // earnings + employer-side; employee deductions + benefits + net pay come
+  // from the backend (state-dependent + engine-delegated). The fallback
+  // surfaces empty arrays for those so the UI doesn't render stale numbers.
   const fallback = computePreview(inputs)
   const data: PreviewOutput = query.data
-    ? { rows: query.data.rows, employerContributions: query.data.employerContributions }
+    ? {
+        rows: query.data.rows,
+        employerContributions: query.data.employerContributions,
+        employeeDeductions: query.data.employeeDeductions,
+        netPayMonthly: query.data.netPayMonthly,
+        benefits: query.data.benefits,
+      }
     : fallback
 
   return { data, isPending: query.isPending, isError: query.isError }

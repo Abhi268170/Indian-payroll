@@ -25,7 +25,13 @@ public class SalaryStructurePreviewCalculatorTests
         bool epfEnabled = true,
         bool gratuityEnabled = true,
         bool epfIncludeEmployerInCtc = true,
-        bool gratuityIncludedInCtc = true)
+        bool gratuityIncludedInCtc = true,
+        string? workStateCode = null,
+        bool ptEnabled = true,
+        bool lwfEnabled = true,
+        bool esiEnabled = true,
+        bool isPwd = false,
+        IReadOnlyList<SalaryStructurePreviewCalculator.BenefitInput>? benefits = null)
     {
         StatutoryOrgConfig org = StatutoryOrgConfig.CreateDefault(TenantId, Guid.Empty);
         org.ConfigureEpf(
@@ -37,21 +43,32 @@ public class SalaryStructurePreviewCalculatorTests
             proRateRestrictedPfWage: false,
             considerSalaryOnLop: true,
             updatedBy: Guid.Empty);
+        org.ConfigureEsi(enabled: true, establishmentCode: null, notifiedArea: true, updatedBy: Guid.Empty);
         org.ConfigureGratuity(includedInCtc: gratuityIncludedInCtc, updatedBy: Guid.Empty);
+
+        // Build engine StatutoryConfig from the same defaults the production
+        // StatutoryConfigBuilder uses, just without PT/LWF unless caller passes
+        // workStateCode. Tests for residual + employer EPF don't need slabs.
+        Payroll.Engine.Inputs.StatutoryConfig engineConfig = Payroll.Application.Services.StatutoryConfigBuilder.Build(
+            org, taxConfig: null, taxSlabs: [], surchargeSlabs: [], ptSlabs: [], lwfConfigs: []);
 
         return new SalaryStructurePreviewCalculator.Inputs(
             AnnualCtc: annualCtc,
             TemplateComponents: templateComponents,
             Overrides: new Dictionary<Guid, EmployeeSalaryComponentOverride>(),
             AddedComponents: [],
+            Benefits: benefits ?? [],
             EmployeeFlags: new SalaryStructurePreviewCalculator.EmployeeStatutoryFlags(
                 EpfEnabled: epfEnabled,
-                EsiEnabled: true,
-                PtEnabled: true,
-                LwfEnabled: true,
-                GratuityEnabled: gratuityEnabled),
-            OrgConfig: org,
-            Caps: new SalaryStructurePreviewCalculator.StatutoryCaps());
+                EsiEnabled: esiEnabled,
+                PtEnabled: ptEnabled,
+                LwfEnabled: lwfEnabled,
+                GratuityEnabled: gratuityEnabled,
+                IsPwd: isPwd),
+            EngineConfig: engineConfig,
+            WorkStateCode: workStateCode,
+            Year: 2025,
+            Month: 5);
     }
 
     // Build a template with: Basic (PF-eligible) + HRA (non-PF) + Special-Allowance-as-residual.
@@ -208,5 +225,86 @@ public class SalaryStructurePreviewCalculatorTests
             MakeInputs(annualCtc: 6_00_000m, templateComponents: template.Components.ToList()));
 
         output.Rows.First(r => r.IsResidual).MonthlyAmount.Should().Be(0m);
+    }
+
+    // ── PR4: employee deductions, net pay, benefits ──────────────────────────
+
+    [Fact]
+    public void EmployeeEpf_SubtractsFromNet_WhenFlagsOn()
+    {
+        // CTC ₹6L → basic ₹25k → PF wage capped at ₹15k → employee EPF = ₹1,800
+        SalaryStructurePreviewCalculator.Output output = SalaryStructurePreviewCalculator.Compute(
+            MakeInputs(annualCtc: 6_00_000m, templateComponents: SimpleTemplate()));
+
+        output.EmployeeDeductions.Should().ContainSingle(d => d.Code == "EPF_EMPLOYEE");
+        output.EmployeeDeductions.First(d => d.Code == "EPF_EMPLOYEE").MonthlyAmount.Should().Be(1_800m);
+    }
+
+    [Fact]
+    public void EmployeeEpf_Zero_WhenEmployeeOptedOut()
+    {
+        SalaryStructurePreviewCalculator.Output output = SalaryStructurePreviewCalculator.Compute(
+            MakeInputs(annualCtc: 6_00_000m, templateComponents: SimpleTemplate(), epfEnabled: false));
+
+        output.EmployeeDeductions.Should().NotContain(d => d.Code == "EPF_EMPLOYEE");
+    }
+
+    [Fact]
+    public void EmployeeEsi_AppliesAtWageBelowLimit()
+    {
+        // Drop CTC so monthly ESI wage stays below the ₹21k cap. Basic ₹10k →
+        // ESI wage = HRA+Basic = ₹14k (HRA considerForEsi=true in fixture). ESI
+        // employee 0.75% = ₹105.
+        SalaryStructurePreviewCalculator.Output output = SalaryStructurePreviewCalculator.Compute(
+            MakeInputs(annualCtc: 2_40_000m, templateComponents: SimpleTemplate()));
+
+        output.EmployeeDeductions.Should().Contain(d => d.Code == "ESI_EMPLOYEE");
+        output.EmployeeDeductions.First(d => d.Code == "ESI_EMPLOYEE").MonthlyAmount.Should().Be(105m);
+    }
+
+    [Fact]
+    public void EmployeeEsi_Zero_AboveLimit()
+    {
+        // ESI wage at default ₹6L CTC is way above ₹21k → exempt.
+        SalaryStructurePreviewCalculator.Output output = SalaryStructurePreviewCalculator.Compute(
+            MakeInputs(annualCtc: 6_00_000m, templateComponents: SimpleTemplate()));
+
+        output.EmployeeDeductions.Should().NotContain(d => d.Code == "ESI_EMPLOYEE");
+    }
+
+    [Fact]
+    public void Pt_SkippedWhenWorkStateCodeNull()
+    {
+        SalaryStructurePreviewCalculator.Output output = SalaryStructurePreviewCalculator.Compute(
+            MakeInputs(annualCtc: 6_00_000m, templateComponents: SimpleTemplate(), workStateCode: null));
+
+        output.EmployeeDeductions.Should().NotContain(d => d.Code == "PT_EMPLOYEE");
+    }
+
+    [Fact]
+    public void NetPay_EqualsGrossMinusAllEmployeeDeductions()
+    {
+        SalaryStructurePreviewCalculator.Output output = SalaryStructurePreviewCalculator.Compute(
+            MakeInputs(annualCtc: 6_00_000m, templateComponents: SimpleTemplate()));
+
+        decimal totalDeductions = output.EmployeeDeductions.Sum(d => d.MonthlyAmount);
+        output.NetPayMonthly.Should().Be(50_000m - totalDeductions);  // grossMonthly - deductions
+    }
+
+    [Fact]
+    public void Benefits_RenderedSeparately_NotInGross()
+    {
+        SalaryStructurePreviewCalculator.BenefitInput lta = new(
+            Guid.NewGuid(), "LTA", "Leave Travel Allowance", AnnualAmount: 50_000m);
+
+        SalaryStructurePreviewCalculator.Output output = SalaryStructurePreviewCalculator.Compute(
+            MakeInputs(annualCtc: 6_00_000m, templateComponents: SimpleTemplate(),
+                benefits: new[] { lta }));
+
+        output.Benefits.Should().HaveCount(1);
+        output.Benefits.First().AnnualAmount.Should().Be(50_000m);
+        output.Benefits.First().MonthlyAmount.Should().Be(4_166.67m);  // 50000/12 rounded AwayFromZero
+        // Benefits don't change residual or net pay
+        output.NetPayMonthly.Should().Be(50_000m - output.EmployeeDeductions.Sum(d => d.MonthlyAmount));
     }
 }

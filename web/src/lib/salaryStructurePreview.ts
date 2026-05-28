@@ -102,9 +102,31 @@ export interface EmployerContribution {
   annualAmount: number
 }
 
+export interface EmployeeDeduction {
+  code: string
+  name: string
+  monthlyAmount: number
+  annualAmount: number
+}
+
+export interface BenefitRow {
+  code: string
+  name: string
+  monthlyAmount: number
+  annualAmount: number
+}
+
 export interface PreviewOutput {
   rows: PreviewRow[]
   employerContributions: EmployerContribution[]
+  employeeDeductions: EmployeeDeduction[]
+  netPayMonthly: number
+  benefits: BenefitRow[]
+}
+
+export interface BenefitInput {
+  componentId: string
+  annualAmount: number
 }
 
 export interface PreviewInputs {
@@ -112,9 +134,13 @@ export interface PreviewInputs {
   templateComponents: PreviewComponent[]
   overrides: Record<string, Override>
   addedComponents: AddedComponent[]
+  benefits?: BenefitInput[]
   employeeFlags?: EmployeeStatutoryFlags
   orgFlags?: StatutoryOrgFlags
   caps?: StatutoryCaps
+  workStateCode?: string | null
+  year?: number
+  month?: number
 }
 
 function round2(n: number): number {
@@ -142,12 +168,19 @@ export interface PreviewApiRequest {
   templateComponents: { componentId: string; formulaType: FormulaType; fixedAmount: number | null; percentage: number | null; displayOrder: number }[]
   overrides: { salaryComponentId: string; formulaType: FormulaType; fixedAmount: number | null; percentage: number | null }[]
   addedComponents: { componentId: string; formulaType: FormulaType; fixedAmount: number | null; percentage: number | null }[]
-  employeeFlags: EmployeeStatutoryFlags
+  benefits: { componentId: string; annualAmount: number }[]
+  employeeFlags: EmployeeStatutoryFlags & { isPwd?: boolean }
+  workStateCode?: string | null
+  year?: number
+  month?: number
 }
 
 export interface PreviewApiResponse {
   rows: PreviewRow[]
   employerContributions: EmployerContribution[]
+  employeeDeductions: EmployeeDeduction[]
+  netPayMonthly: number
+  benefits: BenefitRow[]
 }
 
 export function computePreview(inputs: PreviewInputs): PreviewOutput {
@@ -270,5 +303,8 @@ export function computePreview(inputs: PreviewInputs): PreviewOutput {
     })
   }
 
-  return { rows, employerContributions }
+  // Local fallback computes earnings + employer-side only. Employee deductions,
+  // net pay, and benefits arrive from the backend (state-dependent + delegates to
+  // engine calculators that aren't worth porting). Defaults keep callers safe.
+  return { rows, employerContributions, employeeDeductions: [], netPayMonthly: 0, benefits: [] }
 }

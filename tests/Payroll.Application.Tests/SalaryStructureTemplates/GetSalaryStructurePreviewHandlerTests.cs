@@ -63,6 +63,18 @@ public class GetSalaryStructurePreviewHandlerTests
 
         IStatutoryConfigRepository statutoryRepo = Substitute.For<IStatutoryConfigRepository>();
         statutoryRepo.GetByTenantAsync(Arg.Any<CancellationToken>()).Returns(org);
+        // Handler builds engine config via StatutoryConfigBuilder which tolerates
+        // null taxConfig + empty slabs. NSubstitute returns null for Task<X?> by
+        // default, but stubbing the list-returning calls keeps the calculator from
+        // tripping on `null` Task returns.
+        statutoryRepo.GetIncomeTaxSlabsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new List<IncomeTaxSlab>());
+        statutoryRepo.GetSurchargeSlabsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(new List<IncomeTaxSurchargeSlab>());
+        statutoryRepo.GetPtSlabsAsync(Arg.Any<string>(), Arg.Any<DateOnly>(), Arg.Any<CancellationToken>())
+            .Returns(new List<ProfessionalTaxSlab>());
+        statutoryRepo.GetLwfConfigsAsync(Arg.Any<IEnumerable<string>>(), Arg.Any<CancellationToken>())
+            .Returns(new List<LwfStateConfig>());
 
         ITenantContext tenantCtx = Substitute.For<ITenantContext>();
         tenantCtx.TenantId.Returns(TenantId);
@@ -83,9 +95,13 @@ public class GetSalaryStructurePreviewHandlerTests
             ],
             Overrides: [],
             AddedComponents: [],
+            Benefits: [],
             EmployeeFlags: new PreviewEmployeeFlagsInput(
                 EpfEnabled: epfEnabled,
-                GratuityEnabled: gratuityEnabled));
+                GratuityEnabled: gratuityEnabled),
+            WorkStateCode: null,
+            Year: 2025,
+            Month: 5);
 
     [Fact]
     public async Task Preview_MatchesDirectCalculator_AllFlagsOn()

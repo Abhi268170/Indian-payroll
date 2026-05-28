@@ -233,6 +233,8 @@ export default function SalaryStructureBuilderPage(): ReactElement {
     return m
   }, [preview.data.rows])
   const employerContributions: EmployerContribution[] = preview.data.employerContributions
+  const employeeDeductions = preview.data.employeeDeductions
+  const netPayMonthly = preview.data.netPayMonthly
 
   const alreadyAdded = new Set(rows.map(r => r.componentId))
 
@@ -525,6 +527,30 @@ export default function SalaryStructureBuilderPage(): ReactElement {
                     )
                   })}
                 </tbody>
+                {employeeDeductions.length > 0 && (
+                  <tbody className="border-t border-[var(--color-border)] bg-gray-50">
+                    <tr>
+                      <td colSpan={4} className="px-4 pt-2 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
+                        Employee deductions
+                        <span className="ml-1.5 text-[10px] font-normal normal-case tracking-normal text-[var(--color-text-secondary)]">
+                          (PT + LWF vary by employee state — see hire wizard)
+                        </span>
+                      </td>
+                    </tr>
+                    {employeeDeductions.map(d => (
+                      <tr key={d.code} className="text-[var(--color-text-secondary)]">
+                        <td className="px-4 py-1.5 text-[12px]" colSpan={3}>{d.name}</td>
+                        <td className="px-4 py-1.5 text-right text-[12px]">−{formatINR(d.annualAmount)}</td>
+                        <td />
+                      </tr>
+                    ))}
+                    <tr className="font-semibold text-[var(--color-text-primary)] border-t border-[var(--color-border)]">
+                      <td className="px-4 py-2 text-[12px]" colSpan={3}>Take-home (net pay)</td>
+                      <td className="px-4 py-2 text-right text-[12px]">{formatINR(netPayMonthly * 12)}</td>
+                      <td />
+                    </tr>
+                  </tbody>
+                )}
                 {employerContributions.length > 0 && (
                   <tbody className="border-t border-[var(--color-border)] bg-gray-50">
                     <tr>
