@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employees Module — What's Built &amp; What's Missing</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f0f4f8;
+    color: #1a202c;
+    padding: 32px 16px;
+    line-height: 1.6;
+  }
+
+  .page-title {
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a202c;
+  }
+  .page-subtitle {
+    text-align: center;
+    color: #64748b;
+    margin-bottom: 40px;
+    font-size: 15px;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+  .dot-done    { background: #22c55e; }
+  .dot-partial { background: #f59e0b; }
+  .dot-missing { background: #ef4444; }
+  .dot-future  { background: #94a3b8; }
+
+  /* ── Overall meter ── */
+  .meter-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 680px;
+    margin: 0 auto 48px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    text-align: center;
+  }
+  .meter-label { font-size: 15px; color: #64748b; margin-bottom: 12px; }
+  .meter-bar-wrap {
+    background: #e2e8f0;
+    border-radius: 99px;
+    height: 28px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .meter-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #22c55e 0%, #84cc16 100%);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    transition: width 1s ease;
+  }
+  .meter-caption { font-size: 13px; color: #94a3b8; }
+
+  /* ── Section titles ── */
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 20px;
+    margin-top: 48px;
+    text-align: center;
+  }
+  .section-desc {
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+    margin-top: -12px;
+    margin-bottom: 24px;
+  }
+
+  /* ── Journey flow ── */
+  .journey {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+    max-width: 900px;
+    margin: 0 auto 16px;
+  }
+  .journey-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 130px;
+    text-align: center;
+  }
+  .journey-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .journey-circle.done    { background: #dcfce7; }
+  .journey-circle.partial { background: #fef9c3; }
+  .journey-circle.missing { background: #fee2e2; }
+  .journey-label { font-size: 12px; font-weight: 600; color: #374151; }
+  .journey-status { font-size: 11px; margin-top: 4px; }
+  .journey-status.done    { color: #16a34a; }
+  .journey-status.partial { color: #b45309; }
+  .journey-status.missing { color: #dc2626; }
+
+  .journey-arrow {
+    font-size: 20px;
+    color: #cbd5e1;
+    align-self: center;
+    margin-bottom: 32px;
+    flex-shrink: 0;
+  }
+
+  /* ── Feature cards grid ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .feature-card {
+    background: white;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    border-left: 5px solid transparent;
+  }
+  .feature-card.done    { border-left-color: #22c55e; }
+  .feature-card.partial { border-left-color: #f59e0b; }
+  .feature-card.missing { border-left-color: #ef4444; }
+  .feature-card.future  { border-left-color: #94a3b8; }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .card-icon { font-size: 26px; }
+  .card-title { font-size: 16px; font-weight: 700; color: #1a202c; }
+  .card-badge {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 99px;
+    white-space: nowrap;
+  }
+  .badge-done    { background: #dcfce7; color: #166534; }
+  .badge-partial { background: #fef9c3; color: #92400e; }
+  .badge-missing { background: #fee2e2; color: #991b1b; }
+  .badge-future  { background: #f1f5f9; color: #475569; }
+
+  .card-desc { font-size: 13px; color: #475569; margin-bottom: 14px; }
+
+  .checklist { list-style: none; }
+  .checklist li {
+    display: flex;
+    gap: 8px;
+    font-size: 13px;
+    padding: 3px 0;
+    color: #374151;
+  }
+  .checklist li .ci { flex-shrink: 0; }
+
+  /* ── Priority table ── */
+  .priority-wrap {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .priority-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .priority-wrap th {
+    background: #0f172a;
+    color: white;
+    font-size: 13px;
+    padding: 14px 20px;
+    text-align: left;
+  }
+  .priority-wrap td {
+    padding: 14px 20px;
+    font-size: 13px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: top;
+  }
+  .priority-wrap tr:last-child td { border-bottom: none; }
+  .priority-wrap tr:nth-child(even) td { background: #fafafa; }
+
+  .pill {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .pill-red    { background: #fee2e2; color: #991b1b; }
+  .pill-orange { background: #ffedd5; color: #9a3412; }
+  .pill-blue   { background: #dbeafe; color: #1e40af; }
+
+  /* ── Impact strip ── */
+  .impact-strip {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 12px;
+    padding: 20px 24px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .impact-strip h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #9a3412;
+    margin-bottom: 10px;
+  }
+  .impact-strip ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .impact-strip li {
+    font-size: 13px;
+    color: #7c2d12;
+    display: flex;
+    gap: 8px;
+  }
+
+  /* ── Mini-progress per card ── */
+  .mini-bar-wrap { margin-top: 12px; }
+  .mini-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #94a3b8;
+    margin-bottom: 4px;
+  }
+  .mini-bar {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .mini-fill {
+    height: 100%;
+    border-radius: 99px;
+  }
+  .fill-green  { background: #22c55e; }
+  .fill-yellow { background: #f59e0b; }
+  .fill-red    { background: #ef4444; }
+  .fill-gray   { background: #94a3b8; }
+
+  footer {
+    text-align: center;
+    margin-top: 60px;
+    font-size: 12px;
+    color: #94a3b8;
+  }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">👤 Employees Module — Build Status</h1>
+<p class="page-subtitle">What works today, what's half-done, and what still needs to be built.<br>
+Compared against Zoho Payroll (our reference product).</p>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item"><div class="dot dot-done"></div> Fully built</div>
+  <div class="legend-item"><div class="dot dot-partial"></div> Partially built</div>
+  <div class="legend-item"><div class="dot dot-missing"></div> Not built yet</div>
+  <div class="legend-item"><div class="dot dot-future"></div> Planned for later</div>
+</div>
+
+<!-- Overall meter -->
+<div class="meter-card">
+  <div class="meter-label">Overall completion vs Zoho Payroll</div>
+  <div class="meter-bar-wrap">
+    <div class="meter-fill" style="width:65%">65%</div>
+  </div>
+  <div class="meter-caption">Core hiring &amp; profile flows are working. Exit, bulk import, prior salary history, and IFSC lookup still need to be built.</div>
+</div>
+
+<!-- ── Employee Lifecycle Journey ── -->
+<div class="section-title">🗺️ The Employee Lifecycle — Step by Step</div>
+<p class="section-desc">What happens to an employee from the moment they're added until they leave the company.</p>
+
+<div class="journey">
+
+  <div class="journey-step">
+    <div class="journey-circle done">➕</div>
+    <div class="journey-label">Add Employee</div>
+    <div class="journey-status done">✓ Working</div>
+  </div>
+  <div class="journey-arrow">→</div>
+
+  <div class="journey-step">
+    <div class="journey-circle done">💰</div>
+    <div class="journey-label">Set Salary</div>
+    <div class="journey-status done">✓ Working</div>
+  </div>
+  <div class="journey-arrow">→</div>
+
+  <div class="journey-step">
+    <div class="journey-circle done">🏦</div>
+    <div class="journey-label">Bank Details</div>
+    <div class="journey-status partial">⚠ Partial</div>
+  </div>
+  <div class="journey-arrow">→</div>
+
+  <div class="journey-step">
+    <div class="journey-circle done">📋</div>
+    <div class="journey-label">Profile &amp; Docs</div>
+    <div class="journey-status done">✓ Working</div>
+  </div>
+  <div class="journey-arrow">→</div>
+
+  <div class="journey-step">
+    <div class="journey-circle partial">📊</div>
+    <div class="journey-label">Run Payroll</div>
+    <div class="journey-status partial">⚠ Partial</div>
+  </div>
+  <div class="journey-arrow">→</div>
+
+  <div class="journey-step">
+    <div class="journey-circle missing">💼</div>
+    <div class="journey-label">Salary Raise</div>
+    <div class="journey-status missing">✗ Missing</div>
+  </div>
+  <div class="journey-arrow">→</div>
+
+  <div class="journey-step">
+    <div class="journey-circle missing">🚪</div>
+    <div class="journey-label">Employee Exit</div>
+    <div class="journey-status missing">✗ Missing</div>
+  </div>
+
+</div>
+
+<!-- ── Feature Cards ── -->
+<div class="section-title">🧩 Every Feature, One by One</div>
+
+<div class="cards-grid">
+
+  <!-- ADD EMPLOYEE WIZARD -->
+  <div class="feature-card done">
+    <div class="card-header">
+      <div class="card-icon">🧙</div>
+      <div class="card-title">Add Employee Wizard</div>
+      <div class="card-badge badge-done">Fully Built</div>
+    </div>
+    <div class="card-desc">The 4-step guided form used when hiring a new person. Like an onboarding checklist.</div>
+    <ul class="checklist">
+      <li><span class="ci">✅</span> Step 1 — Name, job title, department, join date, location</li>
+      <li><span class="ci">✅</span> Step 2 — Annual salary, how it's split (Basic, HRA, etc.)</li>
+      <li><span class="ci">✅</span> Step 3 — Date of birth, PAN, father's name, address</li>
+      <li><span class="ci">✅</span> Step 4 — Bank account for salary transfer</li>
+      <li><span class="ci">✅</span> Can create new departments/designations mid-wizard</li>
+      <li><span class="ci">⚠️</span> Can't add extra salary components during the wizard</li>
+      <li><span class="ci">⚠️</span> IFSC code entered but not verified against bank records</li>
+      <li><span class="ci">❌</span> No warning shown when email ID cannot be changed later</li>
+    </ul>
+    <div class="mini-bar-wrap">
+      <div class="mini-bar-label"><span>Completeness</span><span>85%</span></div>
+      <div class="mini-bar"><div class="mini-fill fill-green" style="width:85%"></div></div>
+    </div>
+  </div>
+
+  <!-- EMPLOYEE LIST -->
+  <div class="feature-card partial">
+    <div class="card-header">
+      <div class="card-icon">📋</div>
+      <div class="card-title">Employee List Page</div>
+      <div class="card-badge badge-partial">Partially Built</div>
+    </div>
+    <div class="card-desc">The main page showing all employees. Like a spreadsheet view of your entire workforce.</div>
+    <ul class="checklist">
+      <li><span class="ci">✅</span> Shows all employees with name, title, department, status</li>
+      <li><span class="ci">✅</span> Search by name, email, or employee code</li>
+      <li><span class="ci">✅</span> Filter by status (Active / Inactive / Exited)</li>
+      <li><span class="ci">✅</span> Banner highlights employees with missing info</li>
+      <li><span class="ci">❌</span> Only 5 columns visible — Zoho shows 21 (PAN, bank details, UAN, etc.)</li>
+      <li><span class="ci">❌</span> No way to choose which columns to show/hide</li>
+      <li><span class="ci">❌</span> No saved views (e.g. "Employees with portal access")</li>
+      <li><span class="ci">❌</span> No bulk import or export to spreadsheet</li>
+    </ul>
+    <div class="mini-bar-wrap">
+      <div class="mini-bar-label"><span>Completeness</span><span>50%</span></div>
+      <div class="mini-bar"><div class="mini-fill fill-yellow" style="width:50%"></div></div>
+    </div>
+  </div>
+
+  <!-- EMPLOYEE PROFILE -->
+  <div class="feature-card done">
+    <div class="card-header">
+      <div class="card-icon">👤</div>
+      <div class="card-title">Employee Profile Page</div>
+      <div class="card-badge badge-done">Mostly Built</div>
+    </div>
+    <div class="card-desc">The individual page for each employee. Click an employee → see everything about them.</div>
+    <ul class="checklist">
+      <li><span class="ci">✅</span> Basic info — name, title, department, dates</li>
+      <li><span class="ci">✅</span> Personal info — PAN, address, date of birth</li>
+      <li><span class="ci">✅</span> Statutory settings — EPF/ESI/PT toggles per person</li>
+      <li><span class="ci">✅</span> Payment info — bank account (securely masked)</li>
+      <li><span class="ci">✅</span> All sections editable inline (no page refresh needed)</li>
+      <li><span class="ci">⚠️</span> Quick-add menu for one-time salary items missing</li>
+      <li><span class="ci">❌</span> No "Initiate Exit" button on the profile</li>
+      <li><span class="ci">❌</span> No loan details tab</li>
+    </ul>
+    <div class="mini-bar-wrap">
+      <div class="mini-bar-label"><span>Completeness</span><span>75%</span></div>
+      <div class="mini-bar"><div class="mini-fill fill-green" style="width:75%"></div></div>
+    </div>
+  </div>
+
+  <!-- SALARY STRUCTURE -->
+  <div class="feature-card partial">
+    <div class="card-header">
+      <div class="card-icon">💵</div>
+      <div class="card-title">Salary Breakdown</div>
+      <div class="card-badge badge-partial">Partially Built</div>
+    </div>
+    <div class="card-desc">How each person's salary is split — Basic, HRA, allowances. The breakdown that appears on every payslip.</div>
+    <ul class="checklist">
+      <li><span class="ci">✅</span> Annual CTC entered → auto-splits into components</li>
+      <li><span class="ci">✅</span> Fixed Allowance always adjusts to fill remaining amount</li>
+      <li><span class="ci">✅</span> Supports % of CTC, % of Basic, fixed amounts</li>
+      <li><span class="ci">✅</span> Salary tab shows each component with monthly &amp; annual amounts</li>
+      <li><span class="ci">⚠️</span> Editing salary restarts the full 4-step wizard — should be a simpler screen</li>
+      <li><span class="ci">❌</span> No salary revision history (can't see "was ₹8L, now ₹10L")</li>
+      <li><span class="ci">❌</span> No "print salary structure" button</li>
+      <li><span class="ci">❌</span> Perquisites (non-cash benefits like company car) not supported</li>
+    </ul>
+    <div class="mini-bar-wrap">
+      <div class="mini-bar-label"><span>Completeness</span><span>60%</span></div>
+      <div class="mini-bar"><div class="mini-fill fill-yellow" style="width:60%"></div></div>
+    </div>
+  </div>
+
+  <!-- BANK DETAILS -->
+  <div class="feature-card partial">
+    <div class="card-header">
+      <div class="card-icon">🏦</div>
+      <div class="card-title">Bank &amp; Payment Details</div>
+      <div class="card-badge badge-partial">Partially Built</div>
+    </div>
+    <div class="card-desc">Where each person's salary gets transferred. Must be accurate — wrong details = unpaid employee.</div>
+    <ul class="checklist">
+      <li><span class="ci">✅</span> All 4 payment modes: NEFT, RTGS, Cheque, Cash</li>
+      <li><span class="ci">✅</span> Account number stored securely (encrypted, never shown in full)</li>
+      <li><span class="ci">✅</span> Account type: Savings / Current</li>
+      <li><span class="ci">❌</span> IFSC code is not verified — no check if it's a real bank branch</li>
+      <li><span class="ci">❌</span> Bank name &amp; branch not auto-filled from IFSC</li>
+      <li><span class="ci">❌</span> No "type account number twice to confirm" safety check</li>
+    </ul>
+    <div class="mini-bar-wrap">
+      <div class="mini-bar-label"><span>Completeness</span><span>55%</span></div>
+      <div class="mini-bar"><div class="mini-fill fill-yellow" style="width:55%"></div></div>
+    </div>
+  </div>
+
+  <!-- PRIOR EMPLOYER YTD -->
+  <div class="feature-card missing">
+    <div class="card-header">
+      <div class="card-icon">📅</div>
+      <div class="card-title">Previous Employer Salary History</div>
+      <div class="card-badge badge-missing">Not Built</div>
+    </div>
+    <div class="card-desc">When someone joins mid-year (e.g. September), they already earned salary at another company. This info is needed to calculate the correct income tax for the rest of the year.</div>
+    <ul class="checklist">
+      <li><span class="ci">❌</span> No form to enter previous employer's name and period</li>
+      <li><span class="ci">❌</span> No field for how much they earned &amp; how much tax was already deducted</li>
+      <li><span class="ci">❌</span> Without this, income tax is calculated wrong for mid-year joiners</li>
+      <li><span class="ci">❌</span> No bulk import for employees joining with prior history</li>
+    </ul>
+    <div class="mini-bar-wrap">
+      <div class="mini-bar-label"><span>Completeness</span><span>0%</span></div>
+      <div class="mini-bar"><div class="mini-fill fill-red" style="width:3%"></div></div>
+    </div>
+  </div>
+
+  <!-- EMPLOYEE EXIT -->
+  <div class="feature-card missing">
+    <div class="card-header">
+      <div class="card-icon">🚪</div>
+      <div class="card-title">Employee Exit &amp; Offboarding</div>
+      <div class="card-badge badge-missing">Not Built</div>
+    </div>
+    <div class="card-desc">When someone resigns or is let go. The system needs to know their last working day, reason for leaving, and what their final paycheck should include.</div>
+    <ul class="checklist">
+      <li><span class="ci">❌</span> No "Initiate Exit" button anywhere in the app</li>
+      <li><span class="ci">❌</span> No form to enter last working day and reason for leaving</li>
+      <li><span class="ci">❌</span> No full &amp; final settlement calculation (gratuity, leave encashment, etc.)</li>
+      <li><span class="ci">❌</span> No status change: "On Notice Period" → "Exited"</li>
+      <li><span class="ci">❌</span> Employee's portal access not automatically removed on exit</li>
+    </ul>
+    <div class="mini-bar-wrap">
+      <div class="mini-bar-label"><span>Completeness</span><span>0%</span></div>
+      <div class="mini-bar"><div class="mini-fill fill-red" style="width:3%"></div></div>
+    </div>
+  </div>
+
+  <!-- BULK IMPORT -->
+  <div class="feature-card missing">
+    <div class="card-header">
+      <div class="card-icon">📤</div>
+      <div class="card-title">Bulk Import &amp; Export</div>
+      <div class="card-badge badge-missing">Not Built</div>
+    </div>
+    <div class="card-desc">Adding or updating many employees at once via a spreadsheet — instead of one by one. Essential for companies migrating from another payroll system.</div>
+    <ul class="checklist">
+      <li><span class="ci">❌</span> No CSV/Excel upload for employee details</li>
+      <li><span class="ci">❌</span> No template to download and fill in</li>
+      <li><span class="ci">❌</span> No bulk salary update (e.g. yearly hike for 50 people)</li>
+      <li><span class="ci">❌</span> No export to spreadsheet for payroll team</li>
+      <li><span class="ci">❌</span> Zoho supports 19 different import types — we have 0</li>
+    </ul>
+    <div class="mini-bar-wrap">
+      <div class="mini-bar-label"><span>Completeness</span><span>0%</span></div>
+      <div class="mini-bar"><div class="mini-fill fill-red" style="width:3%"></div></div>
+    </div>
+  </div>
+
+  <!-- TAX DECLARATIONS -->
+  <div class="feature-card partial">
+    <div class="card-header">
+      <div class="card-icon">📑</div>
+      <div class="card-title">Tax Declaration (Form)</div>
+      <div class="card-badge badge-partial">Partially Built</div>
+    </div>
+    <div class="card-desc">The form each employee fills to declare investments and savings — so the company can calculate the right amount of income tax to cut from salary every month.</div>
+    <ul class="checklist">
+      <li><span class="ci">✅</span> Tab exists on the employee profile</li>
+      <li><span class="ci">✅</span> New tax regime only (as per our product scope)</li>
+      <li><span class="ci">❌</span> Form fields not yet built — the tab is empty</li>
+      <li><span class="ci">❌</span> No way for employee to submit their declaration</li>
+      <li><span class="ci">❌</span> No document upload for proof of investments</li>
+      <li><span class="ci">❌</span> No financial year selector (FY2025-26, FY2026-27, etc.)</li>
+    </ul>
+    <div class="mini-bar-wrap">
+      <div class="mini-bar-label"><span>Completeness</span><span>15%</span></div>
+      <div class="mini-bar"><div class="mini-fill fill-red" style="width:15%"></div></div>
+    </div>
+  </div>
+
+  <!-- STATUTORY SETTINGS -->
+  <div class="feature-card done">
+    <div class="card-header">
+      <div class="card-icon">🏛️</div>
+      <div class="card-title">Govt Contribution Settings</div>
+      <div class="card-badge badge-done">Fully Built</div>
+    </div>
+    <div class="card-desc">Per-employee switches for PF (Provident Fund), ESI (health insurance), Professional Tax, and Labour Welfare Fund. Some employees are exempt from certain contributions.</div>
+    <ul class="checklist">
+      <li><span class="ci">✅</span> EPF (PF) — on/off toggle per employee</li>
+      <li><span class="ci">✅</span> ESI — on/off toggle per employee</li>
+      <li><span class="ci">✅</span> Professional Tax — on/off toggle per employee</li>
+      <li><span class="ci">✅</span> Labour Welfare Fund — on/off toggle per employee</li>
+      <li><span class="ci">✅</span> Differently-abled flag (IsPWD) — affects tax</li>
+      <li><span class="ci">✅</span> UAN and ESI number fields stored</li>
+    </ul>
+    <div class="mini-bar-wrap">
+      <div class="mini-bar-label"><span>Completeness</span><span>90%</span></div>
+      <div class="mini-bar"><div class="mini-fill fill-green" style="width:90%"></div></div>
+    </div>
+  </div>
+
+  <!-- PAYSLIPS -->
+  <div class="feature-card done">
+    <div class="card-header">
+      <div class="card-icon">🧾</div>
+      <div class="card-title">Payslips (on Profile)</div>
+      <div class="card-badge badge-done">Fully Built</div>
+    </div>
+    <div class="card-desc">Each employee's monthly payslip history visible directly on their profile page.</div>
+    <ul class="checklist">
+      <li><span class="ci">✅</span> Payslips tab on employee profile</li>
+      <li><span class="ci">✅</span> Download as PDF</li>
+      <li><span class="ci">✅</span> PDF protected by employee's date of birth</li>
+      <li><span class="ci">✅</span> Send payslip to employee's email</li>
+      <li><span class="ci">✅</span> Payslips appear after payroll is run for that month</li>
+    </ul>
+    <div class="mini-bar-wrap">
+      <div class="mini-bar-label"><span>Completeness</span><span>95%</span></div>
+      <div class="mini-bar"><div class="mini-fill fill-green" style="width:95%"></div></div>
+    </div>
+  </div>
+
+  <!-- LOANS -->
+  <div class="feature-card future">
+    <div class="card-header">
+      <div class="card-icon">💳</div>
+      <div class="card-title">Employee Loans</div>
+      <div class="card-badge badge-future">Planned Later</div>
+    </div>
+    <div class="card-desc">If the company gives salary advances or loans, they're tracked here. EMI deducted from monthly salary automatically.</div>
+    <ul class="checklist">
+      <li><span class="ci">⏳</span> Loan creation form — amount, disbursement date, interest</li>
+      <li><span class="ci">⏳</span> EMI schedule — how much deducted each month</li>
+      <li><span class="ci">⏳</span> Outstanding balance tracking</li>
+      <li><span class="ci">⏳</span> Loan tab on employee profile</li>
+    </ul>
+    <div class="mini-bar-wrap">
+      <div class="mini-bar-label"><span>Completeness</span><span>0%</span></div>
+      <div class="mini-bar"><div class="mini-fill fill-gray" style="width:3%"></div></div>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ── What breaks if we ignore the gaps ── -->
+<div class="section-title">⚠️ What Goes Wrong Without These Features</div>
+<p class="section-desc">Real-world impact of launching without the missing pieces.</p>
+
+<div class="impact-strip" style="max-width:800px; margin:0 auto 24px;">
+  <h3>🔴 If we launch today without fixing these…</h3>
+  <ul>
+    <li><span>→</span> <strong>Mid-year joiners get wrong income tax deducted</strong> — prior employer salary not captured, TDS calculated as if they earned zero before joining.</li>
+    <li><span>→</span> <strong>No way to offboard employees</strong> — resigned staff stay "Active" in the system forever; their salary might keep getting processed.</li>
+    <li><span>→</span> <strong>Wrong money transferred to wrong banks</strong> — IFSC is never verified, so a typo can send salary to a non-existent or wrong branch.</li>
+    <li><span>→</span> <strong>Customers can't migrate from existing payroll systems</strong> — no bulk import means manually entering 100+ employees one by one; a deal-breaker for most companies.</li>
+    <li><span>→</span> <strong>Salary raise for any employee requires re-entering everything</strong> — no quick "change CTC" screen; user must redo the entire 4-step wizard.</li>
+  </ul>
+</div>
+
+
+<!-- ── What to build next (priority table) ── -->
+<div class="section-title">🗓️ Suggested Build Order</div>
+<p class="section-desc">What to tackle first, based on how much it would hurt customers if missing.</p>
+
+<div class="priority-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>What to Build</th>
+        <th>Why It Can't Wait</th>
+        <th>Priority</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1</strong></td>
+        <td><strong>Previous Employer Salary (YTD)</strong><br><small style="color:#94a3b8">Form on employee profile for prior-company income &amp; tax</small></td>
+        <td>Without this, income tax is wrong for anyone who joined mid-year. Legal/compliance risk.</td>
+        <td><span class="pill pill-red">Must Have</span></td>
+      </tr>
+      <tr>
+        <td><strong>2</strong></td>
+        <td><strong>IFSC Lookup &amp; Verification</strong><br><small style="color:#94a3b8">Auto-fill bank name from IFSC code, show verified badge</small></td>
+        <td>Prevents salary going to wrong bank. Builds trust with payroll managers.</td>
+        <td><span class="pill pill-red">Must Have</span></td>
+      </tr>
+      <tr>
+        <td><strong>3</strong></td>
+        <td><strong>Salary Raise Screen</strong><br><small style="color:#94a3b8">Simple "change CTC" page — not the full 4-step wizard</small></td>
+        <td>Every company does annual raises. Current flow forces re-entering all details — terrible UX.</td>
+        <td><span class="pill pill-red">Must Have</span></td>
+      </tr>
+      <tr>
+        <td><strong>4</strong></td>
+        <td><strong>Employee Exit Flow</strong><br><small style="color:#94a3b8">Resign/terminate form, last working day, status change</small></td>
+        <td>Staff turnover is constant. Without this, exited employees keep showing as active.</td>
+        <td><span class="pill pill-red">Must Have</span></td>
+      </tr>
+      <tr>
+        <td><strong>5</strong></td>
+        <td><strong>Bulk Import (Spreadsheet Upload)</strong><br><small style="color:#94a3b8">CSV upload for employees, salary, prior history</small></td>
+        <td>No customer with 50+ employees will onboard without this. Sales blocker.</td>
+        <td><span class="pill pill-orange">High</span></td>
+      </tr>
+      <tr>
+        <td><strong>6</strong></td>
+        <td><strong>More Columns &amp; Filters on List Page</strong><br><small style="color:#94a3b8">UAN, PAN, onboarding status, column selector</small></td>
+        <td>HR teams live in this list. Limited columns make it hard to spot issues at a glance.</td>
+        <td><span class="pill pill-orange">High</span></td>
+      </tr>
+      <tr>
+        <td><strong>7</strong></td>
+        <td><strong>Tax Declaration Form</strong><br><small style="color:#94a3b8">New-regime investment declaration per employee per FY</small></td>
+        <td>Needed before year-end tax season. Can be deferred to Q3.</td>
+        <td><span class="pill pill-blue">Medium</span></td>
+      </tr>
+      <tr>
+        <td><strong>8</strong></td>
+        <td><strong>Salary Revision History</strong><br><small style="color:#94a3b8">Timeline of past CTCs on the salary tab</small></td>
+        <td>Auditors and employees both ask for this. Nice-to-have for launch.</td>
+        <td><span class="pill pill-blue">Medium</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<footer>
+  Generated from codebase audit — compared against Zoho Payroll India (reference product).<br>
+  Last updated: May 2026 &nbsp;·&nbsp; Branch: feat/payroll-run-module
+</footer>
+
+</body>
+</html>
