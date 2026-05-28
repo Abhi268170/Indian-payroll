@@ -416,6 +416,18 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
         catch (NotFoundException) { return NotFound(); }
     }
 
+    [HttpGet("{id:guid}/export/payroll-details")]
+    public async Task<IActionResult> ExportPayrollDetails(Guid id, [FromQuery] string format = "xlsx", CancellationToken ct = default)
+    {
+        try
+        {
+            Application.Interfaces.ExportFileResult result =
+                await sender.Send(new Application.Queries.PayrollRuns.ExportPayrollDetailsQuery(id, format), ct);
+            return File(result.Data, result.ContentType, result.FileName);
+        }
+        catch (NotFoundException) { return NotFound(); }
+    }
+
     private Guid GetActorId()
     {
         string? sub = User.FindFirst("sub")?.Value;
