@@ -416,6 +416,19 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
         catch (NotFoundException) { return NotFound(); }
     }
 
+    [HttpGet("{id:guid}/export/tds-breakup")]
+    public async Task<IActionResult> ExportTdsBreakup(Guid id, [FromQuery] string format = "xlsx", CancellationToken ct = default)
+    {
+        try
+        {
+            Application.Interfaces.ExportFileResult result =
+                await sender.Send(new Application.Queries.PayrollRuns.ExportTdsBreakupQuery(id, format), ct);
+            return File(result.Data, result.ContentType, result.FileName);
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+    }
+
     private Guid GetActorId()
     {
         string? sub = User.FindFirst("sub")?.Value;
