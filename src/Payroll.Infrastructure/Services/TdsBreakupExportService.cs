@@ -97,7 +97,7 @@ public sealed class TdsBreakupExportService(
             : TDSCalculator.ComputeVerbose(
                 annualProjectedGross: ws.AnnualProjectedIncome,
                 priorEmployerYTDTaxableIncome: 0m,
-                priorEmployerYTDTDSDeducted: 0m,
+                priorEmployerYTDTDSDeducted: priorTds,
                 currentEmployerYTDTDSDeducted: ws.YtdTdsDeducted,
                 hasPan: hasPan,
                 config: snapshot,
