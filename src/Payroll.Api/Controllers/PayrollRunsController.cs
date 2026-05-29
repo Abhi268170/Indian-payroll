@@ -417,6 +417,7 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
     }
 
     [HttpGet("{id:guid}/export/payroll-details")]
+    [Authorize(Policy = "FinanceViewer")]
     public async Task<IActionResult> ExportPayrollDetails(Guid id, [FromQuery] string format = "xlsx", CancellationToken ct = default)
     {
         try

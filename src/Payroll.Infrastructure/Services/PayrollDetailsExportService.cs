@@ -158,6 +158,9 @@ public sealed class PayrollDetailsExportService(
         ];
         decimal benefitsTotal = empBd.Where(b => b.IsBenefit).Sum(b => b.ProratedAmount);
         decimal reimbursementsTotal = pe.ReimbursementsAmount;
+        decimal otherDeductionsTotal = deductions.Sum(c => GetComponentAmount(empBd, c.Code) ?? 0m);
+        decimal effectiveTds = pe.TdsOverrideAmount ?? pe.TdsAmount;
+        decimal totalDeductions = pe.EmployeePf + pe.EmployeeEsi + pe.PtAmount + pe.LwfEmployeeAmount + effectiveTds + otherDeductionsTotal;
         decimal employerCost = pe.EmployerPf + pe.EpsAmount + pe.EmployerEsi + pe.LwfEmployerAmount + pe.GratuityAmount + benefitsTotal;
         decimal annualCtc = pe.MonthlyCTC * 12m;
         decimal ctcDelta = pe.MonthlyCTC - (pe.GrossPay + employerCost);
@@ -171,7 +174,7 @@ public sealed class PayrollDetailsExportService(
         row.Add(FormatMoney(reimbursementsTotal));
         row.AddRange([FormatMoney(pe.EmployeePf), FormatMoney(pe.EmployeeEsi), FormatMoney(pe.PtAmount), FormatMoney(pe.LwfEmployeeAmount), FormatMoney(pe.TdsAmount), pe.TdsOverrideAmount.HasValue ? FormatMoney(pe.TdsOverrideAmount.Value) : string.Empty, pe.TdsOverrideReason ?? string.Empty]);
         foreach (ComponentColumn c in deductions) row.Add(FormatMoneyOrEmpty(GetComponentAmount(empBd, c.Code)));
-        row.AddRange([FormatMoney(pe.GrossPay - pe.NetPay), FormatMoney(pe.NetPay)]);
+        row.AddRange([FormatMoney(totalDeductions), FormatMoney(pe.NetPay)]);
         row.AddRange([FormatMoney(pe.EmployerPf), FormatMoney(pe.EpsAmount), FormatMoney(pe.EmployerEsi), FormatMoney(pe.LwfEmployerAmount), FormatMoney(pe.GratuityAmount), FormatMoney(employerCost)]);
         row.AddRange([FormatMoney(pe.MonthlyCTC), FormatMoney(annualCtc), FormatMoney(ctcDelta)]);
         return row;
