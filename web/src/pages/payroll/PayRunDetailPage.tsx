@@ -14,7 +14,6 @@ interface PagedResult<T> {
 import PayRunHeader from './components/PayRunHeader'
 import PendingTasksBanner from './components/PendingTasksBanner'
 import EmployeeSummaryTable from './components/EmployeeSummaryTable'
-import VariableInputsPanel from './components/VariableInputsPanel'
 import ApprovePayrollDialog from './components/ApprovePayrollDialog'
 import RejectApprovalDialog from './components/RejectApprovalDialog'
 import RecordPaymentDialog from './components/RecordPaymentDialog'
@@ -27,11 +26,6 @@ import ExportModal from './components/ExportModal'
 import PayRunTaxesTab from './tabs/PayRunTaxesTab'
 
 type Tab = 'employees' | 'taxes' | 'insights'
-
-interface VariableInputsState {
-  employeeId: string
-  employeeName: string
-}
 
 interface PayslipState {
   employeeId: string
@@ -56,7 +50,6 @@ export default function PayRunDetailPage(): React.ReactElement {
 
   const [activeTab, setActiveTab] = useState<Tab>('employees')
   const [showMenu, setShowMenu] = useState(false)
-  const [variableInputs, setVariableInputs] = useState<VariableInputsState | null>(null)
   const [payslipState, setPayslipState] = useState<PayslipState | null>(null)
   const [showApprove, setShowApprove] = useState(false)
   const [showReject, setShowReject] = useState(false)
@@ -90,9 +83,12 @@ export default function PayRunDetailPage(): React.ReactElement {
 
   const { data: employeesData } = useQuery<PagedResult<PayrunEmployeeDto>>({
     queryKey: ['run-employees', runId, empPage, empPageSize],
-    queryFn: () => api.get<PagedResult<PayrunEmployeeDto>>(`/api/v1/payroll-runs/${runId}/employees`, {
-      params: { page: empPage, pageSize: empPageSize },
-    }).then(r => r.data),
+    queryFn: () =>
+      api
+        .get<PagedResult<PayrunEmployeeDto>>(`/api/v1/payroll-runs/${runId}/employees`, {
+          params: { page: empPage, pageSize: empPageSize },
+        })
+        .then(r => r.data),
     enabled: !!run,
     placeholderData: keepPreviousData,
   })
@@ -101,7 +97,10 @@ export default function PayRunDetailPage(): React.ReactElement {
 
   const { data: pendingTasks } = useQuery<PendingTasksDto>({
     queryKey: ['pending-tasks', runId],
-    queryFn: () => api.get<PendingTasksDto>(`/api/v1/payroll-runs/${runId}/pending-tasks`).then(r => r.data),
+    queryFn: () =>
+      api
+        .get<PendingTasksDto>(`/api/v1/payroll-runs/${runId}/pending-tasks`)
+        .then(r => r.data),
     enabled: run?.status === 'Draft',
   })
 
@@ -173,8 +172,9 @@ export default function PayRunDetailPage(): React.ReactElement {
             employees={employees}
             runStatus={run.status}
             runId={runId}
-            onOpenVariableInputs={(empId, empName) => { setVariableInputs({ employeeId: empId, employeeName: empName }) }}
-            onSkipEmployee={(empId, empName) => { setSkipState({ employeeId: empId, employeeName: empName }) }}
+            onSkipEmployee={(empId, empName) => {
+              setSkipState({ employeeId: empId, employeeName: empName })
+            }}
             onDownloadPayslip={handleDownloadPayslip}
             onReEvaluate={() => { reEvaluateMutation.mutate() }}
             isReEvaluating={reEvaluateMutation.isPending}
@@ -195,17 +195,10 @@ export default function PayRunDetailPage(): React.ReactElement {
 
       {activeTab === 'insights' && (
         <div className="flex items-center justify-center h-48 rounded-xl border border-dashed border-[var(--color-border)]">
-          <p className="text-[13px] text-[var(--color-text-secondary)]">Overall Insights — coming soon</p>
+          <p className="text-[13px] text-[var(--color-text-secondary)]">
+            Overall Insights — coming soon
+          </p>
         </div>
-      )}
-
-      {variableInputs && (
-        <VariableInputsPanel
-          runId={runId}
-          employeeId={variableInputs.employeeId}
-          employeeName={variableInputs.employeeName}
-          onClose={() => { setVariableInputs(null) }}
-        />
       )}
 
       {payslipState && (
@@ -230,11 +223,19 @@ export default function PayRunDetailPage(): React.ReactElement {
       )}
 
       {showDeletePayment && (
-        <DeletePaymentDialog runId={runId} periodLabel={run.periodLabel} onClose={() => { setShowDeletePayment(false) }} />
+        <DeletePaymentDialog
+          runId={runId}
+          periodLabel={run.periodLabel}
+          onClose={() => { setShowDeletePayment(false) }}
+        />
       )}
 
       {showBankAdvice && (
-        <BankAdviceModal runId={runId} periodLabel={run.periodLabel} onClose={() => { setShowBankAdvice(false) }} />
+        <BankAdviceModal
+          runId={runId}
+          periodLabel={run.periodLabel}
+          onClose={() => { setShowBankAdvice(false) }}
+        />
       )}
 
       {skipState && (

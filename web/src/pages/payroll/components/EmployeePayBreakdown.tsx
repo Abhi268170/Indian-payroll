@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Trash2, Plus } from 'lucide-react'
 import { api } from '@/lib/api'
@@ -54,17 +54,9 @@ export default function EmployeePayBreakdown({
   const [tdsReason, setTdsReason] = useState('')
   const [editingTds, setEditingTds] = useState(false)
   const [addModalCategory, setAddModalCategory] = useState<'Earning' | 'Deduction' | null>(null)
+  // isDirtyLopRef: true while the user has typed into the LOP input but not yet saved.
+  // Using a ref (not state) so it can be read inside useEffect without becoming a dep.
   const isDirtyLopRef = useRef(false)
-
-  useEffect(() => {
-    if (!data) return
-    if (!isDirtyLopRef.current) {
-      setLopDaysEdit(null)
-    }
-    if (!editingTds) {
-      setTdsOverride(data.tdsOverrideAmount !== null ? String(data.tdsOverrideAmount) : '')
-    }
-  }, [data, editingTds])
 
   const lopDays = lopDaysEdit ?? (data?.lopDays ?? 0)
 
@@ -79,6 +71,7 @@ export default function EmployeePayBreakdown({
       api.put(`/api/v1/payroll-runs/${runId}/employees/${employeeId}/lop`, { lopDays: days }),
     onSuccess: () => {
       isDirtyLopRef.current = false
+      setLopDaysEdit(null) // reset edit; display reverts to server value on next data refresh
       invalidateQueries()
     },
   })
@@ -360,7 +353,12 @@ export default function EmployeePayBreakdown({
                 </button>
                 {!editingTds && (
                   <button
-                    onClick={() => { setEditingTds(true) }}
+                    onClick={() => {
+                      setTdsOverride(
+                        data.tdsOverrideAmount !== null ? String(data.tdsOverrideAmount) : '',
+                      )
+                      setEditingTds(true)
+                    }}
                     className="text-[12px] text-[var(--color-primary)] hover:underline"
                   >
                     Override TDS

@@ -1,14 +1,17 @@
-import { useEffect, useRef, useState } from 'react'
-import { ChevronDown, Download, Eye, Upload } from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
+import { ChevronDown, ChevronRight, Download, Upload } from 'lucide-react'
 import { formatINR } from '@/lib/format'
 import type { PayrunEmployeeDto } from '@/types/api'
 import type { ImportType } from './ImportModal'
+import EmployeePayBreakdown from './EmployeePayBreakdown'
+
+const DRAFT_TOTAL_COLS = 8
+const APPROVED_TOTAL_COLS = 6
 
 interface EmployeeSummaryTableProps {
   employees: PayrunEmployeeDto[]
   runStatus: string
   runId: string
-  onOpenVariableInputs: (employeeId: string, employeeName: string) => void
   onSkipEmployee: (employeeId: string, employeeName: string) => void
   onDownloadPayslip: (employeeId: string, employeeName: string) => void
   onReEvaluate: () => void
@@ -22,7 +25,7 @@ type FilterMode = 'All' | 'Active' | 'Skipped'
 export default function EmployeeSummaryTable({
   employees,
   runStatus,
-  onOpenVariableInputs,
+  runId,
   onSkipEmployee,
   onDownloadPayslip,
   onReEvaluate,
@@ -32,6 +35,7 @@ export default function EmployeeSummaryTable({
 }: EmployeeSummaryTableProps): React.ReactElement {
   const [filter, setFilter] = useState<FilterMode>('All')
   const [showImportExport, setShowImportExport] = useState(false)
+  const [expandedRowId, setExpandedRowId] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -51,11 +55,24 @@ export default function EmployeeSummaryTable({
     return true
   })
 
+  // Derive effective expanded ID: if the expanded employee is not in the current visible list
+  // (due to filter change or pagination page change), treat it as collapsed. The stored
+  // expandedRowId is preserved so navigating back to the page doesn't lose the intent.
+  const effectiveExpandedRowId = visible.some(e => e.employeeId === expandedRowId)
+    ? expandedRowId
+    : null
+
   const isDraft = runStatus === 'Draft'
   const isPaidOrApproved = runStatus === 'Approved' || runStatus === 'Paid'
   const hasOnboardingBlocked = employees.some(
-    e => e.status === 'Skipped' && e.skipReason?.startsWith('Onboarding incomplete')
+    e => e.status === 'Skipped' && e.skipReason?.startsWith('Onboarding incomplete'),
   )
+
+  function toggleRow(id: string): void {
+    setExpandedRowId(prev => (prev === id ? null : id))
+  }
+
+  const expandColSpan = isDraft ? DRAFT_TOTAL_COLS - 1 : APPROVED_TOTAL_COLS - 1
 
   return (
     <div>
@@ -73,7 +90,9 @@ export default function EmployeeSummaryTable({
           >
             {f}
             <span className="ml-1.5 opacity-70">
-              {String(f === 'All' ? employees.length : employees.filter(e => e.status === f).length)}
+              {String(
+                f === 'All' ? employees.length : employees.filter(e => e.status === f).length,
+              )}
             </span>
           </button>
         ))}
@@ -101,7 +120,9 @@ export default function EmployeeSummaryTable({
             <div className="absolute right-0 top-full mt-1 w-52 bg-white rounded-xl shadow-lg border border-[var(--color-border)] py-1 z-20">
               {isDraft && (
                 <>
-                  <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-[var(--color-text-muted)]">Import</p>
+                  <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-[var(--color-text-muted)]">
+                    Import
+                  </p>
                   <button
                     onClick={() => { setShowImportExport(false); onShowImport('lop') }}
                     className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-[var(--color-text-primary)] hover:bg-[var(--color-page-bg)]"
@@ -126,7 +147,9 @@ export default function EmployeeSummaryTable({
                   <div className="border-t border-[var(--color-border)] my-1" />
                 </>
               )}
-              <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-[var(--color-text-muted)]">Export</p>
+              <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-[var(--color-text-muted)]">
+                Export
+              </p>
               <button
                 onClick={() => { setShowImportExport(false); onShowExport() }}
                 className="w-full flex items-center gap-2 px-3 py-2 text-[13px] text-[var(--color-text-primary)] hover:bg-[var(--color-page-bg)]"
@@ -143,111 +166,166 @@ export default function EmployeeSummaryTable({
         <table className="w-full">
           <thead>
             <tr className="bg-[var(--color-page-bg)] border-b border-[var(--color-border)]">
-              <th className="px-4 py-2.5 text-left text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">Employee</th>
+              <th className="w-8 px-2 py-2.5" />
+              <th className="px-4 py-2.5 text-left text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                Employee
+              </th>
               {isDraft && (
                 <>
-                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">Gross Pay</th>
-                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">Deductions</th>
-                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">Taxes</th>
-                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">Net Pay</th>
-                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">LOP</th>
+                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                    Gross Pay
+                  </th>
+                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                    Deductions
+                  </th>
+                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                    Taxes
+                  </th>
+                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                    Net Pay
+                  </th>
+                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                    LOP
+                  </th>
                 </>
               )}
               {isPaidOrApproved && (
                 <>
-                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">Net Pay</th>
-                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">TDS</th>
-                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">PF</th>
+                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                    Net Pay
+                  </th>
+                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                    TDS
+                  </th>
+                  <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                    PF
+                  </th>
                 </>
               )}
-              <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">Actions</th>
+              <th className="px-4 py-2.5 text-right text-[11px] font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[var(--color-border)]">
+          <tbody>
             {visible.map(emp => (
-              <tr
-                key={emp.employeeId}
-                className={`hover:bg-[var(--color-page-bg)] transition-colors ${emp.status === 'Skipped' ? 'opacity-60' : ''}`}
-              >
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 flex items-center justify-center flex-shrink-0">
-                      <span className="text-[10px] font-semibold text-[var(--color-primary)]">
-                        {emp.employeeName.slice(0, 2).toUpperCase()}
-                      </span>
+              <React.Fragment key={emp.employeeId}>
+                <tr
+                  className={`border-b border-[var(--color-border)] hover:bg-[var(--color-page-bg)] transition-colors ${emp.status === 'Skipped' ? 'opacity-60' : ''}`}
+                >
+                  {/* Chevron toggle */}
+                  <td
+                    className="w-8 px-2 py-3 cursor-pointer text-[var(--color-text-secondary)] hover:text-[var(--color-primary)]"
+                    onClick={() => { toggleRow(emp.employeeId) }}
+                  >
+                    {effectiveExpandedRowId === emp.employeeId ? (
+                      <ChevronDown size={14} />
+                    ) : (
+                      <ChevronRight size={14} />
+                    )}
+                  </td>
+
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-full bg-[var(--color-primary)]/10 flex items-center justify-center flex-shrink-0">
+                        <span className="text-[10px] font-semibold text-[var(--color-primary)]">
+                          {emp.employeeName.slice(0, 2).toUpperCase()}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="text-[13px] font-medium text-[var(--color-text-primary)]">
+                          {emp.employeeName}
+                        </p>
+                        <p className="text-[11px] text-[var(--color-text-secondary)]">
+                          {emp.employeeCode} · {emp.designation}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-[13px] font-medium text-[var(--color-text-primary)]">{emp.employeeName}</p>
-                      <p className="text-[11px] text-[var(--color-text-secondary)]">{emp.employeeCode} · {emp.designation}</p>
-                    </div>
-                  </div>
-                  {emp.status === 'Skipped' && emp.skipReason && (
-                    <p className="mt-1 ml-9 text-[11px] text-amber-600">{emp.skipReason}</p>
+                    {emp.status === 'Skipped' && emp.skipReason && (
+                      <p className="mt-1 ml-9 text-[11px] text-amber-600">{emp.skipReason}</p>
+                    )}
+                  </td>
+
+                  {isDraft && (
+                    <>
+                      <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-primary)]">
+                        {formatINR(emp.grossPay)}
+                      </td>
+                      <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">
+                        {formatINR(
+                          emp.employeePf + emp.employeeEsi + emp.ptAmount + emp.lwfEmployeeAmount,
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">
+                        {formatINR(emp.tdsOverrideAmount ?? emp.tdsAmount)}
+                      </td>
+                      <td className="px-4 py-3 text-right text-[13px] font-semibold text-[var(--color-text-primary)]">
+                        {formatINR(emp.netPay)}
+                      </td>
+                      <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">
+                        {emp.lopDays > 0 ? `${String(emp.lopDays)}d` : '—'}
+                      </td>
+                    </>
                   )}
-                </td>
 
-                {isDraft && (
-                  <>
-                    <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-primary)]">{formatINR(emp.grossPay)}</td>
-                    <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">{formatINR(emp.employeePf + emp.employeeEsi + emp.ptAmount + emp.lwfEmployeeAmount)}</td>
-                    <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">{formatINR(emp.tdsOverrideAmount ?? emp.tdsAmount)}</td>
-                    <td className="px-4 py-3 text-right text-[13px] font-semibold text-[var(--color-text-primary)]">{formatINR(emp.netPay)}</td>
-                    <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">{emp.lopDays > 0 ? `${String(emp.lopDays)}d` : '—'}</td>
-                  </>
-                )}
+                  {isPaidOrApproved && (
+                    <>
+                      <td className="px-4 py-3 text-right text-[13px] font-semibold text-[var(--color-text-primary)]">
+                        {formatINR(emp.netPay)}
+                      </td>
+                      <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">
+                        {formatINR(emp.tdsOverrideAmount ?? emp.tdsAmount)}
+                      </td>
+                      <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">
+                        {formatINR(emp.employeePf)}
+                      </td>
+                    </>
+                  )}
 
-                {isPaidOrApproved && (
-                  <>
-                    <td className="px-4 py-3 text-right text-[13px] font-semibold text-[var(--color-text-primary)]">{formatINR(emp.netPay)}</td>
-                    <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">{formatINR(emp.tdsOverrideAmount ?? emp.tdsAmount)}</td>
-                    <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">{formatINR(emp.employeePf)}</td>
-                  </>
-                )}
-
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-end gap-1.5">
-                    {isDraft && emp.status === 'Active' && (
-                      <>
-                        <button
-                          onClick={() => { onOpenVariableInputs(emp.employeeId, emp.employeeName) }}
-                          className="h-7 w-7 flex items-center justify-center rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-page-bg)] transition-colors"
-                          title="View details"
-                        >
-                          <Eye size={13} />
-                        </button>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-1.5">
+                      {isDraft && emp.status === 'Active' && (
                         <button
                           onClick={() => { onSkipEmployee(emp.employeeId, emp.employeeName) }}
                           className="h-7 px-2.5 rounded-lg border border-[var(--color-border)] text-[12px] text-[var(--color-text-secondary)] hover:bg-[var(--color-page-bg)] transition-colors"
                         >
                           Skip
                         </button>
-                      </>
-                    )}
-                    {isPaidOrApproved && (
-                      <button
-                        onClick={() => { onDownloadPayslip(emp.employeeId, emp.employeeName) }}
-                        className="h-7 w-7 flex items-center justify-center rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-page-bg)] transition-colors"
-                        title="Download payslip"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                    {isDraft && emp.status === 'Skipped' && (
-                      <button
-                        onClick={() => { onOpenVariableInputs(emp.employeeId, emp.employeeName) }}
-                        className="h-7 w-7 flex items-center justify-center rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-page-bg)] transition-colors"
-                        title="View details"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
+                      )}
+                      {isPaidOrApproved && (
+                        <button
+                          onClick={() => { onDownloadPayslip(emp.employeeId, emp.employeeName) }}
+                          className="h-7 w-7 flex items-center justify-center rounded-lg border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:bg-[var(--color-page-bg)] transition-colors"
+                          title="Download payslip"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+
+                {effectiveExpandedRowId === emp.employeeId && (
+                  <tr className="bg-[var(--color-surface)] border-b border-[var(--color-border)]">
+                    <td />
+                    <td colSpan={expandColSpan}>
+                      <EmployeePayBreakdown
+                        runId={runId}
+                        employeeId={emp.employeeId}
+                        employeeName={emp.employeeName}
+                        readOnly={!isDraft}
+                      />
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
             ))}
             {visible.length === 0 && (
               <tr>
-                <td colSpan={10} className="px-4 py-8 text-center text-[13px] text-[var(--color-text-secondary)]">
+                <td
+                  colSpan={10}
+                  className="px-4 py-8 text-center text-[13px] text-[var(--color-text-secondary)]"
+                >
                   No employees match this filter.
                 </td>
               </tr>
