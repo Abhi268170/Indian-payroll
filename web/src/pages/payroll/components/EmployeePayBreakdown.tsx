@@ -503,20 +503,9 @@ export default function EmployeePayBreakdown({
           </section>
         )}
 
-        {/* Net pay footer */}
-        <div className="border-t border-[var(--color-border)] pt-3 flex items-center justify-between">
-          <div>
-            <span className="text-[13px] font-semibold text-[var(--color-text-primary)]">
-              Net Pay
-            </span>
-            <span className="ml-2 text-[11px] text-[var(--color-text-secondary)]">
-              CTC {formatINR(data.monthlyCTC)}/mo
-            </span>
-          </div>
-          <span className="text-[16px] font-bold text-[var(--color-primary)]">
-            {formatINR(data.netPay)}
-          </span>
-        </div>
+        <p className="text-[11px] text-[var(--color-text-secondary)] border-t border-[var(--color-border)] pt-3">
+          Monthly CTC: {formatINR(data.monthlyCTC)}
+        </p>
       </div>
 
       {addModalCategory != null && (

@@ -1,4 +1,4 @@
-import { MoreVertical, Calendar, Users, DollarSign, FileSpreadsheet } from 'lucide-react'
+import { MoreVertical, Calendar, Users, IndianRupee, FileSpreadsheet } from 'lucide-react'
 import { formatINR } from '@/lib/format'
 import type { PayrollRunSummaryDto } from '@/types/api'
 
@@ -131,14 +131,14 @@ export default function PayRunHeader({ run, onApprove, onDelete, onRecordPayment
           </div>
         </div>
         <div className="flex items-center gap-2.5">
-          <DollarSign className="w-4 h-4 text-[var(--color-text-secondary)]" />
+          <IndianRupee className="w-4 h-4 text-[var(--color-text-secondary)]" />
           <div>
             <p className="text-[11px] text-[var(--color-text-secondary)]">Net Pay</p>
             <p className="text-[13px] font-medium text-[var(--color-text-primary)]">{formatINR(run.totalNetPay)}</p>
           </div>
         </div>
         <div className="flex items-center gap-2.5">
-          <DollarSign className="w-4 h-4 text-[var(--color-text-secondary)]" />
+          <IndianRupee className="w-4 h-4 text-[var(--color-text-secondary)]" />
           <div>
             <p className="text-[11px] text-[var(--color-text-secondary)]">Payroll Cost</p>
             <p className="text-[13px] font-medium text-[var(--color-text-primary)]">{formatINR(run.payrollCost)}</p>
