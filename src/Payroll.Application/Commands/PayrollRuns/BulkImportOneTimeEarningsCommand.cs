@@ -161,7 +161,7 @@ public sealed class BulkImportOneTimeEarningsCommandHandler(
                 employeeEsi: result.ESI.EmployeeContribution,
                 employerEsi: result.ESI.EmployerContribution,
                 ptAmount: result.PT.Amount,
-                tdsAmount: result.TDS.MonthlyTDS,
+                tdsAmount: payrunEmp.TdsOverrideAmount ?? result.TDS.MonthlyTDS,
                 lwfEmployeeAmount: result.LWF.EmployeeAmount,
                 lwfEmployerAmount: result.LWF.EmployerAmount,
                 gratuityAmount: result.Gratuity.MonthlyAccrual,

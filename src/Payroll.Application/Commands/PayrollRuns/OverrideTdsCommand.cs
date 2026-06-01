@@ -41,6 +41,21 @@ public sealed class OverrideTdsHandler(
         if (payrunEmp.Status == PayrunEmployeeStatus.Skipped)
             throw new InvalidOperationException("Cannot override TDS for a skipped employee.");
 
+        // Cap: override cannot exceed total annual tax liability still owed.
+        // YTD uses effective deducted amounts (TdsOverrideAmount ?? TdsAmount) from
+        // already-approved/paid runs — the current Draft run is excluded by the query.
+        var ytdMap = await payrunEmployeeRepo.GetCurrentEmployerYtdAsync(
+            [req.EmployeeId], run.PayPeriod.FiscalYear, ct);
+        ytdMap.TryGetValue(req.EmployeeId, out var ytd);
+        var worksheet = await tdsWorksheetRepo.GetByRunAndEmployeeAsync(req.RunId, req.EmployeeId, ct);
+        if (worksheet is not null)
+        {
+            decimal maxAllowed = Math.Max(0m, worksheet.AnnualTaxLiability - ytd.YtdTds);
+            if (req.OverrideAmount > maxAllowed)
+                throw new InvalidOperationException(
+                    $"Override amount ₹{req.OverrideAmount:N2} exceeds remaining tax liability of ₹{maxAllowed:N2} for this fiscal year.");
+        }
+
         decimal previousTds = payrunEmp.TdsOverrideAmount ?? payrunEmp.TdsAmount;
         payrunEmp.SetTdsOverride(req.OverrideAmount, req.Reason, req.ActorId);
 
@@ -68,8 +83,7 @@ public sealed class OverrideTdsHandler(
 
         payrunEmployeeRepo.Update(payrunEmp);
 
-        // Sync TdsWorksheet to reflect the override
-        var worksheet = await tdsWorksheetRepo.GetByRunAndEmployeeAsync(req.RunId, req.EmployeeId, ct);
+        // Sync TdsWorksheet to reflect the override (worksheet already fetched above for cap check)
         worksheet?.UpdateTdsThisMonth(req.OverrideAmount, req.ActorId);
 
         await uow.SaveChangesAsync(ct);
