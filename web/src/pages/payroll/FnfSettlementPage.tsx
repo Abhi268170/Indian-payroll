@@ -63,9 +63,10 @@ export default function FnfSettlementPage(): ReactElement {
     return <Navigate to="/pay-runs" replace />
   }
 
+  // The employees endpoint returns a paged result ({ items, total, … }); unwrap items.
   const { data: rows = [] } = useQuery<EmployeeRowDto[]>({
     queryKey: ['fnf-rows', runId],
-    queryFn: () => api.get<EmployeeRowDto[]>(`/api/v1/payroll-runs/${runId}/employees`).then(r => r.data),
+    queryFn: () => api.get<{ items: EmployeeRowDto[] }>(`/api/v1/payroll-runs/${runId}/employees`).then(r => r.data.items),
     enabled: Boolean(runId),
   })
 
