@@ -1,4 +1,6 @@
 import { MoreVertical, Calendar, Users, IndianRupee, FileSpreadsheet } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
+import { api } from '@/lib/api'
 import { formatINR } from '@/lib/format'
 import type { PayrollRunSummaryDto } from '@/types/api'
 
@@ -29,6 +31,25 @@ function statusBadge(status: string): React.ReactElement {
 }
 
 export default function PayRunHeader({ run, onApprove, onDelete, onRecordPayment, onDeletePayment, onRejectApproval, onBankAdvice, showMenu, onToggleMenu }: PayRunHeaderProps): React.ReactElement {
+  const qc = useQueryClient()
+  // WI-26: settlement date is editable on a Draft FnF run.
+  const isFnf = run.type === 'FinalSettlement' || run.type === 'BulkFinalSettlement'
+  const canEditSettlementDate = isFnf && run.status === 'Draft'
+
+  async function editSettlementDate(): Promise<void> {
+    const current = run.payDay ?? ''
+    const input = window.prompt('New settlement date (YYYY-MM-DD):', current)
+    if (!input) return
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(input)) { window.alert('Use format YYYY-MM-DD.'); return }
+    try {
+      await api.patch(`/api/v1/payroll-runs/${run.id}/settlement-date`, { settlementDate: input })
+      await qc.invalidateQueries({ queryKey: ['payroll-run', run.id] })
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } }).response?.data?.error
+      window.alert(msg ?? 'Failed to update settlement date.')
+    }
+  }
+
   return (
     <div className="bg-white rounded-xl border border-[var(--color-border)] px-6 py-5 mb-4">
       {/* Title row */}
@@ -118,8 +139,16 @@ export default function PayRunHeader({ run, onApprove, onDelete, onRecordPayment
           <Calendar className="w-4 h-4 text-[var(--color-text-secondary)]" />
           <div>
             <p className="text-[11px] text-[var(--color-text-secondary)]">Pay Day</p>
-            <p className="text-[13px] font-medium text-[var(--color-text-primary)]">
+            <p className="text-[13px] font-medium text-[var(--color-text-primary)] flex items-center gap-2">
               {run.payDay ? new Date(run.payDay).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}
+              {canEditSettlementDate && (
+                <button
+                  onClick={() => { void editSettlementDate() }}
+                  className="text-[11px] text-[var(--color-primary)] hover:underline font-normal"
+                >
+                  Edit
+                </button>
+              )}
             </p>
           </div>
         </div>

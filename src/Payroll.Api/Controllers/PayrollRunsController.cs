@@ -160,6 +160,20 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
         catch (DomainException ex) { return UnprocessableEntity(new { error = ex.Message }); }
     }
 
+    // WI-26: revise the settlement (pay) date on a Draft FnF run.
+    [HttpPatch("{id:guid}/settlement-date")]
+    public async Task<IActionResult> UpdateSettlementDate(Guid id, [FromBody] UpdateSettlementDateRequest req, CancellationToken ct)
+    {
+        try
+        {
+            await sender.Send(new UpdateSettlementDateCommand(id, req.SettlementDate, GetActorId()), ct);
+            return NoContent();
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (DomainException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+        catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+    }
+
     // WI-22: compute an FnF settlement for hypothetical inputs without persisting.
     [HttpPost("{id:guid}/employees/{eid:guid}/fnf-preview")]
     public async Task<IActionResult> PreviewFnf(Guid id, Guid eid, [FromBody] UpdateFnfRunRequest req, CancellationToken ct)
@@ -495,6 +509,7 @@ public record OverrideTdsRequest(decimal OverrideAmount, string? Reason);
 public record SkipEmployeeRequest(string Reason);
 public record RejectApprovalRequest(string? Reason);
 public record RecordPaymentRequest(DateOnly PaymentDate, string PaymentMode, string? Reference, bool NotifyEmployees);
+public record UpdateSettlementDateRequest(DateOnly SettlementDate);
 
 public record UpdateFnfRunRequest(
     int LopDays,

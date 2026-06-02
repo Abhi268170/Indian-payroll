@@ -98,6 +98,18 @@ public sealed class PayrollRun : AuditableEntity
         SetUpdated(actorId);
     }
 
+    // WI-26: revise the settlement (pay) date on a Draft FnF run. Settlement
+    // timing is frequently renegotiated after notice is served.
+    public void UpdateSettlementDate(DateOnly settlementDate, Guid actorId)
+    {
+        if (Type != PayrollRunType.FinalSettlement && Type != PayrollRunType.BulkFinalSettlement)
+            throw new InvalidOperationException("Settlement date applies only to final settlement runs.");
+        if (Status != PayrollRunStatus.Draft)
+            throw new InvalidOperationException("Settlement date can only be changed while the run is Draft.");
+        PayDay = settlementDate;
+        SetUpdated(actorId);
+    }
+
     public void UpdateFinancialSummary(
         decimal payrollCost,
         decimal totalNetPay,
