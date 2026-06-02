@@ -147,6 +147,43 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
         catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
     }
 
+    // WI-21: categorized FnF settlement summary (earnings / deductions / statutory / net).
+    [HttpGet("{id:guid}/employees/{eid:guid}/fnf-summary")]
+    public async Task<IActionResult> GetFnfSummary(Guid id, Guid eid, CancellationToken ct)
+    {
+        try
+        {
+            FnfSummaryDto dto = await sender.Send(new GetFnfSummaryQuery(id, eid), ct);
+            return Ok(dto);
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (DomainException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+    }
+
+    // WI-22: compute an FnF settlement for hypothetical inputs without persisting.
+    [HttpPost("{id:guid}/employees/{eid:guid}/fnf-preview")]
+    public async Task<IActionResult> PreviewFnf(Guid id, Guid eid, [FromBody] UpdateFnfRunRequest req, CancellationToken ct)
+    {
+        try
+        {
+            FnfPreviewDto dto = await sender.Send(new GetFnfPreviewQuery(
+                RunId: id,
+                EmployeeId: eid,
+                LopDays: req.LopDays,
+                Bonus: req.Bonus,
+                Commission: req.Commission,
+                LeaveEncashment: req.LeaveEncashment,
+                Gratuity: req.Gratuity,
+                HasNoticePay: req.HasNoticePay,
+                NoticePayDirection: req.NoticePayDirection,
+                NoticePayAmount: req.NoticePayAmount,
+                Deductions: req.Deductions ?? new List<FnfAdhocDeductionDto>()), ct);
+            return Ok(dto);
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (DomainException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+    }
+
     [HttpPut("{id:guid}/employees/{eid:guid}/tds-override")]
     public async Task<IActionResult> OverrideTds(Guid id, Guid eid, [FromBody] OverrideTdsRequest req, CancellationToken ct)
     {
