@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { ArrowLeft, AlertCircle, MoreHorizontal } from 'lucide-react'
 import { api } from '@/lib/api'
 import type { EmployeeDto } from '@/types/api'
@@ -59,6 +59,23 @@ export default function EmployeeDetailPage(): React.ReactElement {
     queryFn: () => api.get<EmployeeDto>(`/api/v1/employees/${id}`).then(r => r.data),
     enabled: !!id,
   })
+
+  const cancelExit = useMutation({
+    mutationFn: () => api.delete(`/api/v1/employees/${id}/exit`),
+    onSuccess: () => { void refetch() },
+  })
+
+  function handleCancelExit(): void {
+    setKebabOpen(false)
+    if (!window.confirm('Cancel this exit? The final settlement run will be removed and the employee restored to Active.')) return
+    cancelExit.mutate(undefined, {
+      onError: (err: unknown) => {
+        const message = (err as { response?: { data?: { error?: string } } }).response?.data?.error
+          ?? 'Failed to cancel exit.'
+        window.alert(message)
+      },
+    })
+  }
 
   if (isLoading) {
     return (
@@ -132,12 +149,22 @@ export default function EmployeeDetailPage(): React.ReactElement {
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => { setKebabOpen(false) }} />
                   <div className="absolute right-0 top-9 z-20 w-52 bg-white border border-[var(--color-border)] rounded-lg shadow-lg py-1">
-                    <button
-                      onClick={() => { setKebabOpen(false); navigate(`/employees/${id}/exit/initiate`) }}
-                      className="w-full text-left px-4 py-2 text-[13px] text-[var(--color-text-primary)] hover:bg-gray-50"
-                    >
-                      Initiate Exit Process
-                    </button>
+                    {employee.dateOfLeaving === null ? (
+                      <button
+                        onClick={() => { setKebabOpen(false); navigate(`/employees/${id}/exit/initiate`) }}
+                        className="w-full text-left px-4 py-2 text-[13px] text-[var(--color-text-primary)] hover:bg-gray-50"
+                      >
+                        Initiate Exit Process
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleCancelExit}
+                        disabled={cancelExit.isPending}
+                        className="w-full text-left px-4 py-2 text-[13px] text-red-600 hover:bg-red-50 disabled:opacity-50"
+                      >
+                        {cancelExit.isPending ? 'Cancelling…' : 'Cancel Exit Process'}
+                      </button>
+                    )}
                   </div>
                 </>
               )}

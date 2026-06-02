@@ -263,6 +263,22 @@ public sealed class EmployeesController(ISender sender, IEmployeeImportTemplateG
         }
     }
 
+    [HttpDelete("{id:guid}/exit")]
+    public async Task<IActionResult> CancelExit(Guid id, CancellationToken ct)
+    {
+        try
+        {
+            await sender.Send(new CancelExitCommand(EmployeeId: id, ActorId: GetActorId()), ct);
+            return NoContent();
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (DomainException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+        catch (ValidationException ex)
+        {
+            return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });
+        }
+    }
+
     [HttpGet("import/template")]
     [AllowAnonymous] // blank template, no tenant data
     public IActionResult DownloadTemplate()
