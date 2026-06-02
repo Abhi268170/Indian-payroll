@@ -266,7 +266,11 @@ public sealed class PayrollFnfOrchestrator(
             // Notice Pay) are flat — never prorated to LWD even when LOP is set.
             CalculateOnProRata: !b.IsOneTimeEarning && b.CalculateOnProRata,
             IsFlat: false,
-            ShowInPayslip: b.ShowInPayslip);
+            ShowInPayslip: b.ShowInPayslip,
+            // Consistency with the regular run: one-time amounts add ×1 to the TDS
+            // projection. (FnF runs with MonthsRemainingInFY=1, so this is a no-op
+            // there, but keeps the mapping identical across paths.)
+            IsOneTime: b.IsOneTimeEarning);
 
     // ── Shared helpers used by both UpdateFnfRunCommand and ApprovePayrollRunCommand ──
 

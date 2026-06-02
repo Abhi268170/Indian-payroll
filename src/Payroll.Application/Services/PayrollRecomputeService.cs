@@ -239,5 +239,8 @@ public sealed class PayrollRecomputeService(
             // employee has LOP days, which is never what the operator intends.
             CalculateOnProRata: !b.IsOneTimeEarning && b.CalculateOnProRata,
             IsFlat: false,
-            ShowInPayslip: b.ShowInPayslip);
+            ShowInPayslip: b.ShowInPayslip,
+            // One-time amounts are paid/taxed this month only — the engine adds them
+            // to the annual TDS projection ×1, not ×MonthsRemainingInFY.
+            IsOneTime: b.IsOneTimeEarning);
 }

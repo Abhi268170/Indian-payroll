@@ -330,4 +330,82 @@ public class GrossCalculatorTests
 
         result.AnnualProjectedTaxableGross.Should().Be(56_000m * 10);
     }
+
+    // ── One-time amounts (bonus / arrears) project ×1, not ×MonthsRemaining ──────
+
+    [Fact]
+    public void OneTimeTaxable_AddedOnce_NotProjectedTimesMonthsRemaining()
+    {
+        // Recurring BASIC 20000 (taxable) + one-time BONUS 50000 (taxable).
+        // monthsRemaining = 10.
+        // Correct: 20000×10 + 50000×1 = 2,50,000  (NOT 70000×10 = 7,00,000)
+        Guid bonusId = Guid.NewGuid();
+        IReadOnlyList<SalaryComponentInput> components =
+        [
+            new(BasicId, "BASIC", 20000m, IsTaxable: true),
+            new(bonusId, "BONUS", 50000m, IsTaxable: true, CalculateOnProRata: false, IsOneTime: true),
+        ];
+
+        GrossResult result = GrossCalculator.Compute(
+            MakeEmployee(lop: 0, components: components), Run31());
+
+        result.AnnualProjectedTaxableGross.Should().Be(20000m * 10 + 50000m);
+    }
+
+    [Fact]
+    public void OneTimeComponent_AddedOnce_InGrossProjection()
+    {
+        // Gross projection must also exclude the one-time amount from the ×N base.
+        // 20000×10 + 50000×1 = 2,50,000
+        Guid bonusId = Guid.NewGuid();
+        IReadOnlyList<SalaryComponentInput> components =
+        [
+            new(BasicId, "BASIC", 20000m, IsTaxable: true),
+            new(bonusId, "BONUS", 50000m, IsTaxable: true, CalculateOnProRata: false, IsOneTime: true),
+        ];
+
+        GrossResult result = GrossCalculator.Compute(
+            MakeEmployee(lop: 0, components: components), Run31());
+
+        result.AnnualProjectedGross.Should().Be(20000m * 10 + 50000m);
+    }
+
+    [Fact]
+    public void OneTimeComponent_StillCountsInThisMonthGrossAndTaxable()
+    {
+        // The one-time amount is paid and taxed THIS month — full amount in both
+        // GrossWage and TaxableGrossWage (×1), just not multiplied into the projection.
+        Guid bonusId = Guid.NewGuid();
+        IReadOnlyList<SalaryComponentInput> components =
+        [
+            new(BasicId, "BASIC", 20000m, IsTaxable: true),
+            new(bonusId, "BONUS", 50000m, IsTaxable: true, CalculateOnProRata: false, IsOneTime: true),
+        ];
+
+        GrossResult result = GrossCalculator.Compute(
+            MakeEmployee(lop: 0, components: components), Run31());
+
+        result.GrossWage.Should().Be(70000m);
+        result.TaxableGrossWage.Should().Be(70000m);
+    }
+
+    [Fact]
+    public void OneTimeNonTaxableComponent_ExcludedFromTaxableProjectionEntirely()
+    {
+        // A non-taxable one-time amount (e.g. exempt arrear portion) adds to gross
+        // once but never to the taxable projection.
+        Guid arrearId = Guid.NewGuid();
+        IReadOnlyList<SalaryComponentInput> components =
+        [
+            new(BasicId,  "BASIC",  20000m, IsTaxable: true),
+            new(arrearId, "ARREAR_EXEMPT", 8000m, IsTaxable: false, CalculateOnProRata: false, IsOneTime: true),
+        ];
+
+        GrossResult result = GrossCalculator.Compute(
+            MakeEmployee(lop: 0, components: components), Run31());
+
+        result.AnnualProjectedTaxableGross.Should().Be(20000m * 10);   // bonus excluded (non-taxable)
+        result.AnnualProjectedGross.Should().Be(20000m * 10 + 8000m);  // included in gross once
+        result.GrossWage.Should().Be(28000m);
+    }
 }

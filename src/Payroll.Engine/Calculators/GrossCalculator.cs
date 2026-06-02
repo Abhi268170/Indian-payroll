@@ -18,6 +18,13 @@ public static class GrossCalculator
         decimal esiWage = 0m;
         decimal lopDeduction = 0m;
 
+        // One-time amounts (bonus, commission, salary-revision arrears) are paid and
+        // taxed this month only. They are split out so the annual projection multiplies
+        // ONLY the recurring portion by MonthsRemainingInFY and adds the one-time portion
+        // once — projecting a one-time payment ×N would massively over-tax it.
+        decimal oneTimeGross = 0m;
+        decimal oneTimeTaxable = 0m;
+
         foreach (SalaryComponentInput c in employee.Components)
         {
             bool skipProRata = !c.CalculateOnProRata || c.IsFlat;
@@ -40,10 +47,22 @@ public static class GrossCalculator
 
             if (c.ConsiderForEsi)
                 esiWage += prorated;
+
+            if (c.IsOneTime)
+            {
+                oneTimeGross += prorated;
+                if (c.IsTaxable)
+                    oneTimeTaxable += prorated;
+            }
         }
 
-        decimal annualProjected = employee.CurrentEmployerYTDGross + grossWage * run.MonthsRemainingInFY;
-        decimal annualProjectedTaxable = employee.CurrentEmployerYTDTaxable + taxableWage * run.MonthsRemainingInFY;
+        // Recurring portion projects ×N; one-time portion adds ×1.
+        decimal recurringGross = grossWage - oneTimeGross;
+        decimal recurringTaxable = taxableWage - oneTimeTaxable;
+        decimal annualProjected =
+            employee.CurrentEmployerYTDGross + recurringGross * run.MonthsRemainingInFY + oneTimeGross;
+        decimal annualProjectedTaxable =
+            employee.CurrentEmployerYTDTaxable + recurringTaxable * run.MonthsRemainingInFY + oneTimeTaxable;
 
         return new GrossResult(
             GrossWage: grossWage,
@@ -51,7 +70,7 @@ public static class GrossCalculator
             FullPFWage: fullPfWage,
             AnnualProjectedGross: annualProjected,
             LOPDeduction: lopDeduction,
-            ArrearAmount: 0m,
+            ArrearAmount: oneTimeGross,
             ComponentBreakdown: breakdown,
             TaxableGrossWage: taxableWage,
             AnnualProjectedTaxableGross: annualProjectedTaxable,
