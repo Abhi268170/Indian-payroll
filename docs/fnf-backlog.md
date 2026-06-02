@@ -605,7 +605,27 @@ Dependent on WI-28. Once `ExitInitiatedDomainEvent` is raised, a handler can tri
 **What's missing:**
 No Form 16, Form 24Q, or TRACES integration exists. FnF TDS sweeps are computed and stored (after WI-04) but never exported into statutory returns. This affects all employees, not just FnF exits.
 
-**Note:** Deferred — mark all related code with `// DEFERRED: form16-form24q` per CLAUDE.md convention.
+**STATUS: DEFERRED (assessed — large, no partial implementation exists).**
+
+Assessment: a codebase grep for Form16/Form24Q/TRACES/FVU found **no generation
+or return-filing code** — only preflight warnings and PAN-validation comments that
+already surface the gap to users ("Form 24Q and Form 16 will be unavailable until
+Tax Details are set"; "Company PAN is required for tax filings"). So there is no
+half-built path to mark or clean up.
+
+This is a full statutory-reporting subsystem (Form 24Q quarterly deductee
+annexures, Form 16 Part A/B, TRACES/FVU export) affecting ALL employees, not just
+FnF exits. It depends on the TDS worksheets now persisted per run (incl. FnF after
+WI-04). Out of scope for the FnF workstream; tracked as its own initiative.
+
+Implementation outline when picked up:
+- Quarterly Form 24Q: aggregate TdsWorksheet rows per deductee per quarter →
+  TRACES-format export (FVU/text).
+- Form 16: Part A (TDS deducted/deposited per quarter) + Part B (annual income
+  breakdown incl. FnF components) per employee.
+- Mark the entry points `// DEFERRED: form16-form24q` once stubs are introduced.
+
+**No code change in this pass.**
 
 **Smoke test (when implemented):**
 1. Complete at least one FnF run and several regular runs in a fiscal year.
