@@ -2564,13 +2564,90 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("uuid")
                         .HasColumnName("updated_by");
 
+                    b.Property<Guid?>("ArrearPaidRunId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("arrear_paid_run_id");
+
+                    b.Property<Guid?>("ResultingSalaryStructureId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("resulting_salary_structure_id");
+
                     b.HasKey("Id")
                         .HasName("pk_salary_revisions");
 
                     b.HasIndex("EmployeeId", "Status")
                         .HasDatabaseName("ix_salary_revisions_employee_id_status");
 
+                    b.HasIndex("PayoutYear", "PayoutMonth", "Status")
+                        .HasDatabaseName("ix_salary_revisions_payout_year_payout_month_status");
+
                     b.ToTable("salary_revisions", (string)null);
+                });
+
+            modelBuilder.Entity("Payroll.Domain.Entities.SalaryRevisionComponentOverride", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<decimal?>("FixedAmount")
+                        .HasColumnType("numeric(18,4)")
+                        .HasColumnName("fixed_amount");
+
+                    b.Property<string>("FormulaType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("formula_type");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<decimal?>("Percentage")
+                        .HasColumnType("numeric(7,4)")
+                        .HasColumnName("percentage");
+
+                    b.Property<Guid>("SalaryComponentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("salary_component_id");
+
+                    b.Property<Guid>("SalaryRevisionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("salary_revision_id");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_salary_revision_component_overrides");
+
+                    b.HasIndex("SalaryRevisionId", "SalaryComponentId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_salary_revision_component_overrides_salary_revision_id_sala");
+
+                    b.ToTable("salary_revision_component_overrides", (string)null);
                 });
 
             modelBuilder.Entity("Payroll.Domain.Entities.SalaryStructureComponent", b =>
@@ -3142,6 +3219,16 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasConstraintName("fk_employee_salary_component_overrides_employee_salary_structu");
                 });
 
+            modelBuilder.Entity("Payroll.Domain.Entities.SalaryRevisionComponentOverride", b =>
+                {
+                    b.HasOne("Payroll.Domain.Entities.SalaryRevision", null)
+                        .WithMany("ComponentOverrides")
+                        .HasForeignKey("SalaryRevisionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_salary_revision_component_overrides_salary_revisions_salary");
+                });
+
             modelBuilder.Entity("Payroll.Domain.Entities.OrgProfile", b =>
                 {
                     b.HasOne("Payroll.Domain.Entities.WorkLocation", null)
@@ -3211,6 +3298,11 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                 });
 
             modelBuilder.Entity("Payroll.Domain.Entities.EmployeeSalaryStructure", b =>
+                {
+                    b.Navigation("ComponentOverrides");
+                });
+
+            modelBuilder.Entity("Payroll.Domain.Entities.SalaryRevision", b =>
                 {
                     b.Navigation("ComponentOverrides");
                 });

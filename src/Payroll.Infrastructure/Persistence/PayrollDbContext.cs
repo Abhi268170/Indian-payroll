@@ -34,6 +34,7 @@ public sealed class PayrollDbContext(
     public DbSet<EmployeeSalaryComponentOverride> EmployeeSalaryComponentOverrides => Set<EmployeeSalaryComponentOverride>();
     public DbSet<EmployeeExit> EmployeeExits => Set<EmployeeExit>();
     public DbSet<SalaryRevision> SalaryRevisions => Set<SalaryRevision>();
+    public DbSet<SalaryRevisionComponentOverride> SalaryRevisionComponentOverrides => Set<SalaryRevisionComponentOverride>();
     public DbSet<EmployeeVehicleDetail> EmployeeVehicleDetails => Set<EmployeeVehicleDetail>();
     public DbSet<PriorEmployerYtd> PriorEmployerYtds => Set<PriorEmployerYtd>();
     public DbSet<EmployeeFyOpening> EmployeeFyOpenings => Set<EmployeeFyOpening>();
@@ -81,6 +82,7 @@ public sealed class PayrollDbContext(
         modelBuilder.ApplyConfiguration(new EmployeeSalaryComponentOverrideConfiguration());
         modelBuilder.ApplyConfiguration(new EmployeeExitConfiguration());
         modelBuilder.ApplyConfiguration(new SalaryRevisionConfiguration());
+        modelBuilder.ApplyConfiguration(new SalaryRevisionComponentOverrideConfiguration());
         modelBuilder.ApplyConfiguration(new EmployeeVehicleDetailConfiguration());
         modelBuilder.ApplyConfiguration(new PriorEmployerYtdConfiguration());
         modelBuilder.ApplyConfiguration(new EmployeeFyOpeningConfiguration());
