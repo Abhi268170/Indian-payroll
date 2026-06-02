@@ -64,13 +64,18 @@ public sealed class UpdateFnfRunHandler(
     IUnitOfWork uow)
     : IRequestHandler<UpdateFnfRunCommand>
 {
-    // ₹20L lifetime exemption per Section 10(10). Prior received is assumed 0
-    // for v1 since EmployeeFyOpening does not yet carry the field.
+    // ₹20L lifetime exemption per Section 10(10). Prior received = 0 for v1.
+    // WI-19 will move this to DB config so it survives budget amendments.
     private const decimal GratuityExemptionLimit = 2_000_000m;
+
+    // ₹25L lifetime exemption per Section 10(10AA) as amended by Finance Act 2023.
+    // WI-19 will move this to DB config so it survives budget amendments.
+    private const decimal LeaveEncashmentExemptionLimit = 2_500_000m;
 
     private static readonly HashSet<string> FnfCodes = new(StringComparer.OrdinalIgnoreCase)
     {
-        "FNF_BONUS", "FNF_COMMISSION", "FNF_LEAVE_ENCASHMENT",
+        "FNF_BONUS", "FNF_COMMISSION",
+        "FNF_LEAVE_ENCASHMENT_EXEMPT", "FNF_LEAVE_ENCASHMENT_TAXABLE",
         "FNF_GRATUITY_EXEMPT", "FNF_GRATUITY_TAXABLE",
         "FNF_NOTICE_PAY_PAYABLE", "FNF_NOTICE_PAY_RECEIVABLE",
         "FNF_ADHOC_DEDUCTION"
@@ -101,7 +106,15 @@ public sealed class UpdateFnfRunHandler(
         var toAdd = new List<PayrunComponentBreakdown>();
         if (req.Bonus > 0) toAdd.Add(MakeFnf(req, "FNF_BONUS", "Bonus", req.Bonus, isTaxable: true));
         if (req.Commission > 0) toAdd.Add(MakeFnf(req, "FNF_COMMISSION", "Commission", req.Commission, isTaxable: true));
-        if (req.LeaveEncashment > 0) toAdd.Add(MakeFnf(req, "FNF_LEAVE_ENCASHMENT", "Leave Encashment", req.LeaveEncashment, isTaxable: true));
+        if (req.LeaveEncashment > 0)
+        {
+            // Section 10(10AA): private-sector employees exempt up to ₹25L lifetime.
+            // Prior encashment received = 0 for v1 (WI-19 will add the prior-received field).
+            decimal leExempt = Math.Min(req.LeaveEncashment, LeaveEncashmentExemptionLimit);
+            decimal leTaxable = req.LeaveEncashment - leExempt;
+            if (leExempt > 0) toAdd.Add(MakeFnf(req, "FNF_LEAVE_ENCASHMENT_EXEMPT", "Leave Encashment (Exempt)", leExempt, isTaxable: false));
+            if (leTaxable > 0) toAdd.Add(MakeFnf(req, "FNF_LEAVE_ENCASHMENT_TAXABLE", "Leave Encashment (Taxable)", leTaxable, isTaxable: true));
+        }
 
         if (req.Gratuity > 0)
         {

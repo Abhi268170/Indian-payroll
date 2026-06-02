@@ -39,7 +39,8 @@ public sealed class PayrollFnfOrchestrator(
     IEmployeeExitRepository exitRepo,
     IWorkLocationRepository workLocationRepo,
     IPayScheduleRepository payScheduleRepo,
-    IPriorEmployerYtdRepository priorYtdRepo)
+    IPriorEmployerYtdRepository priorYtdRepo,
+    IEmployeeFyOpeningRepository fyOpeningRepo)
     : IPayrollFnfOrchestrator
 {
     public async Task<FnfEngineResult> ComputeAsync(Guid fnfRunId, Guid employeeId, CancellationToken ct = default)
@@ -102,6 +103,20 @@ public sealed class PayrollFnfOrchestrator(
         bool hasPan = !string.IsNullOrWhiteSpace(employee.EncryptedPAN);
         var (hyIndex, hyTotal) = run.PayPeriod.HalfYearPosition(employee.DateOfJoining);
         (decimal ytdGross, decimal ytdTaxableGross, decimal ytdTds) = await LoadCurrentYtdAsync(employeeId, run.PayPeriod.FiscalYear, ct);
+
+        // WI-05: merge pre-system opening balances into current-employer YTD.
+        // Mirrors InitiatePayrollRunCommand's opening merge. Without this, employees
+        // whose first months in the FY were entered as openings get under-counted
+        // YTD and receive under-deducted TDS in their final settlement.
+        IReadOnlyList<EmployeeFyOpening> openings = await fyOpeningRepo
+            .GetByEmployeesAndFiscalYearAsync([employeeId], run.PayPeriod.FiscalYear, ct);
+        EmployeeFyOpening? opening = openings.FirstOrDefault();
+        if (opening != null)
+        {
+            ytdGross += opening.GrossSalary;
+            ytdTaxableGross += opening.GrossSalary; // treat full opening gross as taxable (same assumption as regular run)
+            ytdTds += opening.TdsDeducted;
+        }
 
         // FnF closes the FY for this employee. Prior-employer YTD must be included
         // for mid-year joiners so the final TDS sweep accounts for the full year's
