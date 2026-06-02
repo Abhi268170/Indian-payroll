@@ -41,7 +41,8 @@ internal sealed class GetEmployeeVariableInputsHandler(
                 FullAmount: b.FullAmount,
                 ProratedAmount: b.ProratedAmount,
                 IsOneTimeEarning: b.IsOneTimeEarning,
-                IsDeduction: b.SalaryComponentId.HasValue && deductionIds.Contains(b.SalaryComponentId.Value)))
+                IsDeduction: b.SalaryComponentId.HasValue && deductionIds.Contains(b.SalaryComponentId.Value),
+                IsBenefit: b.IsBenefit))
             .ToList();
 
         return new EmployeeVariableInputsDto(
