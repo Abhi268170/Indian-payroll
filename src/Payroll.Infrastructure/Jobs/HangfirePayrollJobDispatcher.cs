@@ -11,6 +11,6 @@ internal sealed class HangfirePayrollJobDispatcher : IPayrollJobDispatcher
     public void EnqueueGeneratePayslipsThenNotify(Guid payrollRunId, Guid tenantId)
     {
         string generateJobId = BackgroundJob.Enqueue<GeneratePayslipsJob>(j => j.Execute(payrollRunId, tenantId));
-        BackgroundJob.ContinueJobWith<SendPayslipNotificationJob>(generateJobId, j => j.Execute(payrollRunId));
+        BackgroundJob.ContinueJobWith<SendPayslipNotificationJob>(generateJobId, j => j.Execute(payrollRunId, tenantId));
     }
 }

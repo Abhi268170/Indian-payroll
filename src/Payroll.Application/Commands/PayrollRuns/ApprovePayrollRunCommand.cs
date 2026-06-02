@@ -95,6 +95,12 @@ public sealed class ApprovePayrollRunHandler(
 
         await uow.SaveChangesAsync(ct);
 
-        jobDispatcher.EnqueueGeneratePayslips(req.RunId, run.TenantId);
+        // WI-18: FnF settlements are emailed automatically (often the work email is
+        // already deactivated, so timely delivery to personal email matters). Regular
+        // runs keep generate-only — payslip emailing there stays a separate action.
+        if (isFnf)
+            jobDispatcher.EnqueueGeneratePayslipsThenNotify(req.RunId, run.TenantId);
+        else
+            jobDispatcher.EnqueueGeneratePayslips(req.RunId, run.TenantId);
     }
 }
