@@ -65,6 +65,16 @@ internal sealed class PayrollRunRepository(PayrollDbContext db) : IPayrollRunRep
         return q.FirstOrDefaultAsync(ct);
     }
 
+    public Task<PayrollRun?> GetFinalisedRegularRunForPeriodAsync(int year, int month, CancellationToken ct = default) =>
+        db.PayrollRuns
+            .Where(r => r.PayPeriod.Year == year
+                && r.PayPeriod.Month == month
+                && r.Type == Domain.Enums.PayrollRunType.Regular
+                && (r.Status == Domain.Enums.PayrollRunStatus.Approved
+                    || r.Status == Domain.Enums.PayrollRunStatus.Paid))
+            .OrderByDescending(r => r.Status == Domain.Enums.PayrollRunStatus.Paid)
+            .FirstOrDefaultAsync(ct);
+
     public async Task<IReadOnlyList<PayrollRun>> ListPendingAsync(CancellationToken ct = default)
     {
         return await db.PayrollRuns

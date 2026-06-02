@@ -15,6 +15,11 @@ public interface IPayrollRunRepository
     void Update(PayrollRun run);
     Task<bool> ExistsForPeriodAsync(PayPeriod period, PayrollRunType? type = null, CancellationToken ct = default);
     Task<PayrollRun?> GetActiveForPeriodAsync(PayPeriod period, PayrollRunType? type = null, CancellationToken ct = default);
+
+    // The finalised (Approved or Paid) Regular run that actually paid a given month —
+    // the basis for salary-revision arrear back-computation. Null if none exists.
+    Task<PayrollRun?> GetFinalisedRegularRunForPeriodAsync(int year, int month, CancellationToken ct = default);
+
     Task<IReadOnlyList<Guid>> GetPaidIdsForFiscalYearAsync(int fiscalYear, CancellationToken ct = default);
     Task<PayrollRun?> FindDraftBulkFnfByPayDateAsync(DateOnly payDate, CancellationToken ct = default);
     Task<IReadOnlyList<PayrollRun>> FindDraftRegularRunsCoveringDateAsync(DateOnly date, CancellationToken ct = default);
