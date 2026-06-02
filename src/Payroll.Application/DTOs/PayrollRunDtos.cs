@@ -95,7 +95,10 @@ public sealed record PayrunEmployeeDto(
     decimal LwfEmployeeAmount,
     decimal TdsAmount,
     decimal? TdsOverrideAmount,
-    string? SkipReason);
+    string? SkipReason,
+    // WI-24: exit metadata for FnF run rows (null for regular runs).
+    DateOnly? LastWorkingDay = null,
+    string? ExitReason = null);
 
 public sealed record PendingRunCardDto(
     Guid Id,

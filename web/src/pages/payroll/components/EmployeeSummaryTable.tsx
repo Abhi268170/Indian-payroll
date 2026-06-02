@@ -1,9 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ChevronDown, ChevronRight, Download, Upload } from 'lucide-react'
-import { formatINR } from '@/lib/format'
+import { formatINR, formatDate } from '@/lib/format'
 import type { PayrunEmployeeDto } from '@/types/api'
 import type { ImportType } from './ImportModal'
 import EmployeePayBreakdown from './EmployeePayBreakdown'
+
+// WI-24: humanize the ExitReason enum for inline display on FnF rows.
+function formatExitReason(reason: string): string {
+  return reason.replace(/([a-z])([A-Z])/g, '$1 $2')
+}
 
 const DRAFT_TOTAL_COLS = 8
 const APPROVED_TOTAL_COLS = 6
@@ -239,6 +244,12 @@ export default function EmployeeSummaryTable({
                         <p className="text-[11px] text-[var(--color-text-secondary)]">
                           {emp.employeeCode} · {emp.designation}
                         </p>
+                        {emp.lastWorkingDay && (
+                          <p className="text-[11px] text-[var(--color-text-secondary)] mt-0.5">
+                            LWD {formatDate(emp.lastWorkingDay)}
+                            {emp.exitReason ? ` · ${formatExitReason(emp.exitReason)}` : ''}
+                          </p>
+                        )}
                       </div>
                     </div>
                     {emp.status === 'Skipped' && emp.skipReason && (

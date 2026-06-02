@@ -282,6 +282,8 @@ export interface PayrunEmployeeDto {
   tdsAmount: number
   tdsOverrideAmount: number | null
   skipReason: string | null
+  lastWorkingDay: string | null
+  exitReason: string | null
 }
 
 export interface PayRunTaxLineDto {

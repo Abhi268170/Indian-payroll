@@ -15,6 +15,7 @@ public sealed class GetPayrollRunEmployeesHandler(
     IPayrollRunRepository runRepo,
     IPayrunEmployeeRepository payrunEmployeeRepo,
     IEmployeeRepository employeeRepo,
+    IEmployeeExitRepository exitRepo,
     IDesignationRepository designationRepo,
     IDepartmentRepository departmentRepo)
     : IRequestHandler<GetPayrollRunEmployeesQuery, PagedResult<PayrunEmployeeDto>>
@@ -24,9 +25,15 @@ public sealed class GetPayrollRunEmployeesHandler(
         var run = await runRepo.GetByIdAsync(req.RunId, ct)
             ?? throw new NotFoundException($"Payroll run {req.RunId} not found.");
 
-        _ = run; // accessed for existence check
-
         var pagination = req.Pagination ?? new PaginationParams();
+
+        // WI-24: for FnF runs, surface each employee's LWD + exit reason inline
+        // so HR can verify a bulk settlement without opening every row.
+        bool isFnf = run.Type == PayrollRunType.FinalSettlement
+                  || run.Type == PayrollRunType.BulkFinalSettlement;
+        Dictionary<Guid, Domain.Entities.EmployeeExit> exitByEmployee = isFnf
+            ? (await exitRepo.GetByFnfRunIdsAsync(new[] { req.RunId }, ct)).ToDictionary(e => e.EmployeeId)
+            : new();
 
         var payrunEmps = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
 
@@ -74,7 +81,9 @@ public sealed class GetPayrollRunEmployeesHandler(
                     LwfEmployeeAmount: pe.LwfEmployeeAmount,
                     TdsAmount: pe.TdsAmount,
                     TdsOverrideAmount: pe.TdsOverrideAmount,
-                    SkipReason: pe.SkipReason);
+                    SkipReason: pe.SkipReason,
+                    LastWorkingDay: exitByEmployee.GetValueOrDefault(pe.EmployeeId)?.LastWorkingDay,
+                    ExitReason: exitByEmployee.GetValueOrDefault(pe.EmployeeId)?.Reason.ToString());
             })
             .ToList();
 
