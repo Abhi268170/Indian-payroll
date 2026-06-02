@@ -2804,6 +2804,18 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasDefaultValue(true)
                         .HasColumnName("gratuity_included_in_ctc");
 
+                    b.Property<decimal>("GratuityExemptionLimit")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("numeric(18,2)")
+                        .HasDefaultValue(2_000_000m)
+                        .HasColumnName("gratuity_exemption_limit");
+
+                    b.Property<decimal>("LeaveEncashmentExemptionLimit")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("numeric(18,2)")
+                        .HasDefaultValue(2_500_000m)
+                        .HasColumnName("leave_encashment_exemption_limit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean")
                         .HasColumnName("is_deleted");

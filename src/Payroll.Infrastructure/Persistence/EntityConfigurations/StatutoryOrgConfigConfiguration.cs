@@ -16,6 +16,8 @@ internal sealed class StatutoryOrgConfigConfiguration : IEntityTypeConfiguration
         builder.Property(s => s.EpfEmployerContributionRate).IsRequired().HasMaxLength(40);
         builder.Property(s => s.EsiEstablishmentCode).HasMaxLength(30);
         builder.Property(s => s.GratuityIncludedInCtc).IsRequired().HasDefaultValue(true);
+        builder.Property(s => s.GratuityExemptionLimit).HasColumnType("numeric(18,2)").IsRequired().HasDefaultValue(2_000_000m);
+        builder.Property(s => s.LeaveEncashmentExemptionLimit).HasColumnType("numeric(18,2)").IsRequired().HasDefaultValue(2_500_000m);
         builder.Property(s => s.BonusRate).HasColumnType("numeric(5,4)").IsRequired().HasDefaultValue(0.0833m);
         builder.Property(s => s.BonusMode).IsRequired().HasMaxLength(20).HasDefaultValue("Yearly");
 

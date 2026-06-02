@@ -61,19 +61,12 @@ public sealed class UpdateFnfRunHandler(
     ITdsWorksheetRepository tdsWorksheetRepo,
     IEmployeeRepository employeeRepo,
     IEmployeeExitRepository exitRepo,
+    IStatutoryConfigRepository statutoryRepo,
     IPayrollCostCalculator costCalculator,
     ITenantContext tenantContext,
     IUnitOfWork uow)
     : IRequestHandler<UpdateFnfRunCommand>
 {
-    // ₹20L lifetime exemption per Section 10(10). Prior received = 0 for v1.
-    // WI-19 will move this to DB config so it survives budget amendments.
-    private const decimal GratuityExemptionLimit = 2_000_000m;
-
-    // ₹25L lifetime exemption per Section 10(10AA) as amended by Finance Act 2023.
-    // WI-19 will move this to DB config so it survives budget amendments.
-    private const decimal LeaveEncashmentExemptionLimit = 2_500_000m;
-
     private static readonly HashSet<string> FnfCodes = new(StringComparer.OrdinalIgnoreCase)
     {
         "FNF_BONUS", "FNF_COMMISSION",
@@ -98,6 +91,13 @@ public sealed class UpdateFnfRunHandler(
 
         payrunEmp.SetLop(req.LopDays, req.ActorId);
 
+        // WI-19: exemption limits come from tenant statutory config (not hardcoded),
+        // so budget amendments can be applied without a deployment.
+        StatutoryOrgConfig orgConfig = await statutoryRepo.GetByTenantAsync(ct)
+            ?? throw new DomainException("Statutory configuration not found.");
+        decimal gratuityExemptionLimit = orgConfig.GratuityExemptionLimit;
+        decimal leaveEncashmentExemptionLimit = orgConfig.LeaveEncashmentExemptionLimit;
+
         // Replace all FnF-prefixed breakdowns. Recurring (non-FNF) breakdowns
         // are left alone — Phase 4 initiation will populate those.
         var existing = await breakdownRepo.GetByRunAndEmployeeAsync(req.RunId, req.EmployeeId, ct);
@@ -112,7 +112,7 @@ public sealed class UpdateFnfRunHandler(
         {
             // Section 10(10AA): private-sector employees exempt up to ₹25L lifetime.
             // Prior encashment received = 0 for v1 (WI-19 will add the prior-received field).
-            decimal leExempt = Math.Min(req.LeaveEncashment, LeaveEncashmentExemptionLimit);
+            decimal leExempt = Math.Min(req.LeaveEncashment, leaveEncashmentExemptionLimit);
             decimal leTaxable = req.LeaveEncashment - leExempt;
             if (leExempt > 0) toAdd.Add(MakeFnf(req, "FNF_LEAVE_ENCASHMENT_EXEMPT", "Leave Encashment (Exempt)", leExempt, isTaxable: false));
             if (leTaxable > 0) toAdd.Add(MakeFnf(req, "FNF_LEAVE_ENCASHMENT_TAXABLE", "Leave Encashment (Taxable)", leTaxable, isTaxable: true));
@@ -132,7 +132,7 @@ public sealed class UpdateFnfRunHandler(
                     + "Gratuity is not payable under the Payment of Gratuity Act, 1972.");
 
             // Section 10(10) exempt up to ₹20L lifetime. Prior received = 0 for v1.
-            decimal exempt = Math.Min(req.Gratuity, GratuityExemptionLimit);
+            decimal exempt = Math.Min(req.Gratuity, gratuityExemptionLimit);
             decimal taxable = req.Gratuity - exempt;
             if (exempt > 0) toAdd.Add(MakeFnf(req, "FNF_GRATUITY_EXEMPT", "Gratuity (Exempt)", exempt, isTaxable: false));
             if (taxable > 0) toAdd.Add(MakeFnf(req, "FNF_GRATUITY_TAXABLE", "Gratuity (Taxable)", taxable, isTaxable: true));

@@ -26,6 +26,11 @@ public sealed class StatutoryOrgConfig : AuditableEntity
     // Gratuity CTC inclusion
     public bool GratuityIncludedInCtc { get; private set; } = true;
 
+    // FnF lifetime tax-exemption limits (Section 10(10) / 10(10AA)). Stored in
+    // config so budget amendments don't require a deployment (WI-19).
+    public decimal GratuityExemptionLimit { get; private set; } = 2_000_000m;
+    public decimal LeaveEncashmentExemptionLimit { get; private set; } = 2_500_000m;
+
     // Statutory Bonus
     public bool StatutoryBonusEnabled { get; private set; }
     public decimal BonusRate { get; private set; } = 8.33m;
@@ -72,6 +77,13 @@ public sealed class StatutoryOrgConfig : AuditableEntity
     public void ConfigureGratuity(bool includedInCtc, Guid updatedBy)
     {
         GratuityIncludedInCtc = includedInCtc;
+        SetUpdated(updatedBy);
+    }
+
+    public void ConfigureFnfExemptionLimits(decimal gratuityLimit, decimal leaveEncashmentLimit, Guid updatedBy)
+    {
+        GratuityExemptionLimit = gratuityLimit;
+        LeaveEncashmentExemptionLimit = leaveEncashmentLimit;
         SetUpdated(updatedBy);
     }
 
