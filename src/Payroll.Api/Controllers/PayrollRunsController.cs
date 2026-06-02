@@ -143,6 +143,7 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
             return NoContent();
         }
         catch (NotFoundException) { return NotFound(); }
+        catch (DomainException ex) { return UnprocessableEntity(new { error = ex.Message }); }
         catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
     }
 

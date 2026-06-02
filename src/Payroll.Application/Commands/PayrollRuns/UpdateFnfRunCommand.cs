@@ -59,6 +59,8 @@ public sealed class UpdateFnfRunHandler(
     IPayrunComponentBreakdownRepository breakdownRepo,
     IPayrollFnfOrchestrator orchestrator,
     ITdsWorksheetRepository tdsWorksheetRepo,
+    IEmployeeRepository employeeRepo,
+    IEmployeeExitRepository exitRepo,
     IPayrollCostCalculator costCalculator,
     ITenantContext tenantContext,
     IUnitOfWork uow)
@@ -118,6 +120,17 @@ public sealed class UpdateFnfRunHandler(
 
         if (req.Gratuity > 0)
         {
+            // WI-15: gratuity is only payable after 5 years of continuous service
+            // (4y 240d), per Section 4 of the Payment of Gratuity Act 1972.
+            Employee employee = await employeeRepo.GetByIdAsync(req.EmployeeId, ct)
+                ?? throw new NotFoundException($"Employee {req.EmployeeId} not found.");
+            EmployeeExit exit = await exitRepo.GetActiveByEmployeeAsync(req.EmployeeId, ct)
+                ?? throw new DomainException($"No active exit for employee {req.EmployeeId}.");
+            if (!employee.IsGratuityEligibleAt(exit.LastWorkingDay))
+                throw new DomainException(
+                    "Employee has not completed 5 years of continuous service (4y 240d). "
+                    + "Gratuity is not payable under the Payment of Gratuity Act, 1972.");
+
             // Section 10(10) exempt up to ₹20L lifetime. Prior received = 0 for v1.
             decimal exempt = Math.Min(req.Gratuity, GratuityExemptionLimit);
             decimal taxable = req.Gratuity - exempt;

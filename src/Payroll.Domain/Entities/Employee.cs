@@ -270,4 +270,22 @@ public sealed class Employee : AuditableEntity
         if (years < 0) return new(0, 0);
         return new(years, months);
     }
+
+    // Payment of Gratuity Act 1972, Section 4: 5 years of continuous service,
+    // satisfied by 4 completed years plus 240 days in the 5th year.
+    public bool IsGratuityEligibleAt(DateOnly asOf)
+    {
+        if (DateOfJoining == default || asOf < DateOfJoining) return false;
+
+        int completedYears = asOf.Year - DateOfJoining.Year;
+        if (asOf < DateOfJoining.AddYears(completedYears)) completedYears--;
+
+        if (completedYears >= 5) return true;
+        if (completedYears < 4) return false;
+
+        // Exactly 4 completed years — check the 5th year has ≥ 240 days.
+        DateOnly fifthYearStart = DateOfJoining.AddYears(4);
+        int daysIntoFifthYear = asOf.DayNumber - fifthYearStart.DayNumber;
+        return daysIntoFifthYear >= 240;
+    }
 }
