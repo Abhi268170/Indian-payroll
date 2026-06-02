@@ -69,7 +69,14 @@ public sealed record PayrollRunSummaryDto(
     int EmployeeCount,
     DateTimeOffset CreatedAt,
     DateTimeOffset? ApprovedAt,
-    DateTimeOffset? PaidAt);
+    DateTimeOffset? PaidAt,
+    // WI-20: FnF exit metadata, populated only for a single FinalSettlement run
+    // (one exit). Null for regular runs and bulk runs (per-employee data lives
+    // on the employee rows — see WI-24).
+    DateOnly? LastWorkingDay = null,
+    string? ExitReason = null,
+    string? SettlementMode = null,
+    DateOnly? SettlementDate = null);
 
 public sealed record PayrunEmployeeDto(
     Guid EmployeeId,
