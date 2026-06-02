@@ -116,6 +116,12 @@ public sealed class PayrunEmployee : AuditableEntity
         SetUpdated(actorId);
     }
 
+    public void SetMonthlyCTC(decimal monthlyCTC, Guid actorId)
+    {
+        MonthlyCTC = monthlyCTC;
+        SetUpdated(actorId);
+    }
+
     public void SetLop(int lopDays, Guid actorId)
     {
         if (lopDays < 0)

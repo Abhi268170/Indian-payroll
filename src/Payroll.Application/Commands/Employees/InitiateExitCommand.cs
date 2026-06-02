@@ -1,5 +1,6 @@
 using FluentValidation;
 using MediatR;
+using Payroll.Application.Commands.PayrollRuns;
 using Payroll.Application.DTOs;
 using Payroll.Application.Services;
 using Payroll.Domain.Common;
@@ -58,6 +59,10 @@ public sealed class InitiateExitHandler(
     IPayScheduleRepository payScheduleRepo,
     IStatutoryConfigRepository statutoryRepo,
     IWorkLocationRepository workLocationRepo,
+    IEmployeeSalaryStructureRepository salaryStructureRepo,
+    ISalaryStructureTemplateRepository templateRepo,
+    ISalaryComponentRepository salaryComponentRepo,
+    IPayrunComponentBreakdownRepository breakdownRepo,
     ITenantContext tenantContext,
     IUnitOfWork uow)
     : IRequestHandler<InitiateExitCommand, EmployeeExitDto>
@@ -69,6 +74,10 @@ public sealed class InitiateExitHandler(
 
         if (employee.Status != EmployeeStatus.Active)
             throw new DomainException($"Cannot initiate exit: employee status is {employee.Status}.");
+
+        // WI-02: salary structure must exist before FnF run can be created.
+        var salaryStructure = await salaryStructureRepo.GetActiveWithOverridesAsync(req.EmployeeId, ct)
+            ?? throw new DomainException("Employee has no active salary structure. Assign one before initiating exit.");
 
         var existingExit = await exitRepo.GetActiveByEmployeeAsync(req.EmployeeId, ct);
         if (existingExit != null)
@@ -116,7 +125,8 @@ public sealed class InitiateExitHandler(
         }
 
         // Create or append to the FnF run.
-        string snapshot = await BuildStatutoryConfigSnapshotAsync(ct, employee, new DateOnly(req.LastWorkingDay.Year, req.LastWorkingDay.Month, 1));
+        DateOnly lwdPeriodStart = new(req.LastWorkingDay.Year, req.LastWorkingDay.Month, 1);
+        (string snapshot, StatutoryConfig staticConfig) = await BuildStatutoryConfigSnapshotAsync(ct, employee, lwdPeriodStart);
         PayrollRun fnfRun = req.SettlementMode == ExitSettlementMode.CustomDate
             ? PayrollRun.CreateFinalSettlement(
                 tenantId: tenantContext.TenantId,
@@ -138,6 +148,11 @@ public sealed class InitiateExitHandler(
             createdBy: req.ActorId,
             employeeExitId: exit.Id);
         await payrunEmpRepo.AddAsync(payrunEmp, ct);
+
+        // WI-01: seed recurring salary component breakdowns so the FnF engine
+        // has non-zero inputs when UpdateFnfRunCommand triggers computation.
+        await SeedRecurringComponentBreakdownsAsync(
+            fnfRun.Id, payrunEmp, salaryStructure, staticConfig, req.ActorId, ct);
 
         if (fnfRun.Type == PayrollRunType.BulkFinalSettlement)
             fnfRun.SetEmployeeCount(fnfRun.EmployeeCount + 1, req.ActorId);
@@ -178,7 +193,8 @@ public sealed class InitiateExitHandler(
             type, paySchedule.PayDateDay, req.LastWorkingDay, workWeek);
     }
 
-    private async Task<string> BuildStatutoryConfigSnapshotAsync(CancellationToken ct, Employee employee, DateOnly periodStart)
+    private async Task<(string Json, StatutoryConfig Config)> BuildStatutoryConfigSnapshotAsync(
+        CancellationToken ct, Employee employee, DateOnly periodStart)
     {
         var orgConfig = await statutoryRepo.GetByTenantAsync(ct)
             ?? throw new DomainException("Statutory configuration not found. Configure EPF/ESI settings first.");
@@ -194,8 +210,62 @@ public sealed class InitiateExitHandler(
         var ptSlabs = await statutoryRepo.GetPtSlabsAsync(stateCode, periodStart, ct);
         var lwfConfigs = await statutoryRepo.GetLwfConfigsAsync(new[] { stateCode }, ct);
 
-        var staticConfig = StatutoryConfigBuilder.Build(orgConfig, taxConfig, taxSlabs, surchargeSlabs, ptSlabs, lwfConfigs);
-        return JsonSerializer.Serialize(staticConfig);
+        StatutoryConfig staticConfig = StatutoryConfigBuilder.Build(orgConfig, taxConfig, taxSlabs, surchargeSlabs, ptSlabs, lwfConfigs);
+        return (JsonSerializer.Serialize(staticConfig), staticConfig);
+    }
+
+    private async Task SeedRecurringComponentBreakdownsAsync(
+        Guid fnfRunId,
+        PayrunEmployee payrunEmp,
+        EmployeeSalaryStructure salaryStructure,
+        StatutoryConfig staticConfig,
+        Guid actorId,
+        CancellationToken ct)
+    {
+        SalaryStructureTemplate? template = salaryStructure.SalaryStructureTemplateId.HasValue
+            ? await templateRepo.GetByIdWithComponentsAsync(salaryStructure.SalaryStructureTemplateId.Value, ct)
+            : null;
+
+        // Identify override-only component IDs not present in the template.
+        var addedComponentIds = new HashSet<Guid>();
+        if (salaryStructure.ComponentOverrides.Count > 0 && template is not null)
+        {
+            var templateCompIds = new HashSet<Guid>(template.Components.Select(c => c.ComponentId));
+            foreach (var ov in salaryStructure.ComponentOverrides)
+            {
+                if (!templateCompIds.Contains(ov.SalaryComponentId))
+                    addedComponentIds.Add(ov.SalaryComponentId);
+            }
+        }
+
+        Dictionary<Guid, SalaryComponent> addedCompDetails = addedComponentIds.Count > 0
+            ? (await salaryComponentRepo.GetByIdsAsync([.. addedComponentIds], ct)).ToDictionary(c => c.Id)
+            : [];
+
+        IReadOnlyList<SalaryComponentInput> components =
+            InitiatePayrollRunHandler.BuildComponentInputs(salaryStructure, template, addedCompDetails, staticConfig);
+
+        payrunEmp.SetMonthlyCTC(salaryStructure.AnnualCTC / 12m, actorId);
+
+        foreach (SalaryComponentInput comp in components)
+        {
+            PayrunComponentBreakdown breakdown = PayrunComponentBreakdown.Create(
+                payrollRunId: fnfRunId,
+                employeeId: payrunEmp.EmployeeId,
+                tenantId: payrunEmp.TenantId,
+                salaryComponentId: comp.ComponentId == Guid.Empty ? null : comp.ComponentId,
+                componentCode: comp.Code,
+                componentName: comp.Code,
+                fullAmount: comp.Amount,
+                proratedAmount: comp.Amount,
+                isOneTimeEarning: false,
+                isTaxable: comp.IsTaxable,
+                considerForEpf: comp.ConsiderForEpf,
+                considerForEsi: comp.ConsiderForEsi,
+                calculateOnProRata: comp.CalculateOnProRata,
+                showInPayslip: comp.ShowInPayslip);
+            await breakdownRepo.AddAsync(breakdown, ct);
+        }
     }
 
     private static EmployeeExitDto Map(EmployeeExit e, PayrollRun fnfRun) =>
