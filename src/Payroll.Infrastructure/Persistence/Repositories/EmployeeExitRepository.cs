@@ -10,7 +10,8 @@ internal sealed class EmployeeExitRepository(PayrollDbContext db) : IEmployeeExi
         db.EmployeeExits.FirstOrDefaultAsync(e => e.Id == id, ct);
 
     public Task<EmployeeExit?> GetActiveByEmployeeAsync(Guid employeeId, CancellationToken ct = default) =>
-        db.EmployeeExits.FirstOrDefaultAsync(e => e.EmployeeId == employeeId, ct);
+        db.EmployeeExits.FirstOrDefaultAsync(
+            e => e.EmployeeId == employeeId && e.Status == Domain.Enums.ExitStatus.InProgress, ct);
 
     public async Task<IReadOnlyList<EmployeeExit>> GetByFnfRunIdsAsync(IEnumerable<Guid> runIds, CancellationToken ct = default)
     {

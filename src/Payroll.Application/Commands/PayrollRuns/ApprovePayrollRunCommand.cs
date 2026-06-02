@@ -19,6 +19,7 @@ public sealed class ApprovePayrollRunHandler(
     IPayrollRecomputeService recomputeService,
     IPayrollFnfOrchestrator fnfOrchestrator,
     ITdsWorksheetRepository tdsWorksheetRepo,
+    IEmployeeExitRepository exitRepo,
     IPayrollCostCalculator costCalculator,
     IUnitOfWork uow,
     ISender sender,
@@ -59,6 +60,14 @@ public sealed class ApprovePayrollRunHandler(
                 await tdsWorksheetRepo.DeleteByRunAndEmployeeAsync(req.RunId, pe.EmployeeId, ct);
                 await tdsWorksheetRepo.AddAsync(
                     PayrollFnfOrchestrator.BuildWorksheet(run, pe, fnf, req.ActorId), ct);
+
+                // WI-09: mark exit Completed so re-hired employees can exit again.
+                EmployeeExit? exit = await exitRepo.GetActiveByEmployeeAsync(pe.EmployeeId, ct);
+                if (exit != null)
+                {
+                    exit.MarkCompleted(req.ActorId);
+                    exitRepo.Update(exit);
+                }
             }
             else
             {

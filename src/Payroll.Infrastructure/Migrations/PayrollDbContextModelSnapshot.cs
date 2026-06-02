@@ -548,6 +548,11 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("text")
                         .HasColumnName("settlement_mode");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("status");
+
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamptz")
                         .HasColumnName("updated_at");
@@ -562,7 +567,7 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                     b.HasIndex("EmployeeId")
                         .IsUnique()
                         .HasDatabaseName("ix_employee_exits_employee_id")
-                        .HasFilter("is_deleted = false");
+                        .HasFilter("is_deleted = false AND status = 'InProgress'");
 
                     b.ToTable("employee_exits", (string)null);
                 });

@@ -3,6 +3,7 @@ using Payroll.Application.DTOs;
 using Payroll.Domain.Common;
 using Payroll.Domain.Enums;
 using Payroll.Domain.Interfaces;
+using Payroll.Domain.Entities;
 
 namespace Payroll.Application.Queries.PayrollRuns;
 
@@ -16,8 +17,11 @@ public sealed class GetPendingTasksHandler(
 {
     public async Task<PendingTasksDto> Handle(GetPendingTasksQuery req, CancellationToken ct)
     {
-        _ = await runRepo.GetByIdAsync(req.RunId, ct)
+        PayrollRun run = await runRepo.GetByIdAsync(req.RunId, ct)
             ?? throw new NotFoundException($"Payroll run {req.RunId} not found.");
+
+        bool isFnf = run.Type == PayrollRunType.FinalSettlement
+                  || run.Type == PayrollRunType.BulkFinalSettlement;
 
         var payrunEmployees = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
         IReadOnlyList<Domain.Entities.Employee> employees = await employeeRepo.GetManyByIdsAsync(
@@ -29,6 +33,19 @@ public sealed class GetPendingTasksHandler(
 
         foreach (var pe in payrunEmployees)
         {
+            // WI-10: FnF runs must have been computed before approval.
+            // GrossPay = 0 means UpdateFnfRunCommand was never called — the operator
+            // hasn't opened the settlement and saved it. Approving a ₹0 FnF run
+            // produces a legally invalid payslip and marks the employee Exited.
+            if (isFnf && pe.Status == PayrunEmployeeStatus.Active && pe.GrossPay == 0m)
+            {
+                employeeMap.TryGetValue(pe.EmployeeId, out Employee? fnfEmp);
+                string name = fnfEmp?.EmployeeCode ?? pe.EmployeeId.ToString();
+                hardBlocks.Add(new PendingTaskItemDto(pe.EmployeeId, name,
+                    $"FnF settlement not computed for {name}. Open settlement and save it first."));
+                continue;
+            }
+
             // System-skipped = hard block (onboarding incomplete)
             if (pe.Status == PayrunEmployeeStatus.Skipped &&
                 pe.SkipReason is not null &&

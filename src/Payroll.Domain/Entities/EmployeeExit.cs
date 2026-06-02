@@ -8,6 +8,7 @@ public sealed class EmployeeExit : AuditableEntity
     private EmployeeExit() { }
 
     public Guid EmployeeId { get; private set; }
+    public ExitStatus Status { get; private set; }
     public DateOnly LastWorkingDay { get; private set; }
     public ExitReason Reason { get; private set; }
     public ExitSettlementMode SettlementMode { get; private set; }
@@ -32,6 +33,7 @@ public sealed class EmployeeExit : AuditableEntity
         Guid createdBy) => new()
         {
             EmployeeId = employeeId,
+            Status = ExitStatus.InProgress,
             LastWorkingDay = lastWorkingDay,
             Reason = reason,
             SettlementMode = settlementMode,
@@ -40,6 +42,18 @@ public sealed class EmployeeExit : AuditableEntity
             Notes = notes,
             CreatedBy = createdBy
         };
+
+    public void MarkCompleted(Guid updatedBy)
+    {
+        Status = ExitStatus.Completed;
+        SetUpdated(updatedBy);
+    }
+
+    public void MarkReverted(Guid updatedBy)
+    {
+        Status = ExitStatus.Reverted;
+        SetUpdated(updatedBy);
+    }
 
     public void Update(
         DateOnly lastWorkingDay,

@@ -266,9 +266,13 @@ public class ApproveFnfRunTests
                 EmployeeCount: 1,
                 PayrollCost: 105_000m));
 
+        var exitRepo = Substitute.For<IEmployeeExitRepository>();
+        exitRepo.GetActiveByEmployeeAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns((Payroll.Domain.Entities.EmployeeExit?)null);
+
         var handler = new ApprovePayrollRunHandler(
             runRepo, payrunEmpRepo, auditLogRepo, recomputeService,
-            fnfOrchestrator, tdsWorksheetRepo,
+            fnfOrchestrator, tdsWorksheetRepo, exitRepo,
             costCalculator, uow, sender, jobDispatcher);
 
         return (handler, new Deps(fnfOrchestrator, recomputeService, tdsWorksheetRepo, payrunEmpRepo));
