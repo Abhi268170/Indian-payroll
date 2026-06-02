@@ -18,6 +18,13 @@ namespace Payroll.Application.Services;
 public interface IPayrollFnfOrchestrator
 {
     Task<FnfEngineResult> ComputeAsync(Guid fnfRunId, Guid employeeId, CancellationToken ct = default);
+
+    // WI-22: compute against an in-memory breakdown set instead of the persisted
+    // rows — used by the preview endpoint to model what-if amounts without saving.
+    Task<FnfEngineResult> ComputeAsync(
+        Guid fnfRunId, Guid employeeId,
+        IReadOnlyList<PayrunComponentBreakdown> breakdownOverride,
+        CancellationToken ct = default);
 }
 
 public sealed record FnfEngineResult(
@@ -46,7 +53,19 @@ public sealed class PayrollFnfOrchestrator(
     IEmployeeFyOpeningRepository fyOpeningRepo)
     : IPayrollFnfOrchestrator
 {
-    public async Task<FnfEngineResult> ComputeAsync(Guid fnfRunId, Guid employeeId, CancellationToken ct = default)
+    public Task<FnfEngineResult> ComputeAsync(Guid fnfRunId, Guid employeeId, CancellationToken ct = default) =>
+        ComputeCoreAsync(fnfRunId, employeeId, breakdownOverride: null, ct);
+
+    public async Task<FnfEngineResult> ComputeAsync(
+        Guid fnfRunId, Guid employeeId,
+        IReadOnlyList<PayrunComponentBreakdown> breakdownOverride,
+        CancellationToken ct = default)
+        => await ComputeCoreAsync(fnfRunId, employeeId, breakdownOverride, ct);
+
+    private async Task<FnfEngineResult> ComputeCoreAsync(
+        Guid fnfRunId, Guid employeeId,
+        IReadOnlyList<PayrunComponentBreakdown>? breakdownOverride,
+        CancellationToken ct)
     {
         PayrollRun run = await runRepo.GetByIdAsync(fnfRunId, ct)
             ?? throw new Domain.Common.NotFoundException($"FnF run {fnfRunId} not found.");
@@ -63,8 +82,10 @@ public sealed class PayrollFnfOrchestrator(
         EmployeeExit exit = await exitRepo.GetActiveByEmployeeAsync(employeeId, ct)
             ?? throw new Domain.Common.DomainException($"No active exit for employee {employeeId}.");
 
-        // Load stored breakdowns (recurring + Phase 4 FnF one-time entries).
-        var breakdowns = await breakdownRepo.GetByRunAndEmployeeAsync(fnfRunId, employeeId, ct);
+        // Persisted breakdowns (recurring + saved FnF one-time), unless the caller
+        // supplied an in-memory set for a preview (WI-22).
+        var breakdowns = breakdownOverride
+            ?? await breakdownRepo.GetByRunAndEmployeeAsync(fnfRunId, employeeId, ct);
 
         WorkLocation? workLocation = await workLocationRepo.GetByIdAsync(employee.WorkLocationId, ct);
         string workStateCode = workLocation?.State.ToIsoCode() ?? "MH";

@@ -104,50 +104,22 @@ public sealed class UpdateFnfRunHandler(
         foreach (var b in existing.Where(x => FnfCodes.Contains(x.ComponentCode)))
             breakdownRepo.Remove(b);
 
-        // Persist new FnF rows.
-        var toAdd = new List<PayrunComponentBreakdown>();
-        if (req.Bonus > 0) toAdd.Add(MakeFnf(req, "FNF_BONUS", "Bonus", req.Bonus, isTaxable: true));
-        if (req.Commission > 0) toAdd.Add(MakeFnf(req, "FNF_COMMISSION", "Commission", req.Commission, isTaxable: true));
-        if (req.LeaveEncashment > 0)
-        {
-            // Section 10(10AA): private-sector employees exempt up to ₹25L lifetime.
-            // Prior encashment received = 0 for v1 (WI-19 will add the prior-received field).
-            decimal leExempt = Math.Min(req.LeaveEncashment, leaveEncashmentExemptionLimit);
-            decimal leTaxable = req.LeaveEncashment - leExempt;
-            if (leExempt > 0) toAdd.Add(MakeFnf(req, "FNF_LEAVE_ENCASHMENT_EXEMPT", "Leave Encashment (Exempt)", leExempt, isTaxable: false));
-            if (leTaxable > 0) toAdd.Add(MakeFnf(req, "FNF_LEAVE_ENCASHMENT_TAXABLE", "Leave Encashment (Taxable)", leTaxable, isTaxable: true));
-        }
-
+        // Gratuity eligibility (WI-15): only payable after 5 years (4y 240d).
+        bool gratuityEligible = true;
         if (req.Gratuity > 0)
         {
-            // WI-15: gratuity is only payable after 5 years of continuous service
-            // (4y 240d), per Section 4 of the Payment of Gratuity Act 1972.
             Employee employee = await employeeRepo.GetByIdAsync(req.EmployeeId, ct)
                 ?? throw new NotFoundException($"Employee {req.EmployeeId} not found.");
             EmployeeExit exit = await exitRepo.GetActiveByEmployeeAsync(req.EmployeeId, ct)
                 ?? throw new DomainException($"No active exit for employee {req.EmployeeId}.");
-            if (!employee.IsGratuityEligibleAt(exit.LastWorkingDay))
-                throw new DomainException(
-                    "Employee has not completed 5 years of continuous service (4y 240d). "
-                    + "Gratuity is not payable under the Payment of Gratuity Act, 1972.");
-
-            // Section 10(10) exempt up to ₹20L lifetime. Prior received = 0 for v1.
-            decimal exempt = Math.Min(req.Gratuity, gratuityExemptionLimit);
-            decimal taxable = req.Gratuity - exempt;
-            if (exempt > 0) toAdd.Add(MakeFnf(req, "FNF_GRATUITY_EXEMPT", "Gratuity (Exempt)", exempt, isTaxable: false));
-            if (taxable > 0) toAdd.Add(MakeFnf(req, "FNF_GRATUITY_TAXABLE", "Gratuity (Taxable)", taxable, isTaxable: true));
+            gratuityEligible = employee.IsGratuityEligibleAt(exit.LastWorkingDay);
         }
 
-        if (req.HasNoticePay && req.NoticePayAmount > 0)
-        {
-            if (req.NoticePayDirection == "Payable")
-                toAdd.Add(MakeFnf(req, "FNF_NOTICE_PAY_PAYABLE", "Notice Pay (Company pays)", req.NoticePayAmount, isTaxable: true));
-            else
-                toAdd.Add(MakeFnf(req, "FNF_NOTICE_PAY_RECEIVABLE", "Notice Pay (Recovered)", -req.NoticePayAmount, isTaxable: false));
-        }
-
-        foreach (var d in req.Deductions)
-            toAdd.Add(MakeFnf(req, "FNF_ADHOC_DEDUCTION", d.Name, -d.Amount, isTaxable: false));
+        var toAdd = BuildFnfRows(
+            req.RunId, req.EmployeeId, tenantContext.TenantId,
+            req.Bonus, req.Commission, req.LeaveEncashment, req.Gratuity, gratuityEligible,
+            req.HasNoticePay, req.NoticePayDirection, req.NoticePayAmount, req.Deductions,
+            gratuityExemptionLimit, leaveEncashmentExemptionLimit);
 
         await breakdownRepo.AddRangeAsync(toAdd, ct);
         await uow.SaveChangesAsync(ct);
@@ -181,12 +153,64 @@ public sealed class UpdateFnfRunHandler(
         await uow.SaveChangesAsync(ct);
     }
 
-    private PayrunComponentBreakdown MakeFnf(
-        UpdateFnfRunCommand req, string code, string name, decimal amount, bool isTaxable) =>
+    // Shared builder for the FnF one-time rows (bonus, commission, leave-encashment
+    // split, gratuity split, notice pay, ad-hoc deductions). Used by UpdateFnf (which
+    // persists the rows) and by the FnF preview (WI-22, in-memory only).
+    public static List<PayrunComponentBreakdown> BuildFnfRows(
+        Guid runId, Guid employeeId, Guid tenantId,
+        decimal bonus, decimal commission, decimal leaveEncashment, decimal gratuity,
+        bool gratuityEligible,
+        bool hasNoticePay, string? noticePayDirection, decimal noticePayAmount,
+        IReadOnlyList<FnfAdhocDeductionDto> deductions,
+        decimal gratuityExemptionLimit, decimal leaveEncashmentExemptionLimit)
+    {
+        var rows = new List<PayrunComponentBreakdown>();
+
+        if (bonus > 0) rows.Add(MakeFnfRow(runId, employeeId, tenantId, "FNF_BONUS", "Bonus", bonus, true));
+        if (commission > 0) rows.Add(MakeFnfRow(runId, employeeId, tenantId, "FNF_COMMISSION", "Commission", commission, true));
+
+        if (leaveEncashment > 0)
+        {
+            // Section 10(10AA): private-sector employees exempt up to the limit.
+            decimal leExempt = Math.Min(leaveEncashment, leaveEncashmentExemptionLimit);
+            decimal leTaxable = leaveEncashment - leExempt;
+            if (leExempt > 0) rows.Add(MakeFnfRow(runId, employeeId, tenantId, "FNF_LEAVE_ENCASHMENT_EXEMPT", "Leave Encashment (Exempt)", leExempt, false));
+            if (leTaxable > 0) rows.Add(MakeFnfRow(runId, employeeId, tenantId, "FNF_LEAVE_ENCASHMENT_TAXABLE", "Leave Encashment (Taxable)", leTaxable, true));
+        }
+
+        if (gratuity > 0)
+        {
+            if (!gratuityEligible)
+                throw new DomainException(
+                    "Employee has not completed 5 years of continuous service (4y 240d). "
+                    + "Gratuity is not payable under the Payment of Gratuity Act, 1972.");
+
+            decimal exempt = Math.Min(gratuity, gratuityExemptionLimit);
+            decimal taxable = gratuity - exempt;
+            if (exempt > 0) rows.Add(MakeFnfRow(runId, employeeId, tenantId, "FNF_GRATUITY_EXEMPT", "Gratuity (Exempt)", exempt, false));
+            if (taxable > 0) rows.Add(MakeFnfRow(runId, employeeId, tenantId, "FNF_GRATUITY_TAXABLE", "Gratuity (Taxable)", taxable, true));
+        }
+
+        if (hasNoticePay && noticePayAmount > 0)
+        {
+            if (noticePayDirection == "Payable")
+                rows.Add(MakeFnfRow(runId, employeeId, tenantId, "FNF_NOTICE_PAY_PAYABLE", "Notice Pay (Company pays)", noticePayAmount, true));
+            else
+                rows.Add(MakeFnfRow(runId, employeeId, tenantId, "FNF_NOTICE_PAY_RECEIVABLE", "Notice Pay (Recovered)", -noticePayAmount, false));
+        }
+
+        foreach (var d in deductions)
+            rows.Add(MakeFnfRow(runId, employeeId, tenantId, "FNF_ADHOC_DEDUCTION", d.Name, -d.Amount, false));
+
+        return rows;
+    }
+
+    private static PayrunComponentBreakdown MakeFnfRow(
+        Guid runId, Guid employeeId, Guid tenantId, string code, string name, decimal amount, bool isTaxable) =>
         PayrunComponentBreakdown.Create(
-            payrollRunId: req.RunId,
-            employeeId: req.EmployeeId,
-            tenantId: tenantContext.TenantId,
+            payrollRunId: runId,
+            employeeId: employeeId,
+            tenantId: tenantId,
             salaryComponentId: null,
             componentCode: code,
             componentName: name,
