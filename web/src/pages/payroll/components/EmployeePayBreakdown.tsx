@@ -103,10 +103,18 @@ export default function EmployeePayBreakdown({
   }
 
   const EMPTY_GUID = '00000000-0000-0000-0000-000000000000'
+  // FnF settlement earnings (gratuity, leave encashment, etc.) are seeded with
+  // an empty salaryComponentId, so they look like reimbursements to the filter
+  // below. Discriminate by the FNF_ code prefix and treat them as one-time
+  // earnings instead of tagging them with a "Reimbursement" pill.
+  const isFnfComponent = (c: ComponentBreakdownDto): boolean => c.componentCode.startsWith('FNF_')
   const salaryComponents = data?.components.filter(c => !c.isOneTimeEarning) ?? []
   const oneTimeEarnings =
     data?.components.filter(
-      c => c.isOneTimeEarning && c.salaryComponentId !== EMPTY_GUID && !c.isDeduction,
+      c =>
+        c.isOneTimeEarning &&
+        !c.isDeduction &&
+        (c.salaryComponentId !== EMPTY_GUID || isFnfComponent(c)),
     ) ?? []
   const oneTimeDeductions =
     data?.components.filter(
@@ -114,7 +122,7 @@ export default function EmployeePayBreakdown({
     ) ?? []
   const reimbursements =
     data?.components.filter(
-      c => c.isOneTimeEarning && c.salaryComponentId === EMPTY_GUID,
+      c => c.isOneTimeEarning && c.salaryComponentId === EMPTY_GUID && !isFnfComponent(c),
     ) ?? []
 
   const effectiveTds = data ? (data.tdsOverrideAmount ?? data.tdsAmount) : 0
