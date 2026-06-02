@@ -108,7 +108,11 @@ export default function EmployeePayBreakdown({
   // below. Discriminate by the FNF_ code prefix and treat them as one-time
   // earnings instead of tagging them with a "Reimbursement" pill.
   const isFnfComponent = (c: ComponentBreakdownDto): boolean => c.componentCode.startsWith('FNF_')
-  const salaryComponents = data?.components.filter(c => !c.isOneTimeEarning) ?? []
+  // Employer-borne benefit components (health insurance, NPS employer match, …)
+  // are part of CTC but excluded from gross pay, so they must not appear in the
+  // Earnings list — they render under Benefits (Employer Cost) instead.
+  const salaryComponents = data?.components.filter(c => !c.isOneTimeEarning && !c.isBenefit) ?? []
+  const componentBenefits = data?.components.filter(c => !c.isOneTimeEarning && c.isBenefit) ?? []
   const oneTimeEarnings =
     data?.components.filter(
       c =>
@@ -173,7 +177,10 @@ export default function EmployeePayBreakdown({
   const deductionRows = buildDeductions(data)
   const totalStatutoryDeductions = deductionRows.reduce((s, r) => s + r.amount, 0)
   const totalOneTimeDeductions = oneTimeDeductions.reduce((s, c) => s + c.fullAmount, 0)
-  const benefits = buildBenefits(data)
+  const benefits = [
+    ...buildBenefits(data),
+    ...componentBenefits.map(c => ({ label: c.componentName, amount: c.proratedAmount })),
+  ]
   const totalBenefits = benefits.reduce((s, r) => s + r.amount, 0)
 
   return (
