@@ -2,6 +2,7 @@ using FluentValidation;
 using MediatR;
 using Payroll.Application.Commands.PayrollRuns;
 using Payroll.Application.DTOs;
+using Payroll.Application.Interfaces;
 using Payroll.Application.Services;
 using Payroll.Domain.Common;
 using Payroll.Domain.Entities;
@@ -64,6 +65,9 @@ public sealed class InitiateExitHandler(
     ISalaryComponentRepository salaryComponentRepo,
     IPayrunComponentBreakdownRepository breakdownRepo,
     IAuditLogRepository auditLogRepo,
+    IEmployeeDocumentRepository documentRepo,
+    IExitDocumentGenerator exitDocGenerator,
+    IFileStorageService fileStorage,
     ITenantContext tenantContext,
     IUnitOfWork uow)
     : IRequestHandler<InitiateExitCommand, EmployeeExitDto>
@@ -188,7 +192,32 @@ public sealed class InitiateExitHandler(
 
         await uow.SaveChangesAsync(ct);
 
+        // WI-31: generate the relieving/experience letter AFTER the exit is
+        // committed, so an object-storage hiccup can't roll back or block the exit.
+        await GenerateRelievingLetterAsync(employee, exit, orgProfile?.CompanyName ?? "The Company", req.ActorId, ct);
+
         return Map(exit, fnfRun);
+    }
+
+    private async Task GenerateRelievingLetterAsync(
+        Employee employee, EmployeeExit exit, string companyName, Guid actorId, CancellationToken ct)
+    {
+        Domain.ValueObjects.Tenure tenure = employee.TenureAt(exit.LastWorkingDay);
+        string tenureLabel = $"{tenure.Years}y {tenure.Months}m";
+
+        byte[] pdf = exitDocGenerator.GenerateRelievingLetter(employee, exit, companyName, tenureLabel);
+        string storageKey = $"exit-documents/{tenantContext.TenantId}/{employee.Id}/relieving-letter-{exit.Id}.pdf";
+        using (MemoryStream ms = new(pdf))
+            await fileStorage.UploadAsync(storageKey, ms, "application/pdf", ct);
+
+        await documentRepo.AddAsync(EmployeeDocument.Create(
+            employeeId: employee.Id,
+            tenantId: tenantContext.TenantId,
+            documentType: "RelievingLetter",
+            fileName: $"Relieving_Letter_{employee.EmployeeCode}.pdf",
+            storageKey: storageKey,
+            createdBy: actorId), ct);
+        await uow.SaveChangesAsync(ct);
     }
 
     private async Task<PayrollRun> GetOrCreateBulkFnfRunAsync(

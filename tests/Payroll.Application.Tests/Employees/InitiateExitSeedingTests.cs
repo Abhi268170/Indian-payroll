@@ -2,6 +2,7 @@ using FluentAssertions;
 using NSubstitute;
 using Payroll.Application.Commands.Employees;
 using Payroll.Application.Commands.PayrollRuns;
+using Payroll.Application.Interfaces;
 using Payroll.Domain.Common;
 using Payroll.Domain.Entities;
 using Payroll.Domain.Enums;
@@ -514,11 +515,16 @@ public class InitiateExitSeedingTests
             .Returns(new List<DomainPayrollRun>());
 
         var auditLogRepo = Substitute.For<IAuditLogRepository>();
+        var documentRepo = Substitute.For<IEmployeeDocumentRepository>();
+        var exitDocGenerator = Substitute.For<IExitDocumentGenerator>();
+        exitDocGenerator.GenerateRelievingLetter(Arg.Any<Employee>(), Arg.Any<EmployeeExit>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(new byte[] { 1, 2, 3 });
+        var fileStorage = Substitute.For<IFileStorageService>();
         var handler = new InitiateExitHandler(
             employeeRepo, exitRepo, orgProfileRepo, runRepo, payrunEmpRepo,
             payScheduleRepo, statutoryRepo, workLocationRepo,
             salaryStructureRepo, templateRepo, salaryComponentRepo, breakdownRepo,
-            auditLogRepo, tenantContext, uow);
+            auditLogRepo, documentRepo, exitDocGenerator, fileStorage, tenantContext, uow);
 
         return (handler, breakdownRepo, payrunEmpRepo, runRepo);
     }

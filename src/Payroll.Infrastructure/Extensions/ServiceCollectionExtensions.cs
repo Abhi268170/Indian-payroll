@@ -83,6 +83,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IEmployeeFyOpeningRepository, EmployeeFyOpeningRepository>();
         services.AddScoped<IPayrollRunAuditLogRepository, PayrollRunAuditLogRepository>();
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+        services.AddScoped<IEmployeeDocumentRepository, EmployeeDocumentRepository>();
         services.AddScoped<IPayslipRepository, PayslipRepository>();
         services.AddScoped<IEmployeeExitRepository, EmployeeExitRepository>();
         services.AddTransient<IPayrollJobDispatcher, HangfirePayrollJobDispatcher>();
@@ -143,6 +144,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IFileStorageService, MinioFileStorageService>();
 
         services.AddScoped<IPayslipPdfGenerator, PayslipPdfGenerator>();
+        services.AddScoped<IExitDocumentGenerator, ExitDocumentGenerator>();
         services.AddScoped<IBankAdviceGenerator, BankAdviceGenerator>();
         services.AddScoped<IPayrollExportService, PayrollExportService>();
         services.AddScoped<IPayrollDetailsExportService, PayrollDetailsExportService>();

@@ -279,6 +279,22 @@ public sealed class EmployeesController(ISender sender, IEmployeeImportTemplateG
         }
     }
 
+    // WI-31: list generated HR documents (relieving letter, etc.) for an employee.
+    [HttpGet("{id:guid}/documents")]
+    public async Task<IActionResult> GetDocuments(Guid id, CancellationToken ct)
+        => Ok(await sender.Send(new GetEmployeeDocumentsQuery(id), ct));
+
+    [HttpGet("{id:guid}/documents/{docId:guid}/download")]
+    public async Task<IActionResult> DownloadDocument(Guid id, Guid docId, CancellationToken ct)
+    {
+        try
+        {
+            EmployeeDocumentContentDto doc = await sender.Send(new GetEmployeeDocumentContentQuery(id, docId), ct);
+            return File(doc.Content, doc.ContentType, doc.FileName);
+        }
+        catch (NotFoundException) { return NotFound(); }
+    }
+
     [HttpGet("import/template")]
     [AllowAnonymous] // blank template, no tenant data
     public IActionResult DownloadTemplate()

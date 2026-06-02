@@ -11,6 +11,7 @@ public sealed class PayrollDbContext(
     : DbContext(options)
 {
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<EmployeeDocument> EmployeeDocuments => Set<EmployeeDocument>();
     public DbSet<WorkLocation> WorkLocations => Set<WorkLocation>();
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<Designation> Designations => Set<Designation>();
@@ -57,6 +58,7 @@ public sealed class PayrollDbContext(
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.ApplyConfiguration(new AuditLogConfiguration());
+        modelBuilder.ApplyConfiguration(new EmployeeDocumentConfiguration());
         modelBuilder.ApplyConfiguration(new WorkLocationConfiguration());
         modelBuilder.ApplyConfiguration(new DepartmentConfiguration());
         modelBuilder.ApplyConfiguration(new DesignationConfiguration());

@@ -22,6 +22,21 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Payroll.Domain.Entities.EmployeeDocument", b =>
+                {
+                    b.Property<Guid>("Id").ValueGeneratedOnAdd().HasColumnType("uuid").HasColumnName("id");
+                    b.Property<Guid>("EmployeeId").HasColumnType("uuid").HasColumnName("employee_id");
+                    b.Property<Guid>("TenantId").HasColumnType("uuid").HasColumnName("tenant_id");
+                    b.Property<string>("DocumentType").IsRequired().HasMaxLength(100).HasColumnType("character varying(100)").HasColumnName("document_type");
+                    b.Property<string>("FileName").IsRequired().HasMaxLength(300).HasColumnType("character varying(300)").HasColumnName("file_name");
+                    b.Property<string>("StorageKey").IsRequired().HasMaxLength(1000).HasColumnType("character varying(1000)").HasColumnName("storage_key");
+                    b.Property<DateTimeOffset>("CreatedAt").HasColumnType("timestamptz").HasColumnName("created_at");
+                    b.Property<Guid>("CreatedBy").HasColumnType("uuid").HasColumnName("created_by");
+                    b.HasKey("Id").HasName("pk_employee_documents");
+                    b.HasIndex("EmployeeId").HasDatabaseName("ix_employee_documents_employee_id");
+                    b.ToTable("employee_documents", (string)null);
+                });
+
             modelBuilder.Entity("Payroll.Domain.Entities.AuditLog", b =>
                 {
                     b.Property<Guid>("Id")
