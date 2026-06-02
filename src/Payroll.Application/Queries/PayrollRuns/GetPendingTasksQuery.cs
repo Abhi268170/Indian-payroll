@@ -46,6 +46,26 @@ public sealed class GetPendingTasksHandler(
                 continue;
             }
 
+            // WI-16: FnF payment will fail without a bank account / core identity.
+            // Regular runs hard-block these at initiation (skipped); FnF runs are
+            // built from a single employee at exit time, so enforce it here.
+            if (isFnf && pe.Status == PayrunEmployeeStatus.Active
+                && employeeMap.TryGetValue(pe.EmployeeId, out Employee? fnfOnboard))
+            {
+                if (string.IsNullOrWhiteSpace(fnfOnboard.EncryptedBankAccount))
+                {
+                    hardBlocks.Add(new PendingTaskItemDto(pe.EmployeeId, fnfOnboard.EmployeeCode,
+                        $"Bank account not configured for {fnfOnboard.EmployeeCode}. Payment will fail without it."));
+                    continue;
+                }
+                if (fnfOnboard.DateOfBirth == default)
+                {
+                    hardBlocks.Add(new PendingTaskItemDto(pe.EmployeeId, fnfOnboard.EmployeeCode,
+                        $"Date of birth missing for {fnfOnboard.EmployeeCode}. Complete onboarding before settlement."));
+                    continue;
+                }
+            }
+
             // System-skipped = hard block (onboarding incomplete)
             if (pe.Status == PayrunEmployeeStatus.Skipped &&
                 pe.SkipReason is not null &&
