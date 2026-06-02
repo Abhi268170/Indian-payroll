@@ -36,8 +36,8 @@ export default function ProvisionOrgPage(): React.ReactElement {
       slug: v.slug,
     }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['platform-tenants'] })
-      navigate('/platform/orgs')
+      void qc.invalidateQueries({ queryKey: ['platform-tenants'] })
+      void navigate('/platform/orgs')
     },
     onError: (err: unknown) => {
       const response = (err as { response?: { status?: number; data?: unknown } }).response
@@ -55,9 +55,9 @@ export default function ProvisionOrgPage(): React.ReactElement {
         serverMessage = firstLine.slice(0, 240) || null
       } else if (data && typeof data === 'object') {
         const obj = data as { error?: string; message?: string; title?: string; detail?: string }
-        serverMessage = obj.error || obj.message || obj.detail || obj.title || null
+        serverMessage = [obj.error, obj.message, obj.detail, obj.title].find(s => s !== undefined && s !== '') ?? null
       }
-      const statusHint = status ? ` (HTTP ${status})` : ''
+      const statusHint = status ? ` (HTTP ${String(status)})` : ''
       setApiError(
         serverMessage
           ? `Provisioning failed${statusHint}: ${serverMessage}`
@@ -82,14 +82,14 @@ export default function ProvisionOrgPage(): React.ReactElement {
       <h1 className="text-xl font-semibold text-gray-900 mb-6">Provision New Organisation</h1>
 
       <form
-        onSubmit={handleSubmit(v => { setApiError(null); provision.mutate(v) })}
+        onSubmit={e => { void handleSubmit(v => { setApiError(null); provision.mutate(v) })(e) }}
         className="bg-white border border-gray-200 rounded-xl p-6 space-y-5"
       >
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Organisation Name</label>
           <input
             {...register('displayName')}
-            onChange={e => { register('displayName').onChange(e); onNameChange(e) }}
+            onChange={e => { void register('displayName').onChange(e); onNameChange(e) }}
             className={inputCls}
             placeholder="Acme Corp"
           />
@@ -114,7 +114,7 @@ export default function ProvisionOrgPage(): React.ReactElement {
           <label className="block text-sm font-medium text-gray-700 mb-1">Slug</label>
           <input
             {...register('slug')}
-            onChange={e => { register('slug').onChange(e); setSlugTouched(true) }}
+            onChange={e => { void register('slug').onChange(e); setSlugTouched(true) }}
             className={inputCls}
             placeholder="acme-corp"
           />

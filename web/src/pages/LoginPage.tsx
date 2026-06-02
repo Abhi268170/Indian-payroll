@@ -31,7 +31,7 @@ export default function LoginPage(): React.ReactElement {
     try {
       const { accessToken, refreshToken } = await getToken(values.username, values.password)
       login(accessToken, refreshToken)
-      navigate('/', { replace: true })
+      void navigate('/', { replace: true })
     } catch {
       setError('Invalid credentials or server error.')
     }
@@ -39,7 +39,7 @@ export default function LoginPage(): React.ReactElement {
 
   return (
     <AuthLayout title="Sign in" subtitle="Sign in to your account">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={(e) => { void handleSubmit(onSubmit)(e) }} className="space-y-4">
         <div>
           <label className="block text-[13px] font-medium text-[var(--color-text-primary)] mb-1">Email</label>
           <input

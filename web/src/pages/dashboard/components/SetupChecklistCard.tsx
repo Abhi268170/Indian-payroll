@@ -62,7 +62,7 @@ export default function SetupChecklistCard(): ReactElement | null {
           </span>
         </div>
         <div className="w-full h-1.5 bg-[var(--color-border)] rounded-full overflow-hidden">
-          <div className="h-full bg-[var(--color-primary)] transition-all" style={{ width: `${percent}%` }} />
+          <div className="h-full bg-[var(--color-primary)] transition-all" style={{ width: `${percent.toString()}%` }} />
         </div>
       </div>
 

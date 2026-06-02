@@ -93,7 +93,7 @@ export default function SetPasswordPage(): React.ReactElement {
       title="Set your password"
       subtitle={`For ${email}. Minimum 8 characters, mixed case, digit + special character.`}
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={(e) => { void handleSubmit(onSubmit)(e) }} className="space-y-4">
         <div>
           <label className="block text-[13px] font-medium text-[var(--color-text-primary)] mb-1">New Password</label>
           <input

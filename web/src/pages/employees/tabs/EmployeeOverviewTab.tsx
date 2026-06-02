@@ -33,7 +33,7 @@ function ReadField({ label, value }: { label: string; value: string | null | und
   return (
     <div>
       <p className={labelCls}>{label}</p>
-      <p className={valueCls}>{value || '—'}</p>
+      <p className={valueCls}>{value == null || value === '' ? '—' : value}</p>
     </div>
   )
 }
@@ -71,6 +71,17 @@ function SectionHeader({
           Edit
         </button>
       )}
+    </div>
+  )
+}
+
+function Toggle({ label, enabled }: { label: string; enabled: boolean }): React.ReactElement {
+  return (
+    <div className="flex items-center justify-between py-2.5 border-b border-[var(--color-border)] last:border-0">
+      <span className="text-[13px] text-[var(--color-text-primary)]">{label}</span>
+      <span className={`text-[12px] font-medium px-2 py-0.5 rounded-full ${enabled ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+        {enabled ? 'Enabled' : 'Disabled'}
+      </span>
     </div>
   )
 }
@@ -132,16 +143,16 @@ function BasicSection({ employee, onSaved }: Props): React.ReactElement {
   const save = useMutation({
     mutationFn: (v: BasicValues) => api.put(`/api/v1/employees/${employee.id}/basic-details`, {
       firstName: v.firstName,
-      middleName: v.middleName || null,
+      middleName: v.middleName === '' ? null : v.middleName,
       lastName: v.lastName,
-      mobileNumber: v.mobileNumber || null,
+      mobileNumber: v.mobileNumber === '' ? null : v.mobileNumber,
       gender: v.gender,
       isDirector: v.isDirector,
       enablePortalAccess: v.enablePortalAccess,
       departmentId: v.departmentId,
       designationId: v.designationId,
       workLocationId: v.workLocationId,
-      businessUnitId: v.businessUnitId || null,
+      businessUnitId: v.businessUnitId === '' ? null : v.businessUnitId,
     }),
     onSuccess: () => { setEditing(false); onSaved() },
   })
@@ -158,7 +169,7 @@ function BasicSection({ employee, onSaved }: Props): React.ReactElement {
 
   return (
     <section className="border border-[var(--color-border)] rounded-xl p-5">
-      <SectionHeader title="Basic Information" editing={editing} onEdit={() => setEditing(true)} onCancel={cancel} />
+      <SectionHeader title="Basic Information" editing={editing} onEdit={() => { setEditing(true); }} onCancel={cancel} />
 
       {!editing ? (
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">
@@ -176,7 +187,7 @@ function BasicSection({ employee, onSaved }: Props): React.ReactElement {
           <ReadField label="Portal Access" value={fmtBool(employee.enablePortalAccess)} />
         </div>
       ) : (
-        <form onSubmit={handleSubmit(v => save.mutate(v))} className="space-y-4">
+        <form onSubmit={(e) => { void handleSubmit(v => { save.mutate(v); })(e) }} className="space-y-4">
           <div className="grid grid-cols-3 gap-4">
             <div>
               <label className={fieldLabelCls}>First Name <span className="text-red-500">*</span></label>
@@ -314,7 +325,7 @@ function PersonalSection({ employee, onSaved }: Props): React.ReactElement {
       fathersName: employee.fathersName ?? '',
       pan: '',
       personalEmail: employee.personalEmail ?? '',
-      differentlyAbledType: (employee.differentlyAbledType as PersonalValues['differentlyAbledType']) ?? 'None',
+      differentlyAbledType: employee.differentlyAbledType as PersonalValues['differentlyAbledType'],
       isPWD: employee.isPWD,
       addressLine1: employee.addressLine1 ?? '',
       addressLine2: employee.addressLine2 ?? '',
@@ -327,16 +338,16 @@ function PersonalSection({ employee, onSaved }: Props): React.ReactElement {
   const save = useMutation({
     mutationFn: (v: PersonalValues) => api.put(`/api/v1/employees/${employee.id}/personal-details`, {
       dateOfBirth: v.dateOfBirth,
-      fathersName: v.fathersName || null,
-      pan: v.pan || null,
-      personalEmail: v.personalEmail || null,
+      fathersName: v.fathersName === '' ? null : v.fathersName,
+      pan: v.pan === '' ? null : v.pan,
+      personalEmail: v.personalEmail === '' ? null : v.personalEmail,
       differentlyAbledType: v.differentlyAbledType,
       isPWD: v.isPWD,
-      addressLine1: v.addressLine1 || null,
-      addressLine2: v.addressLine2 || null,
-      city: v.city || null,
-      residentialState: v.residentialState || null,
-      pinCode: v.pinCode || null,
+      addressLine1: v.addressLine1 === '' ? null : v.addressLine1,
+      addressLine2: v.addressLine2 === '' ? null : v.addressLine2,
+      city: v.city === '' ? null : v.city,
+      residentialState: v.residentialState === '' ? null : v.residentialState,
+      pinCode: v.pinCode === '' ? null : v.pinCode,
     }),
     onSuccess: () => { setEditing(false); onSaved() },
   })
@@ -350,7 +361,7 @@ function PersonalSection({ employee, onSaved }: Props): React.ReactElement {
 
   return (
     <section className="border border-[var(--color-border)] rounded-xl p-5">
-      <SectionHeader title="Personal Information" editing={editing} onEdit={() => setEditing(true)} onCancel={cancel} />
+      <SectionHeader title="Personal Information" editing={editing} onEdit={() => { setEditing(true); }} onCancel={cancel} />
 
       {!editing ? (
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">
@@ -365,7 +376,7 @@ function PersonalSection({ employee, onSaved }: Props): React.ReactElement {
           <ReadField label="PIN Code" value={employee.pinCode} />
         </div>
       ) : (
-        <form onSubmit={handleSubmit(v => save.mutate(v))} className="space-y-4">
+        <form onSubmit={(e) => { void handleSubmit(v => { save.mutate(v); })(e) }} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={fieldLabelCls}>Date of Birth <span className="text-red-500">*</span></label>
@@ -494,8 +505,8 @@ function StatutorySection({ employee, onSaved }: Props): React.ReactElement {
       esiEnabled: v.esiEnabled,
       ptEnabled: v.ptEnabled,
       lwfEnabled: v.lwfEnabled,
-      uan: v.uan || null,
-      esicipNumber: v.esicipNumber || null,
+      uan: v.uan === '' ? null : v.uan,
+      esicipNumber: v.esicipNumber === '' ? null : v.esicipNumber,
     }),
     onSuccess: () => { setEditing(false); onSaved() },
     onError: () => { /* error shown via save.isError */ },
@@ -503,20 +514,9 @@ function StatutorySection({ employee, onSaved }: Props): React.ReactElement {
 
   function cancel(): void { reset(); setEditing(false); save.reset() }
 
-  function Toggle({ label, enabled }: { label: string; enabled: boolean }): React.ReactElement {
-    return (
-      <div className="flex items-center justify-between py-2.5 border-b border-[var(--color-border)] last:border-0">
-        <span className="text-[13px] text-[var(--color-text-primary)]">{label}</span>
-        <span className={`text-[12px] font-medium px-2 py-0.5 rounded-full ${enabled ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
-          {enabled ? 'Enabled' : 'Disabled'}
-        </span>
-      </div>
-    )
-  }
-
   return (
     <section className="border border-[var(--color-border)] rounded-xl p-5">
-      <SectionHeader title="Statutory Information" editing={editing} onEdit={() => setEditing(true)} onCancel={cancel} />
+      <SectionHeader title="Statutory Information" editing={editing} onEdit={() => { setEditing(true); }} onCancel={cancel} />
 
       {!editing ? (
         <div>
@@ -532,7 +532,7 @@ function StatutorySection({ employee, onSaved }: Props): React.ReactElement {
           </div>
         </div>
       ) : (
-        <form onSubmit={handleSubmit(v => save.mutate(v))} className="space-y-4">
+        <form onSubmit={(e) => { void handleSubmit(v => { save.mutate(v); })(e) }} className="space-y-4">
           <div className="space-y-1">
             {[
               { name: 'epfEnabled' as const, label: 'Employee Provident Fund (EPF)' },
@@ -604,7 +604,7 @@ function PaymentSection({ employee, onSaved }: Props): React.ReactElement {
   const { register, handleSubmit, reset, watch, formState: { errors, isDirty } } = useForm<PaymentValues>({
     resolver: zodResolver(paymentSchema),
     defaultValues: {
-      paymentMode: (employee.paymentMode as PaymentValues['paymentMode']) ?? 'Cash',
+      paymentMode: employee.paymentMode as PaymentValues['paymentMode'],
       accountHolderName: employee.accountHolderName ?? '',
       bankName: employee.bankName ?? '',
       accountType: (employee.accountType as PaymentValues['accountType']) ?? undefined,
@@ -620,11 +620,11 @@ function PaymentSection({ employee, onSaved }: Props): React.ReactElement {
   const save = useMutation({
     mutationFn: (v: PaymentValues) => api.put(`/api/v1/employees/${employee.id}/payment-info`, {
       paymentMode: v.paymentMode,
-      accountHolderName: hasBankFields ? (v.accountHolderName || null) : null,
-      bankName: hasBankFields ? (v.bankName || null) : null,
-      accountType: hasBankFields ? (v.accountType || null) : null,
-      accountNumber: hasBankFields ? (v.accountNumber || null) : null,
-      ifsc: hasBankFields ? (v.ifscCode || null) : null,
+      accountHolderName: hasBankFields ? (v.accountHolderName === '' ? null : v.accountHolderName) : null,
+      bankName: hasBankFields ? (v.bankName === '' ? null : v.bankName) : null,
+      accountType: hasBankFields ? (v.accountType ?? null) : null,
+      accountNumber: hasBankFields ? (v.accountNumber === '' ? null : v.accountNumber) : null,
+      ifsc: hasBankFields ? (v.ifscCode === '' ? null : v.ifscCode) : null,
     }),
     onSuccess: () => { setEditing(false); onSaved() },
   })
@@ -637,7 +637,7 @@ function PaymentSection({ employee, onSaved }: Props): React.ReactElement {
 
   return (
     <section className="border border-[var(--color-border)] rounded-xl p-5">
-      <SectionHeader title="Payment Information" editing={editing} onEdit={() => setEditing(true)} onCancel={cancel} />
+      <SectionHeader title="Payment Information" editing={editing} onEdit={() => { setEditing(true); }} onCancel={cancel} />
 
       {!editing ? (
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">
@@ -652,7 +652,7 @@ function PaymentSection({ employee, onSaved }: Props): React.ReactElement {
           )}
         </div>
       ) : (
-        <form onSubmit={handleSubmit(v => save.mutate(v))} className="space-y-4">
+        <form onSubmit={(e) => { void handleSubmit(v => { save.mutate(v); })(e) }} className="space-y-4">
           <div>
             <label className={fieldLabelCls}>Payment Mode <span className="text-red-500">*</span></label>
             <select {...register('paymentMode')} className={`${inputCls} w-64`}>

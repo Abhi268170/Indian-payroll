@@ -23,7 +23,7 @@ const CURRENT_FY = new Date().getMonth() >= 3
 const FY_OPTIONS = [CURRENT_FY, CURRENT_FY - 1, CURRENT_FY - 2]
 
 function fyLabel(y: number): string {
-  return `FY ${y}-${String(y + 1).slice(2)}`
+  return `FY ${String(y)}-${String(y + 1).slice(2)}`
 }
 
 export default function EmployeeTaxTab({ employeeId }: Props): React.ReactElement {
@@ -37,7 +37,7 @@ export default function EmployeeTaxTab({ employeeId }: Props): React.ReactElemen
     queryKey: ['employee-fy-opening', employeeId, selectedFy],
     queryFn: async () => {
       try {
-        const r = await api.get<FyOpeningDto>(`/api/v1/employees/${employeeId}/fy-opening/${selectedFy}`)
+        const r = await api.get<FyOpeningDto>(`/api/v1/employees/${employeeId}/fy-opening/${String(selectedFy)}`)
         return r.data
       } catch {
         return null
@@ -58,8 +58,8 @@ export default function EmployeeTaxTab({ employeeId }: Props): React.ReactElemen
 
   const save = useMutation({
     mutationFn: () =>
-      api.put(`/api/v1/employees/${employeeId}/fy-opening/${selectedFy}`, {
-        monthsCount: Number(form.monthsCount),
+      api.put(`/api/v1/employees/${employeeId}/fy-opening/${String(selectedFy)}`, {
+        monthsCount: form.monthsCount,
         grossSalary: parseFloat(form.grossSalary) || 0,
         tdsDeducted: parseFloat(form.tdsDeducted) || 0,
         pfDeducted: parseFloat(form.pfDeducted) || 0,
@@ -68,7 +68,7 @@ export default function EmployeeTaxTab({ employeeId }: Props): React.ReactElemen
       void qc.invalidateQueries({ queryKey: ['employee-fy-opening', employeeId, selectedFy] })
       setEditing(false)
     },
-    onError: () => setErr('Save failed. Check values and try again.'),
+    onError: () => { setErr('Save failed. Check values and try again.'); },
   })
 
   return (
@@ -142,7 +142,7 @@ export default function EmployeeTaxTab({ employeeId }: Props): React.ReactElemen
                   min={1}
                   max={12}
                   value={form.monthsCount}
-                  onChange={e => setForm(f => ({ ...f, monthsCount: Number(e.target.value) }))}
+                  onChange={e => { setForm(f => ({ ...f, monthsCount: Number(e.target.value) })); }}
                   className="w-full h-9 px-3 text-[13px] border border-[var(--color-border)] rounded-lg"
                 />
               </div>
@@ -155,7 +155,7 @@ export default function EmployeeTaxTab({ employeeId }: Props): React.ReactElemen
                   min={0}
                   step={0.01}
                   value={form.grossSalary}
-                  onChange={e => setForm(f => ({ ...f, grossSalary: e.target.value }))}
+                  onChange={e => { setForm(f => ({ ...f, grossSalary: e.target.value })); }}
                   className="w-full h-9 px-3 text-[13px] border border-[var(--color-border)] rounded-lg"
                   placeholder="0.00"
                 />
@@ -169,7 +169,7 @@ export default function EmployeeTaxTab({ employeeId }: Props): React.ReactElemen
                   min={0}
                   step={0.01}
                   value={form.tdsDeducted}
-                  onChange={e => setForm(f => ({ ...f, tdsDeducted: e.target.value }))}
+                  onChange={e => { setForm(f => ({ ...f, tdsDeducted: e.target.value })); }}
                   className="w-full h-9 px-3 text-[13px] border border-[var(--color-border)] rounded-lg"
                   placeholder="0.00"
                 />
@@ -183,7 +183,7 @@ export default function EmployeeTaxTab({ employeeId }: Props): React.ReactElemen
                   min={0}
                   step={0.01}
                   value={form.pfDeducted}
-                  onChange={e => setForm(f => ({ ...f, pfDeducted: e.target.value }))}
+                  onChange={e => { setForm(f => ({ ...f, pfDeducted: e.target.value })); }}
                   className="w-full h-9 px-3 text-[13px] border border-[var(--color-border)] rounded-lg"
                   placeholder="0.00"
                 />
@@ -199,7 +199,7 @@ export default function EmployeeTaxTab({ employeeId }: Props): React.ReactElemen
                 {save.isPending ? 'Saving…' : 'Save'}
               </button>
               <button
-                onClick={() => setEditing(false)}
+                onClick={() => { setEditing(false); }}
                 className="h-8 px-4 text-[12px] font-medium border border-[var(--color-border)] rounded-lg hover:bg-[var(--color-bg-secondary)] transition-colors"
               >
                 Cancel

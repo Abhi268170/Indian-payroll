@@ -18,6 +18,12 @@ vi.mock('../components/EmployeePayBreakdown', () => ({
 
 import EmployeeSummaryTable from '../components/EmployeeSummaryTable'
 
+function chevronAt(chevrons: HTMLElement[], index: number): HTMLElement {
+  const chevron = chevrons[index]
+  if (!chevron) throw new Error(`No chevron cell at index ${String(index)}`)
+  return chevron
+}
+
 const defaultProps = {
   runStatus: 'Draft',
   runId: 'run-1',
@@ -65,7 +71,7 @@ describe('EmployeeSummaryTable', () => {
       const chevrons = screen.getAllByRole('cell').filter(td =>
         td.querySelector('svg'),
       )
-      fireEvent.click(chevrons[0]!)
+      fireEvent.click(chevronAt(chevrons, 0))
 
       const bd = screen.getByTestId('breakdown-emp-1')
       expect(bd).toBeDefined()
@@ -77,10 +83,10 @@ describe('EmployeeSummaryTable', () => {
       render(<EmployeeSummaryTable {...defaultProps} employees={[emp]} />)
 
       const chevrons = screen.getAllByRole('cell').filter(td => td.querySelector('svg'))
-      fireEvent.click(chevrons[0]!)
+      fireEvent.click(chevronAt(chevrons, 0))
       expect(screen.getByTestId('breakdown-emp-1')).toBeDefined()
 
-      fireEvent.click(chevrons[0]!)
+      fireEvent.click(chevronAt(chevrons, 0))
       expect(screen.queryByTestId('breakdown-emp-1')).toBeNull()
     })
 
@@ -90,10 +96,10 @@ describe('EmployeeSummaryTable', () => {
       render(<EmployeeSummaryTable {...defaultProps} employees={[empA, empB]} />)
 
       const chevrons = screen.getAllByRole('cell').filter(td => td.querySelector('svg'))
-      fireEvent.click(chevrons[0]!) // expand A
+      fireEvent.click(chevronAt(chevrons, 0)) // expand A
       expect(screen.getByTestId('breakdown-emp-a')).toBeDefined()
 
-      fireEvent.click(chevrons[1]!) // expand B → A collapses
+      fireEvent.click(chevronAt(chevrons, 1)) // expand B → A collapses
       expect(screen.queryByTestId('breakdown-emp-a')).toBeNull()
       expect(screen.getByTestId('breakdown-emp-b')).toBeDefined()
     })
@@ -105,7 +111,7 @@ describe('EmployeeSummaryTable', () => {
       )
 
       const chevrons = screen.getAllByRole('cell').filter(td => td.querySelector('svg'))
-      fireEvent.click(chevrons[0]!)
+      fireEvent.click(chevronAt(chevrons, 0))
 
       const bd = screen.getByTestId('breakdown-emp-1')
       expect(bd.dataset.readonly).toBe('true')
@@ -116,7 +122,7 @@ describe('EmployeeSummaryTable', () => {
       render(<EmployeeSummaryTable {...defaultProps} runStatus="Paid" employees={[emp]} />)
 
       const chevrons = screen.getAllByRole('cell').filter(td => td.querySelector('svg'))
-      fireEvent.click(chevrons[0]!)
+      fireEvent.click(chevronAt(chevrons, 0))
 
       expect(screen.getByTestId('breakdown-emp-1').dataset.readonly).toBe('true')
     })
@@ -182,7 +188,7 @@ describe('EmployeeSummaryTable', () => {
 
       // Expand the skipped employee row
       const chevrons = screen.getAllByRole('cell').filter(td => td.querySelector('svg'))
-      fireEvent.click(chevrons[1]!) // skipped is second
+      fireEvent.click(chevronAt(chevrons, 1)) // skipped is second
       expect(screen.getByTestId('breakdown-emp-skipped')).toBeDefined()
 
       // Switch to Active filter — skipped employee not visible, breakdown must not show
@@ -200,7 +206,7 @@ describe('EmployeeSummaryTable', () => {
 
       // Expand page 1 employee
       const chevrons = screen.getAllByRole('cell').filter(td => td.querySelector('svg'))
-      fireEvent.click(chevrons[0]!)
+      fireEvent.click(chevronAt(chevrons, 0))
       expect(screen.getByTestId('breakdown-p1-emp')).toBeDefined()
 
       // Simulate page change: new employees with different ID

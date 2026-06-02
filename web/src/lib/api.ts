@@ -1,14 +1,14 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 
-export const API_BASE = import.meta.env['VITE_API_URL'] ?? 'http://localhost:5000'
+export const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:5000'
 
 export const api = axios.create({ baseURL: API_BASE })
 
 api.interceptors.request.use(config => {
   const token = useAuthStore.getState().token
   if (token) {
-    config.headers['Authorization'] = `Bearer ${token}`
+    config.headers.Authorization = `Bearer ${token}`
   }
   return config
 })
@@ -27,13 +27,16 @@ async function doRefresh(): Promise<string> {
     grant_type: 'refresh_token',
     refresh_token: refreshToken,
     client_id: 'payroll-api',
-    client_secret: import.meta.env['VITE_CLIENT_SECRET'] ?? 'dev-client-secret-2024',
+    client_secret: (import.meta.env.VITE_CLIENT_SECRET as string | undefined) ?? 'dev-client-secret-2024',
   })
 
   try {
-    const resp = await axios.post(`${API_BASE}/connect/token`, params)
-    const newAccessToken = resp.data.access_token as string
-    const newRefreshToken = resp.data.refresh_token as string | undefined
+    const resp = await axios.post<{ access_token: string; refresh_token?: string }>(
+      `${API_BASE}/connect/token`,
+      params,
+    )
+    const newAccessToken = resp.data.access_token
+    const newRefreshToken = resp.data.refresh_token
     const { setToken, login } = useAuthStore.getState()
     if (newRefreshToken) {
       login(newAccessToken, newRefreshToken)
@@ -62,8 +65,8 @@ api.interceptors.response.use(
       const isJobs = url.includes('/api/v1/jobs/')
       if (isWrite && isV1 && !isOnboardingWrite && !isJobs) {
         const { queryClient } = await import('./queryClient')
-        queryClient.invalidateQueries({ queryKey: ['onboarding-status'] })
-        queryClient.invalidateQueries({ queryKey: ['payroll-run-preflight'] })
+        void queryClient.invalidateQueries({ queryKey: ['onboarding-status'] })
+        void queryClient.invalidateQueries({ queryKey: ['payroll-run-preflight'] })
       }
     } catch {
       // Never let cache-invalidation failures break the original response.
@@ -72,6 +75,7 @@ api.interceptors.response.use(
   },
   async error => {
     if (!axios.isAxiosError(error) || error.response?.status !== 401) {
+      // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- propagate original axios error unchanged so callers keep response/status
       return Promise.reject(error)
     }
 
@@ -88,8 +92,12 @@ api.interceptors.response.use(
       const newToken = await refreshPromise
 
       // Retry original request with new token
-      const config = error.config!
-      config.headers['Authorization'] = `Bearer ${newToken}`
+      const config = error.config
+      if (!config) {
+        return await Promise.reject(error)
+      }
+      config.headers.Authorization = `Bearer ${newToken}`
+      // eslint-disable-next-line @typescript-eslint/return-await -- retry rejection must reach caller, not the refresh-failure handler below
       return api.request(config)
     } catch {
       return Promise.reject(error)
@@ -106,12 +114,15 @@ export async function getToken(
     username,
     password,
     client_id: 'payroll-api',
-    client_secret: import.meta.env['VITE_CLIENT_SECRET'] ?? 'dev-client-secret-2024',
+    client_secret: (import.meta.env.VITE_CLIENT_SECRET as string | undefined) ?? 'dev-client-secret-2024',
     scope: 'profile email roles offline_access payroll.api',
   })
-  const resp = await axios.post(`${API_BASE}/connect/token`, params)
+  const resp = await axios.post<{ access_token: string; refresh_token: string }>(
+    `${API_BASE}/connect/token`,
+    params,
+  )
   return {
-    accessToken: resp.data.access_token as string,
-    refreshToken: resp.data.refresh_token as string,
+    accessToken: resp.data.access_token,
+    refreshToken: resp.data.refresh_token,
   }
 }

@@ -55,7 +55,7 @@ function getUpcomingPayDates(
       day = Math.min(payDateDay ?? 1, daysInMonth)
     }
     day = walkBackToWorkingDay(year, month, day, workWeekDays)
-    dates.push(`${day} ${MONTH_NAMES[month - 1]} ${year}`)
+    dates.push(`${String(day)} ${MONTH_NAMES[month - 1] ?? ''} ${String(year)}`)
     month++
     if (month > 12) { month = 1; year++ }
   }
@@ -329,7 +329,7 @@ function PayScheduleForm({
                 </select>
               </div>
             </div>
-            {firstPayPeriodMonth && firstPayPeriodYear && payDateType && (
+            {firstPayPeriodMonth && firstPayPeriodYear && (
               <div className="mt-4">
                 <p className="text-[12px] text-[var(--color-text-muted)] mb-2">Upcoming pay dates:</p>
                 <div className="flex gap-3">

@@ -9,7 +9,7 @@ export default function PlatformLayout(): React.ReactElement {
 
   function handleLogout(): void {
     logout()
-    navigate('/login', { replace: true })
+    void navigate('/login', { replace: true })
   }
 
   return (

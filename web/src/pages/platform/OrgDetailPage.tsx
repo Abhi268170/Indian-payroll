@@ -9,27 +9,27 @@ export default function OrgDetailPage(): React.ReactElement {
 
   const { data: tenant, isLoading, isError, error } = useQuery<TenantDto>({
     queryKey: ['platform-tenant', id],
-    queryFn: () => api.get<TenantDto>(`/api/tenants/${id}`).then(r => r.data),
+    queryFn: () => api.get<TenantDto>(`/api/tenants/${String(id)}`).then(r => r.data),
     enabled: !!id,
   })
 
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: ['platform-tenants'] })
-    queryClient.invalidateQueries({ queryKey: ['platform-tenant', id] })
+    void queryClient.invalidateQueries({ queryKey: ['platform-tenants'] })
+    void queryClient.invalidateQueries({ queryKey: ['platform-tenant', id] })
   }
 
   const suspendMutation = useMutation({
-    mutationFn: () => api.post(`/api/tenants/${id}/suspend`),
+    mutationFn: () => api.post(`/api/tenants/${String(id)}/suspend`),
     onSuccess: invalidate,
   })
 
   const activateMutation = useMutation({
-    mutationFn: () => api.post(`/api/tenants/${id}/activate`),
+    mutationFn: () => api.post(`/api/tenants/${String(id)}/activate`),
     onSuccess: invalidate,
   })
 
   const resendMutation = useMutation({
-    mutationFn: () => api.post(`/api/tenants/${id}/resend-setup-email`),
+    mutationFn: () => api.post(`/api/tenants/${String(id)}/resend-setup-email`),
   })
 
   const anyMutating = suspendMutation.isPending || activateMutation.isPending || resendMutation.isPending
@@ -43,8 +43,8 @@ export default function OrgDetailPage(): React.ReactElement {
   }
 
   if (isError || !tenant) {
-    const status = (error as { response?: { status?: number } })?.response?.status
-    const msg = status ? `Error ${status}` : 'Request failed'
+    const status = (error as { response?: { status?: number } }).response?.status
+    const msg = status ? `Error ${String(status)}` : 'Request failed'
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-2">
         <p className="text-sm text-red-500">Failed to load organisation. ({msg})</p>
@@ -85,21 +85,21 @@ export default function OrgDetailPage(): React.ReactElement {
         {tenant.isActive ? (
           <ActionButton
             label="Suspend Org"
-            onClick={() => suspendMutation.mutate()}
+            onClick={() => { suspendMutation.mutate(); }}
             disabled={anyMutating}
             variant="danger"
           />
         ) : (
           <ActionButton
             label="Activate Org"
-            onClick={() => activateMutation.mutate()}
+            onClick={() => { activateMutation.mutate(); }}
             disabled={anyMutating}
             variant="primary"
           />
         )}
         <ActionButton
           label={resendMutation.isSuccess ? 'Email Sent ✓' : 'Resend Setup Email'}
-          onClick={() => resendMutation.mutate()}
+          onClick={() => { resendMutation.mutate(); }}
           disabled={anyMutating || resendMutation.isSuccess}
           variant="secondary"
         />

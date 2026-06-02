@@ -56,12 +56,12 @@ export default function EmployeeDetailPage(): React.ReactElement {
 
   const { data: employee, isLoading, error, refetch } = useQuery<EmployeeDto>({
     queryKey: ['employee', id],
-    queryFn: () => api.get<EmployeeDto>(`/api/v1/employees/${id}`).then(r => r.data),
+    queryFn: () => api.get<EmployeeDto>(`/api/v1/employees/${String(id)}`).then(r => r.data),
     enabled: !!id,
   })
 
   const cancelExit = useMutation({
-    mutationFn: () => api.delete(`/api/v1/employees/${id}/exit`),
+    mutationFn: () => api.delete(`/api/v1/employees/${String(id)}/exit`),
     onSuccess: () => { void refetch() },
   })
 
@@ -89,7 +89,7 @@ export default function EmployeeDetailPage(): React.ReactElement {
     return (
       <div className="py-20 text-center">
         <p className="text-[13px] text-red-600">Employee not found.</p>
-        <button onClick={() => navigate('/employees')} className="mt-3 text-[13px] text-[var(--color-primary)]">
+        <button onClick={() => { void navigate('/employees') }} className="mt-3 text-[13px] text-[var(--color-primary)]">
           Back to Employees
         </button>
       </div>
@@ -100,7 +100,7 @@ export default function EmployeeDetailPage(): React.ReactElement {
     <div className="space-y-0">
       {/* Back */}
       <button
-        onClick={() => navigate('/employees')}
+        onClick={() => { void navigate('/employees') }}
         className="inline-flex items-center gap-1.5 text-[12px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors mb-3"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
@@ -151,7 +151,7 @@ export default function EmployeeDetailPage(): React.ReactElement {
                   <div className="absolute right-0 top-9 z-20 w-52 bg-white border border-[var(--color-border)] rounded-lg shadow-lg py-1">
                     {employee.dateOfLeaving === null ? (
                       <button
-                        onClick={() => { setKebabOpen(false); navigate(`/employees/${id}/exit/initiate`) }}
+                        onClick={() => { setKebabOpen(false); void navigate(`/employees/${String(id)}/exit/initiate`) }}
                         className="w-full text-left px-4 py-2 text-[13px] text-[var(--color-text-primary)] hover:bg-gray-50"
                       >
                         Initiate Exit Process
@@ -178,7 +178,7 @@ export default function EmployeeDetailPage(): React.ReactElement {
         {TABS.map(t => (
           <button
             key={t.key}
-            onClick={() => setTab(t.key)}
+            onClick={() => { setTab(t.key); }}
             className={`h-10 px-4 text-[13px] font-medium border-b-2 transition-colors whitespace-nowrap ${
               tab === t.key
                 ? 'border-[var(--color-primary)] text-[var(--color-primary)]'

@@ -33,7 +33,7 @@ const MONTH_NAMES = [
 ]
 
 function formatPeriod(year: number, month: number): string {
-  return `${MONTH_NAMES[month - 1] ?? 'Unknown'} ${year}`
+  return `${MONTH_NAMES[month - 1] ?? 'Unknown'} ${year.toString()}`
 }
 
 function formatDateTime(iso: string): string {

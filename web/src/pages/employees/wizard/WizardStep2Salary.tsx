@@ -194,6 +194,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
   useEffect(() => {
     if (templates.length > 0 && !templateId) {
       const active = templates.find(t => t.isActive) ?? templates[0]
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- seed default template from async query data; not derivable during render
       if (active) setTemplateId(active.id)
     }
   }, [templates, templateId])
@@ -201,8 +202,10 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
   // Reset overrides and added comps when template changes
   useEffect(() => {
     if (prefilled) return  // don't wipe overrides loaded from existing structure
+    /* eslint-disable react-hooks/set-state-in-effect -- reset overrides/added comps when template changes; intentional sync, not derivable */
     setOverrides({})
     setAddedComps([])
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [templateId, prefilled])
 
   const { data: existingSalary } = useQuery<EmployeeSalaryStructureDto>({
@@ -219,6 +222,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
   // Pre-fill form from existing salary structure + employee flags
   useEffect(() => {
     if (prefilled || !existingSalary || !employeeDetail) return
+    /* eslint-disable react-hooks/set-state-in-effect -- one-time prefill of form state from async existing-salary + employee queries */
     setAnnualCTC(String(existingSalary.annualCTC))
     if (existingSalary.templateId) setTemplateId(existingSalary.templateId)
     setEpfEnabled(employeeDetail.epfEnabled)
@@ -226,6 +230,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
     setPtEnabled(employeeDetail.ptEnabled)
     setLwfEnabled(employeeDetail.lwfEnabled)
     setPrefilled(true)
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [existingSalary, employeeDetail, prefilled])
 
   // Apply template-level statutory defaults to employee flags ONCE per template
@@ -306,8 +311,8 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
     const val = parseFloat(rawVal)
     if (isNaN(val)) {
       setOverrides(prev => {
-        const next = { ...prev }
-        delete next[componentId]
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars -- rest-destructure to omit key immutably
+        const { [componentId]: _omit, ...next } = prev
         return next
       })
       return
@@ -319,8 +324,8 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
     const val = parseFloat(rawVal)
     if (isNaN(val)) {
       setOverrides(prev => {
-        const next = { ...prev }
-        delete next[componentId]
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars -- rest-destructure to omit key immutably
+        const { [componentId]: _omit, ...next } = prev
         return next
       })
       return
@@ -330,8 +335,8 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
 
   function handleResetOverride(componentId: string): void {
     setOverrides(prev => {
-      const next = { ...prev }
-      delete next[componentId]
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- rest-destructure to omit key immutably
+      const { [componentId]: _omit, ...next } = prev
       return next
     })
   }
@@ -355,8 +360,8 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
   function handleRemoveAdded(componentId: string): void {
     setAddedComps(prev => prev.filter(c => c.id !== componentId))
     setOverrides(prev => {
-      const next = { ...prev }
-      delete next[componentId]
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- rest-destructure to omit key immutably
+      const { [componentId]: _omit, ...next } = prev
       return next
     })
   }
@@ -378,8 +383,8 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
   function handleRemoveBenefit(componentId: string): void {
     setAddedBenefits(prev => prev.filter(b => b.id !== componentId))
     setBenefitOverrides(prev => {
-      const next = { ...prev }
-      delete next[componentId]
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- rest-destructure to omit key immutably
+      const { [componentId]: _omit, ...next } = prev
       return next
     })
   }
@@ -435,7 +440,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
       })
     },
     onSuccess: () => { setError(null); onSuccess() },
-    onError: () => setError('Failed to save salary details. Please try again.'),
+    onError: () => { setError('Failed to save salary details. Please try again.'); },
   })
 
   function handleSave(): void {
@@ -449,9 +454,9 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
 
   function calcLabel(row: ComponentRow): string {
     if (row.isResidual) return 'Fixed Allowance (residual)'
-    if (row.formulaType === 'PercentOfCTC') return `${row.percentage ?? ''}% of CTC`
-    if (row.formulaType === 'PercentOfBasic') return `${row.percentage ?? ''}% of Basic`
-    if (row.formulaType === 'PercentOfGross') return `${row.percentage ?? ''}% of Gross`
+    if (row.formulaType === 'PercentOfCTC') return `${String(row.percentage ?? '')}% of CTC`
+    if (row.formulaType === 'PercentOfBasic') return `${String(row.percentage ?? '')}% of Basic`
+    if (row.formulaType === 'PercentOfGross') return `${String(row.percentage ?? '')}% of Gross`
     return 'Fixed'
   }
 
@@ -474,7 +479,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
               <input
                 type="checkbox"
                 checked={s.value}
-                onChange={e => s.set(e.target.checked)}
+                onChange={e => { s.set(e.target.checked); }}
                 className="w-4 h-4 accent-[var(--color-primary)]"
               />
               <span className="text-[12px] text-[var(--color-text-primary)]">{s.label}</span>
@@ -494,7 +499,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
               min={0}
               step={1000}
               value={annualCTC}
-              onChange={e => setAnnualCTC(e.target.value)}
+              onChange={e => { setAnnualCTC(e.target.value); }}
               className={inputCls}
               placeholder="e.g. 840000"
             />
@@ -508,7 +513,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
             <label className={labelCls}>Salary Template</label>
             <select
               value={templateId}
-              onChange={e => setTemplateId(e.target.value)}
+              onChange={e => { setTemplateId(e.target.value); }}
               className={inputCls}
             >
               <option value="">No template</option>
@@ -558,7 +563,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                               max={100}
                               step={0.5}
                               value={overrides[row.componentId]?.percentage ?? row.percentage ?? ''}
-                              onChange={e => handlePctChange(row.componentId, e.target.value, row.formulaType)}
+                              onChange={e => { handlePctChange(row.componentId, e.target.value, row.formulaType); }}
                               className="w-16 h-7 px-2 text-[12px] border border-[var(--color-border)] rounded text-center bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
                             />
                             <span className="text-[var(--color-text-secondary)]">%</span>
@@ -569,7 +574,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                             min={0}
                             step={100}
                             value={overrides[row.componentId]?.fixedAmount ?? row.fixedAmount ?? ''}
-                            onChange={e => handleFixedChange(row.componentId, e.target.value)}
+                            onChange={e => { handleFixedChange(row.componentId, e.target.value); }}
                             className="w-24 h-7 px-2 text-[12px] border border-[var(--color-border)] rounded text-right bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
                           />
                         )}
@@ -580,7 +585,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                         {!row.isResidual && isChanged && !row.isAdded && (
                           <button
                             type="button"
-                            onClick={() => handleResetOverride(row.componentId)}
+                            onClick={() => { handleResetOverride(row.componentId); }}
                             title="Reset to template default"
                             className="p-1 rounded hover:bg-[var(--color-bg-subtle)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
                           >
@@ -590,7 +595,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                         {row.isAdded && (
                           <button
                             type="button"
-                            onClick={() => handleRemoveAdded(row.componentId)}
+                            onClick={() => { handleRemoveAdded(row.componentId); }}
                             title="Remove added earning"
                             className="p-1 rounded hover:bg-red-50 text-[var(--color-text-secondary)] hover:text-red-500"
                           >
@@ -681,7 +686,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                         setAddEarningId(id)
                         const sc = availableToAdd.find(x => x.id === id)
                         if (sc) {
-                          setAddEarningFormulaType(sc.formulaType ?? 'Fixed')
+                          setAddEarningFormulaType(sc.formulaType)
                           setAddEarningAmount(sc.fixedAmount != null ? String(sc.fixedAmount) : '')
                           setAddEarningPercentage(sc.percentage != null ? String(sc.percentage) : '')
                         }
@@ -695,7 +700,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                     </select>
                     <select
                       value={addEarningFormulaType}
-                      onChange={e => setAddEarningFormulaType(e.target.value)}
+                      onChange={e => { setAddEarningFormulaType(e.target.value); }}
                       className="h-8 px-2 text-[12px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
                     >
                       <option value="Fixed">Fixed ₹</option>
@@ -710,7 +715,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                         step={100}
                         placeholder="Amount ₹"
                         value={addEarningAmount}
-                        onChange={e => setAddEarningAmount(e.target.value)}
+                        onChange={e => { setAddEarningAmount(e.target.value); }}
                         className="w-28 h-8 px-2 text-[12px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
                       />
                     ) : (
@@ -721,7 +726,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                         step={0.5}
                         placeholder="%"
                         value={addEarningPercentage}
-                        onChange={e => setAddEarningPercentage(e.target.value)}
+                        onChange={e => { setAddEarningPercentage(e.target.value); }}
                         className="w-20 h-8 px-2 text-[12px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
                       />
                     )}
@@ -750,7 +755,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                 ) : (
                   <button
                     type="button"
-                    onClick={() => setShowAddEarning(true)}
+                    onClick={() => { setShowAddEarning(true); }}
                     className="flex items-center gap-1.5 text-[12px] text-[var(--color-primary)] hover:text-[var(--color-primary-hover)]"
                   >
                     <Plus size={13} />
@@ -797,7 +802,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                       <td className="px-2 py-2 text-center">
                         <button
                           type="button"
-                          onClick={() => handleRemoveBenefit(b.id)}
+                          onClick={() => { handleRemoveBenefit(b.id); }}
                           className="p-1 rounded hover:bg-red-50 text-[var(--color-text-secondary)] hover:text-red-500"
                         >
                           <Trash2 size={13} />
@@ -813,7 +818,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                 <div className="flex items-center gap-2">
                   <select
                     value={addBenefitId}
-                    onChange={e => setAddBenefitId(e.target.value)}
+                    onChange={e => { setAddBenefitId(e.target.value); }}
                     className="h-8 px-2 text-[12px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] flex-1"
                   >
                     <option value="">Select benefit</option>
@@ -827,7 +832,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                     step={100}
                     placeholder="Amount ₹/month"
                     value={addBenefitAmount}
-                    onChange={e => setAddBenefitAmount(e.target.value)}
+                    onChange={e => { setAddBenefitAmount(e.target.value); }}
                     className="w-32 h-8 px-2 text-[12px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
                   />
                   <button
@@ -849,7 +854,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
               ) : availableBenefits.length > 0 ? (
                 <button
                   type="button"
-                  onClick={() => setShowAddBenefit(true)}
+                  onClick={() => { setShowAddBenefit(true); }}
                   className="flex items-center gap-1.5 text-[12px] text-[var(--color-primary)] hover:text-[var(--color-primary-hover)]"
                 >
                   <Plus size={13} />

@@ -100,12 +100,12 @@ export default function PayRunsPage(): React.ReactElement {
   const historyTotal = historyData?.total ?? 0
 
   function startPolling(jobId: string): void {
-    pollRef.current = setInterval(() => {
+    const intervalId = setInterval(() => {
       void (async () => {
         try {
           const { data } = await api.get<JobStatus>(`/api/v1/jobs/${jobId}/status`)
           if (data.status === 'completed') {
-            clearInterval(pollRef.current!)
+            clearInterval(intervalId)
             pollRef.current = null
             setInitiating(false)
             if (data.resultJson) {
@@ -113,19 +113,20 @@ export default function PayRunsPage(): React.ReactElement {
               void navigate(`/pay-runs/${dto.id}`)
             }
           } else if (data.status === 'failed') {
-            clearInterval(pollRef.current!)
+            clearInterval(intervalId)
             pollRef.current = null
             setInitiating(false)
             setInitiateError(data.error ?? 'Payroll initiation failed. Please try again.')
           }
         } catch {
-          clearInterval(pollRef.current!)
+          clearInterval(intervalId)
           pollRef.current = null
           setInitiating(false)
           setInitiateError('Lost connection during payroll initiation. Please refresh and check status.')
         }
       })()
     }, 1500)
+    pollRef.current = intervalId
   }
 
   const initiateMutation = useMutation({
@@ -166,7 +167,7 @@ export default function PayRunsPage(): React.ReactElement {
           {allPending.length > 0 && (
             <div className="flex items-center gap-2 mb-4">
               <button
-                onClick={() => setPendingChip('all')}
+                onClick={() => { setPendingChip('all'); }}
                 className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-medium border transition-colors ${
                   pendingChip === 'all'
                     ? 'bg-[var(--color-primary-light)] border-[var(--color-primary)] text-[var(--color-primary)]'
@@ -180,7 +181,7 @@ export default function PayRunsPage(): React.ReactElement {
               </button>
               {fsRuns.length > 0 && (
                 <button
-                  onClick={() => setPendingChip('FinalSettlement')}
+                  onClick={() => { setPendingChip('FinalSettlement'); }}
                   className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-medium border transition-colors ${
                     pendingChip === 'FinalSettlement'
                       ? 'bg-[var(--color-primary-light)] border-[var(--color-primary)] text-[var(--color-primary)]'
@@ -195,7 +196,7 @@ export default function PayRunsPage(): React.ReactElement {
               )}
               {bulkFsRuns.length > 0 && (
                 <button
-                  onClick={() => setPendingChip('BulkFinalSettlement')}
+                  onClick={() => { setPendingChip('BulkFinalSettlement'); }}
                   className={`inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-[12px] font-medium border transition-colors ${
                     pendingChip === 'BulkFinalSettlement'
                       ? 'bg-[var(--color-primary-light)] border-[var(--color-primary)] text-[var(--color-primary)]'

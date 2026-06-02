@@ -69,15 +69,6 @@ export default function PayRunDetailPage(): React.ReactElement {
     retry: false,
   })
 
-  // Deep-link safety net (plan §4.5): API returns 404 for run ids absent from this
-  // tenant — cross-tenant access surfaces as 404 too because schema-per-tenant +
-  // JWT tenant_id binding routes the query through the wrong schema and finds
-  // nothing. Bounce to the list rather than showing a broken detail shell.
-  const runStatusCode = (runError as { response?: { status?: number } } | null)?.response?.status
-  if (runStatusCode === 404) {
-    return <Navigate to="/pay-runs" replace />
-  }
-
   const [empPage, setEmpPage] = useState(1)
   const [empPageSize, setEmpPageSize] = usePersistedPageSize('payrun-employees', 25)
 
@@ -123,6 +114,15 @@ export default function PayRunDetailPage(): React.ReactElement {
 
   function handleDownloadPayslip(employeeId: string, employeeName: string): void {
     setPayslipState({ employeeId, employeeName })
+  }
+
+  // Deep-link safety net (plan §4.5): API returns 404 for run ids absent from this
+  // tenant — cross-tenant access surfaces as 404 too because schema-per-tenant +
+  // JWT tenant_id binding routes the query through the wrong schema and finds
+  // nothing. Bounce to the list rather than showing a broken detail shell.
+  const runStatusCode = (runError as { response?: { status?: number } } | null)?.response?.status
+  if (runStatusCode === 404) {
+    return <Navigate to="/pay-runs" replace />
   }
 
   if (runLoading || !run) {

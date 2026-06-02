@@ -134,7 +134,7 @@ function BonusConfigForm({
   const qc = useQueryClient()
   const toast = useToast()
 
-  const [bonusRatePct, setBonusRatePct] = useState(String((config.bonusRate * 100).toFixed(2)))
+  const [bonusRatePct, setBonusRatePct] = useState((config.bonusRate * 100).toFixed(2))
   const [bonusMode, setBonusMode] = useState(config.bonusMode)
   const [bonusPayoutMonth, setBonusPayoutMonth] = useState(
     config.bonusPayoutMonth ? String(config.bonusPayoutMonth) : ''

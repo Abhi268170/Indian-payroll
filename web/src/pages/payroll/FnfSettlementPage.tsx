@@ -48,7 +48,7 @@ export default function FnfSettlementPage(): ReactElement {
 
   const { data: run, error: runError } = useQuery<PayrollRunDto>({
     queryKey: ['payroll-run', runId],
-    queryFn: () => api.get<PayrollRunDto>(`/api/v1/payroll-runs/${runId}`).then(r => r.data),
+    queryFn: () => api.get<PayrollRunDto>(`/api/v1/payroll-runs/${String(runId)}`).then(r => r.data),
     enabled: Boolean(runId),
     retry: false,
   })
@@ -56,7 +56,7 @@ export default function FnfSettlementPage(): ReactElement {
   // The employees endpoint returns a paged result ({ items, total, … }); unwrap items.
   const { data: rows = [] } = useQuery<EmployeeRowDto[]>({
     queryKey: ['fnf-rows', runId],
-    queryFn: () => api.get<{ items: EmployeeRowDto[] }>(`/api/v1/payroll-runs/${runId}/employees`).then(r => r.data.items),
+    queryFn: () => api.get<{ items: EmployeeRowDto[] }>(`/api/v1/payroll-runs/${String(runId)}/employees`).then(r => r.data.items),
     enabled: Boolean(runId),
   })
 
@@ -65,7 +65,7 @@ export default function FnfSettlementPage(): ReactElement {
   const employeeId = selectedEmployeeId ?? rows[0]?.employeeId ?? null
 
   const mutation = useMutation({
-    mutationFn: () => api.put(`/api/v1/payroll-runs/${runId}/employees/${employeeId}/fnf-settlement`, {
+    mutationFn: () => api.put(`/api/v1/payroll-runs/${String(runId)}/employees/${String(employeeId)}/fnf-settlement`, {
       lopDays,
       bonus: parseFloat(bonus) || 0,
       commission: parseFloat(commission) || 0,
@@ -111,7 +111,7 @@ export default function FnfSettlementPage(): ReactElement {
         <h1 className="text-[20px] font-semibold text-[var(--color-text-primary)]">
           {isBulk ? 'Bulk Final Settlement Payroll' : 'Final Settlement Payroll'}
         </h1>
-        <button onClick={() => { navigate('/pay-runs') }} className="text-[13px] text-[var(--color-text-secondary)]">
+        <button onClick={() => { void navigate('/pay-runs') }} className="text-[13px] text-[var(--color-text-secondary)]">
           Close
         </button>
       </div>
@@ -232,7 +232,7 @@ export default function FnfSettlementPage(): ReactElement {
 
       <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-[var(--color-border)]">
         <button
-          onClick={() => { navigate('/pay-runs') }}
+          onClick={() => { void navigate('/pay-runs') }}
           className="px-4 h-9 text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
         >Cancel</button>
         <button
@@ -297,7 +297,7 @@ const inputCls = 'w-full h-9 px-3 border border-[var(--color-border)] rounded-lg
 
 function formatDate(iso: string): string {
   const d = new Date(iso)
-  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
+  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getFullYear())}`
 }
 
 function extractError(err: unknown): string | null {

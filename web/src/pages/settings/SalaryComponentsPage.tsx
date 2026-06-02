@@ -93,7 +93,7 @@ function formatCalculation(comp: SalaryComponentSummary): string {
       return comp.fixedAmount != null && comp.fixedAmount > 0 ? formatINR(comp.fixedAmount) : 'Variable'
     }
     const base = FORMULA_BASE[comp.formulaType]
-    return base != null && comp.percentage != null ? `${comp.percentage}% ${base}` : '—'
+    return base != null && comp.percentage != null ? `${String(comp.percentage)}% ${base}` : '—'
   }
   if (comp.category === 'Deduction') {
     return comp.deductionFrequency ? (DEDUCTION_FREQ_LABELS[comp.deductionFrequency] ?? comp.deductionFrequency) : '—'
@@ -103,10 +103,7 @@ function formatCalculation(comp: SalaryComponentSummary): string {
       ? `${formatINR(comp.reimbursementAmount)}/mo`
       : 'Variable'
   }
-  if (comp.category === 'Benefit') {
-    return comp.benefitPercentage != null ? `${comp.benefitPercentage}%` : 'Variable'
-  }
-  return '—'
+  return comp.benefitPercentage != null ? `${String(comp.benefitPercentage)}%` : 'Variable'
 }
 
 export default function SalaryComponentsPage(): ReactElement {

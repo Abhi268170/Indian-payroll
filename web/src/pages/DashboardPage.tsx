@@ -81,7 +81,7 @@ export default function DashboardPage(): ReactElement {
   })
 
   const activeCount = activeEmployees?.total ?? 0
-  const lastRun = history?.items?.[0]
+  const lastRun = history?.items[0]
 
   return (
     <div className="space-y-5">

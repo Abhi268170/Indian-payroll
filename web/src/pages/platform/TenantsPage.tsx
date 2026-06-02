@@ -19,7 +19,7 @@ export default function TenantsPage(): React.ReactElement {
           <p className="text-sm text-gray-500 mt-0.5">Tenants that have purchased Indian Payroll</p>
         </div>
         <button
-          onClick={() => navigate('/platform/orgs/new')}
+          onClick={() => { void navigate('/platform/orgs/new') }}
           className="bg-gray-900 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
         >
           + Provision New Organisation
@@ -51,7 +51,7 @@ export default function TenantsPage(): React.ReactElement {
                 <tr
                   key={t.id}
                   className="hover:bg-gray-50 cursor-pointer"
-                  onClick={() => navigate(`/platform/orgs/${t.id}`)}
+                  onClick={() => { void navigate(`/platform/orgs/${t.id}`) }}
                 >
                   <td className="px-4 py-3 text-gray-900 font-medium">{t.displayName}</td>
                   <td className="px-4 py-3">

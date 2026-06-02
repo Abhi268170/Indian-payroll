@@ -49,7 +49,7 @@ export default function ForgotPasswordPage(): React.ReactElement {
           </Link>
         </div>
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={(e) => { void handleSubmit(onSubmit)(e) }} className="space-y-4">
           <div>
             <label className="block text-[13px] font-medium text-[var(--color-text-primary)] mb-1">Email</label>
             <input

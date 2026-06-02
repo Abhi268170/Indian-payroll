@@ -1,4 +1,4 @@
-import { useEffect, useId, useState, type ReactElement } from 'react'
+import { useId, useState, type ReactElement } from 'react'
 import { Calendar } from 'lucide-react'
 
 interface DateInputProps {
@@ -26,6 +26,7 @@ function displayToIso(display: string): string | null {
   const match = DD_MM_YYYY_RE.exec(display.trim())
   if (!match) return null
   const [, dd, mm, yyyy] = match
+  if (!dd || !mm || !yyyy) return null
   const day = Number(dd)
   const month = Number(mm)
   const year = Number(yyyy)
@@ -54,10 +55,12 @@ export function DateInput({
   const id = useId()
   const [display, setDisplay] = useState(() => isoToDisplay(value))
 
-  useEffect(() => {
-    // Keep display in sync when parent updates ISO value externally.
+  // Keep display in sync when parent updates ISO value externally.
+  const [prevValue, setPrevValue] = useState(value)
+  if (value !== prevValue) {
+    setPrevValue(value)
     setDisplay(isoToDisplay(value))
-  }, [value])
+  }
 
   function commit(next: string): void {
     if (next === '') {
@@ -86,7 +89,7 @@ export function DateInput({
           setDisplay(e.target.value)
           commit(e.target.value)
         }}
-        onBlur={e => commit(e.target.value)}
+        onBlur={e => { commit(e.target.value); }}
       />
       <input
         type="date"
@@ -97,7 +100,7 @@ export function DateInput({
         tabIndex={-1}
         aria-hidden="true"
         className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 opacity-0 cursor-pointer"
-        onChange={e => onChange(e.target.value)}
+        onChange={e => { onChange(e.target.value); }}
       />
       <Calendar className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-secondary)] pointer-events-none" />
     </div>

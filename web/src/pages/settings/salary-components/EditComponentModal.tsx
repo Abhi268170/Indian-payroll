@@ -91,7 +91,7 @@ function EditForm({
   const [isTaxable, setIsTaxable] = useState(detail.isTaxable ?? true)
   const [considerForEpf, setConsiderForEpf] = useState(detail.considerForEpf ?? false)
   const [epfInclusionRule, setEpfInclusionRule] = useState<'Always' | 'OnlyWhenPfWageBelowLimit'>(
-    (detail.epfInclusionRule as 'Always' | 'OnlyWhenPfWageBelowLimit') ?? 'Always',
+    (detail.epfInclusionRule as 'Always' | 'OnlyWhenPfWageBelowLimit' | null) ?? 'Always',
   )
   const [considerForEsi, setConsiderForEsi] = useState(detail.considerForEsi ?? false)
   const [calculateOnProRata, setCalculateOnProRata] = useState(detail.calculateOnProRata ?? true)
@@ -100,13 +100,13 @@ function EditForm({
 
   // Deduction
   const [deductionFrequency, setDeductionFrequency] = useState<'EveryMonth' | 'OnceAYear' | 'Quarterly' | 'HalfYearly'>(
-    (detail.deductionFrequency as 'EveryMonth' | 'OnceAYear' | 'Quarterly' | 'HalfYearly') ?? 'EveryMonth',
+    (detail.deductionFrequency as 'EveryMonth' | 'OnceAYear' | 'Quarterly' | 'HalfYearly' | null) ?? 'EveryMonth',
   )
 
   // Reimbursement
   const [reimbursementAmount, setReimbursementAmount] = useState(String(detail.reimbursementAmount ?? ''))
   const [unclaimedHandling, setUnclaimedHandling] = useState<'DoNotPay' | 'PayAsTaxable'>(
-    (detail.unclaimedHandling as 'DoNotPay' | 'PayAsTaxable') ?? 'DoNotPay',
+    (detail.unclaimedHandling as 'DoNotPay' | 'PayAsTaxable' | null) ?? 'DoNotPay',
   )
 
   // Benefit

@@ -23,6 +23,11 @@ const updateSchema = createSchema.omit({ state: true }).extend({
   ptRegistrationNumber: z.string().max(50).optional().or(z.literal('')),
 })
 
+function emptyToNull(value: string | undefined): string | null {
+  if (value === undefined || value === '') return null
+  return value
+}
+
 type CreateFormData = z.infer<typeof createSchema>
 type UpdateFormData = z.infer<typeof updateSchema>
 
@@ -58,10 +63,10 @@ export default function WorkLocationFormPage({ location, onSaved, onCancel }: Pr
       api.post('/api/v1/work-locations', {
         name: data.name,
         state: data.state,
-        addressLine1: data.addressLine1 || null,
-        addressLine2: data.addressLine2 || null,
-        city: data.city || null,
-        pinCode: data.pinCode || null,
+        addressLine1: emptyToNull(data.addressLine1),
+        addressLine2: emptyToNull(data.addressLine2),
+        city: emptyToNull(data.city),
+        pinCode: emptyToNull(data.pinCode),
       }),
     onSuccess: () => {
       toastSuccess('Work location created')
@@ -73,15 +78,17 @@ export default function WorkLocationFormPage({ location, onSaved, onCancel }: Pr
   })
 
   const updateMutation = useMutation({
-    mutationFn: (data: UpdateFormData) =>
-      api.put(`/api/v1/work-locations/${location!.id}`, {
+    mutationFn: (data: UpdateFormData) => {
+      if (!location) throw new Error('No location to update')
+      return api.put(`/api/v1/work-locations/${location.id}`, {
         name: data.name,
-        addressLine1: data.addressLine1 || null,
-        addressLine2: data.addressLine2 || null,
-        city: data.city || null,
-        pinCode: data.pinCode || null,
-        ptRegistrationNumber: data.ptRegistrationNumber || null,
-      }),
+        addressLine1: emptyToNull(data.addressLine1),
+        addressLine2: emptyToNull(data.addressLine2),
+        city: emptyToNull(data.city),
+        pinCode: emptyToNull(data.pinCode),
+        ptRegistrationNumber: emptyToNull(data.ptRegistrationNumber),
+      })
+    },
     onSuccess: () => {
       toastSuccess('Work location updated')
       onSaved()
@@ -102,7 +109,7 @@ export default function WorkLocationFormPage({ location, onSaved, onCancel }: Pr
         </h1>
         <form
           className="space-y-5"
-          onSubmit={handleSubmit(data => updateMutation.mutate(data))}
+          onSubmit={(e) => { void handleSubmit(data => { updateMutation.mutate(data); })(e) }}
         >
           <Input
             label="Work Location Name"
@@ -178,7 +185,7 @@ export default function WorkLocationFormPage({ location, onSaved, onCancel }: Pr
       </h1>
       <form
         className="space-y-5"
-        onSubmit={handleSubmit(data => createMutation.mutate(data))}
+        onSubmit={(e) => { void handleSubmit(data => { createMutation.mutate(data); })(e) }}
       >
         <Input
           label="Work Location Name"

@@ -22,9 +22,9 @@ export default function AddEmployeeWizard(): React.ReactElement {
   function goToStep(employeeId: string, nextStep: number): void {
     const stepNames = ['', '', 'salary', 'personal', 'payment']
     if (nextStep > 4) {
-      navigate(`/employees/${employeeId}`)
+      void navigate(`/employees/${employeeId}`)
     } else {
-      navigate(`/employees/${employeeId}/wizard/${stepNames[nextStep]}`)
+      void navigate(`/employees/${employeeId}/wizard/${stepNames[nextStep] ?? ''}`)
     }
   }
 
@@ -49,30 +49,30 @@ export default function AddEmployeeWizard(): React.ReactElement {
       <div className="bg-white border border-[var(--color-border)] rounded-xl p-6">
         {currentStep === 1 && (
           <WizardStep1Basic
-            onSuccess={newId => goToStep(newId, 2)}
-            onCancel={() => navigate('/employees')}
+            onSuccess={newId => { goToStep(newId, 2); }}
+            onCancel={() => { void navigate('/employees') }}
           />
         )}
         {currentStep === 2 && id && (
           <WizardStep2Salary
             employeeId={id}
             isRevise={isRevise}
-            onSuccess={() => isRevise ? navigate(`/employees/${id}?tab=salary`) : goToStep(id, 3)}
-            onSkip={() => goToStep(id, 3)}
+            onSuccess={() => { if (isRevise) { void navigate(`/employees/${id}?tab=salary`) } else { goToStep(id, 3) } }}
+            onSkip={() => { goToStep(id, 3); }}
           />
         )}
         {currentStep === 3 && id && (
           <WizardStep3Personal
             employeeId={id}
-            onSuccess={() => goToStep(id, 4)}
-            onSkip={() => goToStep(id, 4)}
+            onSuccess={() => { goToStep(id, 4); }}
+            onSkip={() => { goToStep(id, 4); }}
           />
         )}
         {currentStep === 4 && id && (
           <WizardStep4Payment
             employeeId={id}
-            onSuccess={() => navigate(`/employees/${id}`)}
-            onSkip={() => navigate(`/employees/${id}`)}
+            onSuccess={() => { void navigate(`/employees/${id}`) }}
+            onSkip={() => { void navigate(`/employees/${id}`) }}
           />
         )}
       </div>

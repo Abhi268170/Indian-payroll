@@ -63,7 +63,7 @@ export default function InlineCreateModal({ title, fields, onSave, onClose }: Pr
               <input
                 className={inputCls}
                 value={values[f.name] ?? ''}
-                onChange={e => setValues(v => ({ ...v, [f.name]: e.target.value }))}
+                onChange={e => { setValues(v => ({ ...v, [f.name]: e.target.value })); }}
               />
             </div>
           ))}
@@ -75,7 +75,7 @@ export default function InlineCreateModal({ title, fields, onSave, onClose }: Pr
           <button
             type="button"
             disabled={saving}
-            onClick={handleSave}
+            onClick={() => { void handleSave() }}
             className="h-8 px-4 bg-[var(--color-primary)] text-white text-[12px] font-medium rounded-lg disabled:opacity-50 hover:bg-[var(--color-primary-hover)] transition-colors"
           >
             {saving ? 'Saving…' : 'Save'}

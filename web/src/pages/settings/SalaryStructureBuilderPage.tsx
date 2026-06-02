@@ -138,7 +138,8 @@ export default function SalaryStructureBuilderPage(): ReactElement {
   useQuery<TemplateDetail>({
     queryKey: ['salary-structure-template', id],
     queryFn: async () => {
-      const res = await api.get<TemplateDetail>(`/api/v1/salary-structure-templates/${id!}`)
+      if (!id) throw new Error('Template id is required')
+      const res = await api.get<TemplateDetail>(`/api/v1/salary-structure-templates/${id}`)
       return res.data
     },
     enabled: !isNew,
@@ -150,7 +151,8 @@ export default function SalaryStructureBuilderPage(): ReactElement {
   const { data: templateData } = useQuery<TemplateDetail>({
     queryKey: ['salary-structure-template', id],
     queryFn: async () => {
-      const res = await api.get<TemplateDetail>(`/api/v1/salary-structure-templates/${id!}`)
+      if (!id) throw new Error('Template id is required')
+      const res = await api.get<TemplateDetail>(`/api/v1/salary-structure-templates/${id}`)
       return res.data
     },
     enabled: !isNew,

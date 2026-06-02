@@ -105,14 +105,14 @@ export default function EmployeesPage(): React.ReactElement {
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => navigate('/employees/import')}
+            onClick={() => { void navigate('/employees/import') }}
             className="inline-flex items-center gap-1.5 h-9 px-4 bg-white border border-[var(--color-border)] text-[var(--color-text-secondary)] text-[13px] font-medium rounded-lg hover:border-[var(--color-border-strong)] transition-colors"
           >
             <Upload className="w-3.5 h-3.5" />
             Import
           </button>
           <button
-            onClick={() => navigate('/employees/new')}
+            onClick={() => { void navigate('/employees/new') }}
             disabled={addEmployeeBlocked}
             title={addEmployeeTooltip}
             className="inline-flex items-center gap-1.5 h-9 px-4 bg-[var(--color-primary)] text-white text-[13px] font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[var(--color-primary)]"
@@ -190,7 +190,7 @@ export default function EmployeesPage(): React.ReactElement {
               {filtered.map(e => (
                 <tr
                   key={e.id}
-                  onClick={() => navigate(`/employees/${e.id}`)}
+                  onClick={() => { void navigate(`/employees/${e.id}`) }}
                   className="hover:bg-[var(--color-page-bg)] cursor-pointer transition-colors"
                 >
                   <td className="px-4 py-3">

@@ -33,7 +33,7 @@ export default function EmployeeSalaryTab({ employeeId }: Props): React.ReactEle
       <div className="p-8 text-center space-y-3">
         <p className="text-[13px] text-[var(--color-text-secondary)]">No salary structure assigned yet.</p>
         <button
-          onClick={() => navigate(`/employees/${employeeId}/wizard/salary`)}
+          onClick={() => { void navigate(`/employees/${employeeId}/wizard/salary`) }}
           className="h-8 px-4 bg-[var(--color-primary)] text-white text-[12px] font-medium rounded-lg hover:bg-[var(--color-primary-hover)] transition-colors"
         >
           Assign Salary Structure
@@ -60,7 +60,7 @@ export default function EmployeeSalaryTab({ employeeId }: Props): React.ReactEle
             )}
             <p className="text-[11px] text-[var(--color-text-secondary)] mt-1">Effective {fmtDate(data.effectiveFrom)}</p>
             <button
-              onClick={() => navigate(`/employees/${employeeId}/wizard/salary?revise=1`)}
+              onClick={() => { void navigate(`/employees/${employeeId}/wizard/salary?revise=1`) }}
               className="mt-2 h-8 px-3 text-[12px] text-[var(--color-primary)] border border-[var(--color-primary)]/40 rounded-lg hover:bg-[var(--color-primary)]/5 transition-colors"
             >
               Revise
@@ -92,11 +92,11 @@ export default function EmployeeSalaryTab({ employeeId }: Props): React.ReactEle
                     {c.isResidual
                       ? 'Residual (Fixed Allowance)'
                       : c.formulaType === 'PercentOfCTC'
-                        ? `${c.percentage}% of CTC`
+                        ? `${String(c.percentage)}% of CTC`
                         : c.formulaType === 'PercentOfBasic'
-                          ? `${c.percentage}% of Basic`
+                          ? `${String(c.percentage)}% of Basic`
                           : c.formulaType === 'PercentOfGross'
-                            ? `${c.percentage}% of Gross`
+                            ? `${String(c.percentage)}% of Gross`
                             : 'Fixed'}
                   </td>
                   <td className="px-5 py-3 text-right text-[var(--color-text-primary)]">{formatINR(c.monthlyAmount)}</td>
@@ -104,7 +104,7 @@ export default function EmployeeSalaryTab({ employeeId }: Props): React.ReactEle
                 </tr>
               ))}
             </tbody>
-            {(data.employeeDeductions ?? []).length > 0 && (
+            {data.employeeDeductions.length > 0 && (
               <tbody className="bg-[var(--color-page-bg)] border-t border-[var(--color-border)]">
                 <tr>
                   <td colSpan={4} className="px-5 pt-2 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
@@ -120,12 +120,12 @@ export default function EmployeeSalaryTab({ employeeId }: Props): React.ReactEle
                 ))}
                 <tr className="font-semibold text-[var(--color-text-primary)] border-t border-[var(--color-border)]">
                   <td className="px-5 py-2" colSpan={2}>Take-home (net pay)</td>
-                  <td className="px-5 py-2 text-right">{formatINR(data.netPayMonthly ?? 0)}</td>
-                  <td className="px-5 py-2 text-right">{formatINR((data.netPayMonthly ?? 0) * 12)}</td>
+                  <td className="px-5 py-2 text-right">{formatINR(data.netPayMonthly)}</td>
+                  <td className="px-5 py-2 text-right">{formatINR(data.netPayMonthly * 12)}</td>
                 </tr>
               </tbody>
             )}
-            {(data.employerContributions ?? []).length > 0 && (
+            {data.employerContributions.length > 0 && (
               <tbody className="bg-[var(--color-page-bg)] border-t border-[var(--color-border)]">
                 <tr>
                   <td colSpan={4} className="px-5 pt-2 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">
@@ -141,7 +141,7 @@ export default function EmployeeSalaryTab({ employeeId }: Props): React.ReactEle
                 ))}
               </tbody>
             )}
-            {(data.benefits ?? []).length > 0 && (
+            {data.benefits.length > 0 && (
               <tbody className="bg-[var(--color-page-bg)] border-t border-[var(--color-border)]">
                 <tr>
                   <td colSpan={4} className="px-5 pt-2 text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">

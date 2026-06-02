@@ -41,12 +41,12 @@ export default function ExitInitiationPage(): ReactElement {
 
   const { data: employee } = useQuery<EmployeeOverview>({
     queryKey: ['employee', employeeId],
-    queryFn: () => api.get<EmployeeOverview>(`/api/v1/employees/${employeeId}`).then(r => r.data),
+    queryFn: () => api.get<EmployeeOverview>(`/api/v1/employees/${employeeId ?? ''}`).then(r => r.data),
     enabled: Boolean(employeeId),
   })
 
   const mutation = useMutation({
-    mutationFn: () => api.post<ExitResponse>(`/api/v1/employees/${employeeId}/exit`, {
+    mutationFn: () => api.post<ExitResponse>(`/api/v1/employees/${employeeId ?? ''}/exit`, {
       lastWorkingDay,
       reason,
       settlementMode: mode,
@@ -61,7 +61,7 @@ export default function ExitInitiationPage(): ReactElement {
       const route = data.fnfPayrollRunType === 'BulkFinalSettlement'
         ? `/pay-runs/${data.fnfPayrollRunId}`
         : `/pay-runs/${data.fnfPayrollRunId}/fnf`
-      navigate(route)
+      void navigate(route)
     },
     onError: (err: unknown) => {
       setError(extractError(err) ?? 'Failed to initiate exit')
@@ -154,7 +154,7 @@ export default function ExitInitiationPage(): ReactElement {
             </button>
             <button
               type="button"
-              onClick={() => { navigate(`/employees/${employeeId}`) }}
+              onClick={() => { void navigate(`/employees/${employeeId ?? ''}`) }}
               className="px-4 h-9 text-[13px] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
             >
               Cancel
@@ -201,7 +201,7 @@ const inputCls = 'w-full h-9 px-3 border border-[var(--color-border)] rounded-lg
 
 function formatDate(iso: string): string {
   const d = new Date(iso)
-  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
+  return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getFullYear())}`
 }
 
 function extractError(err: unknown): string | null {

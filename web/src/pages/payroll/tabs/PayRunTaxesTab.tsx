@@ -16,7 +16,7 @@ function WorksheetRow({ row }: { row: PayRunTaxLineDto }): React.ReactElement {
     <>
       <tr
         className="border-b border-[var(--color-border)] hover:bg-[var(--color-surface)] transition-colors cursor-pointer"
-        onClick={() => setExpanded(e => !e)}
+        onClick={() => { setExpanded(e => !e); }}
       >
         <td className="px-4 py-3 w-6">
           {expanded

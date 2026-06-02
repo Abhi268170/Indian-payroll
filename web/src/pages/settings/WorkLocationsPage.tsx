@@ -88,7 +88,7 @@ function ContextMenu({
   return (
     <div ref={ref} className="relative">
       <button
-        onClick={() => setOpen(o => !o)}
+        onClick={() => { setOpen(o => !o); }}
         className="inline-flex items-center justify-center w-8 h-8 rounded-full text-[var(--color-text-muted)] hover:bg-gray-100 transition-colors"
         aria-label="More options"
       >
@@ -208,7 +208,7 @@ export default function WorkLocationsPage(): ReactElement {
 
   function handleDelete(loc: WorkLocation): void {
     if (loc.employeeCount > 0) {
-      toastError(`Cannot delete — ${loc.employeeCount} employee(s) assigned`)
+      toastError(`Cannot delete — ${String(loc.employeeCount)} employee(s) assigned`)
       return
     }
     if (!confirm(`Delete "${loc.name}"? This cannot be undone.`)) return
@@ -223,7 +223,7 @@ export default function WorkLocationsPage(): ReactElement {
           void qc.invalidateQueries({ queryKey: ['work-locations'] })
           setView('list')
         }}
-        onCancel={() => setView('list')}
+        onCancel={() => { setView('list'); }}
       />
     )
   }
@@ -232,7 +232,7 @@ export default function WorkLocationsPage(): ReactElement {
     <div className="px-8 py-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-[20px] font-semibold text-[var(--color-text-primary)]">Work Locations</h1>
-        <Button variant="primary" size="sm" onClick={() => setView('new')}>
+        <Button variant="primary" size="sm" onClick={() => { setView('new'); }}>
           Add Work Location
         </Button>
       </div>
@@ -246,7 +246,7 @@ export default function WorkLocationsPage(): ReactElement {
           heading="No work locations yet"
           subtext="Add offices and branches where your employees work"
           action={
-            <Button variant="primary" size="sm" onClick={() => setView('new')}>
+            <Button variant="primary" size="sm" onClick={() => { setView('new'); }}>
               Add Work Location
             </Button>
           }
@@ -257,9 +257,9 @@ export default function WorkLocationsPage(): ReactElement {
             <WorkLocationCard
               key={loc.id}
               location={loc}
-              onEdit={() => setView(loc)}
-              onToggleActive={() => toggleMutation.mutate({ id: loc.id, activate: !loc.isActive })}
-              onDelete={() => handleDelete(loc)}
+              onEdit={() => { setView(loc); }}
+              onToggleActive={() => { toggleMutation.mutate({ id: loc.id, activate: !loc.isActive }); }}
+              onDelete={() => { handleDelete(loc); }}
             />
           ))}
         </div>

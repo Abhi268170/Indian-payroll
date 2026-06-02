@@ -50,22 +50,22 @@ export default function WizardStep3Personal({ employeeId, onSuccess, onSkip }: P
   const save = useMutation({
     mutationFn: (v: FormValues) => api.put(`/api/v1/employees/${employeeId}/personal-details`, {
       fathersName: v.fathersName,
-      pan: v.pan || null,
-      aadhaar: v.aadhaar || null,
-      personalEmail: v.personalEmail || null,
+      pan: v.pan === undefined || v.pan === '' ? null : v.pan,
+      aadhaar: v.aadhaar === undefined || v.aadhaar === '' ? null : v.aadhaar,
+      personalEmail: v.personalEmail === undefined || v.personalEmail === '' ? null : v.personalEmail,
       differentlyAbledType: v.differentlyAbledType,
       isPWD: v.isPWD,
-      addressLine1: v.addressLine1 || null,
-      addressLine2: v.addressLine2 || null,
-      city: v.city || null,
-      residentialState: v.residentialState || null,
-      pinCode: v.pinCode || null,
+      addressLine1: v.addressLine1 === undefined || v.addressLine1 === '' ? null : v.addressLine1,
+      addressLine2: v.addressLine2 === undefined || v.addressLine2 === '' ? null : v.addressLine2,
+      city: v.city === undefined || v.city === '' ? null : v.city,
+      residentialState: v.residentialState === undefined || v.residentialState === '' ? null : v.residentialState,
+      pinCode: v.pinCode === undefined || v.pinCode === '' ? null : v.pinCode,
     }),
     onSuccess,
   })
 
   return (
-    <form onSubmit={handleSubmit(v => save.mutate(v))} className="space-y-5">
+    <form onSubmit={(e) => { void handleSubmit(v => { save.mutate(v); })(e) }} className="space-y-5">
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className={labelCls}>Father's Name <span className="text-red-500">*</span></label>

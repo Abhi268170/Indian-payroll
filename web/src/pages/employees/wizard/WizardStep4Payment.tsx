@@ -69,17 +69,17 @@ export default function WizardStep4Payment({ employeeId, onSuccess, onSkip }: Pr
   const save = useMutation({
     mutationFn: (v: FormValues) => api.put(`/api/v1/employees/${employeeId}/payment-info`, {
       paymentMode: v.paymentMode,
-      accountHolderName: hasBankFields ? (v.accountHolderName || null) : null,
-      bankName: hasBankFields ? (v.bankName || null) : null,
-      accountType: hasBankFields ? (v.accountType || null) : null,
-      accountNumber: hasBankFields ? (v.accountNumber || null) : null,
-      ifsc: hasBankFields ? (v.ifscCode || null) : null,
+      accountHolderName: hasBankFields ? (v.accountHolderName ?? null) : null,
+      bankName: hasBankFields ? (v.bankName ?? null) : null,
+      accountType: hasBankFields ? (v.accountType ?? null) : null,
+      accountNumber: hasBankFields ? (v.accountNumber ?? null) : null,
+      ifsc: hasBankFields ? (v.ifscCode ?? null) : null,
     }),
     onSuccess,
   })
 
   return (
-    <form onSubmit={handleSubmit(v => save.mutate(v))} className="space-y-6">
+    <form onSubmit={(e) => { void handleSubmit(v => { save.mutate(v); })(e) }} className="space-y-6">
       {/* Payment mode cards */}
       <div>
         <p className="text-[12px] font-medium text-[var(--color-text-secondary)] mb-3">Payment Mode</p>

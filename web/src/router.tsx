@@ -31,10 +31,14 @@ import OrgDetailPage from '@/pages/platform/OrgDetailPage'
 import SetPasswordPage from '@/pages/auth/SetPasswordPage'
 import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage'
 
+function nowMs(): number {
+  return Date.now()
+}
+
 function RequireAuth({ children }: { children: React.ReactElement }): React.ReactElement {
   const token = useAuthStore(s => s.token)
   const user = useAuthStore(s => s.user)
-  const isAuth = token !== null && user !== null && user.exp * 1000 > Date.now()
+  const isAuth = token !== null && user !== null && user.exp * 1000 > nowMs()
   if (!isAuth) return <Navigate to="/login" replace />
   return children
 }
@@ -42,7 +46,7 @@ function RequireAuth({ children }: { children: React.ReactElement }): React.Reac
 function RequireSuperAdmin({ children }: { children: React.ReactElement }): React.ReactElement {
   const token = useAuthStore(s => s.token)
   const user = useAuthStore(s => s.user)
-  const isAuth = token !== null && user !== null && user.exp * 1000 > Date.now()
+  const isAuth = token !== null && user !== null && user.exp * 1000 > nowMs()
   if (!isAuth) return <Navigate to="/login" replace />
   const roles = Array.isArray(user.role) ? user.role : [user.role]
   if (!roles.includes('SuperAdmin')) return <Navigate to="/" replace />
@@ -56,7 +60,7 @@ function RequireSuperAdmin({ children }: { children: React.ReactElement }): Reac
 function RequireTenantUser({ children }: { children: React.ReactElement }): React.ReactElement {
   const token = useAuthStore(s => s.token)
   const user = useAuthStore(s => s.user)
-  const isAuth = token !== null && user !== null && user.exp * 1000 > Date.now()
+  const isAuth = token !== null && user !== null && user.exp * 1000 > nowMs()
   if (!isAuth) return <Navigate to="/login" replace />
   const roles = Array.isArray(user.role) ? user.role : [user.role]
   if (roles.includes('SuperAdmin')) return <Navigate to="/platform/orgs" replace />
@@ -66,7 +70,7 @@ function RequireTenantUser({ children }: { children: React.ReactElement }): Reac
 function RootRedirect(): React.ReactElement {
   const user = useAuthStore(s => s.user)
   const token = useAuthStore(s => s.token)
-  const isAuth = token !== null && user !== null && user.exp * 1000 > Date.now()
+  const isAuth = token !== null && user !== null && user.exp * 1000 > nowMs()
   if (!isAuth) return <Navigate to="/login" replace />
   const roles = Array.isArray(user.role) ? user.role : [user.role]
   if (roles.includes('SuperAdmin')) return <Navigate to="/platform/orgs" replace />

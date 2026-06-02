@@ -176,7 +176,7 @@ describe('EmployeePayBreakdown', () => {
       expect(container.querySelectorAll('button[title]').length).toBe(0)
       // Check no button inside the one-time row
       const rows = container.querySelectorAll('tr')
-      const bonusRow = Array.from(rows).find(r => r.textContent?.includes('Bonus'))
+      const bonusRow = Array.from(rows).find(r => r.textContent.includes('Bonus'))
       expect(bonusRow?.querySelector('button')).toBeNull()
     })
   })
@@ -220,13 +220,13 @@ describe('EmployeePayBreakdown', () => {
       })
       const { container } = render(<EmployeePayBreakdown {...defaultProps} readOnly={false} />)
       const rows = container.querySelectorAll('tr')
-      const bonusRow = Array.from(rows).find(r => r.textContent?.includes('Bonus'))
+      const bonusRow = Array.from(rows).find(r => r.textContent.includes('Bonus'))
       expect(bonusRow?.querySelector('button')).toBeTruthy()
     })
   })
 
   describe('LOP dirty flag', () => {
-    it('preserves lopDaysEdit when isDirtyLopRef is true during data refresh', async () => {
+    it('preserves lopDaysEdit when isDirtyLopRef is true during data refresh', () => {
       const { rerender } = render(<EmployeePayBreakdown {...defaultProps} />)
       const lopInput = screen.getAllByRole('spinbutton')[0] as HTMLInputElement
 
@@ -278,7 +278,7 @@ describe('EmployeePayBreakdown', () => {
 
       // Now dirty is false, so server value syncs
       await waitFor(() => {
-        expect((lopInput as HTMLInputElement).value).toBe('3')
+        expect((lopInput).value).toBe('3')
       })
     })
   })

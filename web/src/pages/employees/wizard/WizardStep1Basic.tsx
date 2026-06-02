@@ -80,17 +80,17 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
   const create = useMutation({
     mutationFn: (body: CreateEmployeeRequest) =>
       api.post<{ id: string }>('/api/v1/employees', body).then(r => r.data),
-    onSuccess: data => onSuccess(data.id),
+    onSuccess: data => { onSuccess(data.id); },
   })
 
   function onSubmit(v: FormValues): void {
     create.mutate({
       firstName: v.firstName,
-      middleName: v.middleName || undefined,
+      middleName: v.middleName === '' ? undefined : v.middleName,
       lastName: v.lastName,
-      employeeCode: v.employeeCode || undefined,
+      employeeCode: v.employeeCode === '' ? undefined : v.employeeCode,
       workEmail: v.workEmail,
-      mobileNumber: v.mobileNumber || undefined,
+      mobileNumber: v.mobileNumber === '' ? undefined : v.mobileNumber,
       gender: v.gender,
       dateOfJoining: v.dateOfJoining,
       dateOfBirth: v.dateOfBirth,
@@ -100,13 +100,13 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
       departmentId: v.departmentId,
       designationId: v.designationId,
       workLocationId: v.workLocationId,
-      businessUnitId: v.businessUnitId || undefined,
+      businessUnitId: v.businessUnitId === '' ? undefined : v.businessUnitId,
     })
   }
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <form onSubmit={(e) => { void handleSubmit(onSubmit)(e) }} className="space-y-5">
         {/* Name */}
         <div className="grid grid-cols-3 gap-4">
           <div>
@@ -203,7 +203,7 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
               </label>
               <button
                 type="button"
-                onClick={() => setShowNewDept(true)}
+                onClick={() => { setShowNewDept(true); }}
                 className="text-[11px] text-[var(--color-primary)] hover:underline"
               >
                 + New
@@ -222,7 +222,7 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
               </label>
               <button
                 type="button"
-                onClick={() => setShowNewDesig(true)}
+                onClick={() => { setShowNewDesig(true); }}
                 className="text-[11px] text-[var(--color-primary)] hover:underline"
               >
                 + New
@@ -249,7 +249,7 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
               </label>
               <button
                 type="button"
-                onClick={() => setShowNewBU(true)}
+                onClick={() => { setShowNewBU(true); }}
                 className="text-[11px] text-[var(--color-primary)] hover:underline"
               >
                 + New
@@ -313,13 +313,13 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
           onSave={async (values) => {
             const res = await api.post<{ id: string }>('/api/v1/departments', {
               name: values.name,
-              code: values.code || null,
+              code: values.code === '' ? null : values.code,
             })
             await refetchDepts()
             setValue('departmentId', res.data.id)
             setShowNewDept(false)
           }}
-          onClose={() => setShowNewDept(false)}
+          onClose={() => { setShowNewDept(false); }}
         />
       )}
 
@@ -335,7 +335,7 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
             setValue('designationId', res.data.id)
             setShowNewDesig(false)
           }}
-          onClose={() => setShowNewDesig(false)}
+          onClose={() => { setShowNewDesig(false); }}
         />
       )}
 
@@ -349,13 +349,13 @@ export default function WizardStep1Basic({ onSuccess, onCancel }: Props): React.
           onSave={async (values) => {
             const res = await api.post<{ id: string }>('/api/v1/business-units', {
               name: values.name,
-              description: values.description || null,
+              description: values.description === '' ? null : values.description,
             })
             await refetchBUs()
             setValue('businessUnitId', res.data.id)
             setShowNewBU(false)
           }}
-          onClose={() => setShowNewBU(false)}
+          onClose={() => { setShowNewBU(false); }}
         />
       )}
     </>

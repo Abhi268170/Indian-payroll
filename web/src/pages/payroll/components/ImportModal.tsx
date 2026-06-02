@@ -253,14 +253,14 @@ export default function ImportModal({ runId, importType, onClose, onSuccess }: I
               <div className="flex items-center gap-2 p-3 rounded-lg bg-blue-50 border border-blue-200">
                 <Loader2 className="w-4 h-4 text-blue-600 shrink-0 animate-spin" />
                 <p className="text-[13px] font-medium text-[var(--color-text-primary)]">
-                  {jobStatus?.status === 'queued' ? 'Queued…' : `Processing… ${progressPct !== null ? `${progressPct}%` : ''}`}
+                  {jobStatus?.status === 'queued' ? 'Queued…' : `Processing… ${progressPct !== null ? `${String(progressPct)}%` : ''}`}
                 </p>
               </div>
               {progressPct !== null && (
                 <div className="w-full bg-gray-100 rounded-full h-1.5">
                   <div
                     className="bg-[var(--color-primary)] h-1.5 rounded-full transition-all duration-300"
-                    style={{ width: `${progressPct}%` }}
+                    style={{ width: `${String(progressPct)}%` }}
                   />
                 </div>
               )}
