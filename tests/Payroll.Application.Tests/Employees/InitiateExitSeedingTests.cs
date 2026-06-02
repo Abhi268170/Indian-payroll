@@ -511,11 +511,12 @@ public class InitiateExitSeedingTests
         runRepo.FindDraftRegularRunsCoveringDateAsync(Arg.Any<DateOnly>(), Arg.Any<CancellationToken>())
             .Returns(new List<DomainPayrollRun>());
 
+        var auditLogRepo = Substitute.For<IAuditLogRepository>();
         var handler = new InitiateExitHandler(
             employeeRepo, exitRepo, orgProfileRepo, runRepo, payrunEmpRepo,
             payScheduleRepo, statutoryRepo, workLocationRepo,
             salaryStructureRepo, templateRepo, salaryComponentRepo, breakdownRepo,
-            tenantContext, uow);
+            auditLogRepo, tenantContext, uow);
 
         return (handler, breakdownRepo, payrunEmpRepo, runRepo);
     }

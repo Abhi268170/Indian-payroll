@@ -63,6 +63,7 @@ public sealed class InitiateExitHandler(
     ISalaryStructureTemplateRepository templateRepo,
     ISalaryComponentRepository salaryComponentRepo,
     IPayrunComponentBreakdownRepository breakdownRepo,
+    IAuditLogRepository auditLogRepo,
     ITenantContext tenantContext,
     IUnitOfWork uow)
     : IRequestHandler<InitiateExitCommand, EmployeeExitDto>
@@ -160,6 +161,22 @@ public sealed class InitiateExitHandler(
         // CustomDate FinalSettlement runs are created with count 1 already.
 
         exit.LinkFnfRun(fnfRun.Id, req.ActorId);
+
+        // WI-28: audit trail for the exit event (HR/compliance hook).
+        await auditLogRepo.AddAsync(AuditLog.Create(
+            tenantId: tenantContext.TenantId,
+            action: "ExitInitiated",
+            entityType: nameof(EmployeeExit),
+            entityId: exit.Id,
+            performedBy: req.ActorId,
+            newValue: JsonSerializer.Serialize(new
+            {
+                req.EmployeeId,
+                LastWorkingDay = req.LastWorkingDay.ToString("yyyy-MM-dd"),
+                Reason = req.Reason.ToString(),
+                SettlementMode = req.SettlementMode.ToString(),
+                FnfPayrollRunId = fnfRun.Id,
+            })), ct);
 
         await uow.SaveChangesAsync(ct);
 
