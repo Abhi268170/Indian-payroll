@@ -70,7 +70,9 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
             {
                 col.Item().Text(data.IsFinalSettlement ? "FINAL SETTLEMENT PAYSLIP" : "PAYSLIP")
                     .FontColor(Colors.White).FontSize(data.IsFinalSettlement ? 13 : 16).Bold();
-                col.Item().Text(data.PeriodLabel).FontColor(Colors.White).FontSize(9);
+                // WI-27: for FnF the pay date can be a later month than the worked
+                // period, so label the period as "ending <LWD>" to avoid ambiguity.
+                col.Item().Text(PeriodSubtitle(data)).FontColor(Colors.White).FontSize(9);
             });
         });
     }
@@ -125,7 +127,12 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
 
             AddDetailRow(table, "Employee Code", data.EmployeeCode, "Department", data.Department);
             AddDetailRow(table, "Employee Name", data.EmployeeName, "Designation", data.Designation);
-            AddDetailRow(table, "Pay Period", data.PeriodLabel, "Pay Date",
+            AddDetailRow(table,
+                data.IsFinalSettlement ? "Settlement Period" : "Pay Period",
+                data.IsFinalSettlement && data.LastWorkingDay.HasValue
+                    ? $"{data.PeriodLabel} (ending {data.LastWorkingDay.Value:dd/MM/yyyy})"
+                    : data.PeriodLabel,
+                "Pay Date",
                 data.PayDay.HasValue ? data.PayDay.Value.ToString("dd/MM/yyyy") : "—");
             AddDetailRow(table, "Bank Name", data.BankName ?? "—", "Account No.", data.MaskedBankAccount);
             if (data.IfscCode is not null)
@@ -285,6 +292,12 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
 
     private static string FormatAmount(decimal amount) =>
         amount == 0m ? "—" : amount.ToString("N2");
+
+    // WI-27: FnF header subtitle disambiguates the worked period from a later pay date.
+    private static string PeriodSubtitle(PayslipData data) =>
+        data.IsFinalSettlement && data.LastWorkingDay.HasValue
+            ? $"Period ending {data.LastWorkingDay.Value:dd MMM yyyy}"
+            : data.PeriodLabel;
 
     private static void AddDetailRow(TableDescriptor table, string label1, string value1, string label2, string value2)
     {

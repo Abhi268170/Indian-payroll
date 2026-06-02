@@ -58,6 +58,26 @@ public sealed class PayslipPdfGeneratorTests
     }
 
     [Fact]
+    public void Generate_FnfPayslip_WithLaterPayDate_Succeeds()
+    {
+        // WI-27: LWD in April, settlement paid in June — the FnF header/detail
+        // branch ("Period ending …" / "Settlement Period") must render.
+        var generator = new PayslipPdfGenerator();
+        PayslipData data = BuildSamplePayslipData() with
+        {
+            IsFinalSettlement = true,
+            LastWorkingDay = new DateOnly(2025, 4, 20),
+            PayDay = new DateOnly(2025, 6, 30),
+            ExitReason = "ResignedByEmployee",
+            TenureLabel = "5y 2m",
+        };
+
+        byte[] pdf = generator.Generate(data);
+
+        pdf.Should().NotBeEmpty();
+    }
+
+    [Fact]
     public void Generate_ReturnsPdfWithValidHeader()
     {
         var generator = new PayslipPdfGenerator();
