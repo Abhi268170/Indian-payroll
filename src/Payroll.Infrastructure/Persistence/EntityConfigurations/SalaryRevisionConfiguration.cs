@@ -15,11 +15,20 @@ internal sealed class SalaryRevisionConfiguration : IEntityTypeConfiguration<Sal
         builder.Property(e => e.NewAnnualCTC).IsRequired().HasColumnType("numeric(18,4)");
         builder.Property(e => e.Status).IsRequired().HasConversion<string>();
         builder.Property(e => e.Notes).HasMaxLength(2000);
+        builder.Property(e => e.ResultingSalaryStructureId);
+        builder.Property(e => e.ArrearPaidRunId);
         builder.Property(e => e.CreatedAt).HasColumnType("timestamptz").IsRequired();
         builder.Property(e => e.UpdatedAt).HasColumnType("timestamptz");
         builder.Property(e => e.DeletedAt).HasColumnType("timestamptz");
 
+        builder.HasMany(e => e.ComponentOverrides)
+            .WithOne()
+            .HasForeignKey(o => o.SalaryRevisionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         builder.HasIndex(e => new { e.EmployeeId, e.Status });
+        // Injection looks up applied revisions by payout period (see arrear injection).
+        builder.HasIndex(e => new { e.PayoutYear, e.PayoutMonth, e.Status });
         builder.HasQueryFilter(e => !e.IsDeleted);
     }
 }
