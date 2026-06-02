@@ -53,16 +53,6 @@ export default function FnfSettlementPage(): ReactElement {
     retry: false,
   })
 
-  // Deep-link safety net (plan §4.5): GET /api/v1/payroll-runs/{id} returns 404
-  // for run ids absent from this tenant (cross-tenant access surfaces as 404
-  // too — schema-per-tenant + JWT tenant_id binding routes the query through
-  // the wrong schema and finds nothing). Bounce to the list rather than
-  // rendering a broken FnF shell.
-  const runStatusCode = (runError as { response?: { status?: number } } | null)?.response?.status
-  if (runStatusCode === 404) {
-    return <Navigate to="/pay-runs" replace />
-  }
-
   // The employees endpoint returns a paged result ({ items, total, … }); unwrap items.
   const { data: rows = [] } = useQuery<EmployeeRowDto[]>({
     queryKey: ['fnf-rows', runId],
@@ -99,6 +89,18 @@ export default function FnfSettlementPage(): ReactElement {
   })
 
   if (!runId) return <div>Missing run id</div>
+
+  // Deep-link safety net (plan §4.5): GET /api/v1/payroll-runs/{id} returns 404
+  // for run ids absent from this tenant (cross-tenant access surfaces as 404
+  // too — schema-per-tenant + JWT tenant_id binding routes the query through
+  // the wrong schema and finds nothing). Bounce to the list rather than
+  // rendering a broken FnF shell. Must come AFTER all hooks so the hook order
+  // stays stable when the 404 lands (an early return above the hooks crashes
+  // with "Rendered fewer hooks than expected").
+  const runStatusCode = (runError as { response?: { status?: number } } | null)?.response?.status
+  if (runStatusCode === 404) {
+    return <Navigate to="/pay-runs" replace />
+  }
 
   const isBulk = run?.type === 'BulkFinalSettlement'
   const monthLabel = run?.periodLabel ?? ''
