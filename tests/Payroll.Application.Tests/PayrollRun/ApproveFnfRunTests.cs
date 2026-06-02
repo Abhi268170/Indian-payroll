@@ -350,7 +350,8 @@ public class ApproveFnfRunTests
             ReimbursementsAmount: 0m,
             NetPayWithAdjustments: netPayWithAdj,
             YtdTdsDeducted: ytdTdsDeducted,
-            StaticConfig: MinimalStatutoryConfig());
+            StaticConfig: MinimalStatutoryConfig(),
+            LwdFiscalYear: 2025);
     }
 
     private static StatutoryConfig MinimalStatutoryConfig() => new(

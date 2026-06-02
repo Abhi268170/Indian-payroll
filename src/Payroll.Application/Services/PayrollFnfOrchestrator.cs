@@ -29,7 +29,10 @@ public sealed record FnfEngineResult(
     decimal YtdTdsDeducted,
     // Deserialized statutory config used for this computation.
     // Returned so callers can write TdsWorksheet without re-deserializing.
-    StatutoryConfig StaticConfig);
+    StatutoryConfig StaticConfig,
+    // Fiscal year of the LWD month — may differ from run.PayPeriod.FiscalYear
+    // for BulkFnF runs where LWD is in a different month than the pay date.
+    int LwdFiscalYear);
 
 public sealed class PayrollFnfOrchestrator(
     IPayrollRunRepository runRepo,
@@ -71,18 +74,27 @@ public sealed class PayrollFnfOrchestrator(
         EngineSalaryCalculationMethod calcMethod = paySchedule.SalaryCalculationMethod == SalaryCalculationMethod.ActualDays
             ? EngineSalaryCalculationMethod.ActualDays
             : EngineSalaryCalculationMethod.FixedDays;
+
+        // WI-07: all month/FY-derived values use the LWD month, not run.PayPeriod.
+        // For BulkFinalSettlement, run.PayPeriod is the pay-date month which may
+        // differ from the LWD month. The statutory snapshot was already built for
+        // the LWD month in InitiateExitCommand — the engine must be consistent.
+        Domain.ValueObjects.PayPeriod lwdPeriod = new(exit.LastWorkingDay.Year, exit.LastWorkingDay.Month);
+
         int salaryDivisor = PayScheduleHelpers.GetDivisor(
             calcMethod, paySchedule.FixedWorkingDaysPerMonth,
-            run.PayPeriod.Year, run.PayPeriod.Month);
+            lwdPeriod.Year, lwdPeriod.Month);
 
-        // FnF works on the period containing LWD. WorkingDaysInMonth is days
-        // from period start to LWD (engine prorates fixed components against
-        // that, since the operator has likely set LOP to 0 and the recurring
-        // salary should still shrink to the actual served days).
-        DateOnly periodStart = new(run.PayPeriod.Year, run.PayPeriod.Month, 1);
-        int workedDays = exit.LastWorkingDay >= periodStart
-            ? exit.LastWorkingDay.DayNumber - periodStart.DayNumber + 1
-            : DateTime.DaysInMonth(run.PayPeriod.Year, run.PayPeriod.Month);
+        // WI-08: if the employee joined in the same month as their LWD, proration
+        // starts from DateOfJoining rather than the 1st of the month.
+        // CalendarDaysInMonth stays the full month total so the engine divides
+        // correctly: workedDays / calendarDays gives the partial-month ratio.
+        DateOnly lwdMonthStart = new(lwdPeriod.Year, lwdPeriod.Month, 1);
+        DateOnly effectivePeriodStart = employee.DateOfJoining > lwdMonthStart
+            ? employee.DateOfJoining
+            : lwdMonthStart;
+        int workedDays = exit.LastWorkingDay.DayNumber - effectivePeriodStart.DayNumber + 1;
+        int calendarDaysInLwdMonth = DateTime.DaysInMonth(lwdPeriod.Year, lwdPeriod.Month);
 
         if (run.StatutoryConfigSnapshot is null)
             throw new Domain.Common.DomainException("FnF run missing statutory config snapshot.");
@@ -101,20 +113,17 @@ public sealed class PayrollFnfOrchestrator(
             .FirstOrDefault(b => b.ComponentCode == "BASICSALARY")?.FullAmount ?? 0m;
 
         bool hasPan = !string.IsNullOrWhiteSpace(employee.EncryptedPAN);
-        var (hyIndex, hyTotal) = run.PayPeriod.HalfYearPosition(employee.DateOfJoining);
-        (decimal ytdGross, decimal ytdTaxableGross, decimal ytdTds) = await LoadCurrentYtdAsync(employeeId, run.PayPeriod.FiscalYear, ct);
+        var (hyIndex, hyTotal) = lwdPeriod.HalfYearPosition(employee.DateOfJoining);
+        (decimal ytdGross, decimal ytdTaxableGross, decimal ytdTds) = await LoadCurrentYtdAsync(employeeId, lwdPeriod.FiscalYear, ct);
 
         // WI-05: merge pre-system opening balances into current-employer YTD.
-        // Mirrors InitiatePayrollRunCommand's opening merge. Without this, employees
-        // whose first months in the FY were entered as openings get under-counted
-        // YTD and receive under-deducted TDS in their final settlement.
         IReadOnlyList<EmployeeFyOpening> openings = await fyOpeningRepo
-            .GetByEmployeesAndFiscalYearAsync([employeeId], run.PayPeriod.FiscalYear, ct);
+            .GetByEmployeesAndFiscalYearAsync([employeeId], lwdPeriod.FiscalYear, ct);
         EmployeeFyOpening? opening = openings.FirstOrDefault();
         if (opening != null)
         {
             ytdGross += opening.GrossSalary;
-            ytdTaxableGross += opening.GrossSalary; // treat full opening gross as taxable (same assumption as regular run)
+            ytdTaxableGross += opening.GrossSalary;
             ytdTds += opening.TdsDeducted;
         }
 
@@ -122,12 +131,19 @@ public sealed class PayrollFnfOrchestrator(
         // for mid-year joiners so the final TDS sweep accounts for the full year's
         // taxable income, not just current-employer earnings.
         IReadOnlyList<PriorEmployerYtd> priorList = await priorYtdRepo
-            .GetByEmployeesAndFiscalYearAsync([employeeId], run.PayPeriod.FiscalYear, ct);
+            .GetByEmployeesAndFiscalYearAsync([employeeId], lwdPeriod.FiscalYear, ct);
         PriorEmployerYtd? priorYtd = priorList.FirstOrDefault();
         decimal priorTaxable = PriorEmployerYtdMapper.TaxableIncomeFor(priorYtd);
         decimal priorTds = priorYtd?.TdsDeducted ?? 0m;
 
-        bool lwfAlreadyDeducted = await IsLwfAlreadyDeductedThisHalfYearAsync(employeeId, run.PayPeriod, ct);
+        bool lwfAlreadyDeducted = await IsLwfAlreadyDeductedThisHalfYearAsync(employeeId, lwdPeriod, ct);
+
+        // Effective LOP = unworked days in the LWD month (pre-joining + post-LWD)
+        // plus any operator-set LOP for absences within the worked period.
+        // The engine's proration formula: prorated = fullAmount × (salaryDivisor - lopDays) / salaryDivisor.
+        // lopFromExit = salaryDivisor - workedDays ensures correct partial-month ratio.
+        int lopFromExit = salaryDivisor - workedDays;
+        int effectiveLopDays = lopFromExit + payrunEmp.LopDays;
 
         var empInput = new EmployeeInput(
             EmployeeId: employee.Id,
@@ -138,7 +154,7 @@ public sealed class PayrollFnfOrchestrator(
             IsPWD: employee.IsPWD,
             MonthlyCTC: payrunEmp.MonthlyCTC,
             Components: components,
-            LOPDays: payrunEmp.LopDays,
+            LOPDays: effectiveLopDays,
             WorkingDaysInMonth: workedDays,
             VPFAmount: 0m,
             PriorEmployerYTDTaxableIncome: priorTaxable,
@@ -154,12 +170,12 @@ public sealed class PayrollFnfOrchestrator(
             CurrentEmployerYTDTaxable: ytdTaxableGross);
 
         var runInput = new PayrollRunInput(
-            Year: run.PayPeriod.Year,
-            Month: run.PayPeriod.Month,
-            CalendarDaysInMonth: workedDays,
+            Year: lwdPeriod.Year,
+            Month: lwdPeriod.Month,
+            CalendarDaysInMonth: workedDays, // unused by engine; kept for audit/context
             SalaryDivisor: salaryDivisor,
             MonthsRemainingInFY: 1, // forces full-year TDS closure
-            FiscalYearLabel: run.PayPeriod.FiscalYearLabel);
+            FiscalYearLabel: lwdPeriod.FiscalYearLabel);
 
         PayrollResult result = PayrollEngine.Compute([empInput], runInput, staticConfig)[0];
 
@@ -173,7 +189,8 @@ public sealed class PayrollFnfOrchestrator(
             ReimbursementsAmount: reimbursementsAmount,
             NetPayWithAdjustments: result.NetPay + reimbursementsAmount,
             YtdTdsDeducted: ytdTdsDeducted,
-            StaticConfig: staticConfig);
+            StaticConfig: staticConfig,
+            LwdFiscalYear: lwdPeriod.FiscalYear);
     }
 
     private async Task<(decimal Gross, decimal TaxableGross, decimal Tds)> LoadCurrentYtdAsync(
@@ -255,7 +272,7 @@ public sealed class PayrollFnfOrchestrator(
             payrollRunId: run.Id,
             employeeId: pe.EmployeeId,
             tenantId: pe.TenantId,
-            fiscalYear: run.PayPeriod.FiscalYear,
+            fiscalYear: fnf.LwdFiscalYear,
             annualProjectedIncome: result.TDS.TaxableIncome + fnf.StaticConfig.StandardDeduction,
             standardDeduction: fnf.StaticConfig.StandardDeduction,
             taxableIncome: result.TDS.TaxableIncome,
