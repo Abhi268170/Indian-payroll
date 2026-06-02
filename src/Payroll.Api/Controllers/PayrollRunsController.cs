@@ -121,6 +121,13 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
         catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
     }
 
+    /// <summary>
+    /// Saves the FnF one-time components for an employee and recomputes the settlement.
+    /// Zero-value semantics (WI-30): a zero amount for any component (bonus, commission,
+    /// leave encashment, gratuity, notice pay) REMOVES that component from the settlement
+    /// — the corresponding FNF_* breakdown rows are deleted. There is no way to persist an
+    /// explicit zero-value component; omit it or send 0 to clear it.
+    /// </summary>
     [HttpPut("{id:guid}/employees/{eid:guid}/fnf-settlement")]
     public async Task<IActionResult> UpdateFnf(Guid id, Guid eid, [FromBody] UpdateFnfRunRequest req, CancellationToken ct)
     {
