@@ -16,6 +16,14 @@ public sealed class EmployeeExit : AuditableEntity
     public string? PersonalEmail { get; private set; }
     public string? Notes { get; private set; }
 
+    // WI-29: current-employer YTD captured at exit initiation. Locks the TDS
+    // basis so the FnF recompute is deterministic even if a prior-month run is
+    // approved later. Null for exits created before this snapshot existed —
+    // the orchestrator falls back to a live YTD query in that case.
+    public decimal? YtdGrossSnapshot { get; private set; }
+    public decimal? YtdTaxableSnapshot { get; private set; }
+    public decimal? YtdTdsSnapshot { get; private set; }
+
     // Set when the FnF payroll run is created or appended for this exit.
     // For SettlementMode = CustomDate this points at a FinalSettlement run;
     // for RegularSchedule it points at the shared BulkFinalSettlement run for
@@ -70,6 +78,14 @@ public sealed class EmployeeExit : AuditableEntity
         SettlementDate = settlementDate;
         PersonalEmail = personalEmail;
         Notes = notes;
+        SetUpdated(updatedBy);
+    }
+
+    public void SetYtdSnapshot(decimal ytdGross, decimal ytdTaxable, decimal ytdTds, Guid updatedBy)
+    {
+        YtdGrossSnapshot = ytdGross;
+        YtdTaxableSnapshot = ytdTaxable;
+        YtdTdsSnapshot = ytdTds;
         SetUpdated(updatedBy);
     }
 

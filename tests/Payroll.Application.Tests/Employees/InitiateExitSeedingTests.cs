@@ -413,6 +413,8 @@ public class InitiateExitSeedingTests
         var orgProfileRepo = Substitute.For<IOrgProfileRepository>();
         var runRepo = Substitute.For<IPayrollRunRepository>();
         var payrunEmpRepo = Substitute.For<IPayrunEmployeeRepository>();
+        payrunEmpRepo.GetCurrentEmployerYtdAsync(Arg.Any<IEnumerable<Guid>>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(new Dictionary<Guid, (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds)>());
         var payScheduleRepo = Substitute.For<IPayScheduleRepository>();
         var statutoryRepo = Substitute.For<IStatutoryConfigRepository>();
         var workLocationRepo = Substitute.For<IWorkLocationRepository>();

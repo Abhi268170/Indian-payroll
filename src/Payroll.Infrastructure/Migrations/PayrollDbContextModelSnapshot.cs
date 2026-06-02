@@ -524,6 +524,18 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("date")
                         .HasColumnName("last_working_day");
 
+                    b.Property<decimal?>("YtdGrossSnapshot")
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("ytd_gross_snapshot");
+
+                    b.Property<decimal?>("YtdTaxableSnapshot")
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("ytd_taxable_snapshot");
+
+                    b.Property<decimal?>("YtdTdsSnapshot")
+                        .HasColumnType("numeric(18,2)")
+                        .HasColumnName("ytd_tds_snapshot");
+
                     b.Property<string>("Notes")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)")

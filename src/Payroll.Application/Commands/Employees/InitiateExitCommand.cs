@@ -162,6 +162,14 @@ public sealed class InitiateExitHandler(
 
         exit.LinkFnfRun(fnfRun.Id, req.ActorId);
 
+        // WI-29: lock the current-employer YTD basis at initiation so the FnF
+        // TDS sweep is deterministic even if a prior-month run is approved later.
+        // Fiscal year is the LWD month's FY (matches the orchestrator).
+        int lwdFiscalYear = req.LastWorkingDay.Month >= 4 ? req.LastWorkingDay.Year : req.LastWorkingDay.Year - 1;
+        var ytdMap = await payrunEmpRepo.GetCurrentEmployerYtdAsync([req.EmployeeId], lwdFiscalYear, ct);
+        ytdMap.TryGetValue(req.EmployeeId, out var ytd);
+        exit.SetYtdSnapshot(ytd.YtdGross, ytd.YtdTaxableGross, ytd.YtdTds, req.ActorId);
+
         // WI-28: audit trail for the exit event (HR/compliance hook).
         await auditLogRepo.AddAsync(AuditLog.Create(
             tenantId: tenantContext.TenantId,

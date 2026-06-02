@@ -138,7 +138,21 @@ public sealed class PayrollFnfOrchestrator(
 
         bool hasPan = !string.IsNullOrWhiteSpace(employee.EncryptedPAN);
         var (hyIndex, hyTotal) = lwdPeriod.HalfYearPosition(employee.DateOfJoining);
-        (decimal ytdGross, decimal ytdTaxableGross, decimal ytdTds) = await LoadCurrentYtdAsync(employeeId, lwdPeriod.FiscalYear, ct);
+
+        // WI-29: use the YTD snapshot locked at exit initiation when present, so the
+        // TDS basis is immutable regardless of later prior-month approvals. Older
+        // exits without a snapshot fall back to a live YTD query.
+        decimal ytdGross, ytdTaxableGross, ytdTds;
+        if (exit.YtdGrossSnapshot is decimal snapGross)
+        {
+            ytdGross = snapGross;
+            ytdTaxableGross = exit.YtdTaxableSnapshot ?? 0m;
+            ytdTds = exit.YtdTdsSnapshot ?? 0m;
+        }
+        else
+        {
+            (ytdGross, ytdTaxableGross, ytdTds) = await LoadCurrentYtdAsync(employeeId, lwdPeriod.FiscalYear, ct);
+        }
 
         // WI-05: merge pre-system opening balances into current-employer YTD.
         IReadOnlyList<EmployeeFyOpening> openings = await fyOpeningRepo
