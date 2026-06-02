@@ -154,8 +154,10 @@ public sealed class InitiateExitHandler(
         await SeedRecurringComponentBreakdownsAsync(
             fnfRun.Id, payrunEmp, salaryStructure, staticConfig, req.ActorId, ct);
 
-        if (fnfRun.Type == PayrollRunType.BulkFinalSettlement)
-            fnfRun.SetEmployeeCount(fnfRun.EmployeeCount + 1, req.ActorId);
+        // WI-11: bulk run employee-count increment is handled inside
+        // GetOrCreateBulkFnfRunAsync (fresh run starts at 1 while tracked as
+        // Added; an existing re-used run is incremented + explicitly Updated).
+        // CustomDate FinalSettlement runs are created with count 1 already.
 
         exit.LinkFnfRun(fnfRun.Id, req.ActorId);
 
@@ -168,7 +170,15 @@ public sealed class InitiateExitHandler(
         DateOnly payDate, string snapshot, InitiateExitCommand req, CancellationToken ct)
     {
         var existing = await runRepo.FindDraftBulkFnfByPayDateAsync(payDate, ct);
-        if (existing != null) return existing;
+        if (existing != null)
+        {
+            // WI-11: appending another employee to a re-used bulk run. The entity
+            // came from a query, so mark it explicitly so the count increment
+            // persists under the repository pattern.
+            existing.SetEmployeeCount(existing.EmployeeCount + 1, req.ActorId);
+            runRepo.Update(existing);
+            return existing;
+        }
 
         var fresh = PayrollRun.CreateBulkFinalSettlement(
             tenantId: tenantContext.TenantId,
@@ -176,6 +186,9 @@ public sealed class InitiateExitHandler(
             payDay: payDate,
             statutoryConfigSnapshot: snapshot,
             createdBy: req.ActorId);
+        // First employee in this bulk run. Set count in-memory before AddAsync
+        // so the INSERT carries count = 1 (no Update on an Added entity).
+        fresh.SetEmployeeCount(1, req.ActorId);
         await runRepo.AddAsync(fresh, ct);
         return fresh;
     }

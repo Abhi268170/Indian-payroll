@@ -241,28 +241,48 @@ When appending an employee to an existing bulk FnF run, `fnfRun.SetEmployeeCount
 
 **Fix:** Change to `[AutomaticRetry(Attempts = 3)]` with default exponential backoff. This is a daily idempotent sweep — retries are safe.
 
-**Smoke test:**
-1. Set LWD to yesterday for a test employee.
-2. Manually trigger `MarkExitedOnLwdJob` via Hangfire dashboard.
-3. Employee `Status` must be `Exited` in DB.
-4. Employees list in UI must show "Exited" badge.
+**STATUS: DONE.** Attribute changed 0 → 3. Guarded by a reflection test
+(`MarkExitedOnLwdJobAttributeTests`) asserting `Attempts == 3`.
+
+**Verification note:** the retry-on-transient-failure behavior itself is NOT
+smoke-observable — there is no clean way to inject a transient DB failure mid-run
+to watch Hangfire retry. The flip-to-Exited job logic is pre-existing and was not
+modified by this change (attribute-only edit). The Hangfire dashboard trigger is
+gated behind the SuperAdmin policy via cookie auth, so a bearer-token curl trigger
+returns 403 — manual dashboard trigger remains the operator path.
 
 ---
 
-### WI-13 [BUG · MEDIUM] GratuityAmount on PayrunEmployee always 0 for FnF — cost reports undercount gratuity disbursed
+### WI-13 [BUG · MEDIUM] GratuityAmount on PayrunEmployee always 0 for FnF — ~~cost reports undercount gratuity disbursed~~
 
-**What's wrong:**
-Orchestrator sets `GratuityEnabled=false` so engine returns `GratuityAccrual = 0`. `UpdateFnfRunCommand:147` stores this 0 as `gratuityAmount` on `PayrunEmployee`. Actual gratuity is in `FNF_GRATUITY_EXEMPT` / `FNF_GRATUITY_TAXABLE` breakdown rows. `PayrollCostCalculator` and any report reading `PayrunEmployee.GratuityAmount` will undercount.
+**STATUS: WONTFIX (misdiagnosis — the proposed fix would regress three consumers).**
 
-**File:** `UpdateFnfRunCommand.cs:147`, `PayrollFnfOrchestrator.cs:126`
+**Original claim:** `GratuityAmount` is 0 for FnF rows so cost reports undercount the gratuity disbursed.
 
-**Fix:** In `UpdateFnfRunCommand.Handle()`, after writing breakdown rows, compute `totalGratuity = req.Gratuity` (sum of exempt + taxable) and pass it as `gratuityAmount` to `payrunEmp.UpdateComputedAmounts(...)` instead of `result.Gratuity.MonthlyAccrual`.
+**Why it's wrong:** FnF gratuity is written as `FNF_GRATUITY_EXEMPT` / `FNF_GRATUITY_TAXABLE`
+breakdown rows with `isOneTimeEarning:true`. The orchestrator maps these into engine
+components and `GrossCalculator` sums every component into `grossWage` (one-time ⇒ not
+prorated ⇒ full amount). **Gratuity is therefore already in `GrossPay`** — and `NetPay`,
+since the employee receives it.
 
-**Smoke test:**
-1. Enter ₹5,00,000 gratuity for FnF employee.
-2. Save + approve FnF run.
-3. Query `payrun_employees.gratuity_amount` for the FnF row → must be ₹5,00,000.
-4. FnF run "Payroll Cost" header must include the gratuity in total cost.
+`payrollCost = totalGross + employer extras`, and gratuity is in `totalGross`, so it is
+already counted exactly once. Setting `GratuityAmount = req.Gratuity` would double-count it in:
+- `PayrollCostCalculator.cs:40` — payroll cost inflated by the gratuity amount.
+- `PayslipPdfGenerator.cs:248` — `employerPfInCtc = MonthlyCTC − GrossPay − GratuityAmount`
+  subtracts gratuity that is already inside GrossPay, corrupting the CTC breakdown.
+- `PayrollDetailsExportService.cs:164` — employer cost inflated.
+
+**Semantic note:** for *regular* runs `GratuityAmount` is the engine *accrual*
+(`GratuityEnabled=true`) — a future-liability provision NOT in gross, correctly added to
+cost. An exiting employee has no future accrual; their gratuity is disbursed *through* gross.
+So `GratuityAmount = 0` for FnF is correct, not a gap.
+
+**Verified empirically:** on a clean FnF run, `UpdateFnfRun` with `gratuity=500000` raised
+`gross_pay` and `payroll_cost` each by ₹5,00,000 while `gratuity_amount` stayed 0 — confirming
+gratuity is already fully counted via gross.
+
+**Action:** none. Do not touch `PayrollCostCalculator` / `PayslipPdfGenerator` /
+`PayrollDetailsExportService`. Current behavior is correct.
 
 ---
 

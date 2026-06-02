@@ -11,7 +11,9 @@ namespace Payroll.Infrastructure.Jobs;
 // Idempotent — runs once a day per tenant. The regular-run filter already excludes
 // exiting employees via DateOfLeaving, so this job is purely cosmetic (drives the
 // "Exited" badge in the Employees list); skipping or double-running is safe.
-[AutomaticRetry(Attempts = 0)]
+// WI-12: idempotent daily sweep — retries are safe and recover from transient
+// DB/connection failures so a past-LWD employee isn't left showing Active.
+[AutomaticRetry(Attempts = 3)]
 [Queue("payroll")]
 public sealed class MarkExitedOnLwdJob(
     ITenantContext tenantContext,

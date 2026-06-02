@@ -41,9 +41,9 @@ public sealed class PayslipPdfGeneratorTests
         IfscCode: "HDFC0001234",
         Components: new List<PayslipComponentDto>
         {
-            new("BASIC", "Basic Salary", 37500m, 37500m, true),
-            new("HRA", "HRA", 18750m, 18750m, true),
-            new("SPECIAL", "Special Allowance", 18750m, 18750m, true),
+            new("BASIC", "Basic Salary", 37500m, 37500m, true, false),
+            new("HRA", "HRA", 18750m, 18750m, true, false),
+            new("SPECIAL", "Special Allowance", 18750m, 18750m, true, false),
         });
 
     [Fact]

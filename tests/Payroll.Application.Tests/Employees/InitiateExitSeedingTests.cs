@@ -356,6 +356,40 @@ public class InitiateExitSeedingTests
             .MonthlyCTC.Should().Be(annualCtc / 12m);
     }
 
+    // ─── WI-11: bulk FnF employee count persisted on append ──────────────────
+
+    [Fact]
+    public async Task Handle_AppendToExistingBulkRun_CallsRunRepoUpdate_WithIncrementedCount()
+    {
+        var (template, structure) = BuildFixture(1_200_000m);
+        var (handler, _, _, runRepo) =
+            BuildHandlerWithStubs(salaryStructure: structure);
+
+        // An existing bulk FnF run with one employee already appended.
+        DomainPayrollRun existingBulk = DomainPayrollRun.CreateBulkFinalSettlement(
+            tenantId: TenantId,
+            payPeriod: new Payroll.Domain.ValueObjects.PayPeriod(2026, 6),
+            payDay: new DateOnly(2026, 6, 30),
+            statutoryConfigSnapshot: "{}",
+            createdBy: ActorId);
+        existingBulk.SetEmployeeCount(1, ActorId);
+
+        runRepo.FindDraftBulkFnfByPayDateAsync(Arg.Any<DateOnly>(), Arg.Any<CancellationToken>())
+            .Returns(existingBulk);
+
+        DomainPayrollRun? updatedRun = null;
+        runRepo.When(r => r.Update(Arg.Any<DomainPayrollRun>()))
+            .Do(ci => updatedRun = ci.Arg<DomainPayrollRun>());
+
+        await handler.Handle(MakeCmd(), CancellationToken.None);
+
+        // WI-11: the increment must be persisted via an explicit Update call.
+        runRepo.Received().Update(Arg.Is<DomainPayrollRun>(r => r.Id == existingBulk.Id));
+        updatedRun.Should().NotBeNull();
+        updatedRun!.EmployeeCount.Should().Be(2,
+            "appending a second employee must increment the bulk run count to 2");
+    }
+
     // ─── Internal helpers ────────────────────────────────────────────────────
 
     private static InitiateExitCommand MakeCmd() => new(
