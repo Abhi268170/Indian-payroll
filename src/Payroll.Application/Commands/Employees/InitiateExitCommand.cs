@@ -260,6 +260,8 @@ public sealed class InitiateExitHandler(
 
         payrunEmp.SetMonthlyCTC(salaryStructure.AnnualCTC / 12m, actorId);
 
+        decimal monthlyBasic = components.FirstOrDefault(c => c.Code == "BASICSALARY")?.Amount ?? 0m;
+
         foreach (SalaryComponentInput comp in components)
         {
             PayrunComponentBreakdown breakdown = PayrunComponentBreakdown.Create(
@@ -278,6 +280,63 @@ public sealed class InitiateExitHandler(
                 calculateOnProRata: comp.CalculateOnProRata,
                 showInPayslip: comp.ShowInPayslip);
             await breakdownRepo.AddAsync(breakdown, ct);
+        }
+
+        // WI-17: persist employer-borne benefit-category overrides (health
+        // insurance, NPS employer match, etc.) as IsBenefit rows so the FnF
+        // payslip renders the "Employer benefits" section. These are netted out
+        // of CTC by BuildComponentInputs and must NOT flow into gross — the
+        // orchestrator excludes IsBenefit rows from engine inputs.
+        await SeedBenefitBreakdownsAsync(fnfRunId, payrunEmp, salaryStructure, template,
+            addedCompDetails, monthlyBasic, actorId, ct);
+    }
+
+    private async Task SeedBenefitBreakdownsAsync(
+        Guid fnfRunId,
+        PayrunEmployee payrunEmp,
+        EmployeeSalaryStructure salaryStructure,
+        SalaryStructureTemplate? template,
+        Dictionary<Guid, SalaryComponent> addedCompDetails,
+        decimal monthlyBasic,
+        Guid actorId,
+        CancellationToken ct)
+    {
+        HashSet<Guid> templateCompIds = template?.Components.Select(c => c.ComponentId).ToHashSet() ?? [];
+
+        foreach (EmployeeSalaryComponentOverride ov in salaryStructure.ComponentOverrides)
+        {
+            if (templateCompIds.Contains(ov.SalaryComponentId)) continue;
+            if (!addedCompDetails.TryGetValue(ov.SalaryComponentId, out SalaryComponent? sc)) continue;
+            if (sc.Category != ComponentCategory.Benefit) continue;
+
+            decimal benefitMonthly = ov.FormulaType switch
+            {
+                ComponentFormulaType.Fixed => ov.FixedAmount ?? 0m,
+                ComponentFormulaType.PercentOfCTC =>
+                    Math.Round(salaryStructure.AnnualCTC * (ov.Percentage ?? 0m) / 100m / 12m, 2, MidpointRounding.AwayFromZero),
+                ComponentFormulaType.PercentOfBasic =>
+                    Math.Round(monthlyBasic * (ov.Percentage ?? 0m) / 100m, 2, MidpointRounding.AwayFromZero),
+                _ => 0m,
+            };
+            if (benefitMonthly <= 0m) continue;
+
+            PayrunComponentBreakdown benefitRow = PayrunComponentBreakdown.Create(
+                payrollRunId: fnfRunId,
+                employeeId: payrunEmp.EmployeeId,
+                tenantId: payrunEmp.TenantId,
+                salaryComponentId: sc.Id,
+                componentCode: sc.Code,
+                componentName: sc.NameInPayslip,
+                fullAmount: benefitMonthly,
+                proratedAmount: benefitMonthly,
+                isOneTimeEarning: false,
+                isTaxable: false,
+                considerForEpf: false,
+                considerForEsi: false,
+                calculateOnProRata: false,
+                showInPayslip: sc.ShowInPayslip ?? true,
+                isBenefit: true);
+            await breakdownRepo.AddAsync(benefitRow, ct);
         }
     }
 

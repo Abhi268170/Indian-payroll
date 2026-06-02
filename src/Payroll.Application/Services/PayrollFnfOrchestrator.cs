@@ -101,8 +101,11 @@ public sealed class PayrollFnfOrchestrator(
         StatutoryConfig staticConfig = JsonSerializer.Deserialize<StatutoryConfig>(run.StatutoryConfigSnapshot)!;
 
         // Partition reimbursement vs everything else (same rule as Phase 011).
+        // WI-17: IsBenefit rows are employer-borne (already netted out of CTC) and
+        // must NOT flow into gross/net/PF/ESI — exclude them from engine inputs,
+        // same as reimbursements. They persist for payslip display only.
         var reimbursementRows = breakdowns.Where(IsReimbursement).ToList();
-        var engineRows = breakdowns.Where(b => !IsReimbursement(b)).ToList();
+        var engineRows = breakdowns.Where(b => !IsReimbursement(b) && !b.IsBenefit).ToList();
         decimal reimbursementsAmount = reimbursementRows.Sum(b => b.FullAmount);
 
         IReadOnlyList<SalaryComponentInput> components = engineRows
