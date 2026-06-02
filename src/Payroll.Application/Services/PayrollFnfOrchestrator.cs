@@ -20,7 +20,16 @@ public interface IPayrollFnfOrchestrator
     Task<FnfEngineResult> ComputeAsync(Guid fnfRunId, Guid employeeId, CancellationToken ct = default);
 }
 
-public sealed record FnfEngineResult(PayrollResult Engine, decimal ReimbursementsAmount, decimal NetPayWithAdjustments);
+public sealed record FnfEngineResult(
+    PayrollResult Engine,
+    decimal ReimbursementsAmount,
+    decimal NetPayWithAdjustments,
+    // Total TDS deducted so far this FY (prior-employer + current-employer YTD).
+    // Returned so callers can write TdsWorksheet without re-deriving YTD.
+    decimal YtdTdsDeducted,
+    // Deserialized statutory config used for this computation.
+    // Returned so callers can write TdsWorksheet without re-deserializing.
+    StatutoryConfig StaticConfig);
 
 public sealed class PayrollFnfOrchestrator(
     IPayrollRunRepository runRepo,
@@ -142,10 +151,14 @@ public sealed class PayrollFnfOrchestrator(
         if (lwfAlreadyDeducted)
             result = result with { LWF = new LWFResult(0m, 0m, IsExempt: true) };
 
+        decimal ytdTdsDeducted = priorTds + ytdTds;
+
         return new FnfEngineResult(
             Engine: result,
             ReimbursementsAmount: reimbursementsAmount,
-            NetPayWithAdjustments: result.NetPay + reimbursementsAmount);
+            NetPayWithAdjustments: result.NetPay + reimbursementsAmount,
+            YtdTdsDeducted: ytdTdsDeducted,
+            StaticConfig: staticConfig);
     }
 
     private async Task<(decimal Gross, decimal TaxableGross, decimal Tds)> LoadCurrentYtdAsync(
@@ -184,4 +197,64 @@ public sealed class PayrollFnfOrchestrator(
             CalculateOnProRata: !b.IsOneTimeEarning && b.CalculateOnProRata,
             IsFlat: false,
             ShowInPayslip: b.ShowInPayslip);
+
+    // ── Shared helpers used by both UpdateFnfRunCommand and ApprovePayrollRunCommand ──
+
+    /// <summary>
+    /// Applies FnF engine result to a tracked PayrunEmployee. Call site must hold
+    /// the same pe reference that the cost calculator will read.
+    /// </summary>
+    internal static void ApplyToPayrunEmployee(PayrunEmployee pe, FnfEngineResult fnf, Guid actorId)
+    {
+        PayrollResult result = fnf.Engine;
+        pe.UpdateComputedAmounts(
+            grossPay: result.Gross.GrossWage,
+            taxableGrossPay: result.Gross.TaxableGrossWage,
+            netPay: fnf.NetPayWithAdjustments,
+            taxesAmount: result.TDS.MonthlyTDS + result.PT.Amount,
+            benefitsAmount: result.PF.EPFEmployerContribution + result.ESI.EmployerContribution,
+            reimbursementsAmount: fnf.ReimbursementsAmount,
+            employeePf: result.PF.EmployeeContribution,
+            employerPf: result.PF.EPFEmployerContribution,
+            employeeEsi: result.ESI.EmployeeContribution,
+            employerEsi: result.ESI.EmployerContribution,
+            ptAmount: result.PT.Amount,
+            tdsAmount: pe.TdsOverrideAmount ?? result.TDS.MonthlyTDS,
+            lwfEmployeeAmount: result.LWF.EmployeeAmount,
+            lwfEmployerAmount: result.LWF.EmployerAmount,
+            gratuityAmount: result.Gratuity.MonthlyAccrual,
+            epsAmount: result.PF.EPSEmployerContribution,
+            monthlyCTC: pe.MonthlyCTC,
+            actorId: actorId);
+    }
+
+    /// <summary>
+    /// Builds a TdsWorksheet for a FnF computation. Uses remainingMonthsInFy=1
+    /// because the engine always ran with MonthsRemainingInFY=1 for TDS closure.
+    /// </summary>
+    internal static TdsWorksheet BuildWorksheet(PayrollRun run, PayrunEmployee pe, FnfEngineResult fnf, Guid createdBy)
+    {
+        PayrollResult result = fnf.Engine;
+        decimal tdsThisMonth = pe.TdsOverrideAmount ?? result.TDS.MonthlyTDS;
+        return TdsWorksheet.Create(
+            payrollRunId: run.Id,
+            employeeId: pe.EmployeeId,
+            tenantId: pe.TenantId,
+            fiscalYear: run.PayPeriod.FiscalYear,
+            annualProjectedIncome: result.TDS.TaxableIncome + fnf.StaticConfig.StandardDeduction,
+            standardDeduction: fnf.StaticConfig.StandardDeduction,
+            taxableIncome: result.TDS.TaxableIncome,
+            taxBeforeRebate: result.TDS.TaxBeforeRebate,
+            rebate87A: result.TDS.Rebate87AApplied
+                ? Math.Min(result.TDS.TaxBeforeRebate, fnf.StaticConfig.Rebate87AAmount)
+                : 0m,
+            surcharge: result.TDS.Surcharge,
+            cess: result.TDS.Cess,
+            annualTaxLiability: result.TDS.AnnualProjectedTax,
+            ytdTdsDeducted: fnf.YtdTdsDeducted,
+            remainingMonthsInFy: 1, // engine ran with MonthsRemainingInFY=1 for TDS closure
+            tdsThisMonth: tdsThisMonth,
+            hasPanOverride: result.TDS.HasPanOverride,
+            createdBy: createdBy);
+    }
 }

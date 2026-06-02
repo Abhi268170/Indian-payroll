@@ -58,6 +58,7 @@ public sealed class UpdateFnfRunHandler(
     IPayrunEmployeeRepository payrunEmpRepo,
     IPayrunComponentBreakdownRepository breakdownRepo,
     IPayrollFnfOrchestrator orchestrator,
+    ITdsWorksheetRepository tdsWorksheetRepo,
     IPayrollCostCalculator costCalculator,
     ITenantContext tenantContext,
     IUnitOfWork uow)
@@ -127,29 +128,14 @@ public sealed class UpdateFnfRunHandler(
 
         // Engine recompute via orchestrator.
         FnfEngineResult fnf = await orchestrator.ComputeAsync(req.RunId, req.EmployeeId, ct);
-        var result = fnf.Engine;
 
-        payrunEmp.UpdateComputedAmounts(
-            grossPay: result.Gross.GrossWage,
-            taxableGrossPay: result.Gross.TaxableGrossWage,
-            netPay: fnf.NetPayWithAdjustments,
-            taxesAmount: result.TDS.MonthlyTDS + result.PT.Amount,
-            benefitsAmount: result.PF.EPFEmployerContribution + result.ESI.EmployerContribution,
-            reimbursementsAmount: fnf.ReimbursementsAmount,
-            employeePf: result.PF.EmployeeContribution,
-            employerPf: result.PF.EPFEmployerContribution,
-            employeeEsi: result.ESI.EmployeeContribution,
-            employerEsi: result.ESI.EmployerContribution,
-            ptAmount: result.PT.Amount,
-            tdsAmount: payrunEmp.TdsOverrideAmount ?? result.TDS.MonthlyTDS,
-            lwfEmployeeAmount: result.LWF.EmployeeAmount,
-            lwfEmployerAmount: result.LWF.EmployerAmount,
-            gratuityAmount: result.Gratuity.MonthlyAccrual,
-            epsAmount: result.PF.EPSEmployerContribution,
-            monthlyCTC: payrunEmp.MonthlyCTC,
-            actorId: req.ActorId);
-
+        PayrollFnfOrchestrator.ApplyToPayrunEmployee(payrunEmp, fnf, req.ActorId);
         payrunEmpRepo.Update(payrunEmp);
+
+        // Upsert TDS worksheet so draft state is auditable (WI-04).
+        await tdsWorksheetRepo.DeleteByRunAndEmployeeAsync(req.RunId, req.EmployeeId, ct);
+        await tdsWorksheetRepo.AddAsync(
+            PayrollFnfOrchestrator.BuildWorksheet(run, payrunEmp, fnf, req.ActorId), ct);
 
         // Refresh run totals.
         var allRows = await payrunEmpRepo.GetByRunIdAsync(req.RunId, ct);

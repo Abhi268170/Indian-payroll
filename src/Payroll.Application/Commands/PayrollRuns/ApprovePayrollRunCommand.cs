@@ -6,6 +6,7 @@ using Payroll.Domain.Common;
 using Payroll.Domain.Entities;
 using Payroll.Domain.Enums;
 using Payroll.Domain.Interfaces;
+using Payroll.Engine.Outputs;
 
 namespace Payroll.Application.Commands.PayrollRuns;
 
@@ -16,6 +17,8 @@ public sealed class ApprovePayrollRunHandler(
     IPayrunEmployeeRepository payrunEmployeeRepo,
     IPayrollRunAuditLogRepository auditLogRepo,
     IPayrollRecomputeService recomputeService,
+    IPayrollFnfOrchestrator fnfOrchestrator,
+    ITdsWorksheetRepository tdsWorksheetRepo,
     IPayrollCostCalculator costCalculator,
     IUnitOfWork uow,
     ISender sender,
@@ -38,13 +41,29 @@ public sealed class ApprovePayrollRunHandler(
         var payrunEmployees = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
         var activeEmployees = payrunEmployees.Where(pe => pe.Status == PayrunEmployeeStatus.Active).ToList();
 
-        // Rebuild TDS worksheets through the shared recompute service so the
-        // approved snapshot uses canonical engine output + the operator's TDS
-        // override (if any). Service deletes-and-adds the worksheet per employee
-        // so the prior draft state is replaced cleanly.
+        bool isFnf = run.Type == PayrollRunType.FinalSettlement
+                  || run.Type == PayrollRunType.BulkFinalSettlement;
+
+        // Lock in canonical engine output + operator TDS override.
+        // FnF runs use the FnF orchestrator (MonthsRemainingInFY=1, gratuity
+        // as flat component, LWF half-year dedup). Regular runs use the
+        // shared recompute service which also upserts TDS worksheets.
         foreach (var pe in activeEmployees)
         {
-            await recomputeService.RecomputeEmployeeAsync(req.RunId, pe.EmployeeId, ct);
+            if (isFnf)
+            {
+                FnfEngineResult fnf = await fnfOrchestrator.ComputeAsync(req.RunId, pe.EmployeeId, ct);
+                PayrollFnfOrchestrator.ApplyToPayrunEmployee(pe, fnf, req.ActorId);
+                payrunEmployeeRepo.Update(pe);
+
+                await tdsWorksheetRepo.DeleteByRunAndEmployeeAsync(req.RunId, pe.EmployeeId, ct);
+                await tdsWorksheetRepo.AddAsync(
+                    PayrollFnfOrchestrator.BuildWorksheet(run, pe, fnf, req.ActorId), ct);
+            }
+            else
+            {
+                await recomputeService.RecomputeEmployeeAsync(req.RunId, pe.EmployeeId, ct);
+            }
         }
 
         var snapshot = costCalculator.Calculate(activeEmployees);
