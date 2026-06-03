@@ -10,29 +10,27 @@ public class SalaryArrearCalculatorTests
     private static readonly Guid BasicId = Guid.NewGuid();
     private static readonly Guid HraId = Guid.NewGuid();
 
-    private static ArrearNewComponent NewComp(
-        Guid id, string code, decimal full, bool taxable = true, bool prorate = true) =>
-        new(id, code, code, full, taxable, ConsiderForEpf: false, ConsiderForEsi: false, CalculateOnProRata: prorate);
+    private static ArrearNewComponent NewComp(Guid id, string code, decimal full, bool taxable = true) =>
+        new(id, code, code, full, taxable);
+
+    // No-LOP convenience: prorated == full.
+    private static ArrearOldComponent Old(string code, decimal amount) => new(code, amount, amount);
 
     private static ArrearMonth Month(
-        int year, int month, int baseDays, int lopDays,
-        IReadOnlyList<ArrearOldComponent> old, IReadOnlyList<ArrearNewComponent> @new) =>
-        new(year, month, baseDays, lopDays, old, @new);
+        int year, int month, IReadOnlyList<ArrearOldComponent> old, IReadOnlyList<ArrearNewComponent> @new) =>
+        new(year, month, old, @new);
 
     [Fact]
     public void SingleMonthRaise_NoLop_ArrearIsFullDiff()
     {
         var months = new[]
         {
-            Month(2026, 3, 31, 0,
-                old: [new ArrearOldComponent("BASIC", 28000m)],
-                @new: [NewComp(BasicId, "BASIC", 33600m)]),
+            Month(2026, 3, [Old("BASIC", 28000m)], [NewComp(BasicId, "BASIC", 33600m)]),
         };
 
         ArrearComputation r = SalaryArrearCalculator.Compute(months);
 
-        r.Lines.Should().ContainSingle();
-        r.Lines[0].Amount.Should().Be(5600m);
+        r.Lines.Should().ContainSingle().Which.Amount.Should().Be(5600m);
         r.TotalArrear.Should().Be(5600m);
         r.TotalTaxableArrear.Should().Be(5600m);
     }
@@ -40,44 +38,86 @@ public class SalaryArrearCalculatorTests
     [Fact]
     public void MultiMonth_AccumulatesPerComponent()
     {
-        var month = new Func<int, ArrearMonth>(mo => Month(2026, mo, 30, 0,
-            old: [new ArrearOldComponent("BASIC", 28000m)],
-            @new: [NewComp(BasicId, "BASIC", 33600m)]));
+        ArrearMonth M(int mo) => Month(2026, mo, [Old("BASIC", 28000m)], [NewComp(BasicId, "BASIC", 33600m)]);
 
-        ArrearComputation r = SalaryArrearCalculator.Compute([month(3), month(4), month(5)]);
+        ArrearComputation r = SalaryArrearCalculator.Compute([M(3), M(4), M(5)]);
 
         r.Lines.Should().ContainSingle().Which.Amount.Should().Be(5600m * 3);
         r.TotalArrear.Should().Be(16800m);
     }
 
     [Fact]
-    public void MidMonthLop_NewProratedOnSameBasisAsOldRun()
+    public void LopMonth_ProrationReproducedFromRealizedFactor()
     {
-        // 2 LOP of 31 → payable 29/31. New full 33600 prorated; old already prorated.
-        decimal oldProrated = Math.Round(28000m * 29m / 31m, 2, MidpointRounding.AwayFromZero);
-        decimal newProrated = Math.Round(33600m * 29m / 31m, 2, MidpointRounding.AwayFromZero);
+        // Old run had 2 LOP of 31 → BASIC prorated 26193.55 against full 28000.
+        decimal oldProrated = Math.Round(28000m * 29m / 31m, 2, MidpointRounding.AwayFromZero); // 26193.55
+        decimal expectedNewProrated = Math.Round(33600m * 29m / 31m, 2, MidpointRounding.AwayFromZero); // 31432.26
 
         var months = new[]
         {
-            Month(2026, 3, 31, 2,
-                old: [new ArrearOldComponent("BASIC", oldProrated)],
-                @new: [NewComp(BasicId, "BASIC", 33600m)]),
+            Month(2026, 3, [new ArrearOldComponent("BASIC", oldProrated, 28000m)], [NewComp(BasicId, "BASIC", 33600m)]),
         };
 
         ArrearComputation r = SalaryArrearCalculator.Compute(months);
 
-        r.Lines[0].Amount.Should().Be(newProrated - oldProrated);
+        // ratio approach (33600 * oldProrated/28000) must equal the GrossCalculator proration.
+        r.Lines[0].Amount.Should().Be(expectedNewProrated - oldProrated);
     }
 
     [Fact]
-    public void AddedComponent_PresentOnlyInNew_FullNewAmountIsArrear()
+    public void FlatComponentInLopMonth_NotProrated()
     {
-        // New structure introduces HRA that the old run didn't have.
+        // Discriminating case (advisor): a flat component (full == prorated even with LOP)
+        // must NOT be prorated in the arrear; a recompute-from-days approach would wrongly
+        // prorate it. BASIC was prorated (LOP), MEAL is flat.
+        decimal basicOldProrated = Math.Round(28000m * 29m / 31m, 2, MidpointRounding.AwayFromZero); // 26193.55
+        decimal basicNewProrated = Math.Round(33600m * 29m / 31m, 2, MidpointRounding.AwayFromZero); // 31432.26
+
         var months = new[]
         {
-            Month(2026, 3, 31, 0,
-                old: [new ArrearOldComponent("BASIC", 28000m)],
+            Month(2026, 3,
+                old:
+                [
+                    new ArrearOldComponent("BASIC", basicOldProrated, 28000m),
+                    new ArrearOldComponent("MEAL", 5000m, 5000m), // flat: prorated == full
+                ],
+                @new: [NewComp(BasicId, "BASIC", 33600m), NewComp(HraId, "MEAL", 6000m)]),
+        };
+
+        ArrearComputation r = SalaryArrearCalculator.Compute(months);
+
+        r.Lines.Should().Contain(l => l.Code == "BASIC").Which.Amount.Should().Be(basicNewProrated - basicOldProrated);
+        r.Lines.Should().Contain(l => l.Code == "MEAL").Which.Amount.Should().Be(1000m); // 6000 - 5000, no proration
+    }
+
+    [Fact]
+    public void AddedComponentInLopMonth_UsesMonthFactorFromOldRun()
+    {
+        // HRA exists only in the new structure. In a LOP month it must be prorated by the
+        // month's realized factor (recovered from BASIC's prorated/full), not paid in full.
+        decimal basicOldProrated = Math.Round(28000m * 29m / 31m, 2, MidpointRounding.AwayFromZero);
+        decimal factor = basicOldProrated / 28000m;
+        decimal expectedHra = Math.Round(10000m * factor, 2, MidpointRounding.AwayFromZero);
+
+        var months = new[]
+        {
+            Month(2026, 3,
+                old: [new ArrearOldComponent("BASIC", basicOldProrated, 28000m)],
                 @new: [NewComp(BasicId, "BASIC", 28000m), NewComp(HraId, "HRA", 10000m)]),
+        };
+
+        ArrearComputation r = SalaryArrearCalculator.Compute(months);
+
+        r.Lines.Should().ContainSingle(l => l.Code == "HRA").Which.Amount.Should().Be(expectedHra);
+    }
+
+    [Fact]
+    public void AddedComponent_NoLop_FullNewAmountIsArrear()
+    {
+        var months = new[]
+        {
+            Month(2026, 3, [Old("BASIC", 28000m)],
+                [NewComp(BasicId, "BASIC", 28000m), NewComp(HraId, "HRA", 10000m)]),
         };
 
         ArrearComputation r = SalaryArrearCalculator.Compute(months);
@@ -89,12 +129,9 @@ public class SalaryArrearCalculatorTests
     [Fact]
     public void RemovedComponent_PresentOnlyInOld_IsNegative_NettedIntoTotal()
     {
-        // BASIC rises by 12000; a 2000 allowance is dropped. Net arrear = 10000.
         var months = new[]
         {
-            Month(2026, 3, 31, 0,
-                old: [new ArrearOldComponent("BASIC", 28000m), new ArrearOldComponent("SPECIAL", 2000m)],
-                @new: [NewComp(BasicId, "BASIC", 40000m)]),
+            Month(2026, 3, [Old("BASIC", 28000m), Old("SPECIAL", 2000m)], [NewComp(BasicId, "BASIC", 40000m)]),
         };
 
         ArrearComputation r = SalaryArrearCalculator.Compute(months);
@@ -109,9 +146,7 @@ public class SalaryArrearCalculatorTests
     {
         var months = new[]
         {
-            Month(2026, 3, 31, 0,
-                old: [new ArrearOldComponent("BASIC", 40000m)],
-                @new: [NewComp(BasicId, "BASIC", 30000m)]),
+            Month(2026, 3, [Old("BASIC", 40000m)], [NewComp(BasicId, "BASIC", 30000m)]),
         };
 
         ArrearComputation r = SalaryArrearCalculator.Compute(months);
@@ -126,15 +161,14 @@ public class SalaryArrearCalculatorTests
     {
         var months = new[]
         {
-            Month(2026, 3, 31, 0,
-                old: [new ArrearOldComponent("BASIC", 28000m), new ArrearOldComponent("LTA", 5000m)],
-                @new: [NewComp(BasicId, "BASIC", 30000m), NewComp(HraId, "LTA", 8000m, taxable: false)]),
+            Month(2026, 3, [Old("BASIC", 28000m), Old("LTA", 5000m)],
+                [NewComp(BasicId, "BASIC", 30000m), NewComp(HraId, "LTA", 8000m, taxable: false)]),
         };
 
         ArrearComputation r = SalaryArrearCalculator.Compute(months);
 
-        r.TotalArrear.Should().Be(2000m + 3000m);      // BASIC 2000 + LTA 3000
-        r.TotalTaxableArrear.Should().Be(2000m);        // only BASIC is taxable
+        r.TotalArrear.Should().Be(2000m + 3000m);
+        r.TotalTaxableArrear.Should().Be(2000m);
     }
 
     [Fact]
