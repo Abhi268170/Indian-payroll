@@ -109,6 +109,52 @@ export interface SalaryStructureTemplateSummaryDto {
   componentCount: number
 }
 
+// ── Salary revisions (WI-018) ──────────────────────────────────────────────
+export interface SalaryRevisionSummaryDto {
+  id: string
+  status: 'Pending' | 'Applied'
+  previousAnnualCTC: number
+  newAnnualCTC: number
+  effectiveFromMonth: number
+  effectiveFromYear: number
+  payoutMonth: number
+  payoutYear: number
+  arrearsPaid: boolean
+  notes: string | null
+  createdAt: string
+}
+
+export interface ArrearLineDto {
+  code: string
+  name: string
+  amount: number
+  isTaxable: boolean
+}
+
+export interface ArrearExcludedMonthDto {
+  year: number
+  month: number
+  reason: string
+}
+
+export interface SalaryRevisionArrearPreviewDto {
+  lines: ArrearLineDto[]
+  totalArrear: number
+  totalTaxableArrear: number
+  excludedMonths: ArrearExcludedMonthDto[]
+}
+
+export interface CreateSalaryRevisionRequest {
+  newAnnualCTC: number
+  effectiveFromMonth: number
+  effectiveFromYear: number
+  payoutMonth: number
+  payoutYear: number
+  salaryStructureTemplateId: string | null
+  overrides: ComponentOverrideRequest[]
+  notes: string | null
+}
+
 export interface SalaryStructureTemplateDetailDto {
   id: string
   name: string

@@ -124,6 +124,7 @@ describe('EmployeePayBreakdown', () => {
             proratedAmount: 300,
             isOneTimeEarning: true,
             isDeduction: true,
+            isBenefit: false,
           },
         ],
       })
@@ -168,6 +169,7 @@ describe('EmployeePayBreakdown', () => {
             proratedAmount: 5000,
             isOneTimeEarning: true,
             isDeduction: false,
+            isBenefit: false,
           },
         ],
       })
@@ -215,6 +217,7 @@ describe('EmployeePayBreakdown', () => {
             proratedAmount: 5000,
             isOneTimeEarning: true,
             isDeduction: false,
+            isBenefit: false,
           },
         ],
       })

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '@/lib/api'
 import { formatINR } from '@/lib/format'
 import type { EmployeeSalaryStructureDto } from '@/types/api'
+import SalaryRevisionsSection from './SalaryRevisionsSection'
 
 interface Props {
   employeeId: string
@@ -167,6 +168,8 @@ export default function EmployeeSalaryTab({ employeeId }: Props): React.ReactEle
           </table>
         </div>
       )}
+
+      <SalaryRevisionsSection employeeId={employeeId} />
     </div>
   )
 }
