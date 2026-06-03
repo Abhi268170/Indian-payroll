@@ -23,22 +23,33 @@ public sealed class RejectApprovalHandler(
     IPayrollRunRepository runRepo,
     ITdsWorksheetRepository tdsWorksheetRepo,
     IPayrollRunAuditLogRepository auditLogRepo,
+    ISalaryRevisionRepository salaryRevisionRepo,
     IUnitOfWork uow)
     : IRequestHandler<RejectApprovalCommand>
 {
     public async Task Handle(RejectApprovalCommand req, CancellationToken ct)
     {
-        var run = await runRepo.GetByIdAsync(req.RunId, ct)
+        PayrollRun run = await runRepo.GetByIdAsync(req.RunId, ct)
             ?? throw new NotFoundException($"Payroll run {req.RunId} not found.");
 
         if (run.Status != PayrollRunStatus.Approved)
             throw new InvalidOperationException("Only an Approved payroll run can have its approval rejected.");
 
         await tdsWorksheetRepo.DeleteByRunIdAsync(req.RunId, ct);
+
+        // WI-018: reversing approval makes this run's arrears unpaid again so a future
+        // run for the period re-injects them.
+        IReadOnlyList<SalaryRevision> paidByThisRun = await salaryRevisionRepo.GetByArrearPaidRunAsync(req.RunId, ct);
+        foreach (SalaryRevision rev in paidByThisRun)
+        {
+            rev.ClearArrearPaid(req.ActorId);
+            salaryRevisionRepo.Update(rev);
+        }
+
         run.RejectApproval(req.Reason, req.ActorId);
         runRepo.Update(run);
 
-        var auditEntry = PayrollRunAuditLog.Create(
+        PayrollRunAuditLog auditEntry = PayrollRunAuditLog.Create(
             req.RunId, run.TenantId, PayrollRunStatus.Approved, PayrollRunStatus.Draft, req.ActorId, req.Reason);
         await auditLogRepo.AddAsync(auditEntry, ct);
 

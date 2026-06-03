@@ -34,6 +34,12 @@ internal sealed class SalaryRevisionRepository(PayrollDbContext db)
                 && r.ArrearPaidRunId == null)
             .ToListAsync(ct);
 
+    public async Task<IReadOnlyList<SalaryRevision>> GetByArrearPaidRunAsync(
+        Guid runId, CancellationToken ct = default) =>
+        await db.SalaryRevisions
+            .Where(r => r.ArrearPaidRunId == runId)
+            .ToListAsync(ct);
+
     public void Update(SalaryRevision revision) =>
         db.SalaryRevisions.Update(revision);
 }

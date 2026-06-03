@@ -14,5 +14,9 @@ public interface ISalaryRevisionRepository
     Task<IReadOnlyList<SalaryRevision>> GetAppliedUnpaidForPayoutAsync(
         int payoutYear, int payoutMonth, CancellationToken ct = default);
 
+    // Revisions whose arrears were paid out by a specific run — used to reverse the
+    // paid flag if that run's approval is later rejected.
+    Task<IReadOnlyList<SalaryRevision>> GetByArrearPaidRunAsync(Guid runId, CancellationToken ct = default);
+
     void Update(SalaryRevision revision);
 }

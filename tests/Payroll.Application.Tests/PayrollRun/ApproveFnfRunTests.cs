@@ -270,10 +270,12 @@ public class ApproveFnfRunTests
         exitRepo.GetActiveByEmployeeAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns((Payroll.Domain.Entities.EmployeeExit?)null);
 
+        var salaryRevisionRepo = Substitute.For<ISalaryRevisionRepository>();
+        var breakdownRepo = Substitute.For<IPayrunComponentBreakdownRepository>();
         var handler = new ApprovePayrollRunHandler(
             runRepo, payrunEmpRepo, auditLogRepo, recomputeService,
             fnfOrchestrator, tdsWorksheetRepo, exitRepo,
-            costCalculator, uow, sender, jobDispatcher);
+            costCalculator, salaryRevisionRepo, breakdownRepo, uow, sender, jobDispatcher);
 
         return (handler, new Deps(fnfOrchestrator, recomputeService, tdsWorksheetRepo, payrunEmpRepo));
     }
