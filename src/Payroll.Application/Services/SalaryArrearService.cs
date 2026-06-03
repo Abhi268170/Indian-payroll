@@ -49,6 +49,7 @@ public sealed class SalaryArrearService(
 
         EmployeeSalaryStructure newStructure = BuildInMemoryStructure(revision);
         Dictionary<Guid, SalaryComponent> addedCompDetails = await LoadAddedComponentsAsync(revision, template, ct);
+        Dictionary<Guid, string> nameByComponentId = BuildNameMap(template, addedCompDetails);
 
         int startIdx = revision.EffectiveFromYear * 12 + (revision.EffectiveFromMonth - 1);
         int payoutIdx = revision.PayoutYear * 12 + (revision.PayoutMonth - 1);
@@ -101,7 +102,12 @@ public sealed class SalaryArrearService(
                 InitiatePayrollRunHandler.BuildComponentInputs(newStructure, template, addedCompDetails, config);
 
             List<ArrearNewComponent> newComps = newInputs
-                .Select(c => new ArrearNewComponent(c.ComponentId, c.Code, c.Code, c.Amount, c.IsTaxable))
+                .Select(c => new ArrearNewComponent(
+                    c.ComponentId,
+                    c.Code,
+                    nameByComponentId.TryGetValue(c.ComponentId, out string? friendly) ? friendly : c.Code,
+                    c.Amount,
+                    c.IsTaxable))
                 .ToList();
 
             months.Add(new ArrearMonth(year, month, old, newComps));
@@ -128,6 +134,22 @@ public sealed class SalaryArrearService(
         }
 
         return structure;
+    }
+
+    // Payslip-friendly names per component, so arrear rows render "Arrears - Basic Salary"
+    // rather than "Arrears - BASICSALARY".
+    private static Dictionary<Guid, string> BuildNameMap(
+        SalaryStructureTemplate template, Dictionary<Guid, SalaryComponent> addedCompDetails)
+    {
+        Dictionary<Guid, string> map = new Dictionary<Guid, string>();
+        foreach (SalaryStructureComponent slot in template.Components)
+        {
+            if (slot.Component is not null)
+                map[slot.ComponentId] = slot.Component.NameInPayslip;
+        }
+        foreach (KeyValuePair<Guid, SalaryComponent> kvp in addedCompDetails)
+            map[kvp.Key] = kvp.Value.NameInPayslip;
+        return map;
     }
 
     private async Task<Dictionary<Guid, SalaryComponent>> LoadAddedComponentsAsync(

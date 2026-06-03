@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Payroll.Application.Commands.PayrollRuns;
+using Payroll.Application.Commands.SalaryRevisions;
 using Payroll.Application.DTOs;
 using Payroll.Application.Interfaces;
 using Payroll.Application.Queries.PayrollRuns;
@@ -55,7 +56,7 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
     {
         try
         {
-            var result = await sender.Send(
+            PagedResult<PayrunEmployeeDto> result = await sender.Send(
                 new GetPayrollRunEmployeesQuery(id, filter, new PaginationParams(page, pageSize)), ct);
             return Ok(result);
         }
@@ -252,6 +253,20 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
         catch (NotFoundException) { return NotFound(); }
     }
 
+    [HttpPost("{id:guid}/inject-arrears")]
+    [Authorize(Policy = "PayrollManager")]
+    public async Task<IActionResult> InjectArrears(Guid id, CancellationToken ct)
+    {
+        try
+        {
+            await sender.Send(new InjectSalaryRevisionArrearsCommand(id, GetActorId()), ct);
+            return NoContent();
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (DomainException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+        catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+    }
+
     [HttpPost("{id:guid}/approve")]
     public async Task<IActionResult> Approve(Guid id, CancellationToken ct)
     {
@@ -377,14 +392,14 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
     [HttpGet("pending")]
     public async Task<IActionResult> GetPending(CancellationToken ct = default)
     {
-        var result = await sender.Send(new GetPendingPayrollRunsQuery(), ct);
+        IReadOnlyList<PendingRunCardDto> result = await sender.Send(new GetPendingPayrollRunsQuery(), ct);
         return Ok(result);
     }
 
     [HttpGet("preflight")]
     public async Task<IActionResult> GetPreflight(CancellationToken ct = default)
     {
-        var result = await sender.Send(new GetPayrollRunPreflightQuery(), ct);
+        PayrollRunPreflightDto result = await sender.Send(new GetPayrollRunPreflightQuery(), ct);
         return Ok(result);
     }
 
@@ -395,7 +410,7 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
         [FromQuery] Domain.Enums.PayrollRunType? type = null,
         CancellationToken ct = default)
     {
-        var result = await sender.Send(new GetPayrollHistoryQuery(page, pageSize, type), ct);
+        PagedResult<PayrollHistoryItemDto> result = await sender.Send(new GetPayrollHistoryQuery(page, pageSize, type), ct);
         return Ok(result);
     }
 

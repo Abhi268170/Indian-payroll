@@ -3,10 +3,12 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Payroll.Application.Commands.Employees;
+using Payroll.Application.Commands.SalaryRevisions;
 using Payroll.Application.DTOs;
 using Payroll.Application.Interfaces;
 using Payroll.Application.Queries.Employees;
 using Payroll.Application.Queries.Payslips;
+using Payroll.Application.Queries.SalaryRevisions;
 using Payroll.Domain.Common;
 using Payroll.Domain.Interfaces;
 
@@ -35,7 +37,7 @@ public sealed class EmployeesController(ISender sender, IEmployeeImportTemplateG
         [FromQuery] string? search = null,
         CancellationToken ct = default)
     {
-        var result = await sender.Send(
+        PagedResult<EmployeeListItemDto> result = await sender.Send(
             new ListEmployeesQuery(new PaginationParams(page, pageSize), status, search), ct);
         return Ok(result);
     }
@@ -176,6 +178,61 @@ public sealed class EmployeesController(ISender sender, IEmployeeImportTemplateG
         {
             return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });
         }
+    }
+
+    // ── Salary revisions (WI-018) ────────────────────────────────────────────
+    // Privileged: compensation changes are restricted to payroll managers / org admins.
+
+    [HttpPost("{id:guid}/salary-revisions")]
+    [Authorize(Policy = "PayrollManager")]
+    public async Task<IActionResult> CreateSalaryRevision(
+        Guid id, [FromBody] CreateSalaryRevisionRequest req, CancellationToken ct)
+    {
+        try
+        {
+            Guid rid = await sender.Send(new CreateSalaryRevisionCommand(
+                id, req.NewAnnualCTC, req.EffectiveFromMonth, req.EffectiveFromYear,
+                req.PayoutMonth, req.PayoutYear, req.SalaryStructureTemplateId,
+                req.Overrides?.Select(o => new ComponentOverrideInput(
+                    o.SalaryComponentId, o.FormulaType, o.Percentage, o.FixedAmount)).ToList() ?? [],
+                req.Notes, GetActorId()), ct);
+            return Created($"/api/v1/employees/{id}/salary-revisions/{rid}", new { id = rid });
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (DomainException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+        catch (ValidationException ex) { return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) }); }
+    }
+
+    [HttpGet("{id:guid}/salary-revisions")]
+    [Authorize(Policy = "PayrollManager")]
+    public async Task<IActionResult> ListSalaryRevisions(Guid id, CancellationToken ct)
+        => Ok(await sender.Send(new ListSalaryRevisionsQuery(id), ct));
+
+    [HttpGet("{id:guid}/salary-revisions/{rid:guid}/arrear-preview")]
+    [Authorize(Policy = "PayrollManager")]
+    public async Task<IActionResult> PreviewSalaryRevisionArrears(Guid id, Guid rid, CancellationToken ct)
+    {
+        try
+        {
+            SalaryRevisionArrearPreviewDto dto = await sender.Send(new GetSalaryRevisionArrearPreviewQuery(rid), ct);
+            return Ok(dto);
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (DomainException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+    }
+
+    [HttpPost("{id:guid}/salary-revisions/{rid:guid}/apply")]
+    [Authorize(Policy = "PayrollManager")]
+    public async Task<IActionResult> ApplySalaryRevision(Guid id, Guid rid, CancellationToken ct)
+    {
+        try
+        {
+            await sender.Send(new ApplySalaryRevisionCommand(rid, GetActorId()), ct);
+            return NoContent();
+        }
+        catch (NotFoundException) { return NotFound(); }
+        catch (InvalidOperationException ex) { return UnprocessableEntity(new { error = ex.Message }); }
+        catch (DomainException ex) { return UnprocessableEntity(new { error = ex.Message }); }
     }
 
     [HttpGet("{id:guid}/payslips")]
@@ -445,3 +502,13 @@ public record AssignSalaryStructureRequest(
     bool PtEnabled,
     bool LwfEnabled,
     IReadOnlyList<ComponentOverrideRequest>? Overrides);
+
+public record CreateSalaryRevisionRequest(
+    decimal NewAnnualCTC,
+    int EffectiveFromMonth,
+    int EffectiveFromYear,
+    int PayoutMonth,
+    int PayoutYear,
+    Guid? SalaryStructureTemplateId,
+    IReadOnlyList<ComponentOverrideRequest>? Overrides,
+    string? Notes);
