@@ -37,7 +37,7 @@ public sealed class ApplySalaryRevisionHandler(
         if (revision.Status != SalaryRevisionStatus.Pending)
             throw new InvalidOperationException("Salary revision has already been applied.");
 
-        var effectiveFrom = new DateOnly(revision.EffectiveFromYear, revision.EffectiveFromMonth, 1);
+        DateOnly effectiveFrom = new DateOnly(revision.EffectiveFromYear, revision.EffectiveFromMonth, 1);
 
         EmployeeSalaryStructure? existing = await salaryStructureRepo.GetActiveAsync(revision.EmployeeId, ct);
         if (existing is not null)

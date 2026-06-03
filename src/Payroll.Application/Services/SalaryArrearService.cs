@@ -53,8 +53,8 @@ public sealed class SalaryArrearService(
         int startIdx = revision.EffectiveFromYear * 12 + (revision.EffectiveFromMonth - 1);
         int payoutIdx = revision.PayoutYear * 12 + (revision.PayoutMonth - 1);
 
-        var months = new List<ArrearMonth>();
-        var excluded = new List<ArrearMonthExclusion>();
+        List<ArrearMonth> months = new List<ArrearMonth>();
+        List<ArrearMonthExclusion> excluded = new List<ArrearMonthExclusion>();
 
         for (int idx = startIdx; idx < payoutIdx; idx++)
         {
@@ -94,19 +94,17 @@ public sealed class SalaryArrearService(
                     && !b.IsOneTimeEarning
                     && !b.IsBenefit
                     && !string.Equals(b.ComponentCode, "REIMBURSEMENT", StringComparison.OrdinalIgnoreCase))
-                .Select(b => new ArrearOldComponent(b.ComponentCode, b.ProratedAmount))
+                .Select(b => new ArrearOldComponent(b.ComponentCode, b.ProratedAmount, b.FullAmount))
                 .ToList();
 
             IReadOnlyList<SalaryComponentInput> newInputs =
                 InitiatePayrollRunHandler.BuildComponentInputs(newStructure, template, addedCompDetails, config);
 
             List<ArrearNewComponent> newComps = newInputs
-                .Select(c => new ArrearNewComponent(
-                    c.ComponentId, c.Code, c.Code, c.Amount,
-                    c.IsTaxable, c.ConsiderForEpf, c.ConsiderForEsi, c.CalculateOnProRata))
+                .Select(c => new ArrearNewComponent(c.ComponentId, c.Code, c.Code, c.Amount, c.IsTaxable))
                 .ToList();
 
-            months.Add(new ArrearMonth(year, month, pe.BaseDays, pe.LopDays, old, newComps));
+            months.Add(new ArrearMonth(year, month, old, newComps));
         }
 
         ArrearComputation comp = SalaryArrearCalculator.Compute(months);
@@ -135,7 +133,7 @@ public sealed class SalaryArrearService(
     private async Task<Dictionary<Guid, SalaryComponent>> LoadAddedComponentsAsync(
         SalaryRevision revision, SalaryStructureTemplate template, CancellationToken ct)
     {
-        var templateCompIds = template.Components.Select(c => c.ComponentId).ToHashSet();
+        HashSet<Guid> templateCompIds = template.Components.Select(c => c.ComponentId).ToHashSet();
         List<Guid> addedIds = revision.ComponentOverrides
             .Select(o => o.SalaryComponentId)
             .Where(id => !templateCompIds.Contains(id))

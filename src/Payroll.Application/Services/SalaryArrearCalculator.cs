@@ -2,35 +2,33 @@ namespace Payroll.Application.Services;
 
 // WI-018 step 4 — pure arrear math.
 //
-// Given, for each affected back month, the OLD prorated per-component amounts (read
-// from that month's finalised PayrunComponentBreakdown) and the NEW per-component
-// full amounts (resolved from the backdated structure via BuildComponentInputs),
-// plus that month's persisted proration basis, compute the per-component arrear.
+// For each affected back month we know the OLD per-component amounts (full + the
+// prorated value actually paid, read from that month's finalised PayrunComponentBreakdown)
+// and the NEW per-component full amounts (resolved from the backdated structure via
+// BuildComponentInputs). The arrear is the per-component difference of the NEW prorated
+// amount minus the OLD prorated amount.
 //
-// This type is deterministic and I/O-free so the diff rules (full-outer-join across
-// changed component sets, proration replay, multi-month accumulation, negative clamp)
-// are unit-testable without a database. The orchestration shell that loads runs,
-// breakdowns, and the frozen config wraps this.
+// Proration is reproduced from the OLD run's *realized factor* (oldProrated / oldFull)
+// rather than recomputed from days. That factor already encodes everything the original
+// run applied — LOP, the salary divisor (calendar vs fixed 26/30), mid-month joining,
+// flat components (factor 1), and CalculateOnProRata=false (factor 1) — so the arrear
+// shares the original run's exact basis without re-deriving any of it.
+//
+// Deterministic and I/O-free so the diff rules are unit-testable without a database.
 
-public sealed record ArrearOldComponent(string Code, decimal ProratedAmount);
+public sealed record ArrearOldComponent(string Code, decimal ProratedAmount, decimal FullAmount);
 
 public sealed record ArrearNewComponent(
     Guid ComponentId,
     string Code,
     string Name,
     decimal FullAmount,
-    bool IsTaxable,
-    bool ConsiderForEpf,
-    bool ConsiderForEsi,
-    bool CalculateOnProRata);
+    bool IsTaxable);
 
-// One affected back month: the proration basis actually applied in that finalised run,
-// the old prorated amounts from its breakdown, and the new full amounts for the same month.
+// One affected back month: the old amounts from its breakdown and the new full amounts.
 public sealed record ArrearMonth(
     int Year,
     int Month,
-    int BaseDays,
-    int LopDays,
     IReadOnlyList<ArrearOldComponent> Old,
     IReadOnlyList<ArrearNewComponent> New);
 
@@ -50,39 +48,51 @@ public sealed record ArrearComputation(
 
 public static class SalaryArrearCalculator
 {
-    // Mirror of GrossCalculator's per-component proration so recomputed new amounts
-    // share the exact denominator the original run used.
-    private static decimal Prorate(decimal full, bool calculateOnProRata, int baseDays, int lopDays)
-    {
-        if (!calculateOnProRata || lopDays <= 0 || baseDays <= 0)
-            return full;
-        decimal payableDays = baseDays - lopDays;
-        return Math.Round(full * payableDays / baseDays, 2, MidpointRounding.AwayFromZero);
-    }
-
     public static ArrearComputation Compute(IReadOnlyList<ArrearMonth> months)
     {
         // Accumulate per-component arrear across all months, keyed by component code
         // (codes are stable across structure versions; component ids may differ).
-        var byCode = new Dictionary<string, ArrearLine>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, ArrearLine> byCode = new Dictionary<string, ArrearLine>(StringComparer.OrdinalIgnoreCase);
 
         foreach (ArrearMonth m in months)
         {
-            var oldByCode = m.Old.ToDictionary(o => o.Code, o => o.ProratedAmount, StringComparer.OrdinalIgnoreCase);
-            var newByCode = m.New.ToDictionary(n => n.Code, StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, ArrearOldComponent> oldByCode = m.Old.ToDictionary(o => o.Code, StringComparer.OrdinalIgnoreCase);
+            Dictionary<string, ArrearNewComponent> newByCode = m.New.ToDictionary(n => n.Code, StringComparer.OrdinalIgnoreCase);
 
-            // Full outer join on code: a component may exist in only the new structure
-            // (added → full new amount is arrear) or only the old run (removed → negative).
-            var codes = new HashSet<string>(oldByCode.Keys, StringComparer.OrdinalIgnoreCase);
+            // The month's realized LOP factor, used only for components that exist in the
+            // new structure but had no counterpart in the old run (so no per-component
+            // factor is available). Derived from any old component that was actually
+            // prorated; 1 when the month had no proration.
+            decimal monthFactor = DeriveMonthFactor(m.Old);
+
+            // Full outer join on code: a component may exist only in the new structure
+            // (added → arrear is its full new prorated amount) or only in the old run
+            // (removed → negative recovery).
+            HashSet<string> codes = new HashSet<string>(oldByCode.Keys, StringComparer.OrdinalIgnoreCase);
             codes.UnionWith(newByCode.Keys);
 
             foreach (string code in codes)
             {
+                oldByCode.TryGetValue(code, out ArrearOldComponent? oc);
                 newByCode.TryGetValue(code, out ArrearNewComponent? nc);
-                decimal newProrated = nc is null
-                    ? 0m
-                    : Prorate(nc.FullAmount, nc.CalculateOnProRata, m.BaseDays, m.LopDays);
-                decimal oldProrated = oldByCode.TryGetValue(code, out decimal o) ? o : 0m;
+
+                decimal newProrated;
+                if (nc is null)
+                {
+                    newProrated = 0m; // removed component
+                }
+                else if (oc is not null && oc.FullAmount > 0m)
+                {
+                    // Apply the same realized factor this component had in the old run.
+                    newProrated = Math.Round(nc.FullAmount * oc.ProratedAmount / oc.FullAmount, 2, MidpointRounding.AwayFromZero);
+                }
+                else
+                {
+                    // Added component (no old counterpart): use the month's LOP factor.
+                    newProrated = Math.Round(nc.FullAmount * monthFactor, 2, MidpointRounding.AwayFromZero);
+                }
+
+                decimal oldProrated = oc?.ProratedAmount ?? 0m;
                 decimal diff = newProrated - oldProrated;
                 if (diff == 0m) continue;
 
@@ -92,9 +102,6 @@ public static class SalaryArrearCalculator
                 }
                 else
                 {
-                    // Identity/flags come from the new component when present; for a
-                    // removed component (new side absent) we still surface the recovery
-                    // line using the old code, taxable by default (no flags available).
                     byCode[code] = nc is null
                         ? new ArrearLine(Guid.Empty, code, code, diff, IsTaxable: true,
                             ConsiderForEpf: false, ConsiderForEsi: false)
@@ -114,5 +121,18 @@ public static class SalaryArrearCalculator
             return new ArrearComputation([], 0m, 0m);
 
         return new ArrearComputation(lines, total, Math.Max(0m, taxable));
+    }
+
+    // payableDays/baseDays as realized in the old run, recovered from any component that
+    // was prorated (prorated < full). Flat / no-LOP components have full == prorated and
+    // are skipped. Returns 1 when nothing was prorated that month.
+    private static decimal DeriveMonthFactor(IReadOnlyList<ArrearOldComponent> old)
+    {
+        foreach (ArrearOldComponent o in old)
+        {
+            if (o.FullAmount > 0m && o.ProratedAmount != o.FullAmount)
+                return o.ProratedAmount / o.FullAmount;
+        }
+        return 1m;
     }
 }
