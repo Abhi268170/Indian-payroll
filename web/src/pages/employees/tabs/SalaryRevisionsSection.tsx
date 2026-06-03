@@ -1,4 +1,5 @@
 import { useState, type ReactElement } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { AlertTriangle } from 'lucide-react'
 import { api } from '@/lib/api'
@@ -36,6 +37,7 @@ const labelCls = 'text-[11px] font-medium text-[var(--color-text-secondary)] upp
 
 export default function SalaryRevisionsSection({ employeeId }: Props): ReactElement {
   const qc = useQueryClient()
+  const navigate = useNavigate()
   const nowYear = new Date().getFullYear()
 
   const [showForm, setShowForm] = useState(false)
@@ -118,9 +120,14 @@ export default function SalaryRevisionsSection({ employeeId }: Props): ReactElem
       <div className="px-5 py-3 border-b border-[var(--color-border)] bg-[var(--color-page-bg)] flex items-center justify-between">
         <h3 className="text-[13px] font-semibold text-[var(--color-text-primary)]">Salary Revisions</h3>
         {!showForm && (
-          <button onClick={() => { setShowForm(true) }} className={btnOutline}>
-            New revision
-          </button>
+          <div className="flex items-center gap-3">
+            <button onClick={() => { void navigate('/salary-revisions/import') }} className="text-[12px] text-[var(--color-primary)] hover:underline">
+              Bulk import
+            </button>
+            <button onClick={() => { setShowForm(true) }} className={btnOutline}>
+              New revision
+            </button>
+          </div>
         )}
       </div>
 

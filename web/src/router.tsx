@@ -21,6 +21,7 @@ import EmployeesPage from '@/pages/employees/EmployeesPage'
 import AddEmployeeWizard from '@/pages/employees/AddEmployeeWizard'
 import EmployeeDetailPage from '@/pages/employees/EmployeeDetailPage'
 import ImportEmployeesPage from '@/pages/employees/ImportEmployeesPage'
+import ImportSalaryRevisionsPage from '@/pages/employees/ImportSalaryRevisionsPage'
 import PayRunsPage from '@/pages/payroll/PayRunsPage'
 import PayRunDetailPage from '@/pages/payroll/PayRunDetailPage'
 import ExitInitiationPage from '@/pages/employees/ExitInitiationPage'
@@ -102,6 +103,7 @@ export const router = createBrowserRouter([
       { path: 'dashboard', element: <DashboardPage /> },
       { path: 'employees', element: <EmployeesPage /> },
       { path: 'employees/import', element: <ImportEmployeesPage /> },
+      { path: 'salary-revisions/import', element: <ImportSalaryRevisionsPage /> },
       { path: 'employees/new', element: <AddEmployeeWizard /> },
       { path: 'employees/:id/wizard/:step', element: <AddEmployeeWizard /> },
       { path: 'employees/:id', element: <EmployeeDetailPage /> },
