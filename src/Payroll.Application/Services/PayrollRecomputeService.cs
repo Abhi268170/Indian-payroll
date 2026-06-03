@@ -146,11 +146,14 @@ public sealed class PayrollRecomputeService(
         PayrollResult result = PayrollEngine.Compute([empInput], runInput, staticConfig)[0];
 
         // Sync stored prorated amounts on non-reimbursement breakdowns so the
-        // payslip line items match the engine pass.
+        // payslip line items match the engine pass. Match on ComponentCode, not
+        // ComponentId: salary-revision ARREAR_* rows reuse the underlying component's
+        // SalaryComponentId, so an id-based match would overwrite the arrear row with
+        // the recurring component's amount. Codes are unique per row.
         foreach (PayrunComponentBreakdown bd in engineRows)
         {
             ComponentAmountResult? computed = result.Gross.ComponentBreakdown
-                .FirstOrDefault(c => c.ComponentId == (bd.SalaryComponentId ?? Guid.Empty));
+                .FirstOrDefault(c => string.Equals(c.Code, bd.ComponentCode, StringComparison.OrdinalIgnoreCase));
             if (computed is not null)
                 bd.UpdateAmounts(computed.FullAmount, computed.ProratedAmount);
         }
