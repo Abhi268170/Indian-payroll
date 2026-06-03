@@ -211,7 +211,7 @@ public sealed class InitiatePayrollRunHandler(
         foreach (Employee? emp in activeEmployees)
         {
             if (!eligibleMap.TryGetValue(emp.Id, out (EmployeeSalaryStructure structure, SalaryStructureTemplate? template, string? skipReason) entry)) continue;
-            (EmployeeSalaryStructure salaryStructure, SalaryStructureTemplate template, string skipReason) = entry;
+            (EmployeeSalaryStructure salaryStructure, SalaryStructureTemplate? template, string? skipReason) = entry;
             if (salaryStructure is null) continue;
 
             if (skipReason is null)
