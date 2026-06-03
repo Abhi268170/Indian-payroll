@@ -152,6 +152,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITdsBreakupExportService, TdsBreakupExportService>();
         services.AddScoped<IEmployeeImportParser, EmployeeImportParser>();
         services.AddSingleton<IEmployeeImportTemplateGenerator, EmployeeImportTemplateGenerator>();
+        services.AddScoped<ISalaryRevisionImportParser, SalaryRevisionImportParser>();
+        services.AddSingleton<ISalaryRevisionImportTemplateGenerator, SalaryRevisionImportTemplateGenerator>();
 
         if (!isWorkerOnly)
             services.AddHostedService<SeedDataService>();
