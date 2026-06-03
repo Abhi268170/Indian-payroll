@@ -109,6 +109,10 @@ public class VariableInputCommandTests
         var payrunEmpRepo = Substitute.For<IPayrunEmployeeRepository>();
         payrunEmpRepo.GetByRunAndEmployeeAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(payrunEmp);
+        // The YTD cap-check queries current-employer YTD; stub it so the handler's
+        // ytdMap.TryGetValue does not NRE (real repo never returns null).
+        payrunEmpRepo.GetCurrentEmployerYtdAsync(Arg.Any<IEnumerable<Guid>>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(new Dictionary<Guid, (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds)>());
 
         var handler = new OverrideTdsHandler(
             runRepo, payrunEmpRepo, Substitute.For<ITdsWorksheetRepository>(), Substitute.For<IUnitOfWork>());
