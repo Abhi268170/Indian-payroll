@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Payroll.Application.DTOs;
 using Payroll.Domain.Constants;
 using Payroll.Infrastructure.Persistence;
 using Payroll.Api.Tests.Infrastructure;
@@ -253,10 +254,10 @@ public sealed class EmployeeTests
         HttpResponseMessage listResponse = await client.SendAsync(listReq);
 
         listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        List<Dictionary<string, object>>? employees =
-            await listResponse.Content.ReadFromJsonAsync<List<Dictionary<string, object>>>();
-        employees.Should().HaveCount(1);
-        employees![0]["employeeCode"].ToString().Should().Be("EMP003");
+        PagedResult<Dictionary<string, object>>? employees =
+            await listResponse.Content.ReadFromJsonAsync<PagedResult<Dictionary<string, object>>>();
+        employees!.Items.Should().HaveCount(1);
+        employees.Items[0]["employeeCode"].ToString().Should().Be("EMP003");
     }
 
     [Fact]
@@ -364,8 +365,8 @@ public sealed class EmployeeTests
         HttpResponseMessage listResponse = await client.SendAsync(listReq);
 
         listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        List<Dictionary<string, object>>? employees =
-            await listResponse.Content.ReadFromJsonAsync<List<Dictionary<string, object>>>();
-        employees.Should().BeEmpty("tenant B must not see tenant A employees");
+        PagedResult<Dictionary<string, object>>? employees =
+            await listResponse.Content.ReadFromJsonAsync<PagedResult<Dictionary<string, object>>>();
+        employees!.Items.Should().BeEmpty("tenant B must not see tenant A employees");
     }
 }
