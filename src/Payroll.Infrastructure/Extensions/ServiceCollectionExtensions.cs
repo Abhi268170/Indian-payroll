@@ -128,20 +128,30 @@ public static class ServiceCollectionExtensions
             options.Queues = ["payroll", "reports", "notifications", "default"];
         });
 
-        // MinIO / S3 file storage
-        services.Configure<MinioOptions>(configuration.GetSection("Storage:Minio"));
-        services.AddSingleton<IAmazonS3>(sp =>
+        // File storage — Local (PVC/filesystem) or MinIO/S3, selected by Storage:Provider.
+        // Defaults to Minio so the dev compose stack is unaffected; k8s sets Storage:Provider=Local.
+        string storageProvider = configuration["Storage:Provider"] ?? "Minio";
+        if (string.Equals(storageProvider, "Local", StringComparison.OrdinalIgnoreCase))
         {
-            MinioOptions opts = sp.GetRequiredService<IOptions<MinioOptions>>().Value;
-            string serviceUrl = opts.UseHttps ? $"https://{opts.Endpoint}" : $"http://{opts.Endpoint}";
-            AmazonS3Config s3Config = new()
+            services.Configure<LocalStorageOptions>(configuration.GetSection("Storage:Local"));
+            services.AddScoped<IFileStorageService, LocalFileStorageService>();
+        }
+        else
+        {
+            services.Configure<MinioOptions>(configuration.GetSection("Storage:Minio"));
+            services.AddSingleton<IAmazonS3>(sp =>
             {
-                ServiceURL = serviceUrl,
-                ForcePathStyle = true,
-            };
-            return new AmazonS3Client(new BasicAWSCredentials(opts.AccessKey, opts.SecretKey), s3Config);
-        });
-        services.AddScoped<IFileStorageService, MinioFileStorageService>();
+                MinioOptions opts = sp.GetRequiredService<IOptions<MinioOptions>>().Value;
+                string serviceUrl = opts.UseHttps ? $"https://{opts.Endpoint}" : $"http://{opts.Endpoint}";
+                AmazonS3Config s3Config = new()
+                {
+                    ServiceURL = serviceUrl,
+                    ForcePathStyle = true,
+                };
+                return new AmazonS3Client(new BasicAWSCredentials(opts.AccessKey, opts.SecretKey), s3Config);
+            });
+            services.AddScoped<IFileStorageService, MinioFileStorageService>();
+        }
 
         services.AddScoped<IPayslipPdfGenerator, PayslipPdfGenerator>();
         services.AddScoped<IExitDocumentGenerator, ExitDocumentGenerator>();

@@ -1,0 +1,92 @@
+############################################
+# Web Service (public entrypoint — replaces the old payroll-frontend)
+############################################
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: $(namespace)
+  name: $(proj_branch)
+  labels:
+    app: $(proj_branch)
+spec:
+  selector:
+    app: $(proj_branch)
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP
+
+---
+############################################
+# Web Deployment (nginx: SPA + same-origin /api proxy to the API Service)
+############################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: $(namespace)
+  name: $(proj_branch)
+  labels:
+    app: $(proj_branch)
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: $(proj_branch)
+  template:
+    metadata:
+      labels:
+        app: $(proj_branch)
+    spec:
+      containers:
+        - name: $(proj_branch)
+          image: docker-registry.dev.displayme.net/$(dockerrepo)
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            # Upstream API Service (from K8s-Api.yml). Set API_HOST in PLHB-Web-DEV to the
+            # API Service name — i.e. the API group's "<proj_branch>-api". Decoupled on
+            # purpose: the two manifests resolve from separate variable groups.
+            - name: API_HOST
+              value: "$(API_HOST)"
+            - name: API_PORT
+              value: "80"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+---
+############################################
+# Ingress
+############################################
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: $(namespace)
+  name: $(proj_branch)
+spec:
+  rules:
+    - host: $(site_url)
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: $(proj_branch)
+                port:
+                  number: 80

@@ -1,0 +1,82 @@
+###############################################################################
+# Payroll .NET API + Hangfire worker — CI/CD image (PITS base, PLHB-BE agents).
+#
+# One image serves both roles:
+#   - API    : default
+#   - Worker : same image with env Hangfire__WorkerOnly=true
+#
+# Built on pitsdevops.azurecr.io/pits-linux-base to match the existing PLHB
+# pipelines (guaranteed pullable on the PLHB-BE pool). Build context: repo root.
+###############################################################################
+
+FROM pitsdevops.azurecr.io/pits-linux-base AS base
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    DOTNET_CLI_TELEMETRY_OPTOUT=1 \
+    DOTNET_NOLOGO=true
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        wget ca-certificates curl apt-transport-https \
+    && wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O /tmp/ms.deb \
+    && dpkg -i /tmp/ms.deb && rm /tmp/ms.deb \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends dotnet-sdk-8.0 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+
+###############################################################################
+# Restore — copy props + csproj graph first so NuGet restore layer-caches.
+# global.json is intentionally NOT copied: it pins 8.0.421, while the apt
+# dotnet-sdk-8.0 may be a different patch. Restore uses the installed SDK.
+###############################################################################
+FROM base AS restore
+
+COPY Directory.Build.props Directory.Packages.props ./
+COPY src/Payroll.Engine/Payroll.Engine.csproj                 src/Payroll.Engine/
+COPY src/Payroll.Domain/Payroll.Domain.csproj                 src/Payroll.Domain/
+COPY src/Payroll.Application/Payroll.Application.csproj        src/Payroll.Application/
+COPY src/Payroll.Infrastructure/Payroll.Infrastructure.csproj src/Payroll.Infrastructure/
+COPY src/Payroll.Api/Payroll.Api.csproj                       src/Payroll.Api/
+
+RUN dotnet restore src/Payroll.Api/Payroll.Api.csproj
+
+###############################################################################
+# Build / publish
+###############################################################################
+FROM restore AS builder
+
+COPY src/ src/
+RUN dotnet publish src/Payroll.Api/Payroll.Api.csproj \
+    -c Release \
+    --no-restore \
+    -o /app/publish
+
+###############################################################################
+# Runtime — ASP.NET Core 8 runtime only (no SDK, no nginx). Kestrel on :8080.
+###############################################################################
+FROM pitsdevops.azurecr.io/pits-linux-base AS production
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    ASPNETCORE_URLS=http://0.0.0.0:8080 \
+    ASPNETCORE_ENVIRONMENT=Production
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        wget ca-certificates curl apt-transport-https \
+    && wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O /tmp/ms.deb \
+    && dpkg -i /tmp/ms.deb && rm /tmp/ms.deb \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends aspnetcore-runtime-8.0 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY --from=builder /app/publish .
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+ENTRYPOINT ["dotnet", "Payroll.Api.dll"]

@@ -1,0 +1,53 @@
+###############################################################################
+# Payroll React web — CI/CD image (PITS base, PLHB-BE agents).
+#
+# Serves the built SPA and reverse-proxies /api, /connect, /health to the API
+# Service (same-origin, so the API's CORS policy never triggers). The upstream
+# host is injected at container start via envsubst (API_HOST / API_PORT), exactly
+# like the legacy payroll-frontend image. Build context: web/
+###############################################################################
+
+FROM pitsdevops.azurecr.io/pits-linux-base AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl ca-certificates \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --legacy-peer-deps
+
+COPY . .
+
+# No VITE_API_URL: the SPA calls relative /api, proxied same-origin by nginx below.
+RUN npm run build
+
+# ── Production ──────────────────────────────────────────────────────────────
+FROM pitsdevops.azurecr.io/pits-linux-base AS production
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        nginx curl gettext-base \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -f /etc/nginx/sites-enabled/default
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.ci.conf.template /etc/nginx/nginx.conf.template
+
+# Runtime defaults — overridden by k8s env. Point at the API Service.
+ENV API_HOST=localhost \
+    API_PORT=8080
+
+EXPOSE 80
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost/ || exit 1
+
+# Substitute ONLY API_HOST/API_PORT (quoted list) so nginx's own $vars survive.
+CMD ["/bin/sh", "-c", "envsubst '${API_HOST} ${API_PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"]
