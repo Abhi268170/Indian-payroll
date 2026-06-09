@@ -29,5 +29,4 @@ stages:
         containerRegistry: 'Docker_Reg'
         repository: '$(dockerrepo)'
         command: 'push'
-        tags: |
-          latest
+
