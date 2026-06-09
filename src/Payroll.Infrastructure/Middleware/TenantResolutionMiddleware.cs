@@ -12,6 +12,14 @@ public sealed class TenantResolutionMiddleware(
 {
     public async Task InvokeAsync(HttpContext context, ITenantContext tenantContext)
     {
+        // Infrastructure endpoints are not tenant-scoped — k8s probes hit them by
+        // pod IP, which would otherwise be parsed as a (nonexistent) tenant slug.
+        if (context.Request.Path.StartsWithSegments("/health"))
+        {
+            await next(context);
+            return;
+        }
+
         string host = context.Request.Host.Host;
         string slug = ExtractSlug(host);
 
