@@ -66,6 +66,8 @@ spec:
         app: $(proj_branch)
 
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: workernode1
       containers:
         - name: $(proj_branch)
 
@@ -186,6 +188,8 @@ spec:
         app: $(proj_branch)-hangfire
 
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: workernode1
       containers:
         - name: hangfire-worker
 
