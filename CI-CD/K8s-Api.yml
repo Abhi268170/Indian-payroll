@@ -12,10 +12,10 @@ metadata:
     app: $(proj_branch)
 spec:
   capacity:
-    storage: 5Gi
+    storage: 10Gi
   accessModes:
     - ReadWriteMany
-  storageClassName: $(STORAGE_CLASS)
+  storageClassName: nfs
   persistentVolumeReclaimPolicy: Retain
   claimRef:
     namespace: $(namespace)
@@ -35,11 +35,11 @@ metadata:
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: $(STORAGE_CLASS)
+  storageClassName: nfs
   volumeName: $(proj_branch)-storage-pv
   resources:
     requests:
-      storage: 5Gi
+      storage: 7Gi
 
 ---
 ############################################
