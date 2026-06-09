@@ -67,7 +67,7 @@ spec:
 
     spec:
       nodeSelector:
-        kubernetes.io/hostname: workernode1
+        kubernetes.io/hostname: workernode3
       containers:
         - name: $(proj_branch)
 
@@ -189,7 +189,7 @@ spec:
 
     spec:
       nodeSelector:
-        kubernetes.io/hostname: workernode1
+        kubernetes.io/hostname: workernode3
       containers:
         - name: hangfire-worker
 
