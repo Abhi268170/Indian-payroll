@@ -2,7 +2,7 @@ trigger:
 - develop
 
 variables:
-- group: PLHB-Api-DEV
+- group: BE-DEV
 name: variableConfiguration
 
 pool:
