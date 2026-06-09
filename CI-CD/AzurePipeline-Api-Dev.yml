@@ -37,9 +37,13 @@ stages:
         command: 'build'
         Dockerfile: 'src/Payroll.Api/Dockerfile.ci'
         buildContext: '.'
+        tags: |
+          latest
 
     - task: Docker@2
       inputs:
         containerRegistry: 'Docker_Reg'
         repository: '$(dockerrepo)'
         command: 'push'
+        tags: |
+          latest
