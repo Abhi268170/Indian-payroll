@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
 using Payroll.Application.Extensions;
@@ -87,12 +88,25 @@ if (!isWorkerOnly)
             OpenIddictServerAspNetCoreBuilder aspNetCoreOptions = options.UseAspNetCore()
                 .EnableTokenEndpointPassthrough();
 
-            if (!builder.Environment.IsProduction())
+            // TLS is terminated upstream (k8s ingress / local proxy) and the app speaks HTTP
+            // behind it, so don't require HTTPS at the token endpoint.
+            aspNetCoreOptions.DisableTransportSecurityRequirement();
+
+            if (builder.Environment.IsProduction())
+            {
+                // Persistent symmetric keys so issued tokens survive pod restarts and work
+                // across replicas — the development certificates are per-process and would not.
+                options.AddEncryptionKey(new SymmetricSecurityKey(Convert.FromBase64String(
+                    builder.Configuration["OpenIddict:EncryptionKey"]
+                    ?? throw new InvalidOperationException("OpenIddict:EncryptionKey not configured."))));
+                options.AddSigningKey(new SymmetricSecurityKey(Convert.FromBase64String(
+                    builder.Configuration["OpenIddict:SigningKey"]
+                    ?? throw new InvalidOperationException("OpenIddict:SigningKey not configured."))));
+            }
+            else
             {
                 options.AddDevelopmentEncryptionCertificate();
                 options.AddDevelopmentSigningCertificate();
-                // Allow HTTP for local dev and integration tests (Testcontainers uses plain HTTP)
-                aspNetCoreOptions.DisableTransportSecurityRequirement();
                 // Fix issuer to a stable value so tokens issued from one Host remain valid
                 // when validated from a different Host (e.g., tenant-scoped integration tests).
                 options.SetIssuer(new Uri("https://localhost"));

@@ -153,6 +153,12 @@ spec:
               value: "$(ADMIN_PASSWORD)"
             - name: OPENIDDICT_CLIENT_SECRET
               value: "$(OPENIDDICT_CLIENT_SECRET)"
+            # OpenIddict server token keys (base64 32-byte). Persistent so tokens
+            # survive restarts; Production registers these instead of dev certs.
+            - name: OpenIddict__EncryptionKey
+              value: "$(OPENIDDICT_ENCRYPTION_KEY)"
+            - name: OpenIddict__SigningKey
+              value: "$(OPENIDDICT_SIGNING_KEY)"
 
             # Email / SMTP (port 587 → STARTTLS)
             - name: Email__Host
