@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Payroll.Application.Commands.Employees;
 using Payroll.Application.Commands.PayrollRuns;
@@ -524,7 +525,8 @@ public class InitiateExitSeedingTests
             employeeRepo, exitRepo, orgProfileRepo, runRepo, payrunEmpRepo,
             payScheduleRepo, statutoryRepo, workLocationRepo,
             salaryStructureRepo, templateRepo, salaryComponentRepo, breakdownRepo,
-            auditLogRepo, documentRepo, exitDocGenerator, fileStorage, tenantContext, uow);
+            auditLogRepo, documentRepo, exitDocGenerator, fileStorage, tenantContext,
+            Substitute.For<ILogger<InitiateExitHandler>>(), uow);
 
         return (handler, breakdownRepo, payrunEmpRepo, runRepo);
     }

@@ -154,7 +154,7 @@ public sealed class PayrollDetailsExportService(
             emp?.DateOfLeaving?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) ?? string.Empty,
             pe.Status.ToString(),
             pe.SkipReason ?? string.Empty,
-            FormatInt(pe.BaseDays), FormatInt(pe.LopDays), FormatInt(pe.ActualPayableDays),
+            FormatInt(pe.BaseDays), FormatDays(pe.LopDays), FormatDays(pe.ActualPayableDays),
         ];
         decimal benefitsTotal = empBd.Where(b => b.IsBenefit).Sum(b => b.ProratedAmount);
         decimal reimbursementsTotal = pe.ReimbursementsAmount;
@@ -260,6 +260,10 @@ public sealed class PayrollDetailsExportService(
 
     private static string FormatInt(int value) =>
         value.ToString(CultureInfo.InvariantCulture);
+
+    // Day counts may be fractional (half-day LOP). Drop trailing ".0" so whole days read "2", halves read "1.5".
+    private static string FormatDays(decimal value) =>
+        value.ToString("0.#", CultureInfo.InvariantCulture);
 
     private sealed record ComponentColumn(string Code, string DisplayName);
 

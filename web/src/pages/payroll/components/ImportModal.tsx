@@ -19,7 +19,7 @@ const TYPE_CONFIG: Record<ImportType, {
 }> = {
   lop: {
     title: 'Import LOP Details',
-    description: 'Upload a CSV with Loss of Pay days per employee.',
+    description: 'Upload a CSV with Loss of Pay days per employee. Half-days are supported (e.g. 1.5).',
     templateHeaders: 'Employee Code,LOP Days',
     endpoint: 'lop',
   },

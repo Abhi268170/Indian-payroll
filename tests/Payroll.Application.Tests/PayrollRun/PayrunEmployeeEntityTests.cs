@@ -27,6 +27,15 @@ public class PayrunEmployeeEntityTests
     }
 
     [Fact]
+    public void SetLop_Fractional_UpdatesLopAndPayableDays()
+    {
+        PayrunEmployee emp = CreateEmployee(30);
+        emp.SetLop(1.5m, ActorId);
+        emp.LopDays.Should().Be(1.5m);
+        emp.ActualPayableDays.Should().Be(28.5m);
+    }
+
+    [Fact]
     public void SetLop_FullMonth_Throws()
     {
         var emp = CreateEmployee(31);

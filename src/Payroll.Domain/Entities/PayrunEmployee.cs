@@ -14,8 +14,8 @@ public sealed class PayrunEmployee : AuditableEntity
 
     // Pay period basis
     public int BaseDays { get; private set; }
-    public int LopDays { get; private set; }
-    public int ActualPayableDays { get; private set; }
+    public decimal LopDays { get; private set; }
+    public decimal ActualPayableDays { get; private set; }
 
     // Computed amounts
     public decimal GrossPay { get; private set; }
@@ -122,7 +122,7 @@ public sealed class PayrunEmployee : AuditableEntity
         SetUpdated(actorId);
     }
 
-    public void SetLop(int lopDays, Guid actorId)
+    public void SetLop(decimal lopDays, Guid actorId)
     {
         if (lopDays < 0)
             throw new InvalidOperationException("LOP days cannot be negative.");

@@ -1,5 +1,6 @@
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Payroll.Application.Commands.PayrollRuns;
 using Payroll.Application.DTOs;
 using Payroll.Application.Interfaces;
@@ -69,6 +70,7 @@ public sealed class InitiateExitHandler(
     IExitDocumentGenerator exitDocGenerator,
     IFileStorageService fileStorage,
     ITenantContext tenantContext,
+    ILogger<InitiateExitHandler> logger,
     IUnitOfWork uow)
     : IRequestHandler<InitiateExitCommand, EmployeeExitDto>
 {
@@ -194,7 +196,17 @@ public sealed class InitiateExitHandler(
 
         // WI-31: generate the relieving/experience letter AFTER the exit is
         // committed, so an object-storage hiccup can't roll back or block the exit.
-        await GenerateRelievingLetterAsync(employee, exit, orgProfile?.CompanyName ?? "The Company", req.ActorId, ct);
+        // The generation is best-effort: a failure here must NOT fail the exit (which
+        // is already committed), otherwise the API returns a generic 500 and the exit
+        // appears to have "failed" to the user even though it succeeded.
+        try
+        {
+            await GenerateRelievingLetterAsync(employee, exit, orgProfile?.CompanyName ?? "The Company", req.ActorId, ct);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Relieving letter generation failed for employee {EmployeeId} after exit {ExitId} was committed; exit succeeds regardless.", employee.Id, exit.Id);
+        }
 
         return Map(exit, fnfRun);
     }

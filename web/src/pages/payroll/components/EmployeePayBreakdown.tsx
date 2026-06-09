@@ -235,6 +235,7 @@ export default function EmployeePayBreakdown({
                   type="number"
                   min={0}
                   max={data.baseDays - 1}
+                  step={0.5}
                   value={lopDays}
                   onChange={e => {
                     isDirtyLopRef.current = true

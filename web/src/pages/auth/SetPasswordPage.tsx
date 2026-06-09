@@ -7,7 +7,7 @@ import { api } from '@/lib/api'
 import AuthLayout from '@/components/layout/AuthLayout'
 
 const schema = z.object({
-  newPassword: z.string().min(8, 'Minimum 8 characters')
+  newPassword: z.string().min(12, 'Minimum 12 characters')
     .regex(/[A-Z]/, 'Must contain uppercase')
     .regex(/[a-z]/, 'Must contain lowercase')
     .regex(/[0-9]/, 'Must contain a digit')
@@ -91,7 +91,7 @@ export default function SetPasswordPage(): React.ReactElement {
   return (
     <AuthLayout
       title="Set your password"
-      subtitle={`For ${email}. Minimum 8 characters, mixed case, digit + special character.`}
+      subtitle={`For ${email}. Minimum 12 characters, mixed case, digit + special character.`}
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>

@@ -54,7 +54,7 @@ public sealed class PayrollExportService(
             string name = CsvEscape(emp?.FullName ?? string.Empty);
             string status = pe.Status == PayrunEmployeeStatus.Skipped ? "Skipped" : "Active";
 
-            sb.AppendLine($"{code},{name},{pe.ActualPayableDays},{pe.LopDays}," +
+            sb.AppendLine($"{code},{name},{pe.ActualPayableDays:0.#},{pe.LopDays:0.#}," +
                           $"{pe.GrossPay},{pe.EmployeePf},{pe.EmployeeEsi}," +
                           $"{pe.TdsAmount},{pe.PtAmount},{pe.LwfEmployeeAmount},{pe.NetPay},{status}");
         }

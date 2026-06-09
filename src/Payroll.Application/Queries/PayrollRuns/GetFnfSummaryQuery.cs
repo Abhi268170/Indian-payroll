@@ -19,7 +19,7 @@ public sealed record FnfSummaryDto(
     DateOnly? LastWorkingDay,
     string? ExitReason,
     DateOnly? SettlementDate,
-    int WorkedDays,
+    decimal WorkedDays,
     IReadOnlyList<FnfLineDto> Earnings,
     IReadOnlyList<FnfLineDto> Deductions,
     FnfStatutoryDto StatutoryDeductions,

@@ -1,3 +1,4 @@
+using System.Globalization;
 using MediatR;
 using Payroll.Application.DTOs;
 using Payroll.Application.Services;
@@ -72,9 +73,15 @@ public sealed class BulkImportLopCommandHandler(
                 continue;
             }
 
-            if (!int.TryParse(lopDaysRaw, out int lopDays) || lopDays < 0)
+            if (!decimal.TryParse(lopDaysRaw, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal lopDays) || lopDays < 0)
             {
-                errors.Add(new(displayRow, employeeCode, "LOP Days must be a non-negative whole number."));
+                errors.Add(new(displayRow, employeeCode, "LOP Days must be a non-negative number (whole or half-day, e.g. 1.5)."));
+                continue;
+            }
+
+            if (decimal.Round(lopDays, 1) != lopDays)
+            {
+                errors.Add(new(displayRow, employeeCode, "LOP Days supports at most one decimal place (e.g. 1.5)."));
                 continue;
             }
 

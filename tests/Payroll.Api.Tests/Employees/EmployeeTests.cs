@@ -20,6 +20,9 @@ public sealed class EmployeeTests
         _factory = new PayrollWebApplicationFactory(postgres, redis);
     }
 
+    // GET /employees returns a PagedResult<EmployeeListItemDto>: { items, total, page, pageSize }.
+    private sealed record EmployeeListPage(List<Dictionary<string, object>> Items);
+
     private static string TenantHost(string slug) => $"{slug}.payroll.localhost";
 
     private async Task<string> GetSuperAdminTokenAsync(HttpClient client)
@@ -253,10 +256,10 @@ public sealed class EmployeeTests
         HttpResponseMessage listResponse = await client.SendAsync(listReq);
 
         listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        List<Dictionary<string, object>>? employees =
-            await listResponse.Content.ReadFromJsonAsync<List<Dictionary<string, object>>>();
-        employees.Should().HaveCount(1);
-        employees![0]["employeeCode"].ToString().Should().Be("EMP003");
+        EmployeeListPage? page =
+            await listResponse.Content.ReadFromJsonAsync<EmployeeListPage>();
+        page!.Items.Should().HaveCount(1);
+        page.Items[0]["employeeCode"].ToString().Should().Be("EMP003");
     }
 
     [Fact]
@@ -364,8 +367,8 @@ public sealed class EmployeeTests
         HttpResponseMessage listResponse = await client.SendAsync(listReq);
 
         listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        List<Dictionary<string, object>>? employees =
-            await listResponse.Content.ReadFromJsonAsync<List<Dictionary<string, object>>>();
-        employees.Should().BeEmpty("tenant B must not see tenant A employees");
+        EmployeeListPage? page =
+            await listResponse.Content.ReadFromJsonAsync<EmployeeListPage>();
+        page!.Items.Should().BeEmpty("tenant B must not see tenant A employees");
     }
 }

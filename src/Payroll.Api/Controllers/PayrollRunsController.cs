@@ -510,7 +510,7 @@ public sealed class PayrollRunsController(ISender sender, ITenantContext tenantC
 }
 
 // Request body records
-public record SetLopRequest(int LopDays);
+public record SetLopRequest(decimal LopDays);
 public record AddOneTimeEarningRequest(Guid ComponentId, decimal Amount);
 public record OverrideTdsRequest(decimal OverrideAmount, string? Reason);
 public record SkipEmployeeRequest(string Reason);
@@ -519,7 +519,7 @@ public record RecordPaymentRequest(DateOnly PaymentDate, string PaymentMode, str
 public record UpdateSettlementDateRequest(DateOnly SettlementDate);
 
 public record UpdateFnfRunRequest(
-    int LopDays,
+    decimal LopDays,
     decimal Bonus,
     decimal Commission,
     decimal LeaveEncashment,

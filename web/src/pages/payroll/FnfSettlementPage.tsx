@@ -146,9 +146,10 @@ export default function FnfSettlementPage(): ReactElement {
             <input
               type="number"
               min={0}
+              step={0.5}
               className={inputCls}
               value={lopDays}
-              onChange={e => { setLopDays(parseInt(e.target.value || '0', 10)) }}
+              onChange={e => { setLopDays(parseFloat(e.target.value || '0')) }}
             />
           </Field>
         </Card>

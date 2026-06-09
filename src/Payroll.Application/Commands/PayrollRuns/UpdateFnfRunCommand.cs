@@ -11,7 +11,7 @@ namespace Payroll.Application.Commands.PayrollRuns;
 public record UpdateFnfRunCommand(
     Guid RunId,
     Guid EmployeeId,
-    int LopDays,
+    decimal LopDays,
     decimal Bonus,
     decimal Commission,
     decimal LeaveEncashment,

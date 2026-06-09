@@ -14,7 +14,9 @@ public sealed class RejectApprovalCommandValidator : AbstractValidator<RejectApp
     public RejectApprovalCommandValidator()
     {
         RuleFor(x => x.RunId).NotEmpty();
-        RuleFor(x => x.Reason).NotEmpty().WithMessage("Rejection reason is required.");
+        // Reason is optional — the domain (PayrollRun.RejectApproval) accepts a null/empty
+        // reason and the UI labels the field "(optional)". The previous NotEmpty rule
+        // contradicted both and surfaced as an unhandled 500 ("Failed to reject approval").
         RuleFor(x => x.ActorId).NotEmpty();
     }
 }

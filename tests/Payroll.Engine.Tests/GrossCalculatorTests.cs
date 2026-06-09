@@ -119,6 +119,21 @@ public class GrossCalculatorTests
     }
 
     [Fact]
+    public void WithFractionalLop_HalfDay_ProratesUsingDecimalPayableDays()
+    {
+        // 1.5 LOP days out of 30 calendar days -> payable 28.5/30
+        GrossResult result = GrossCalculator.Compute(MakeEmployee(lop: 1.5m, calendarDays: 30), Run30());
+
+        decimal expectedBasic = Math.Round(28000m * 28.5m / 30m, 2, MidpointRounding.AwayFromZero);
+        decimal expectedHra   = Math.Round(14000m * 28.5m / 30m, 2, MidpointRounding.AwayFromZero);
+        decimal expectedFixed = Math.Round(28000m * 28.5m / 30m, 2, MidpointRounding.AwayFromZero);
+
+        result.ComponentBreakdown.First(c => c.Code == "BASIC").ProratedAmount.Should().Be(expectedBasic);
+        result.GrossWage.Should().Be(expectedBasic + expectedHra + expectedFixed);
+        result.LOPDeduction.Should().Be(70000m - result.GrossWage);
+    }
+
+    [Fact]
     public void WithLop_30DayMonth_ProrationUsesCalendarDays30()
     {
         // June: 30 calendar days, 1 LOP

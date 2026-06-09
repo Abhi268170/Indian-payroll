@@ -2,18 +2,21 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Payroll.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
+namespace Payroll.Infrastructure.Migrations.PayrollDb
 {
     [DbContext(typeof(PayrollDbContext))]
-    partial class PayrollDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260604071446_RestoreFnfExitDocsSalaryRevision")]
+    partial class RestoreFnfExitDocsSalaryRevision
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1850,8 +1853,8 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
-                    b.Property<decimal>("ActualPayableDays")
-                        .HasColumnType("numeric(4,1)")
+                    b.Property<int>("ActualPayableDays")
+                        .HasColumnType("integer")
                         .HasColumnName("actual_payable_days");
 
                     b.Property<int>("BaseDays")
@@ -1922,8 +1925,8 @@ namespace Payroll.Infrastructure.Persistence.Migrations.Tenant
                         .HasColumnType("boolean")
                         .HasColumnName("is_withheld");
 
-                    b.Property<decimal>("LopDays")
-                        .HasColumnType("numeric(4,1)")
+                    b.Property<int>("LopDays")
+                        .HasColumnType("integer")
                         .HasColumnName("lop_days");
 
                     b.Property<decimal>("LwfEmployeeAmount")

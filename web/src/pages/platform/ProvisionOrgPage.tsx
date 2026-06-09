@@ -9,7 +9,7 @@ import { api } from '@/lib/api'
 const SLUG_REGEX = /^[a-z0-9]+(-[a-z0-9]+)*$/
 
 const schema = z.object({
-  displayName: z.string().min(1, 'Required').max(200),
+  displayName: z.string().min(1, 'Required').max(100, 'Maximum 100 characters'),
   adminEmail: z.string().min(1, 'Required').email('Invalid email'),
   slug: z.string().min(1, 'Required').max(63).regex(SLUG_REGEX, 'Lowercase letters, numbers, hyphens only'),
 })

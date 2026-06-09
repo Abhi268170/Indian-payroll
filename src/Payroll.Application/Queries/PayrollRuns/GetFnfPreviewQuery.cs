@@ -14,7 +14,7 @@ namespace Payroll.Application.Queries.PayrollRuns;
 public record GetFnfPreviewQuery(
     Guid RunId,
     Guid EmployeeId,
-    int LopDays,
+    decimal LopDays,
     decimal Bonus,
     decimal Commission,
     decimal LeaveEncashment,

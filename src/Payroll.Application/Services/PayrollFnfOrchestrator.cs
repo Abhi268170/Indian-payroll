@@ -181,7 +181,7 @@ public sealed class PayrollFnfOrchestrator(
         // The engine's proration formula: prorated = fullAmount × (salaryDivisor - lopDays) / salaryDivisor.
         // lopFromExit = salaryDivisor - workedDays ensures correct partial-month ratio.
         int lopFromExit = salaryDivisor - workedDays;
-        int effectiveLopDays = lopFromExit + payrunEmp.LopDays;
+        decimal effectiveLopDays = lopFromExit + payrunEmp.LopDays;
 
         var empInput = new EmployeeInput(
             EmployeeId: employee.Id,

@@ -10,7 +10,7 @@ using Payroll.Engine.Inputs;
 
 namespace Payroll.Application.Commands.PayrollRuns;
 
-public record SetLopCommand(Guid RunId, Guid EmployeeId, int LopDays, Guid ActorId) : IRequest;
+public record SetLopCommand(Guid RunId, Guid EmployeeId, decimal LopDays, Guid ActorId) : IRequest;
 
 public sealed class SetLopCommandValidator : AbstractValidator<SetLopCommand>
 {
