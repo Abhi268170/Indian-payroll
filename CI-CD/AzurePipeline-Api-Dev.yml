@@ -15,11 +15,20 @@ stages:
   - job: Build
     displayName: 'Build and Push API Image'
     steps:
+    
     - task: replacetokens@5
       inputs:
         targetFiles: '.env.example'
         encoding: 'auto'
-        tokenPattern: 'rm'
+        tokenPattern: 'default'
+        writeBOM: true
+        actionOnMissing: 'warn'
+        keepToken: false
+        actionOnNoFiles: 'continue'
+        enableTransforms: false
+        enableRecursion: false
+        useLegacyPattern: false
+        enableTelemetry: true
 
     - task: Docker@2
       inputs:
