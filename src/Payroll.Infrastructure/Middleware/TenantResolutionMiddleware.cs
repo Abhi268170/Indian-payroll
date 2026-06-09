@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Payroll.Domain.Interfaces;
@@ -8,8 +9,15 @@ namespace Payroll.Infrastructure.Middleware;
 // Must be registered BEFORE UseAuthentication in Program.cs.
 public sealed class TenantResolutionMiddleware(
     RequestDelegate next,
-    ILogger<TenantResolutionMiddleware> logger)
+    ILogger<TenantResolutionMiddleware> logger,
+    IConfiguration configuration)
 {
+    // Public base domain the API is served under (the host the browser/web proxy
+    // sends). When set, "<slug>.<baseDomain>" → slug, and the bare base domain →
+    // platform (no tenant). When unset, falls back to the 2-label-base heuristic.
+    private readonly string _baseDomain =
+        (configuration["Tenancy:BaseDomain"] ?? string.Empty).Trim().TrimEnd('.').ToLowerInvariant();
+
     public async Task InvokeAsync(HttpContext context, ITenantContext tenantContext)
     {
         // Infrastructure endpoints are not tenant-scoped — k8s probes hit them by
@@ -53,9 +61,28 @@ public sealed class TenantResolutionMiddleware(
         await next(context);
     }
 
-    private static string ExtractSlug(string host)
+    private string ExtractSlug(string host)
     {
-        // Expected: acme-corp.payroll.example.com → slug = "acme-corp"
+        host = host.Trim().ToLowerInvariant();
+
+        // Base-domain-aware (e.g. base "plhb-fe-dev.mypits.org"):
+        //   acme.plhb-fe-dev.mypits.org → "acme";  plhb-fe-dev.mypits.org → "" (platform)
+        // Unknown hosts (e.g. a pod IP) → "" so they're treated as platform, not a bogus slug.
+        if (!string.IsNullOrEmpty(_baseDomain))
+        {
+            if (host == _baseDomain)
+                return string.Empty;
+
+            string suffix = "." + _baseDomain;
+            if (!host.EndsWith(suffix, StringComparison.Ordinal))
+                return string.Empty;
+
+            string prefix = host[..^suffix.Length];
+            int dot = prefix.IndexOf('.');
+            return dot >= 0 ? prefix[..dot] : prefix;
+        }
+
+        // Fallback (local/compose): acme-corp.payroll.example.com → "acme-corp"
         string[] parts = host.Split('.');
         return parts.Length >= 3 ? parts[0] : string.Empty;
     }

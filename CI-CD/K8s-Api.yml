@@ -97,6 +97,11 @@ spec:
             - name: AllowedHosts
               value: "*"
 
+            # Public base domain → tenant subdomain resolution (<tenant>.BASE → tenant;
+            # bare BASE → platform). Must be the host the browser/web proxy sends.
+            - name: Tenancy__BaseDomain
+              value: "$(TENANCY_BASE_DOMAIN)"
+
             # Database — single DB, schema-per-tenant (public + tenant schemas)
             - name: ConnectionStrings__Payroll
               value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);CommandTimeout=30"
