@@ -22,8 +22,7 @@ stages:
         command: 'build'
         Dockerfile: 'web/Dockerfile.ci'
         buildContext: 'web'
-        tags: |
-          latest
+
 
     - task: Docker@2
       inputs:
