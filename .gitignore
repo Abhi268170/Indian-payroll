@@ -64,3 +64,10 @@ Thumbs.db
 *.log
 logs/
 .worktrees/
+.claude/worktrees/
+
+# Knowledge-graph tool output (graphify)
+**/graphify-out/
+
+# Playwright session snapshot scratch
+/kebab-snapshot.md
