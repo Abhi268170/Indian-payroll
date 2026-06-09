@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
@@ -94,14 +95,18 @@ if (!isWorkerOnly)
 
             if (builder.Environment.IsProduction())
             {
-                // Persistent symmetric keys so issued tokens survive pod restarts and work
-                // across replicas — the development certificates are per-process and would not.
+                // Persistent keys so issued tokens survive pod restarts / multiple replicas
+                // (dev certificates are per-process). Encryption may be symmetric; OpenIddict
+                // requires the signing key to be asymmetric (RSA, base64 PKCS#8 private key).
                 options.AddEncryptionKey(new SymmetricSecurityKey(Convert.FromBase64String(
                     builder.Configuration["OpenIddict:EncryptionKey"]
                     ?? throw new InvalidOperationException("OpenIddict:EncryptionKey not configured."))));
-                options.AddSigningKey(new SymmetricSecurityKey(Convert.FromBase64String(
+
+                RSA signingRsa = RSA.Create();
+                signingRsa.ImportPkcs8PrivateKey(Convert.FromBase64String(
                     builder.Configuration["OpenIddict:SigningKey"]
-                    ?? throw new InvalidOperationException("OpenIddict:SigningKey not configured."))));
+                    ?? throw new InvalidOperationException("OpenIddict:SigningKey not configured.")), out _);
+                options.AddSigningKey(new RsaSecurityKey(signingRsa));
             }
             else
             {
