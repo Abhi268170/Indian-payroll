@@ -24,7 +24,10 @@ RUN npm ci --legacy-peer-deps
 
 COPY . .
 
-# No VITE_API_URL: the SPA calls relative /api, proxied same-origin by nginx below.
+# Empty VITE_API_URL → API_BASE = "" → SPA calls relative /api and /connect,
+# proxied same-origin to the API by nginx below.
+ARG VITE_API_URL=
+ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
 # ── Production ──────────────────────────────────────────────────────────────
