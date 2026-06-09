@@ -16,10 +16,6 @@ spec:
   accessModes:
     - ReadWriteMany
   storageClassName: nfs
-  persistentVolumeReclaimPolicy: Retain
-  claimRef:
-    namespace: $(namespace)
-    name: $(proj_branch)-storage
   nfs:
     server: 10.10.101.62
     path: /shared_drive/PLHB-STORAGE
@@ -36,7 +32,6 @@ spec:
   accessModes:
     - ReadWriteMany
   storageClassName: nfs
-  volumeName: $(proj_branch)-storage-pv
   resources:
     requests:
       storage: 7Gi
@@ -153,7 +148,7 @@ spec:
               value: "$(FRONTEND_BASE_URL)"
 
           volumeMounts:
-            - name: storage
+            - name: nfs-volume
               mountPath: /data/storage
 
           # Kestrel binds :8080 only AFTER startup migrations + tenant provisioning.
@@ -180,7 +175,7 @@ spec:
             failureThreshold: 5
 
       volumes:
-        - name: storage
+        - name: nfs-volume
           persistentVolumeClaim:
             claimName: $(proj_branch)-storage
 
