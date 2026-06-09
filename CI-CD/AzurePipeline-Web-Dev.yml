@@ -2,7 +2,7 @@ trigger:
 - none
 
 variables:
-- group: PLHB-Web-DEV
+- group: Payroll-FE-DEV
 name: variableConfiguration
 
 pool:
