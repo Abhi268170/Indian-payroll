@@ -71,3 +71,6 @@ logs/
 
 # Playwright session snapshot scratch
 /kebab-snapshot.md
+
+# Playwright stored auth state (session tokens — never commit)
+e2e/.auth/
