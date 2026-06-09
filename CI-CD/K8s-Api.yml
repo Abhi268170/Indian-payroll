@@ -1,238 +1,297 @@
 ############################################
-# Shared storage (payslips, Form16, org logos, exit docs)
-# RWX so the API (serves downloads) and the worker (generates files) share it.
-# Requires an RWX-capable StorageClass (e.g. azurefile / nfs).
-############################################
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  namespace: $(namespace)
-  name: $(proj_branch)-storage
-  labels:
-    app: $(proj_branch)-api
-spec:
-  accessModes:
-    - ReadWriteMany
-  storageClassName: $(STORAGE_CLASS)
-  resources:
-    requests:
-      storage: 5Gi
-
----
-############################################
-# API Service
+# Application Service
 ############################################
 apiVersion: v1
 kind: Service
 metadata:
   namespace: $(namespace)
-  name: $(proj_branch)-api
+  name: $(proj_branch)
   labels:
-    app: $(proj_branch)-api
+    app: $(proj_branch)
+
 spec:
   selector:
-    app: $(proj_branch)-api
+    app: $(proj_branch)
+
   ports:
     - name: http
       port: 80
-      targetPort: 8080
+      targetPort: 80
       protocol: TCP
 
 ---
 ############################################
-# API Deployment (Kestrel on :8080)
-# Runs DB migrations + seeding on startup. Keep replicas: 1 — see CI-CD/README.md.
+# API Deployment
 ############################################
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: $(namespace)
-  name: $(proj_branch)-api
+  name: $(proj_branch)
   labels:
-    app: $(proj_branch)-api
+    app: $(proj_branch)
+
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
+
   selector:
     matchLabels:
-      app: $(proj_branch)-api
+      app: $(proj_branch)
+
   template:
     metadata:
       labels:
-        app: $(proj_branch)-api
+        app: $(proj_branch)
+
     spec:
       containers:
-        - name: $(proj_branch)-api
+        - name: $(proj_branch)
+
           image: docker-registry.dev.displayme.net/$(dockerrepo)
           imagePullPolicy: Always
+
           ports:
-            - containerPort: 8080
+            - containerPort: 80
+
           env:
             - name: ASPNETCORE_ENVIRONMENT
               value: "Production"
+
             - name: ASPNETCORE_URLS
-              value: "http://0.0.0.0:8080"
+              value: "http://0.0.0.0:5000"
 
-            - name: ConnectionStrings__Payroll
-              value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);CommandTimeout=30"
+            - name: AllowedHosts
+              value: "*"
 
-            - name: Redis__ConnectionString
-              value: "$(REDIS_HOST):$(REDIS_PORT),password=$(REDIS_PASSWORD),abortConnect=false"
+            - name: CORS_ORIGINS
+              value: "$(CORS_ORIGINS)"
 
-            # File storage — PVC-backed filesystem (no MinIO/S3 in this cluster)
-            - name: Storage__Provider
-              value: "Local"
-            - name: Storage__Local__RootPath
-              value: "/data/storage"
+            # Main Database
+            - name: ConnectionStrings__DefaultConnection
+              value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB_DOTNET);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);"
 
-            - name: Encryption__Key
-              value: "$(ENCRYPTION_KEY)"
+            # Hangfire Database
+            - name: ConnectionStrings__Hangfire
+              value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB_HANGFIRE);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);"
 
-            # Superadmin + OpenIddict client seeding (API only — worker skips it)
-            - name: SUPERADMIN_EMAIL
-              value: "$(SUPERADMIN_EMAIL)"
-            - name: SUPERADMIN_PASSWORD
-              value: "$(SUPERADMIN_PASSWORD)"
-            - name: OPENIDDICT_CLIENT_SECRET
-              value: "$(OPENIDDICT_CLIENT_SECRET)"
+            # Redis
+            - name: ConnectionStrings__Redis
+              value: "$(POSTGRES_HOST):$(REDIS_PORT),abortConnect=false"
+
+            # MultiTenancy
+            - name: MultiTenancy__ControlPlaneConnectionString
+              value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=payroll_platform;Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);"
+
+            - name: MultiTenancy__DefaultConnectionString
+              value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB_DOTNET);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);"
+
+            - name: Jwt__Secret
+              value: "$(JWT_SECRET)"
+
+            - name: Hangfire__Enabled
+              value: "true"
+
+            # FastAPI integration
+            - name: FastApi__BaseUrl
+              value: "$(FastApi__BaseUrl)"
+
+            - name: FastApi__InternalApiKey
+              value: "$(FastApi__InternalApiKey)"
+
+            # Platform admin seeding
+            - name: Seeding__PlatformAdminEmail
+              value: "$(Seeding__PlatformAdminEmail)"
+
+            - name: Seeding__AdminPassword
+              value: "$(Seeding__AdminPassword)"
 
             # Email / SMTP
-            - name: Email__Host
+            - name: Email__SmtpHost
               value: "$(SMTP_HOST)"
-            - name: Email__Port
+
+            - name: Email__SmtpPort
               value: "$(SMTP_PORT)"
+
+            - name: Email__FromAddress
+              value: "$(SMTP_FROM_ADDRESS)"
+
+            - name: Email__FromName
+              value: "$(SMTP_FROM_NAME)"
+
             - name: Email__Username
               value: "$(SMTP_USERNAME)"
+
             - name: Email__Password
               value: "$(SMTP_PASSWORD)"
-            - name: Email__From
-              value: "$(SMTP_FROM)"
-            - name: Email__UseSsl
-              value: "$(SMTP_USE_SSL)"
-            - name: Email__UseStartTls
-              value: "$(SMTP_USE_STARTTLS)"
-            - name: Email__BaseUrl
-              value: "https://$(site_url)"
-          volumeMounts:
-            - name: storage
-              mountPath: /data/storage
-          # Kestrel binds :8080 only AFTER startup migrations + per-tenant provisioning.
-          # On a many-tenant DB this can take minutes — gate liveness behind startup.
-          startupProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 30
+
+            - name: Email__EnableSsl
+              value: "$(SMTP_ENABLE_SSL)"
+
+            - name: Email__FrontendBaseUrl
+              value: "$(FRONTEND_BASE_URL)"
+
           livenessProbe:
             httpGet:
               path: /health
-              port: 8080
+              port: 80
+            initialDelaySeconds: 60
             periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 5
+
           readinessProbe:
             httpGet:
               path: /health
-              port: 8080
+              port: 80
+            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 5
-      volumes:
-        - name: storage
-          persistentVolumeClaim:
-            claimName: $(proj_branch)-storage
 
 ---
 ############################################
-# Hangfire Worker Deployment (same image, Hangfire__WorkerOnly=true)
-# No Service — background processor only. Skips API/seeding/OpenIddict.
+# Hangfire Worker Deployment
 ############################################
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: $(namespace)
-  name: $(proj_branch)-worker
+  name: $(proj_branch)-hangfire
   labels:
-    app: $(proj_branch)-worker
+    app: $(proj_branch)-hangfire
+
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
+
   selector:
     matchLabels:
-      app: $(proj_branch)-worker
+      app: $(proj_branch)-hangfire
+
   template:
     metadata:
       labels:
-        app: $(proj_branch)-worker
+        app: $(proj_branch)-hangfire
+
     spec:
       containers:
-        - name: $(proj_branch)-worker
+        - name: hangfire-worker
+
           image: docker-registry.dev.displayme.net/$(dockerrepo)
           imagePullPolicy: Always
+
           ports:
-            - containerPort: 8080
+            - containerPort: 80
+
           env:
             - name: ASPNETCORE_ENVIRONMENT
               value: "Production"
+
             - name: ASPNETCORE_URLS
-              value: "http://0.0.0.0:8080"
-            - name: Hangfire__WorkerOnly
+              value: "http://0.0.0.0:5000"
+
+            - name: AllowedHosts
+              value: "*"
+
+            - name: CORS_ORIGINS
+              value: "$(CORS_ORIGINS)"
+
+            # Main Database
+            - name: ConnectionStrings__DefaultConnection
+              value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB_DOTNET);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);"
+
+            # Hangfire Database
+            - name: ConnectionStrings__Hangfire
+              value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB_HANGFIRE);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);"
+
+            # Redis
+            - name: ConnectionStrings__Redis
+              value: "$(POSTGRES_HOST):$(REDIS_PORT),abortConnect=false"
+
+            # MultiTenancy
+            - name: MultiTenancy__ControlPlaneConnectionString
+              value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=payroll_platform;Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);"
+
+            - name: MultiTenancy__DefaultConnectionString
+              value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB_DOTNET);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);"
+
+            - name: Jwt__Secret
+              value: "$(JWT_SECRET)"
+
+            - name: Hangfire__Enabled
               value: "true"
 
-            - name: ConnectionStrings__Payroll
-              value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);CommandTimeout=30"
+            # Platform admin seeding
+            - name: Seeding__PlatformAdminEmail
+              value: "$(Seeding__PlatformAdminEmail)"
 
-            - name: Redis__ConnectionString
-              value: "$(REDIS_HOST):$(REDIS_PORT),password=$(REDIS_PASSWORD),abortConnect=false"
+            - name: Seeding__AdminPassword
+              value: "$(Seeding__AdminPassword)"
 
-            - name: Storage__Provider
-              value: "Local"
-            - name: Storage__Local__RootPath
-              value: "/data/storage"
-
-            - name: Encryption__Key
-              value: "$(ENCRYPTION_KEY)"
-
-            # Email / SMTP — worker sends payslip/notification mail
-            - name: Email__Host
+            # Email / SMTP
+            - name: Email__SmtpHost
               value: "$(SMTP_HOST)"
-            - name: Email__Port
+
+            - name: Email__SmtpPort
               value: "$(SMTP_PORT)"
+
+            - name: Email__FromAddress
+              value: "$(SMTP_FROM_ADDRESS)"
+
+            - name: Email__FromName
+              value: "$(SMTP_FROM_NAME)"
+
             - name: Email__Username
               value: "$(SMTP_USERNAME)"
+
             - name: Email__Password
               value: "$(SMTP_PASSWORD)"
-            - name: Email__From
-              value: "$(SMTP_FROM)"
-            - name: Email__UseSsl
-              value: "$(SMTP_USE_SSL)"
-            - name: Email__UseStartTls
-              value: "$(SMTP_USE_STARTTLS)"
-            - name: Email__BaseUrl
-              value: "https://$(site_url)"
-          volumeMounts:
-            - name: storage
-              mountPath: /data/storage
-          # Worker also runs platform MigrateAsync on boot before Kestrel binds :8080.
-          startupProbe:
-            httpGet:
-              path: /health
-              port: 8080
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 30
+
+            - name: Email__EnableSsl
+              value: "$(SMTP_ENABLE_SSL)"
+
+            - name: Email__FrontendBaseUrl
+              value: "$(FRONTEND_BASE_URL)"
+
           livenessProbe:
             httpGet:
               path: /health
-              port: 8080
+              port: 80
+            initialDelaySeconds: 60
             periodSeconds: 15
             timeoutSeconds: 5
             failureThreshold: 5
-      volumes:
-        - name: storage
-          persistentVolumeClaim:
-            claimName: $(proj_branch)-storage
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+
+---
+############################################
+# Ingress
+############################################
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: $(namespace)
+  name: $(proj_branch)
+
+spec:
+  rules:
+    - host: $(site_url)
+
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+
+            backend:
+              service:
+                name: $(proj_branch)
+
+                port:
+                  number: 80
