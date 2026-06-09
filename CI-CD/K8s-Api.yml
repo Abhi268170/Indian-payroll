@@ -128,6 +128,12 @@ spec:
             - name: AllowedHosts
               value: "*"
 
+            # Public base domain → tenant subdomain resolution. Without this the API
+            # parses the base host (plhb-fe-dev.mypits.org) as a tenant slug and 404s
+            # /connect/token. Must be the host the browser/web proxy sends.
+            - name: Tenancy__BaseDomain
+              value: "$(TENANCY_BASE_DOMAIN)"
+
             # Database — single DB, schema-per-tenant (public + tenant schemas)
             - name: ConnectionStrings__Payroll
               value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);CommandTimeout=30"
