@@ -7,34 +7,28 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: $(proj_branch)-storage-pv
-  labels:
-    app: $(proj_branch)
+  name: $(pv_name)
 spec:
   capacity:
-    storage: 10Gi
+    storage: $(pv_storage)
   accessModes:
     - ReadWriteMany
-  storageClassName: nfs
+  storageClassName: $(storageClassName)
   nfs:
     server: 10.10.101.62
-    path: /shared_drive/PLHB-STORAGE
-
+    path: $(nfs_path)
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  namespace: $(namespace)
-  name: $(proj_branch)-storage
-  labels:
-    app: $(proj_branch)
+  name: $(pvc_name)
 spec:
   accessModes:
     - ReadWriteMany
-  storageClassName: nfs
+  storageClassName: $(storageClassName)
   resources:
     requests:
-      storage: 7Gi
+      storage: $(pvc_storage)
 
 ---
 ############################################
