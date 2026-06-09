@@ -1,8 +1,30 @@
 ############################################
 # Shared storage (payslips, Form16, org logos, exit docs)
+# Static NFS PV (this cluster has no dynamic provisioner — mirrors PLHB-Postgres).
 # RWX so the API (serves downloads) and the Hangfire worker (generates files)
-# share it. STORAGE_CLASS must support ReadWriteMany (this cluster: nfs).
+# share it. The NFS export path below must exist on the server and be writable.
 ############################################
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: $(proj_branch)-storage-pv
+  labels:
+    app: $(proj_branch)
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: $(STORAGE_CLASS)
+  persistentVolumeReclaimPolicy: Retain
+  claimRef:
+    namespace: $(namespace)
+    name: $(proj_branch)-storage
+  nfs:
+    server: 10.10.101.62
+    path: /shared_drive/PLHB-STORAGE
+
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -14,6 +36,7 @@ spec:
   accessModes:
     - ReadWriteMany
   storageClassName: $(STORAGE_CLASS)
+  volumeName: $(proj_branch)-storage-pv
   resources:
     requests:
       storage: 5Gi
