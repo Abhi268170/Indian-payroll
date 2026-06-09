@@ -32,6 +32,37 @@ spec:
 
 ---
 ############################################
+# Hangfire Worker Storage
+############################################
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: $(pv_name)-hang
+spec:
+  capacity:
+    storage: $(pv_storage)
+  accessModes:
+    - ReadWriteMany
+  storageClassName: $(storageClassName)
+  nfs:
+    server: 10.10.101.62
+    path: /shared_drive/PLHB-Hangfire
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: $(pvc_name)-hang
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: $(storageClassName)
+  resources:
+    requests:
+      storage: $(pvc_storage)
+
+---      
+############################################
 # Application Service
 ############################################
 apiVersion: v1
