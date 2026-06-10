@@ -123,7 +123,7 @@ public sealed class PayrollRecomputeService(
             Components: components,
             LOPDays: payrunEmp.LopDays,
             WorkingDaysInMonth: payrunEmp.BaseDays,
-            VPFAmount: 0m,
+            VPFPercent: 0m,
             PriorEmployerYTDTaxableIncome: priorTaxable,
             PriorEmployerYTDTDSDeducted: priorTds,
             PriorEmployerYTDPF: 0m,

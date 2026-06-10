@@ -5,8 +5,15 @@ namespace Payroll.Engine.Calculators;
 
 public static class LWFCalculator
 {
-    public static LWFResult Compute(string stateCode, decimal grossWage, StatutoryConfig config, PayrollRunInput run)
+    public static LWFResult Compute(
+        string stateCode,
+        decimal grossWage,
+        StatutoryConfig config,
+        PayrollRunInput run,
+        bool isExempt = false)
     {
+        if (isExempt) return new LWFResult(0m, 0m, IsExempt: true);
+
         LwfStateInput? state = config.LWFStates.FirstOrDefault(l => l.StateCode == stateCode);
         if (state is null) return new LWFResult(0m, 0m, IsExempt: true);
 

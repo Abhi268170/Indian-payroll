@@ -187,4 +187,15 @@ public class LWFCalculatorTests
 
         LWFCalculator.Compute("MH", 20_000m, WithLwf([weird]), Run(6)).EmployeeAmount.Should().Be(0m);
     }
+
+    [Fact]
+    public void IsExemptFlag_ReturnsExempt_EvenWithMatchingState()
+    {
+        StatutoryConfig config = WithLwf([new LwfStateInput(
+            "MH", 25m, 75m, false, null, null, null, null, "Monthly", null, null)]);
+        LWFResult result = LWFCalculator.Compute("MH", 10_000m, config, Run(5), isExempt: true);
+        result.EmployeeAmount.Should().Be(0m);
+        result.EmployerAmount.Should().Be(0m);
+        result.IsExempt.Should().BeTrue();
+    }
 }

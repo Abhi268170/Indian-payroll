@@ -30,7 +30,7 @@ public class GrossCalculatorTests
             Components: components ?? DefaultComponents(),
             LOPDays: lop,
             WorkingDaysInMonth: calendarDays,
-            VPFAmount: 0,
+            VPFPercent: 0,
             PriorEmployerYTDTaxableIncome: 0,
             PriorEmployerYTDTDSDeducted: 0,
             PriorEmployerYTDPF: 0,
@@ -422,5 +422,16 @@ public class GrossCalculatorTests
         result.AnnualProjectedTaxableGross.Should().Be(20000m * 10);   // bonus excluded (non-taxable)
         result.AnnualProjectedGross.Should().Be(20000m * 10 + 8000m);  // included in gross once
         result.GrossWage.Should().Be(28000m);
+    }
+
+    [Fact]
+    public void LopExceedsDivisor_ClampsPayableDaysToZero_NeverNegative()
+    {
+        // 30-day divisor, 31 LOP days (e.g. FnF with operator-entered LOP):
+        // pro-rata components clamp to 0 — gross must never go negative.
+        GrossResult result = GrossCalculator.Compute(MakeEmployee(lop: 31, calendarDays: 31), Run30());
+
+        result.GrossWage.Should().BeGreaterThanOrEqualTo(0m);
+        result.ComponentBreakdown.Should().OnlyContain(c => c.ProratedAmount >= 0m);
     }
 }

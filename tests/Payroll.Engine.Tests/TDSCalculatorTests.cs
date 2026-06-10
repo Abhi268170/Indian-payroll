@@ -51,7 +51,8 @@ public sealed class TDSCalculatorTests
         ESIEnabled: false,
         PTEnabled: false,
         EpfIncludeEmployerInCtc: false,
-        GratuityIncludedInCtc: false
+        GratuityIncludedInCtc: false,
+        Pan206AARate: 0.20m
     );
 
     [Fact]
@@ -80,20 +81,48 @@ public sealed class TDSCalculatorTests
     }
 
     [Fact]
-    public void Income_OneRupeeAbove87AThreshold_NoRebate()
+    public void Income_OneRupeeAbove87AThreshold_MarginalReliefCapsTaxAtExcess()
     {
-        // gross 12,75,001 → taxable 12,00,001 → slab tax 60,000.15 → no rebate (>12L)
-        // cess = 60,000.15 × 4% = 2,400.01
-        // total = 62,400.16 → monthly/12 = 5,200.01
+        // gross 12,75,001 → taxable 12,00,001 → slab tax 60,000.15 → no rebate (>12L),
+        // but §87A marginal relief caps tax at the excess over the limit: ₹1.
+        // cess = 1 × 4% = 0.04 → total 1.04 → monthly 0.09
         TDSResult result = TDSCalculator.Compute(12_75_001m, 0m, 0m, currentEmployerYTDTDSDeducted: 0m, hasPan: true, Config, monthsRemainingInFY: 12);
 
         result.TaxableIncome.Should().Be(12_00_001m);
         result.TaxBeforeRebate.Should().Be(60_000.15m);
         result.Rebate87AApplied.Should().BeFalse();
         result.Surcharge.Should().Be(0m);
-        result.Cess.Should().Be(2_400.01m);
-        result.AnnualProjectedTax.Should().Be(62_400.16m);
-        result.MonthlyTDS.Should().Be(5_200.01m);
+        result.Cess.Should().Be(0.04m);
+        result.AnnualProjectedTax.Should().Be(1.04m);
+        result.MonthlyTDS.Should().Be(0.09m);
+    }
+
+    [Fact]
+    public void MarginalRelief87A_MidBand_TaxCappedAtExcessIncome()
+    {
+        // gross 12,85,000 → taxable 12,10,000 → slab tax 61,500 > excess 10,000
+        // → tax 10,000, cess 400, total 10,400 → monthly 866.67
+        TDSWorkingResult v = TDSCalculator.ComputeVerbose(
+            12_85_000m, 0m, 0m, 0m, hasPan: true, Config, monthsRemainingInFY: 12);
+
+        v.Rebate87AMarginalReliefApplied.Should().BeTrue();
+        v.TaxAfterRebate.Should().Be(10_000m);
+        v.CessAmount.Should().Be(400m);
+        v.AnnualProjectedTax.Should().Be(10_400m);
+        v.MonthlyTDS.Should().Be(866.67m);
+    }
+
+    [Fact]
+    public void MarginalRelief87A_BeyondCrossover_NormalSlabTaxApplies()
+    {
+        // gross 13,75,000 → taxable 13,00,000 → slab tax 75,000 < excess 1,00,000
+        // → no relief; cess 3,000 → total 78,000
+        TDSWorkingResult v = TDSCalculator.ComputeVerbose(
+            13_75_000m, 0m, 0m, 0m, hasPan: true, Config, monthsRemainingInFY: 12);
+
+        v.Rebate87AMarginalReliefApplied.Should().BeFalse();
+        v.TaxAfterRebate.Should().Be(75_000m);
+        v.AnnualProjectedTax.Should().Be(78_000m);
     }
 
     [Fact]
@@ -152,14 +181,14 @@ public sealed class TDSCalculatorTests
     [Fact]
     public void PriorEmployerYTD_TaxableIncome_PushesAbove87AThreshold()
     {
-        // current gross 10,75,001 + prior 2,00,000 = total 12,75,001 → taxable 12,00,001 → no rebate
-        // TaxBeforeRebate = 60,000.15, cess = 2,400.01, total = 62,400.16 → monthly/12 = 5,200.01
+        // current gross 10,75,001 + prior 2,00,000 = total 12,75,001 → taxable 12,00,001 → no rebate,
+        // §87A marginal relief caps tax at ₹1 → +cess 0.04 → total 1.04 → monthly 0.09
         TDSResult result = TDSCalculator.Compute(10_75_001m, 2_00_000m, 0m, currentEmployerYTDTDSDeducted: 0m, hasPan: true, Config, monthsRemainingInFY: 12);
 
         result.TaxableIncome.Should().Be(12_00_001m);
         result.Rebate87AApplied.Should().BeFalse();
-        result.AnnualProjectedTax.Should().Be(62_400.16m);
-        result.MonthlyTDS.Should().Be(5_200.01m);
+        result.AnnualProjectedTax.Should().Be(1.04m);
+        result.MonthlyTDS.Should().Be(0.09m);
     }
 
     [Fact]
@@ -326,8 +355,42 @@ public sealed class TDSCalculatorTests
         v.HasPanOverride.Should().BeTrue();
         v.Pan206AAAnnual.Should().Be(2_40_000m);
         v.Pan206AAMonthly.Should().Be(20_000m);
-        v.SlabBreakdown.Should().BeEmpty();
-        v.TaxableIncome.Should().Be(0m);
+        // The slab working stays populated so the stored worksheet reflects
+        // real income even when the §206AA flat rate wins.
+        v.SlabBreakdown.Should().HaveCount(7);
+        v.TaxableIncome.Should().Be(11_25_000m);
+        v.TotalProjectedIncome.Should().Be(12_00_000m);
+    }
+
+    [Fact]
+    public void Section206AA_SlabTaxHigher_SlabAmountDeducted_NoOverride()
+    {
+        // gross 80,00,000, no PAN → flat 16,00,000 vs slab-computed
+        // taxable 79,25,000 → slab 19,57,500; surcharge 10% = 1,95,750 (no marginal
+        // relief); cess 4% × 21,53,250 = 86,130 → total 22,39,380 > flat
+        // §206AA = HIGHER OF the two → slab tax wins, no flat override.
+        TDSWorkingResult v = TDSCalculator.ComputeVerbose(
+            80_00_000m, 0m, 0m, 0m, hasPan: false, Config, monthsRemainingInFY: 12);
+
+        v.HasPanOverride.Should().BeFalse();
+        v.Pan206AAAnnual.Should().Be(16_00_000m);
+        v.AnnualProjectedTax.Should().Be(22_39_380m);
+        v.MonthlyTDS.Should().Be(1_86_615m);
+    }
+
+    [Fact]
+    public void Section206AA_YtdTdsCredit_ReducesFlatMonthly()
+    {
+        // gross 15,75,000 no PAN → flat 3,15,000 wins; YTD TDS 63,000 already
+        // deducted → remaining 2,52,000 over 6 months → 42,000/month.
+        TDSWorkingResult v = TDSCalculator.ComputeVerbose(
+            15_75_000m, 0m, 0m, currentEmployerYTDTDSDeducted: 63_000m,
+            hasPan: false, Config, monthsRemainingInFY: 6);
+
+        v.HasPanOverride.Should().BeTrue();
+        v.AnnualProjectedTax.Should().Be(3_15_000m);
+        v.MonthlyTDS.Should().Be(42_000m);
+        v.Pan206AAMonthly.Should().Be(42_000m);
     }
 
     [Fact]

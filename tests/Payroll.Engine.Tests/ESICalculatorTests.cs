@@ -41,7 +41,7 @@ public class ESICalculatorTests
         // Standard wage limit is 21000 inclusive — exactly-at-limit must still
         // be calculated, only strictly-above tips to exempt.
         ESIResult r = ESICalculator.Compute(21_000m, Default, isExempt: false, isPWD: false);
-        r.EmployeeContribution.Should().Be(Math.Round(21_000m * Default.ESIEmployeeRate, 2, MidpointRounding.AwayFromZero));
+        r.EmployeeContribution.Should().Be(158m); // 157.50 rounded UP to the next rupee
         r.IsExempt.Should().BeFalse();
     }
 
@@ -73,9 +73,9 @@ public class ESICalculatorTests
     // ── Rate math ─────────────────────────────────────────────────────────────
 
     [Theory]
-    [InlineData(10_000, 75,    325)]    // 10000 × 0.75% = 75; 10000 × 3.25% = 325
-    [InlineData(15_000, 112.5, 487.5)]  // 15000 × 0.75% = 112.50; 15000 × 3.25% = 487.50
-    [InlineData(20_000, 150,   650)]
+    [InlineData(10_000, 75,  325)]  // exact rupee values stay as-is
+    [InlineData(15_000, 113, 488)]  // 112.50 / 487.50 → rounded UP to next rupee
+    [InlineData(20_000, 150, 650)]
     public void StandardRates_AppliedToFullWage(decimal wage, decimal expEmp, decimal expEmpr)
     {
         ESIResult r = ESICalculator.Compute(wage, Default, isExempt: false, isPWD: false);
@@ -84,11 +84,41 @@ public class ESICalculatorTests
     }
 
     [Fact]
-    public void Rounding_HalfAwayFromZero()
+    public void Rounding_UpToNextRupee()
     {
-        // Wage 13_133 → employee 13133 × 0.0075 = 98.4975 → 98.50
+        // ESI (Central) Rules: contributions round UP to the next rupee.
+        // Wage 13,133 → employee 98.4975 → 99; employer 426.8225 → 427.
         ESIResult r = ESICalculator.Compute(13_133m, Default, isExempt: false, isPWD: false);
-        r.EmployeeContribution.Should().Be(98.50m);
+        r.EmployeeContribution.Should().Be(99m);
+        r.EmployerContribution.Should().Be(427m);
+    }
+
+    // ── Contribution-period lock (Apr–Sep / Oct–Mar) ─────────────────────────
+
+    [Fact]
+    public void AboveLimit_ContinueInPeriod_StillContributesOnFullWage()
+    {
+        // Covered at period start, wage crossed the limit mid-period →
+        // contributions continue on the full (above-limit) wage till period end.
+        ESIResult r = ESICalculator.Compute(25_000m, Default, isExempt: false, isPWD: false, continueInPeriod: true);
+        r.IsExempt.Should().BeFalse();
+        r.EmployeeContribution.Should().Be(188m); // 187.50 → 188
+        r.EmployerContribution.Should().Be(813m); // 812.50 → 813
+    }
+
+    [Fact]
+    public void AboveLimit_NotInPeriod_Exempt()
+    {
+        ESIResult r = ESICalculator.Compute(25_000m, Default, isExempt: false, isPWD: false, continueInPeriod: false);
+        r.IsExempt.Should().BeTrue();
+    }
+
+    [Fact]
+    public void IsExempt_OverridesContinueInPeriod()
+    {
+        ESIResult r = ESICalculator.Compute(15_000m, Default, isExempt: true, isPWD: false, continueInPeriod: true);
+        r.IsExempt.Should().BeTrue();
+        r.EmployeeContribution.Should().Be(0m);
     }
 
     [Fact]

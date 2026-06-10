@@ -66,9 +66,8 @@ public class PayrollEngineWiringTests
         EmployeeInput emp = MakeEmployee(components, lopDays: 0);
         IReadOnlyList<PayrollResult> results = PayrollEngine.Compute([emp], Run31(), Config);
 
-        // ESI wage = 5000 (below 21000 limit) → ESI applies
-        decimal expectedEsiEmployee = Math.Round(5000m * Config.ESIEmployeeRate, 2, MidpointRounding.AwayFromZero);
-        results[0].ESI.EmployeeContribution.Should().Be(expectedEsiEmployee);
+        // ESI wage = 5000 (below 21000 limit) → ESI applies; 37.50 rounds UP to 38
+        results[0].ESI.EmployeeContribution.Should().Be(38m);
     }
 
     // ── TDS uses AnnualProjectedTaxableGross, not full gross projection ───────
@@ -149,7 +148,7 @@ public class PayrollEngineWiringTests
             Components: components,
             LOPDays: lopDays,
             WorkingDaysInMonth: 31,
-            VPFAmount: 0,
+            VPFPercent: 0,
             PriorEmployerYTDTaxableIncome: 0,
             PriorEmployerYTDTDSDeducted: 0,
             PriorEmployerYTDPF: 0,

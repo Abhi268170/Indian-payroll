@@ -194,7 +194,7 @@ public sealed class PayrollFnfOrchestrator(
             Components: components,
             LOPDays: effectiveLopDays,
             WorkingDaysInMonth: workedDays,
-            VPFAmount: 0m,
+            VPFPercent: 0m,
             PriorEmployerYTDTaxableIncome: priorTaxable,
             PriorEmployerYTDTDSDeducted: priorTds,
             PriorEmployerYTDPF: 0m,

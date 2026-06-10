@@ -8,7 +8,9 @@ public static class GrossCalculator
     public static GrossResult Compute(EmployeeInput employee, PayrollRunInput run)
     {
         int baseDays = run.SalaryDivisor;
-        decimal payableDays = baseDays - employee.LOPDays;
+        // LOP can exceed the divisor (e.g. fixed 30-day divisor in a 31-day month,
+        // or operator-entered FnF LOP) — clamp so pro-rata never goes negative.
+        decimal payableDays = Math.Max(0m, baseDays - employee.LOPDays);
 
         var breakdown = new List<ComponentAmountResult>(employee.Components.Count);
         decimal grossWage = 0m;

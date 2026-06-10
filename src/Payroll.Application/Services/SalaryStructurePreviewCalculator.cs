@@ -326,7 +326,7 @@ public static class SalaryStructurePreviewCalculator
         new(
             EmployeeId: Guid.Empty, EmployeeCode: "PREVIEW", WorkStateCode: stateCode,
             EpfEnabled: true, IsESIExempt: false, IsPWD: isPwd, MonthlyCTC: 0m,
-            Components: [], LOPDays: 0, WorkingDaysInMonth: 30, VPFAmount: 0,
+            Components: [], LOPDays: 0, WorkingDaysInMonth: 30, VPFPercent: 0,
             PriorEmployerYTDTaxableIncome: 0, PriorEmployerYTDTDSDeducted: 0, PriorEmployerYTDPF: 0,
             HalfYearMonthIndex: 1, HalfYearTotalMonths: 6);
 

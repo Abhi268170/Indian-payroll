@@ -232,7 +232,7 @@ public sealed class InitiatePayrollRunHandler(
                     Components: components,
                     LOPDays: 0,
                     WorkingDaysInMonth: workingDaysInMonth,
-                    VPFAmount: 0,
+                    VPFPercent: 0,
                     PriorEmployerYTDTaxableIncome: PriorEmployerYtdMapper.TaxableIncomeFor(ytd),
                     PriorEmployerYTDTDSDeducted: ytd?.TdsDeducted ?? 0m,
                     PriorEmployerYTDPF: 0m,

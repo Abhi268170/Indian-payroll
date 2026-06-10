@@ -25,7 +25,16 @@ public sealed record StatutoryConfig(
     bool ESIEnabled,
     bool PTEnabled,
     bool EpfIncludeEmployerInCtc,
-    bool GratuityIncludedInCtc
+    bool GratuityIncludedInCtc,
+    // Employer-side EPF charges. Defaults are neutral (0 = charge disabled);
+    // real rates come from DB config — never hardcode statutory values here.
+    decimal EdliRate = 0m,
+    decimal EdliWageCap = 0m,
+    decimal EdliMaxAmount = 0m,
+    decimal EpfAdminRate = 0m,
+    // Section 206AA rate when PAN not furnished. TDS = max(slab tax, this rate × income).
+    // 0 = slab tax only (206AA disabled until config supplies the rate).
+    decimal Pan206AARate = 0m
 );
 
 public sealed record TaxSlab(
@@ -41,11 +50,13 @@ public sealed record SurchargeConfig(
 public sealed record PTSlab(
     string StateCode,
     decimal SalaryFrom,
-    decimal? SalaryTo,
+    decimal? SalaryTo,                    // half-open: wage matches when SalaryFrom <= wage < SalaryTo
     decimal Amount,
     DateOnly EffectiveFrom,
     string Frequency,
-    IReadOnlyList<int> DeductionMonths);
+    IReadOnlyList<int> DeductionMonths,
+    string? Gender = null,                // null = applies to all genders (e.g. Maharashtra splits by gender)
+    decimal? FebruaryAmount = null);      // overrides Amount in February (e.g. MH/KA ₹300 to hit the annual cap)
 
 public sealed record LwfStateInput(
     string StateCode,

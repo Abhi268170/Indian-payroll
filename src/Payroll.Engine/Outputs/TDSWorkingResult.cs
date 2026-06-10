@@ -29,4 +29,7 @@ public sealed record TDSWorkingResult(
     decimal RemainingTaxForFY,
     bool HasPanOverride,
     decimal? Pan206AAAnnual,
-    decimal? Pan206AAMonthly);
+    decimal? Pan206AAMonthly,
+    // Section 87A marginal relief: income just above the rebate limit has tax
+    // capped at (taxable income − rebate limit).
+    bool Rebate87AMarginalReliefApplied = false);

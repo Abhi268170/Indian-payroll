@@ -24,7 +24,9 @@ public class PTCalculatorTests
     private static EmployeeInput MakeEmployee(
         string stateCode = "MH",
         int halfYearMonthIndex = 1,
-        int halfYearTotalMonths = 6) =>
+        int halfYearTotalMonths = 6,
+        string? gender = null,
+        bool ptApplicable = true) =>
         new(
             EmployeeId: Guid.NewGuid(),
             EmployeeCode: "EMP001",
@@ -36,16 +38,23 @@ public class PTCalculatorTests
             Components: [],
             LOPDays: 0,
             WorkingDaysInMonth: 30,
-            VPFAmount: 0,
+            VPFPercent: 0,
             PriorEmployerYTDTaxableIncome: 0,
             PriorEmployerYTDTDSDeducted: 0,
             PriorEmployerYTDPF: 0,
             HalfYearMonthIndex: halfYearMonthIndex,
-            HalfYearTotalMonths: halfYearTotalMonths);
+            HalfYearTotalMonths: halfYearTotalMonths,
+            Gender: gender,
+            PtApplicable: ptApplicable);
 
     private static PayrollRunInput Run(int month) =>
         new(Year: 2025, Month: month, CalendarDaysInMonth: 30, SalaryDivisor: 30,
             MonthsRemainingInFY: 12 - month + 4, FiscalYearLabel: "FY2025-26");
+
+    // February of FY 2025-26 falls in calendar 2026.
+    private static PayrollRunInput RunFeb2026() =>
+        new(Year: 2026, Month: 2, CalendarDaysInMonth: 28, SalaryDivisor: 28,
+            MonthsRemainingInFY: 2, FiscalYearLabel: "FY2025-26");
 
     // ── Global toggle ─────────────────────────────────────────────────────────
 
@@ -101,14 +110,16 @@ public class PTCalculatorTests
     [Fact]
     public void Monthly_BracketBoundary_LowerInclusive()
     {
-        // SalaryFrom = 10001 → exactly 10001 lands in upper bracket (not lower).
+        // Half-open [From, To): exactly 10,000 lands in the upper bracket and a
+        // fractional prorated wage like 9,999.50 still matches the lower one.
         PTSlab[] slabs =
         [
-            new("MH", 7_501m,  10_000m, 175m, FromApr2025, "Monthly", []),
-            new("MH", 10_001m, null,    200m, FromApr2025, "Monthly", []),
+            new("MH", 7_500m,  10_000m, 175m, FromApr2025, "Monthly", []),
+            new("MH", 10_000m, null,    200m, FromApr2025, "Monthly", []),
         ];
-        PTCalculator.Compute(10_001m, MakeEmployee("MH"), WithPt(slabs), Run(5)).Amount.Should().Be(200m);
-        PTCalculator.Compute(10_000m, MakeEmployee("MH"), WithPt(slabs), Run(5)).Amount.Should().Be(175m);
+        PTCalculator.Compute(10_000m, MakeEmployee("MH"), WithPt(slabs), Run(5)).Amount.Should().Be(200m);
+        PTCalculator.Compute(9_999.50m, MakeEmployee("MH"), WithPt(slabs), Run(5)).Amount.Should().Be(175m);
+        PTCalculator.Compute(7_500m, MakeEmployee("MH"), WithPt(slabs), Run(5)).Amount.Should().Be(175m);
     }
 
     // ── Annual / specific-month frequency ────────────────────────────────────
@@ -211,5 +222,74 @@ public class PTCalculatorTests
         // Slab effective from Jun 2025. Run is May 2025 — slab must not apply.
         PTSlab futureSlab = new("MH", 10_001m, null, 200m, new DateOnly(2025, 6, 1), "Monthly", []);
         PTCalculator.Compute(15_000m, MakeEmployee("MH"), WithPt([futureSlab]), Run(5)).IsExempt.Should().BeTrue();
+    }
+
+    // ── Per-employee PT exemption ─────────────────────────────────────────────
+
+    [Fact]
+    public void PtApplicableFalse_ReturnsExempt()
+    {
+        PTSlab slab = new("MH", 0m, null, 200m, FromApr2025, "Monthly", []);
+        PTResult result = PTCalculator.Compute(25_000m, MakeEmployee("MH", ptApplicable: false), WithPt([slab]), Run(5));
+        result.Amount.Should().Be(0m);
+        result.IsExempt.Should().BeTrue();
+    }
+
+    // ── Gender-split slabs (Maharashtra) ─────────────────────────────────────
+
+    private static PTSlab[] MhGenderSlabs =>
+    [
+        new("MH", 0m,       7_500m,  0m,   FromApr2025, "Monthly", [], Gender: "Male"),
+        new("MH", 7_500m,   10_000m, 175m, FromApr2025, "Monthly", [], Gender: "Male"),
+        new("MH", 10_000m,  null,    200m, FromApr2025, "Monthly", [], Gender: "Male", FebruaryAmount: 300m),
+        new("MH", 0m,       25_000m, 0m,   FromApr2025, "Monthly", [], Gender: "Female"),
+        new("MH", 25_000m,  null,    200m, FromApr2025, "Monthly", [], Gender: "Female", FebruaryAmount: 300m),
+    ];
+
+    [Fact]
+    public void GenderSplit_MaleSlabNotShadowedByFemaleZeroBand()
+    {
+        // The C2 regression: male at 8,000 must pay 175 — the female 0-band
+        // (0–25,000 → 0) must not shadow it.
+        PTCalculator.Compute(8_000m, MakeEmployee("MH", gender: "Male"), WithPt(MhGenderSlabs), Run(5))
+            .Amount.Should().Be(175m);
+    }
+
+    [Fact]
+    public void GenderSplit_FemaleExemptUpTo25k()
+    {
+        PTCalculator.Compute(8_000m, MakeEmployee("MH", gender: "Female"), WithPt(MhGenderSlabs), Run(5))
+            .Amount.Should().Be(0m);
+        PTCalculator.Compute(24_000m, MakeEmployee("MH", gender: "Female"), WithPt(MhGenderSlabs), Run(5))
+            .Amount.Should().Be(0m);
+        PTCalculator.Compute(25_000m, MakeEmployee("MH", gender: "Female"), WithPt(MhGenderSlabs), Run(5))
+            .Amount.Should().Be(200m);
+    }
+
+    [Fact]
+    public void GenderSplit_UnknownGender_FallsBackToMaleSchedule()
+    {
+        PTCalculator.Compute(8_000m, MakeEmployee("MH", gender: null), WithPt(MhGenderSlabs), Run(5))
+            .Amount.Should().Be(175m);
+    }
+
+    // ── February surcharge (Article 276 remainder) ───────────────────────────
+
+    [Fact]
+    public void FebruaryAmount_AppliedOnlyInFebruary()
+    {
+        // ₹200 × 11 months + ₹300 in February = ₹2,500 annual cap.
+        PTCalculator.Compute(30_000m, MakeEmployee("MH", gender: "Male"), WithPt(MhGenderSlabs), RunFeb2026())
+            .Amount.Should().Be(300m);
+        PTCalculator.Compute(30_000m, MakeEmployee("MH", gender: "Male"), WithPt(MhGenderSlabs), Run(5))
+            .Amount.Should().Be(200m);
+    }
+
+    [Fact]
+    public void February_NoFebruaryAmountConfigured_UsesRegularAmount()
+    {
+        PTSlab slab = new("KA", 25_000m, null, 200m, FromApr2025, "Monthly", []);
+        PTCalculator.Compute(30_000m, MakeEmployee("KA"), WithPt([slab]), RunFeb2026())
+            .Amount.Should().Be(200m);
     }
 }

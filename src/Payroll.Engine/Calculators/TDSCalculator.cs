@@ -37,78 +37,35 @@ public static class TDSCalculator
         int monthsRemainingInFY)
     {
         decimal totalProjected = annualProjectedGross + priorEmployerYTDTaxableIncome;
+        decimal ytdCredit = currentEmployerYTDTDSDeducted + priorEmployerYTDTDSDeducted;
 
-        // Section 206AA: 20% flat if PAN not furnished, overrides all slab logic
-        if (!hasPan)
-        {
-            decimal flatAnnualTax = Math.Round(totalProjected * 0.20m, 2, MidpointRounding.AwayFromZero);
-            decimal flatMonthly = monthsRemainingInFY > 0
-                ? Math.Round(flatAnnualTax / monthsRemainingInFY, 2, MidpointRounding.AwayFromZero)
-                : 0m;
-            return new TDSWorkingResult(
-                MonthlyTDS: flatMonthly,
-                AnnualProjectedTax: flatAnnualTax,
-                TotalProjectedIncome: totalProjected,
-                StandardDeduction: 0m,
-                TaxableIncome: 0m,
-                SlabBreakdown: Array.Empty<SlabTax>(),
-                TaxBeforeRebate: 0m,
-                Rebate87AApplied: false,
-                Rebate87AAmount: 0m,
-                TaxAfterRebate: 0m,
-                SurchargeRate: null,
-                RawSurcharge: 0m,
-                MarginalReliefApplied: false,
-                SurchargeAfterRelief: 0m,
-                CessRate: config.CessRate,
-                CessAmount: 0m,
-                PriorEmployerTDS: priorEmployerYTDTDSDeducted,
-                CurrentEmployerYTDTDS: currentEmployerYTDTDSDeducted,
-                RemainingTaxForFY: flatAnnualTax,
-                HasPanOverride: true,
-                Pan206AAAnnual: flatAnnualTax,
-                Pan206AAMonthly: flatMonthly);
-        }
+        decimal taxableIncome = Math.Max(0m, totalProjected - config.StandardDeduction);
 
-        decimal taxableIncome = totalProjected - config.StandardDeduction;
-        if (taxableIncome <= 0m)
-        {
-            return new TDSWorkingResult(
-                MonthlyTDS: 0m,
-                AnnualProjectedTax: 0m,
-                TotalProjectedIncome: totalProjected,
-                StandardDeduction: config.StandardDeduction,
-                TaxableIncome: 0m,
-                SlabBreakdown: BuildEmptyBreakdown(config.NewRegimeSlabs),
-                TaxBeforeRebate: 0m,
-                Rebate87AApplied: false,
-                Rebate87AAmount: 0m,
-                TaxAfterRebate: 0m,
-                SurchargeRate: null,
-                RawSurcharge: 0m,
-                MarginalReliefApplied: false,
-                SurchargeAfterRelief: 0m,
-                CessRate: config.CessRate,
-                CessAmount: 0m,
-                PriorEmployerTDS: priorEmployerYTDTDSDeducted,
-                CurrentEmployerYTDTDS: currentEmployerYTDTDSDeducted,
-                RemainingTaxForFY: 0m,
-                HasPanOverride: false,
-                Pan206AAAnnual: null,
-                Pan206AAMonthly: null);
-        }
-
-        IReadOnlyList<SlabTax> breakdown = ComputeSlabBreakdown(taxableIncome, config.NewRegimeSlabs);
+        IReadOnlyList<SlabTax> breakdown = taxableIncome > 0m
+            ? ComputeSlabBreakdown(taxableIncome, config.NewRegimeSlabs)
+            : BuildEmptyBreakdown(config.NewRegimeSlabs);
         decimal taxBeforeRebate = breakdown.Sum(s => s.Tax);
 
         decimal rebateAmount = 0m;
         bool rebateApplied = false;
+        bool marginalReliefApplied = false;
         decimal taxAfterRebate = taxBeforeRebate;
-        if (taxableIncome <= config.Rebate87ALimit)
+        if (taxableIncome > 0m && taxableIncome <= config.Rebate87ALimit)
         {
             rebateAmount = Math.Min(taxBeforeRebate, config.Rebate87AAmount);
             taxAfterRebate = taxBeforeRebate - rebateAmount;
             rebateApplied = true;
+        }
+        else if (taxableIncome > config.Rebate87ALimit && config.Rebate87ALimit > 0m)
+        {
+            // Section 87A marginal relief: just above the rebate limit, tax payable
+            // cannot exceed the income in excess of the limit.
+            decimal excessIncome = taxableIncome - config.Rebate87ALimit;
+            if (taxBeforeRebate > excessIncome)
+            {
+                taxAfterRebate = excessIncome;
+                marginalReliefApplied = true;
+            }
         }
 
         (decimal? surchargeRate, decimal rawSurcharge, bool reliefApplied, decimal surchargeFinal) =
@@ -117,7 +74,27 @@ public static class TDSCalculator
         decimal cess = Math.Round((taxAfterRebate + surchargeFinal) * config.CessRate, 2, MidpointRounding.AwayFromZero);
         decimal totalAnnualTax = taxAfterRebate + surchargeFinal + cess;
 
-        decimal remainingTax = totalAnnualTax - currentEmployerYTDTDSDeducted - priorEmployerYTDTDSDeducted;
+        // Section 206AA: PAN not furnished → TDS at the HIGHER of the slab-computed
+        // tax or the flat rate on total projected income (no cess on the flat path).
+        decimal? pan206AAAnnual = null;
+        decimal? pan206AAMonthly = null;
+        bool panOverride = false;
+        if (!hasPan && config.Pan206AARate > 0m)
+        {
+            decimal flatAnnual = Math.Round(totalProjected * config.Pan206AARate, 2, MidpointRounding.AwayFromZero);
+            pan206AAAnnual = flatAnnual;
+            decimal flatRemaining = Math.Max(0m, flatAnnual - ytdCredit);
+            pan206AAMonthly = monthsRemainingInFY > 0
+                ? Math.Round(flatRemaining / monthsRemainingInFY, 2, MidpointRounding.AwayFromZero)
+                : 0m;
+            if (flatAnnual > totalAnnualTax)
+            {
+                totalAnnualTax = flatAnnual;
+                panOverride = true;
+            }
+        }
+
+        decimal remainingTax = totalAnnualTax - ytdCredit;
         decimal monthlyTDS = monthsRemainingInFY > 0
             ? Math.Max(0m, Math.Round(remainingTax / monthsRemainingInFY, 2, MidpointRounding.AwayFromZero))
             : 0m;
@@ -142,9 +119,10 @@ public static class TDSCalculator
             PriorEmployerTDS: priorEmployerYTDTDSDeducted,
             CurrentEmployerYTDTDS: currentEmployerYTDTDSDeducted,
             RemainingTaxForFY: Math.Max(0m, remainingTax),
-            HasPanOverride: false,
-            Pan206AAAnnual: null,
-            Pan206AAMonthly: null);
+            HasPanOverride: panOverride,
+            Pan206AAAnnual: pan206AAAnnual,
+            Pan206AAMonthly: pan206AAMonthly,
+            Rebate87AMarginalReliefApplied: marginalReliefApplied);
     }
 
     private static IReadOnlyList<SlabTax> ComputeSlabBreakdown(decimal income, IReadOnlyList<TaxSlab> slabs)

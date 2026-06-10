@@ -26,7 +26,8 @@ public static class StatutoryConfigBuilder
             .Select(s => new PTSlab(
                 s.StateCode, s.MinGross, s.MaxGross, s.PtAmount, s.EffectiveDate,
                 s.Frequency,
-                ParseDeductionMonths(s.DeductionMonthsCsv)))
+                ParseDeductionMonths(s.DeductionMonthsCsv),
+                s.Gender))
             .ToList();
 
         var lwfStates = lwfConfigs
