@@ -94,15 +94,23 @@ metadata:
 spec:
   rules:
     - host: $(site_url)
-
       http:
         paths:
           - path: /
             pathType: Prefix
-
             backend:
               service:
                 name: $(proj_branch)
-
                 port:
                   number: 80
+
+    - host: "*.payroll.mypits.org"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: $(proj_branch)
+                port:
+                  name: $(proj_port)
