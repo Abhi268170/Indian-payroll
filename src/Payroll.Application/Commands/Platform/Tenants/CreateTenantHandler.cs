@@ -29,21 +29,24 @@ internal sealed class CreateTenantHandler(
 
         try
         {
-            await provisioner.ProvisionAsync(tenant.Schema, tenant.Id, tenant.DisplayName, cancellationToken);
+            // Deliberately not the request token: a client disconnect (e.g. proxy
+            // timeout) must not abort schema migrations mid-flight.
+            await provisioner.ProvisionAsync(tenant.Schema, tenant.Id, tenant.DisplayName, CancellationToken.None);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Schema provisioning failed for tenant {TenantId}. Rolling back.", tenant.Id);
             try
             {
-                await provisioner.DropAsync(tenant.Schema, cancellationToken);
+                // Rollback must run even when the request was aborted.
+                await provisioner.DropAsync(tenant.Schema, CancellationToken.None);
             }
             catch (Exception dropEx)
             {
                 logger.LogError(dropEx, "Failed to drop schema {Schema} during rollback.", tenant.Schema);
             }
-            await repository.DeleteAsync(tenant, cancellationToken);
-            await unitOfWork.SaveChangesAsync(cancellationToken);
+            await repository.DeleteAsync(tenant, CancellationToken.None);
+            await unitOfWork.SaveChangesAsync(CancellationToken.None);
             throw new InvalidOperationException("Failed to provision tenant schema.", ex);
         }
 
