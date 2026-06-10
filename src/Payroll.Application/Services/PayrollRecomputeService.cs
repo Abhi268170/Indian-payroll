@@ -106,10 +106,23 @@ public sealed class PayrollRecomputeService(
             .Select(MapToEngineInput)
             .ToList();
 
+        // Gratuity Act wage = basic + DA, identified via the linked component's
+        // EarningType (falls back to the legacy code match for unlinked rows).
+        Dictionary<Guid, EarningType?> earningTypeById = componentIds.Count == 0
+            ? []
+            : (await salaryComponentRepo.GetByIdsAsync(componentIds, ct))
+                .ToDictionary(c => c.Id, c => c.EarningType);
         decimal basicWage = engineRows
-            .FirstOrDefault(b => b.ComponentCode == "BASICSALARY")?.FullAmount ?? 0m;
+            .Where(b => b.SalaryComponentId.HasValue
+                && earningTypeById.TryGetValue(b.SalaryComponentId.Value, out EarningType? et)
+                && et is EarningType.Basic or EarningType.DearnesAllowance)
+            .Sum(b => b.FullAmount);
+        if (basicWage == 0m)
+            basicWage = engineRows.FirstOrDefault(b => b.ComponentCode == "BASICSALARY")?.FullAmount ?? 0m;
 
         bool hasPan = !string.IsNullOrWhiteSpace(employee.EncryptedPAN);
+        HashSet<Guid> esiLocked = await payrunEmployeeRepo.GetEsiContributedInPeriodAsync(
+            [employee.Id], run.PayPeriod.Year, run.PayPeriod.Month, ct);
         var (hyIndex, hyTotal) = run.PayPeriod.HalfYearPosition(employee.DateOfJoining);
 
         var empInput = new EmployeeInput(
@@ -123,7 +136,7 @@ public sealed class PayrollRecomputeService(
             Components: components,
             LOPDays: payrunEmp.LopDays,
             WorkingDaysInMonth: payrunEmp.BaseDays,
-            VPFPercent: 0m,
+            VPFPercent: payrunEmp.VpfPercent,
             PriorEmployerYTDTaxableIncome: priorTaxable,
             PriorEmployerYTDTDSDeducted: priorTds,
             PriorEmployerYTDPF: 0m,
@@ -133,7 +146,11 @@ public sealed class PayrollRecomputeService(
             HasPan: hasPan,
             CurrentEmployerYTDGross: currentYtdGross,
             CurrentEmployerYTDTDSDeducted: currentYtdTds,
-            CurrentEmployerYTDTaxable: currentYtdTaxableGross);
+            CurrentEmployerYTDTaxable: currentYtdTaxableGross,
+            Gender: EngineGenderMapper.ToEngineGender(employee.Gender),
+            EsiContinueInPeriod: esiLocked.Contains(employee.Id),
+            PtApplicable: employee.PtEnabled,
+            LwfApplicable: employee.LwfEnabled);
 
         var runInput = new PayrollRunInput(
             Year: run.PayPeriod.Year,

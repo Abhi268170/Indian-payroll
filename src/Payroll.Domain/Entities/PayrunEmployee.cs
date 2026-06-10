@@ -30,6 +30,10 @@ public sealed class PayrunEmployee : AuditableEntity
 
     // Statutory deductions (employee share)
     public decimal EmployeePf { get; private set; }
+    // Voluntary PF: percent snapshot taken at run initiation (deterministic
+    // recompute) and the rupee amount the engine deducted from net pay.
+    public decimal VpfPercent { get; private set; }
+    public decimal VpfAmount { get; private set; }
     public decimal EmployerPf { get; private set; }
     public decimal EmployeeEsi { get; private set; }
     public decimal EmployerEsi { get; private set; }
@@ -94,7 +98,8 @@ public sealed class PayrunEmployee : AuditableEntity
         decimal gratuityAmount,
         decimal epsAmount,
         decimal monthlyCTC,
-        Guid actorId)
+        Guid actorId,
+        decimal? vpfAmount = null)
     {
         GrossPay = grossPay;
         TaxableGrossPay = taxableGrossPay;
@@ -113,6 +118,15 @@ public sealed class PayrunEmployee : AuditableEntity
         GratuityAmount = gratuityAmount;
         EpsAmount = epsAmount;
         MonthlyCTC = monthlyCTC;
+        if (vpfAmount.HasValue) VpfAmount = vpfAmount.Value;
+        SetUpdated(actorId);
+    }
+
+    public void SetVpfPercent(decimal vpfPercent, Guid actorId)
+    {
+        if (vpfPercent is < 0m or > 100m)
+            throw new InvalidOperationException("VPF percent must be between 0 and 100.");
+        VpfPercent = vpfPercent;
         SetUpdated(actorId);
     }
 

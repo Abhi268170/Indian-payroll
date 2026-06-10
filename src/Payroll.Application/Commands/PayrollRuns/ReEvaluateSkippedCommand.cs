@@ -165,14 +165,18 @@ public sealed class ReEvaluateSkippedHandler(
             ? (await salaryComponentRepo.GetByIdsAsync([.. addedComponentIds], ct)).ToDictionary(c => c.Id)
             : [];
 
+        HashSet<Guid> esiLockedEmployees = await payrunEmployeeRepo.GetEsiContributedInPeriodAsync(
+            processedMap.Keys, period.Year, period.Month, ct);
+        var vpfPercentByEmployee = new Dictionary<Guid, decimal>();
+
         var engineInputs = new List<EmployeeInput>();
         foreach ((Guid empId, (PayrunEmployee _, EmployeeSalaryStructure salaryStructure, SalaryStructureTemplate? template)) in processedMap)
         {
             if (!empById.TryGetValue(empId, out Employee? emp)) continue;
 
-            IReadOnlyList<SalaryComponentInput> components = InitiatePayrollRunHandler.BuildComponentInputs(
+            InitiatePayrollRunHandler.ComponentBuildResult build = InitiatePayrollRunHandler.BuildComponentInputs(
                 salaryStructure, template, addedCompDetails, staticConfig);
-            decimal basicWage = components.FirstOrDefault(c => c.Code == "BASICSALARY")?.Amount ?? 0m;
+            IReadOnlyList<SalaryComponentInput> components = build.Components;
             bool hasPan = !string.IsNullOrWhiteSpace(emp.EncryptedPAN);
             string workState = workLocationStateMap.TryGetValue(emp.WorkLocationId, out string? wls) ? wls : "MH";
             (int hyIndex, int hyTotal) = period.HalfYearPosition(emp.DateOfJoining);
@@ -190,17 +194,22 @@ public sealed class ReEvaluateSkippedHandler(
                 Components: components,
                 LOPDays: 0,
                 WorkingDaysInMonth: workingDaysInMonth,
-                VPFPercent: 0,
+                VPFPercent: build.VpfPercent,
                 PriorEmployerYTDTaxableIncome: PriorEmployerYtdMapper.TaxableIncomeFor(ytd),
                 PriorEmployerYTDTDSDeducted: ytd?.TdsDeducted ?? 0m,
                 PriorEmployerYTDPF: 0m,
                 HalfYearMonthIndex: hyIndex,
                 HalfYearTotalMonths: hyTotal,
-                BasicWage: basicWage,
+                BasicWage: build.GratuityWage,
                 HasPan: hasPan,
                 CurrentEmployerYTDGross: curYtd.YtdGross,
                 CurrentEmployerYTDTDSDeducted: curYtd.YtdTds,
-                CurrentEmployerYTDTaxable: curYtd.YtdTaxableGross));
+                CurrentEmployerYTDTaxable: curYtd.YtdTaxableGross,
+                Gender: EngineGenderMapper.ToEngineGender(emp.Gender),
+                EsiContinueInPeriod: esiLockedEmployees.Contains(emp.Id),
+                PtApplicable: emp.PtEnabled,
+                LwfApplicable: emp.LwfEnabled));
+            vpfPercentByEmployee[empId] = build.VpfPercent;
         }
 
         var runInput = new PayrollRunInput(
@@ -251,7 +260,10 @@ public sealed class ReEvaluateSkippedHandler(
                 gratuityAmount: result.Gratuity.MonthlyAccrual,
                 epsAmount: result.PF.EPSEmployerContribution,
                 monthlyCTC: salaryStructure.AnnualCTC / 12m,
-                actorId: req.ActorId);
+                actorId: req.ActorId,
+                vpfAmount: result.PF.VPFContribution);
+            if (vpfPercentByEmployee.TryGetValue(empId, out decimal vpfPct) && vpfPct > 0m)
+                payrunEmp.SetVpfPercent(vpfPct, req.ActorId);
 
             payrunEmployeeRepo.Update(payrunEmp);
 

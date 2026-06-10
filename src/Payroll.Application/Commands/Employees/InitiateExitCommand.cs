@@ -321,10 +321,13 @@ public sealed class InitiateExitHandler(
             ? (await salaryComponentRepo.GetByIdsAsync([.. addedComponentIds], ct)).ToDictionary(c => c.Id)
             : [];
 
-        IReadOnlyList<SalaryComponentInput> components =
+        InitiatePayrollRunHandler.ComponentBuildResult build =
             InitiatePayrollRunHandler.BuildComponentInputs(salaryStructure, template, addedCompDetails, staticConfig);
+        IReadOnlyList<SalaryComponentInput> components = build.Components;
 
         payrunEmp.SetMonthlyCTC(salaryStructure.AnnualCTC / 12m, actorId);
+        if (build.VpfPercent > 0m)
+            payrunEmp.SetVpfPercent(build.VpfPercent, actorId);
 
         decimal monthlyBasic = components.FirstOrDefault(c => c.Code == "BASICSALARY")?.Amount ?? 0m;
 

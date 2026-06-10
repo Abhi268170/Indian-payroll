@@ -109,7 +109,7 @@ public class BuildComponentInputsTests
     public void Basic_PercentOfCTC_IsCorrect()
     {
         var (template, structure) = BuildFixture(1_200_000m); // 12L CTC
-        var inputs = InitiatePayrollRunHandler.BuildComponentInputs(structure, template, new System.Collections.Generic.Dictionary<System.Guid, Payroll.Domain.Entities.SalaryComponent>(), NoCtcDeductionsConfig());
+        var inputs = InitiatePayrollRunHandler.BuildComponentInputs(structure, template, new System.Collections.Generic.Dictionary<System.Guid, Payroll.Domain.Entities.SalaryComponent>(), NoCtcDeductionsConfig()).Components;
 
         decimal basicMonthly = 1_200_000m * 37.5m / 100m / 12m; // 37,500
         inputs.Single(i => i.Code == "BASICSALARY").Amount.Should().Be(basicMonthly);
@@ -119,7 +119,7 @@ public class BuildComponentInputsTests
     public void HRA_PercentOfBasic_UsesBasicNotZero()
     {
         var (template, structure) = BuildFixture(1_200_000m);
-        var inputs = InitiatePayrollRunHandler.BuildComponentInputs(structure, template, new System.Collections.Generic.Dictionary<System.Guid, Payroll.Domain.Entities.SalaryComponent>(), NoCtcDeductionsConfig());
+        var inputs = InitiatePayrollRunHandler.BuildComponentInputs(structure, template, new System.Collections.Generic.Dictionary<System.Guid, Payroll.Domain.Entities.SalaryComponent>(), NoCtcDeductionsConfig()).Components;
 
         decimal basicMonthly = 1_200_000m * 37.5m / 100m / 12m; // 37,500
         decimal expectedHra = Math.Round(basicMonthly * 40m / 100m, 2, MidpointRounding.AwayFromZero); // 15,000
@@ -131,7 +131,7 @@ public class BuildComponentInputsTests
     public void Residual_AbsorbsRemainder()
     {
         var (template, structure) = BuildFixture(1_200_000m);
-        var inputs = InitiatePayrollRunHandler.BuildComponentInputs(structure, template, new System.Collections.Generic.Dictionary<System.Guid, Payroll.Domain.Entities.SalaryComponent>(), NoCtcDeductionsConfig());
+        var inputs = InitiatePayrollRunHandler.BuildComponentInputs(structure, template, new System.Collections.Generic.Dictionary<System.Guid, Payroll.Domain.Entities.SalaryComponent>(), NoCtcDeductionsConfig()).Components;
 
         decimal monthlyGross = 1_200_000m / 12m;    // 100,000
         decimal basicMonthly = monthlyGross * 37.5m / 100m; // 37,500
@@ -145,7 +145,7 @@ public class BuildComponentInputsTests
     public void GrossTotal_EqualsMonthlyCtc()
     {
         var (template, structure) = BuildFixture(1_200_000m);
-        var inputs = InitiatePayrollRunHandler.BuildComponentInputs(structure, template, new System.Collections.Generic.Dictionary<System.Guid, Payroll.Domain.Entities.SalaryComponent>(), NoCtcDeductionsConfig());
+        var inputs = InitiatePayrollRunHandler.BuildComponentInputs(structure, template, new System.Collections.Generic.Dictionary<System.Guid, Payroll.Domain.Entities.SalaryComponent>(), NoCtcDeductionsConfig()).Components;
 
         decimal monthlyGross = 1_200_000m / 12m;
         inputs.Sum(i => i.Amount).Should().Be(monthlyGross);
@@ -158,7 +158,7 @@ public class BuildComponentInputsTests
             Guid.NewGuid(), TenantId, null, 1_200_000m,
             new DateOnly(2025, 1, 1), ActorId);
 
-        var inputs = InitiatePayrollRunHandler.BuildComponentInputs(structure, null, new System.Collections.Generic.Dictionary<System.Guid, Payroll.Domain.Entities.SalaryComponent>(), NoCtcDeductionsConfig());
+        var inputs = InitiatePayrollRunHandler.BuildComponentInputs(structure, null, new System.Collections.Generic.Dictionary<System.Guid, Payroll.Domain.Entities.SalaryComponent>(), NoCtcDeductionsConfig()).Components;
 
         inputs.Should().BeEmpty();
     }

@@ -71,6 +71,36 @@ internal sealed class PayrunEmployeeRepository(PayrollDbContext db) : IPayrunEmp
         return rows.ToDictionary(r => r.EmployeeId, r => (r.YtdGross, r.YtdTaxableGross, r.YtdTds));
     }
 
+    public async Task<HashSet<Guid>> GetEsiContributedInPeriodAsync(
+        IEnumerable<Guid> employeeIds, int year, int month, CancellationToken ct = default)
+    {
+        // Contribution periods: Apr–Sep and Oct–Mar. Compare on year*100+month so
+        // EF translates the window to plain integer arithmetic.
+        (int startYear, int startMonth) = month switch
+        {
+            >= 4 and <= 9 => (year, 4),
+            >= 10 => (year, 10),
+            _ => (year - 1, 10),
+        };
+        int windowStart = startYear * 100 + startMonth;
+        int currentKey = year * 100 + month;
+
+        var empIds = employeeIds.ToList();
+        List<Guid> ids = await (
+            from pe in db.PayrunEmployees
+            join run in db.PayrollRuns on pe.PayrollRunId equals run.Id
+            where empIds.Contains(pe.EmployeeId)
+                && pe.Status == PayrunEmployeeStatus.Active
+                && pe.EmployeeEsi > 0m
+                && (run.Status == PayrollRunStatus.Approved || run.Status == PayrollRunStatus.Paid)
+                && run.PayPeriod.Year * 100 + run.PayPeriod.Month >= windowStart
+                && run.PayPeriod.Year * 100 + run.PayPeriod.Month < currentKey
+            select pe.EmployeeId)
+            .Distinct()
+            .ToListAsync(ct);
+        return [.. ids];
+    }
+
     public Task<bool> HasLwfDeductedInPeriodAsync(
         Guid employeeId, int year, int firstMonth, int lastMonth, CancellationToken ct = default) =>
         (from pe in db.PayrunEmployees

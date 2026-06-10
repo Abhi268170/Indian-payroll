@@ -138,6 +138,8 @@ public sealed class PayrollFnfOrchestrator(
 
         bool hasPan = !string.IsNullOrWhiteSpace(employee.EncryptedPAN);
         var (hyIndex, hyTotal) = lwdPeriod.HalfYearPosition(employee.DateOfJoining);
+        HashSet<Guid> esiLocked = await payrunEmpRepo.GetEsiContributedInPeriodAsync(
+            [employeeId], lwdPeriod.Year, lwdPeriod.Month, ct);
 
         // WI-29: use the YTD snapshot locked at exit initiation when present, so the
         // TDS basis is immutable regardless of later prior-month approvals. Older
@@ -180,8 +182,11 @@ public sealed class PayrollFnfOrchestrator(
         // plus any operator-set LOP for absences within the worked period.
         // The engine's proration formula: prorated = fullAmount × (salaryDivisor - lopDays) / salaryDivisor.
         // lopFromExit = salaryDivisor - workedDays ensures correct partial-month ratio.
-        int lopFromExit = salaryDivisor - workedDays;
-        decimal effectiveLopDays = lopFromExit + payrunEmp.LopDays;
+        // Clamp both directions: FixedDays < calendar days can make lopFromExit
+        // negative (silently crediting a day), and operator LOP on top of exit LOP
+        // can exceed the divisor (negative gross).
+        int lopFromExit = Math.Max(0, salaryDivisor - workedDays);
+        decimal effectiveLopDays = Math.Min(lopFromExit + payrunEmp.LopDays, salaryDivisor);
 
         var empInput = new EmployeeInput(
             EmployeeId: employee.Id,
@@ -194,7 +199,7 @@ public sealed class PayrollFnfOrchestrator(
             Components: components,
             LOPDays: effectiveLopDays,
             WorkingDaysInMonth: workedDays,
-            VPFPercent: 0m,
+            VPFPercent: payrunEmp.VpfPercent,
             PriorEmployerYTDTaxableIncome: priorTaxable,
             PriorEmployerYTDTDSDeducted: priorTds,
             PriorEmployerYTDPF: 0m,
@@ -205,7 +210,11 @@ public sealed class PayrollFnfOrchestrator(
             HasPan: hasPan,
             CurrentEmployerYTDGross: ytdGross,
             CurrentEmployerYTDTDSDeducted: ytdTds,
-            CurrentEmployerYTDTaxable: ytdTaxableGross);
+            CurrentEmployerYTDTaxable: ytdTaxableGross,
+            Gender: EngineGenderMapper.ToEngineGender(employee.Gender),
+            EsiContinueInPeriod: esiLocked.Contains(employeeId),
+            PtApplicable: employee.PtEnabled,
+            LwfApplicable: employee.LwfEnabled);
 
         var runInput = new PayrollRunInput(
             Year: lwdPeriod.Year,

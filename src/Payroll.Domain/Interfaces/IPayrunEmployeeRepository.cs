@@ -15,6 +15,12 @@ public interface IPayrunEmployeeRepository
     Task<IReadOnlyList<PayrunEmployee>> GetByEmployeeAndRunIdsAsync(Guid employeeId, IEnumerable<Guid> runIds, CancellationToken ct = default);
     Task<Dictionary<Guid, (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds)>> GetCurrentEmployerYtdAsync(IEnumerable<Guid> employeeIds, int fiscalYear, CancellationToken ct = default);
 
+    /// <summary>
+    /// Employees who had an ESI contribution in an Approved/Paid run earlier in the
+    /// CURRENT contribution period (Apr–Sep / Oct–Mar) than the given run month.
+    /// </summary>
+    Task<HashSet<Guid>> GetEsiContributedInPeriodAsync(IEnumerable<Guid> employeeIds, int year, int month, CancellationToken ct = default);
+
     // Returns true if any Approved/Paid run between [firstMonth..lastMonth] of `year`
     // recorded a non-zero LWF amount for the employee. Drives FnF's half-year
     // duplicate-protection: LWF that already hit a prior month must not be deducted

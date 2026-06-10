@@ -159,6 +159,13 @@ public sealed class InitiatePayrollRunHandler(
         }
 
         // Build engine inputs per employee
+        // ESI contribution-period lock: anyone who contributed earlier in the
+        // current period (Apr–Sep / Oct–Mar) keeps contributing until period end
+        // even if their wage crossed the limit mid-period.
+        HashSet<Guid> esiLockedEmployees = await payrunEmployeeRepo.GetEsiContributedInPeriodAsync(
+            employeeIds, period.Year, period.Month, ct);
+        var vpfPercentByEmployee = new Dictionary<Guid, decimal>();
+
         var engineInputs = new List<EmployeeInput>();
         var eligibleMap = new Dictionary<Guid, (EmployeeSalaryStructure structure, SalaryStructureTemplate? template, string? skipReason)>();
 
@@ -214,8 +221,8 @@ public sealed class InitiatePayrollRunHandler(
 
             if (skipReason is null)
             {
-                var components = BuildComponentInputs(salaryStructure, template, addedCompDetails, staticConfig);
-                decimal basicWage = components.FirstOrDefault(c => c.Code == "BASICSALARY")?.Amount ?? 0m;
+                ComponentBuildResult build = BuildComponentInputs(salaryStructure, template, addedCompDetails, staticConfig);
+                IReadOnlyList<SalaryComponentInput> components = build.Components;
                 bool hasPan = !string.IsNullOrWhiteSpace(emp.EncryptedPAN);
                 string workState = workLocationStateMap.TryGetValue(emp.WorkLocationId, out string? wls) ? wls : "MH";
                 var (hyIndex, hyTotal) = period.HalfYearPosition(emp.DateOfJoining);
@@ -232,17 +239,22 @@ public sealed class InitiatePayrollRunHandler(
                     Components: components,
                     LOPDays: 0,
                     WorkingDaysInMonth: workingDaysInMonth,
-                    VPFPercent: 0,
+                    VPFPercent: build.VpfPercent,
                     PriorEmployerYTDTaxableIncome: PriorEmployerYtdMapper.TaxableIncomeFor(ytd),
                     PriorEmployerYTDTDSDeducted: ytd?.TdsDeducted ?? 0m,
                     PriorEmployerYTDPF: 0m,
                     HalfYearMonthIndex: hyIndex,
                     HalfYearTotalMonths: hyTotal,
-                    BasicWage: basicWage,
+                    BasicWage: build.GratuityWage,
                     HasPan: hasPan,
                     CurrentEmployerYTDGross: curYtd.YtdGross,
                     CurrentEmployerYTDTDSDeducted: curYtd.YtdTds,
-                    CurrentEmployerYTDTaxable: curYtd.YtdTaxableGross));
+                    CurrentEmployerYTDTaxable: curYtd.YtdTaxableGross,
+                    Gender: EngineGenderMapper.ToEngineGender(emp.Gender),
+                    EsiContinueInPeriod: esiLockedEmployees.Contains(emp.Id),
+                    PtApplicable: emp.PtEnabled,
+                    LwfApplicable: emp.LwfEnabled));
+                vpfPercentByEmployee[emp.Id] = build.VpfPercent;
             }
         }
 
@@ -317,7 +329,10 @@ public sealed class InitiatePayrollRunHandler(
                     gratuityAmount: result.Gratuity.MonthlyAccrual,
                     epsAmount: result.PF.EPSEmployerContribution,
                     monthlyCTC: info.structure.AnnualCTC / 12m,
-                    actorId: req.ActorId);
+                    actorId: req.ActorId,
+                    vpfAmount: result.PF.VPFContribution);
+                if (vpfPercentByEmployee.TryGetValue(emp.Id, out decimal vpfPct) && vpfPct > 0m)
+                    payrunEmp.SetVpfPercent(vpfPct, req.ActorId);
 
                 // Build TdsWorksheet for this employee
                 priorYtdByEmployee.TryGetValue(emp.Id, out var empYtd);
@@ -442,13 +457,23 @@ public sealed class InitiatePayrollRunHandler(
             PaidAt: payrollRun.PaidAt);
     }
 
-    internal static IReadOnlyList<SalaryComponentInput> BuildComponentInputs(
+    internal sealed record ComponentBuildResult(
+        IReadOnlyList<SalaryComponentInput> Components,
+        // VPF is an EMPLOYEE-side deduction (percent of PF wage) — identified by a
+        // Benefit component carrying BenefitPercentage. It must not shrink the CTC
+        // residual like employer-borne benefits do.
+        decimal VpfPercent,
+        // Payment of Gratuity Act wage = basic + dearness allowance, identified by
+        // EarningType — never by a magic component code.
+        decimal GratuityWage);
+
+    internal static ComponentBuildResult BuildComponentInputs(
         EmployeeSalaryStructure structure,
         SalaryStructureTemplate? template,
         Dictionary<Guid, SalaryComponent> addedCompDetails,
         StatutoryConfig config)
     {
-        if (template is null) return [];
+        if (template is null) return new ComponentBuildResult([], 0m, 0m);
 
         Dictionary<Guid, EmployeeSalaryComponentOverride> overrideMap =
             structure.ComponentOverrides.ToDictionary(o => o.SalaryComponentId);
@@ -456,7 +481,9 @@ public sealed class InitiatePayrollRunHandler(
         decimal monthlyCTC = structure.AnnualCTC / 12m;
         var raw = new List<(Guid Id, string Code, decimal Amount, bool IsTaxable, bool ConsiderForEpf, EpfInclusionRule EpfRule, bool ConsiderForEsi, bool CalculateOnProRata, bool IsFlat, bool ShowInPayslip)>();
         decimal basicMonthly = 0m;
+        decimal daMonthly = 0m;
         decimal nonResidualSum = 0m;
+        decimal vpfPercent = 0m;
 
         var ordered = template.Components.OrderBy(c => c.DisplayOrder).ToList();
         var templateCompIds = new HashSet<Guid>(ordered.Select(c => c.ComponentId));
@@ -486,6 +513,7 @@ public sealed class InitiatePayrollRunHandler(
             };
 
             if (comp.Component.EarningType == EarningType.Basic) basicMonthly = monthly;
+            if (comp.Component.EarningType == EarningType.DearnesAllowance) daMonthly += monthly;
             nonResidualSum += monthly;
 
             raw.Add((comp.ComponentId, comp.Component.Code, monthly,
@@ -532,6 +560,14 @@ public sealed class InitiatePayrollRunHandler(
             if (templateCompIds.Contains(ov.SalaryComponentId)) continue;
             if (!addedCompDetails.TryGetValue(ov.SalaryComponentId, out SalaryComponent? sc)) continue;
             if (sc.Category != ComponentCategory.Benefit) continue;
+
+            // VPF-type benefit: employee-side, percent of PF wage. The engine
+            // deducts it from net pay — it is NOT an employer CTC cost.
+            if (sc.BenefitPercentage is not null)
+            {
+                vpfPercent = sc.BenefitPercentage.Value;
+                continue;
+            }
 
             benefitsMonthlyTotal += ov.FormulaType switch
             {
@@ -622,7 +658,7 @@ public sealed class InitiatePayrollRunHandler(
             .Where(r => r.ConsiderForEpf && r.EpfRule == EpfInclusionRule.Always)
             .Sum(r => r.Amount);
 
-        return raw
+        List<SalaryComponentInput> componentInputs = raw
             .Select(r =>
             {
                 bool considerForEpf = r.EpfRule == EpfInclusionRule.OnlyWhenPfWageBelowLimit
@@ -632,5 +668,7 @@ public sealed class InitiatePayrollRunHandler(
                     r.ConsiderForEsi, r.CalculateOnProRata, r.IsFlat, r.ShowInPayslip);
             })
             .ToList();
+
+        return new ComponentBuildResult(componentInputs, vpfPercent, basicMonthly + daMonthly);
     }
 }

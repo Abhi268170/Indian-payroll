@@ -120,12 +120,19 @@ public class InitiateExitSeedingTests
 
     // ─── BuildComponentInputs flag fidelity ─────────────────────────────────
 
+    private static IReadOnlyList<SalaryComponentInput> BuildInputs(
+        EmployeeSalaryStructure structure,
+        SalaryStructureTemplate? template,
+        Dictionary<Guid, SalaryComponent> addedCompDetails,
+        Payroll.Engine.Inputs.StatutoryConfig config) =>
+        InitiatePayrollRunHandler.BuildComponentInputs(structure, template, addedCompDetails, config).Components;
+
     [Fact]
     public void BasicSalary_ConsiderForEpf_True_IsPreserved()
     {
         var (template, structure) = BuildFixture(1_200_000m);
         IReadOnlyList<SalaryComponentInput> inputs =
-            InitiatePayrollRunHandler.BuildComponentInputs(structure, template, [], MinimalConfig());
+            BuildInputs(structure, template, [], MinimalConfig());
 
         inputs.Single(i => i.Code == "BASICSALARY").ConsiderForEpf.Should().BeTrue();
     }
@@ -135,7 +142,7 @@ public class InitiateExitSeedingTests
     {
         var (template, structure) = BuildFixture(1_200_000m);
         IReadOnlyList<SalaryComponentInput> inputs =
-            InitiatePayrollRunHandler.BuildComponentInputs(structure, template, [], MinimalConfig());
+            BuildInputs(structure, template, [], MinimalConfig());
 
         inputs.Single(i => i.Code == "HRA").ConsiderForEpf.Should().BeFalse();
     }
@@ -145,7 +152,7 @@ public class InitiateExitSeedingTests
     {
         var (template, structure) = BuildFixture(1_200_000m);
         IReadOnlyList<SalaryComponentInput> inputs =
-            InitiatePayrollRunHandler.BuildComponentInputs(structure, template, [], MinimalConfig());
+            BuildInputs(structure, template, [], MinimalConfig());
 
         inputs.Single(i => i.Code == "BASICSALARY").ConsiderForEsi.Should().BeTrue();
     }
@@ -155,7 +162,7 @@ public class InitiateExitSeedingTests
     {
         var (template, structure) = BuildFixture(1_200_000m);
         IReadOnlyList<SalaryComponentInput> inputs =
-            InitiatePayrollRunHandler.BuildComponentInputs(structure, template, [], MinimalConfig());
+            BuildInputs(structure, template, [], MinimalConfig());
 
         inputs.Single(i => i.Code == "HRA").ConsiderForEsi.Should().BeFalse();
     }
@@ -165,7 +172,7 @@ public class InitiateExitSeedingTests
     {
         var (template, structure) = BuildFixture(1_200_000m);
         IReadOnlyList<SalaryComponentInput> inputs =
-            InitiatePayrollRunHandler.BuildComponentInputs(structure, template, [], MinimalConfig());
+            BuildInputs(structure, template, [], MinimalConfig());
 
         inputs.Should().OnlyContain(i => i.IsTaxable);
     }
@@ -175,7 +182,7 @@ public class InitiateExitSeedingTests
     {
         var (template, structure) = BuildFixture(1_200_000m);
         IReadOnlyList<SalaryComponentInput> inputs =
-            InitiatePayrollRunHandler.BuildComponentInputs(structure, template, [], MinimalConfig());
+            BuildInputs(structure, template, [], MinimalConfig());
 
         inputs.Should().OnlyContain(i => i.CalculateOnProRata);
     }
@@ -188,7 +195,7 @@ public class InitiateExitSeedingTests
         decimal annualCtc = 1_200_000m;
         var (template, structure) = BuildFixture(annualCtc);
         IReadOnlyList<SalaryComponentInput> inputs =
-            InitiatePayrollRunHandler.BuildComponentInputs(structure, template, [], MinimalConfig());
+            BuildInputs(structure, template, [], MinimalConfig());
 
         decimal expected = Math.Round(annualCtc * 40m / 100m / 12m, 2, MidpointRounding.AwayFromZero);
         inputs.Single(i => i.Code == "BASICSALARY").Amount.Should().Be(expected);
@@ -200,7 +207,7 @@ public class InitiateExitSeedingTests
         decimal annualCtc = 1_200_000m;
         var (template, structure) = BuildFixture(annualCtc);
         IReadOnlyList<SalaryComponentInput> inputs =
-            InitiatePayrollRunHandler.BuildComponentInputs(structure, template, [], MinimalConfig());
+            BuildInputs(structure, template, [], MinimalConfig());
 
         // No employer CTC deductions in MinimalConfig → gross = CTC/12
         inputs.Sum(i => i.Amount).Should().Be(annualCtc / 12m);
@@ -229,7 +236,7 @@ public class InitiateExitSeedingTests
         Dictionary<Guid, SalaryComponent> addedDetails = new() { [benefit.Id] = benefit };
 
         IReadOnlyList<SalaryComponentInput> inputs =
-            InitiatePayrollRunHandler.BuildComponentInputs(structure, template, addedDetails, MinimalConfig());
+            BuildInputs(structure, template, addedDetails, MinimalConfig());
 
         inputs.Should().NotContain(i => i.Code == "HEALTH_INS",
             "benefit-category components must be excluded from engine inputs");
