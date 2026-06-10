@@ -17,13 +17,16 @@ public record PayRunTaxLineDto(
     decimal Cess,
     decimal AnnualTaxLiability,
     decimal TdsThisMonth,
-    bool HasPanOverride);
+    bool HasPanOverride,
+    decimal? TdsOverrideAmount = null,
+    decimal EffectiveTds = 0m);
 
 public record GetPayRunTaxesQuery(Guid RunId) : IRequest<IReadOnlyList<PayRunTaxLineDto>>;
 
 public sealed class GetPayRunTaxesHandler(
     IPayrollRunRepository runRepo,
     ITdsWorksheetRepository tdsWorksheetRepo,
+    IPayrunEmployeeRepository payrunEmployeeRepo,
     IEmployeeRepository employeeRepo)
     : IRequestHandler<GetPayRunTaxesQuery, IReadOnlyList<PayRunTaxLineDto>>
 {
@@ -33,6 +36,8 @@ public sealed class GetPayRunTaxesHandler(
             ?? throw new NotFoundException($"Payroll run {req.RunId} not found.");
 
         IReadOnlyList<Domain.Entities.TdsWorksheet> worksheets = await tdsWorksheetRepo.GetByRunIdAsync(req.RunId, ct);
+        IReadOnlyList<Domain.Entities.PayrunEmployee> payrunEmps = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
+        Dictionary<Guid, Domain.Entities.PayrunEmployee> peMap = payrunEmps.ToDictionary(p => p.EmployeeId);
         IReadOnlyList<Domain.Entities.Employee> employees = await employeeRepo.GetManyByIdsAsync(
             worksheets.Select(w => w.EmployeeId), ct);
         Dictionary<Guid, Domain.Entities.Employee> employeeMap = employees.ToDictionary(e => e.Id);
@@ -55,7 +60,9 @@ public sealed class GetPayRunTaxesHandler(
                 Cess: ws.Cess,
                 AnnualTaxLiability: ws.AnnualTaxLiability,
                 TdsThisMonth: ws.TdsThisMonth,
-                HasPanOverride: ws.HasPanOverride));
+                HasPanOverride: ws.HasPanOverride,
+                TdsOverrideAmount: peMap.GetValueOrDefault(ws.EmployeeId)?.TdsOverrideAmount,
+                EffectiveTds: peMap.GetValueOrDefault(ws.EmployeeId)?.TdsOverrideAmount ?? ws.TdsThisMonth));
         }
 
         result.Sort((a, b) => string.Compare(a.EmployeeCode, b.EmployeeCode, StringComparison.Ordinal));

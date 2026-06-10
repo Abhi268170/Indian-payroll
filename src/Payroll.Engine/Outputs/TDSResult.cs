@@ -8,4 +8,7 @@ public sealed record TDSResult(
     decimal TaxableIncome,
     decimal TaxBeforeRebate,
     bool Rebate87AApplied,
-    bool HasPanOverride);
+    bool HasPanOverride,
+    // Combined current + prior employer projected income BEFORE standard
+    // deduction — what the worksheet stores as "annual projected income".
+    decimal TotalProjectedIncome = 0m);

@@ -24,7 +24,8 @@ public static class TDSCalculator
             v.MonthlyTDS, v.AnnualProjectedTax,
             v.SurchargeAfterRelief, v.CessAmount,
             v.TaxableIncome, v.TaxBeforeRebate,
-            v.Rebate87AApplied, v.HasPanOverride);
+            v.Rebate87AApplied, v.HasPanOverride,
+            v.TotalProjectedIncome);
     }
 
     public static TDSWorkingResult ComputeVerbose(

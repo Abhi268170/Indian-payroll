@@ -264,7 +264,7 @@ public sealed class ReEvaluateSkippedHandler(
                 employeeId: empId,
                 tenantId: payrunEmp.TenantId,
                 fiscalYear: period.FiscalYear,
-                annualProjectedIncome: result.TDS.TaxableIncome + staticConfig.StandardDeduction,
+                annualProjectedIncome: result.TDS.TotalProjectedIncome,
                 standardDeduction: staticConfig.StandardDeduction,
                 taxableIncome: result.TDS.TaxableIncome,
                 taxBeforeRebate: result.TDS.TaxBeforeRebate,

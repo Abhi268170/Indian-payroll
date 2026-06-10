@@ -39,12 +39,14 @@ public class PriorEmployerYtdMapperTests
     }
 
     [Fact]
-    public void StandardDeductionAndPt_Subtracted()
+    public void StandardDeductionAndPt_NotSubtracted()
     {
-        // 500000 - 75000 - 2500 = 422500
+        // Section 16(ia): ONE standard deduction per taxpayer per FY — the engine
+        // subtracts it from the combined projection, so the mapper must not.
+        // PT (16(iii)) is not deductible under the new regime at all.
         PriorEmployerYtdMapper.TaxableIncomeFor(
             Make(gross: 5_00_000m, standardDed: 75_000m, pt: 2_500m))
-            .Should().Be(4_22_500m);
+            .Should().Be(5_00_000m);
     }
 
     [Fact]
@@ -59,18 +61,18 @@ public class PriorEmployerYtdMapperTests
     [Fact]
     public void AllAdjustments_Combined()
     {
-        // 500000 - 75000 - 2500 + 10000 = 432500
+        // Only other income adds; SD/PT claims are ignored: 500000 + 10000
         PriorEmployerYtdMapper.TaxableIncomeFor(
             Make(gross: 5_00_000m, standardDed: 75_000m, pt: 2_500m, otherIncome: 10_000m))
-            .Should().Be(4_32_500m);
+            .Should().Be(5_10_000m);
     }
 
     [Fact]
     public void NegativeResult_ClampedToZero()
     {
-        // 10000 - 75000 = -65000 → clamped to 0 (negative taxable would skew TDS the wrong way)
+        // Negative other income larger than gross → clamped to 0
         PriorEmployerYtdMapper.TaxableIncomeFor(
-            Make(gross: 10_000m, standardDed: 75_000m))
+            Make(gross: 10_000m, otherIncome: -75_000m))
             .Should().Be(0m);
     }
 }

@@ -29,17 +29,18 @@ public sealed class TdsBreakupExportService(
             || string.Equals(format, "xls", StringComparison.OrdinalIgnoreCase);
 
         List<TdsRow> rows = BuildRows(ctx);
+        List<string> headers = BuildHeaders(ctx.Snapshot);
 
         if (isXlsx)
         {
-            byte[] xlsx = BuildXlsx(rows, periodLabel);
+            byte[] xlsx = BuildXlsx(rows, headers, periodLabel);
             return new ExportFileResult(
                 $"TDSBreakup_{periodLabel}.xlsx",
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 xlsx);
         }
 
-        byte[] csv = BuildCsv(rows);
+        byte[] csv = BuildCsv(rows, headers);
         return new ExportFileResult($"TDSBreakup_{periodLabel}.csv", "text/csv", csv);
     }
 
@@ -78,7 +79,7 @@ public sealed class TdsBreakupExportService(
             Employee? emp = ctx.Employees.GetValueOrDefault(pe.EmployeeId);
             TdsWorksheet? ws = ctx.Worksheets.GetValueOrDefault(pe.EmployeeId);
             IReadOnlyList<PriorEmployerYtd> prior = ctx.PriorYtd.GetValueOrDefault(pe.EmployeeId, []);
-            decimal priorTaxable = prior.Sum(p => p.GrossSalary - p.StandardDeductionClaimed);
+            decimal priorTaxable = prior.Sum(Payroll.Application.Services.PriorEmployerYtdMapper.TaxableIncomeFor);
             decimal priorTds = prior.Sum(p => p.TdsDeducted);
 
             rows.Add(BuildRow(pe, emp, ws, ctx.Snapshot, ctx.FiscalYear, priorTaxable, priorTds, ctx.Run.PayPeriod));
@@ -91,59 +92,81 @@ public sealed class TdsBreakupExportService(
         StatutoryConfig snapshot, int fy, decimal priorTaxable, decimal priorTds,
         Domain.ValueObjects.PayPeriod period)
     {
-        bool hasPan = !string.IsNullOrWhiteSpace(emp?.EncryptedPAN);
+        // Deterministic: the verbose working is rebuilt ONLY from values stored at
+        // run time (worksheet + the run's statutory snapshot). The stored
+        // AnnualProjectedIncome already includes prior-employer taxable income and
+        // YtdTdsDeducted already includes prior-employer TDS — passing them again
+        // would double-count (the old export understated "Remaining Tax for FY"
+        // for every mid-year joiner). Live employee/12B state is never consulted.
         TDSWorkingResult? verbose = ws is null
             ? null
             : TDSCalculator.ComputeVerbose(
                 annualProjectedGross: ws.AnnualProjectedIncome,
                 priorEmployerYTDTaxableIncome: 0m,
-                priorEmployerYTDTDSDeducted: priorTds,
+                priorEmployerYTDTDSDeducted: 0m,
                 currentEmployerYTDTDSDeducted: ws.YtdTdsDeducted,
-                hasPan: hasPan,
+                hasPan: !ws.HasPanOverride,
                 config: snapshot,
                 monthsRemainingInFY: ws.RemainingMonthsInFy);
 
         return new TdsRow(pe, emp, ws, verbose, fy, priorTaxable, priorTds, period);
     }
 
-    private static List<string> Headers =>
-    [
-        "Employee Code", "Employee Name", "PAN Furnished", "Regime",
-        "Pay Month", "FY", "Months Remaining in FY", "Status",
-        "Monthly Taxable Gross", "Annual Projected Gross",
-        "Prior Employer YTD Taxable Income", "Total Projected Income",
-        "Standard Deduction", "Taxable Income",
-        "Tax @ 0–4L (0%)", "Tax @ 4L–8L (5%)", "Tax @ 8L–12L (10%)",
-        "Tax @ 12L–16L (15%)", "Tax @ 16L–20L (20%)", "Tax @ 20L–24L (25%)",
-        "Tax @ Above 24L (30%)", "Tax Before Rebate",
-        "87A Rebate Applied", "87A Rebate Amount", "Tax After Rebate",
-        "Surcharge Slab Rate", "Raw Surcharge", "Marginal Relief Applied", "Surcharge After Relief",
-        "Subtotal (Tax + Surcharge)", "Cess Rate", "Cess Amount",
-        "Total Annual Tax Liability", "Prior Employer TDS Deducted",
-        "Current Employer YTD TDS Deducted", "Remaining Tax for FY",
-        "Monthly TDS (Engine)", "Monthly TDS Override", "Override Reason",
-        "Effective TDS This Run",
-        "206AA 20% Flat Annual", "206AA Monthly TDS",
-    ];
+    // Slab columns come from the run's statutory snapshot — never hardcoded to a
+    // specific FY's bands (a 7-column cap once silently dropped extra slabs).
+    private static List<string> BuildHeaders(StatutoryConfig snapshot)
+    {
+        List<string> headers =
+        [
+            "Employee Code", "Employee Name", "PAN Furnished", "Regime",
+            "Pay Month", "FY", "Months Remaining in FY", "Status",
+            "Monthly Taxable Gross", "Annual Projected Gross",
+            "Prior Employer YTD Taxable Income", "Total Projected Income",
+            "Standard Deduction", "Taxable Income",
+        ];
+        foreach (TaxSlab slab in snapshot.NewRegimeSlabs)
+        {
+            string range = slab.IncomeTo.HasValue
+                ? $"{FormatLakh(slab.IncomeFrom)}–{FormatLakh(slab.IncomeTo.Value)}"
+                : "Above " + FormatLakh(slab.IncomeFrom);
+            headers.Add($"Tax @ {range} ({slab.Rate * 100m:0.##}%)");
+        }
+        headers.AddRange(
+        [
+            "Tax Before Rebate",
+            "87A Rebate Applied", "87A Rebate Amount", "87A Marginal Relief Applied", "Tax After Rebate",
+            "Surcharge Slab Rate", "Raw Surcharge", "Marginal Relief Applied", "Surcharge After Relief",
+            "Subtotal (Tax + Surcharge)", "Cess Rate", "Cess Amount",
+            "Total Annual Tax Liability", "Prior Employer TDS Deducted",
+            "YTD TDS Deducted (Current + Prior)", "Remaining Tax for FY",
+            "Monthly TDS (Engine)", "Monthly TDS Override", "Override Reason",
+            "Effective TDS This Run",
+            "206AA Flat Annual", "206AA Monthly TDS",
+        ]);
+        return headers;
+    }
 
-    private static byte[] BuildCsv(List<TdsRow> rows)
+    private static string FormatLakh(decimal v) =>
+        v % 100_000m == 0m ? $"{v / 100_000m:0.##}L" : v.ToString("0", CultureInfo.InvariantCulture);
+
+    private static byte[] BuildCsv(List<TdsRow> rows, List<string> headers)
     {
         StringBuilder sb = new();
-        sb.AppendLine(string.Join(",", Headers.Select(CsvEscape)));
+        sb.AppendLine(string.Join(",", headers.Select(CsvEscape)));
         foreach (TdsRow r in rows)
-            sb.AppendLine(string.Join(",", BuildRowValues(r).Select(CsvEscape)));
+            sb.AppendLine(string.Join(",", BuildRowValues(r, headers.Count).Select(CsvEscape)));
         return Encoding.UTF8.GetBytes(sb.ToString());
     }
 
-    private static byte[] BuildXlsx(List<TdsRow> rows, string periodLabel)
+    private static byte[] BuildXlsx(List<TdsRow> rows, List<string> headers, string periodLabel)
     {
         using XLWorkbook workbook = new();
         IXLWorksheet ws = workbook.AddWorksheet($"TDS {periodLabel}");
 
-        for (int i = 0; i < Headers.Count; i++)
+        for (int i = 0; i < headers.Count; i++)
         {
             IXLCell cell = ws.Cell(1, i + 1);
-            cell.Value = Headers[i];
+            cell.Value = headers[i];
             cell.Style.Font.Bold = true;
             cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#1e293b");
             cell.Style.Font.FontColor = XLColor.White;
@@ -152,7 +175,7 @@ public sealed class TdsBreakupExportService(
         int row = 2;
         foreach (TdsRow r in rows)
         {
-            List<string> values = BuildRowValues(r);
+            List<string> values = BuildRowValues(r, headers.Count);
             for (int i = 0; i < values.Count; i++)
             {
                 IXLCell cell = ws.Cell(row, i + 1);
@@ -168,7 +191,7 @@ public sealed class TdsBreakupExportService(
 
         ws.SheetView.FreezeRows(1);
         ws.SheetView.FreezeColumns(2);
-        ws.Range(1, 1, row - 1, Headers.Count).SetAutoFilter();
+        ws.Range(1, 1, row - 1, headers.Count).SetAutoFilter();
         ws.Columns().AdjustToContents();
 
         using MemoryStream stream = new();
@@ -176,7 +199,7 @@ public sealed class TdsBreakupExportService(
         return stream.ToArray();
     }
 
-    private static List<string> BuildRowValues(TdsRow r)
+    private static List<string> BuildRowValues(TdsRow r, int totalColumns)
     {
         string panFurnished = string.IsNullOrWhiteSpace(r.Employee?.EncryptedPAN) ? "No" : "Yes";
         string status = r.PayrunEmployee.Status.ToString();
@@ -185,7 +208,7 @@ public sealed class TdsBreakupExportService(
 
         if (r.Worksheet is null)
         {
-            return WithBlanks(r, panFurnished, status, payMonth, fyLabel);
+            return WithBlanks(r, panFurnished, status, payMonth, fyLabel, totalColumns);
         }
 
         TDSWorkingResult v = r.Verbose!;
@@ -208,12 +231,13 @@ public sealed class TdsBreakupExportService(
             FormatMoney(r.Worksheet.TaxableIncome),
         ];
 
-        for (int i = 0; i < 7; i++)
-            row.Add(i < slabs.Length ? FormatMoney(slabs[i].Tax) : "0.00");
+        foreach (SlabTax slab in slabs)
+            row.Add(FormatMoney(slab.Tax));
 
         row.Add(FormatMoney(r.Worksheet.TaxBeforeRebate));
         row.Add(v.Rebate87AApplied ? "Yes" : "No");
         row.Add(FormatMoney(v.Rebate87AAmount));
+        row.Add(v.Rebate87AMarginalReliefApplied ? "Yes" : "No");
         row.Add(FormatMoney(v.TaxAfterRebate));
         row.Add(v.SurchargeRate.HasValue ? FormatPercent(v.SurchargeRate.Value) : string.Empty);
         row.Add(FormatMoney(v.RawSurcharge));
@@ -230,12 +254,12 @@ public sealed class TdsBreakupExportService(
         row.Add(overrideAmount);
         row.Add(r.PayrunEmployee.TdsOverrideReason ?? string.Empty);
         row.Add(FormatMoney(effectiveTds));
-        row.Add(r.Worksheet.HasPanOverride && v.Pan206AAAnnual.HasValue ? FormatMoney(v.Pan206AAAnnual.Value) : string.Empty);
-        row.Add(r.Worksheet.HasPanOverride && v.Pan206AAMonthly.HasValue ? FormatMoney(v.Pan206AAMonthly.Value) : string.Empty);
+        row.Add(v.Pan206AAAnnual.HasValue ? FormatMoney(v.Pan206AAAnnual.Value) : string.Empty);
+        row.Add(v.Pan206AAMonthly.HasValue ? FormatMoney(v.Pan206AAMonthly.Value) : string.Empty);
         return row;
     }
 
-    private static List<string> WithBlanks(TdsRow r, string panFurnished, string status, string payMonth, string fyLabel)
+    private static List<string> WithBlanks(TdsRow r, string panFurnished, string status, string payMonth, string fyLabel, int totalColumns)
     {
         List<string> row =
         [
@@ -244,7 +268,7 @@ public sealed class TdsBreakupExportService(
             panFurnished, "New (Sec 115BAC)", payMonth, fyLabel,
             string.Empty, status,
         ];
-        for (int i = 0; i < Headers.Count - row.Count; i++) row.Add(string.Empty);
+        while (row.Count < totalColumns) row.Add(string.Empty);
         return row;
     }
 

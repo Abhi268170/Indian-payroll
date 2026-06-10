@@ -205,7 +205,7 @@ public sealed class PayrollRecomputeService(
             employeeId: payrunEmp.EmployeeId,
             tenantId: payrunEmp.TenantId,
             fiscalYear: run.PayPeriod.FiscalYear,
-            annualProjectedIncome: result.TDS.TaxableIncome + staticConfig.StandardDeduction,
+            annualProjectedIncome: result.TDS.TotalProjectedIncome,
             standardDeduction: staticConfig.StandardDeduction,
             taxableIncome: result.TDS.TaxableIncome,
             taxBeforeRebate: result.TDS.TaxBeforeRebate,

@@ -328,7 +328,7 @@ public sealed class InitiatePayrollRunHandler(
                     employeeId: emp.Id,
                     tenantId: tenantContext.TenantId,
                     fiscalYear: period.FiscalYear,
-                    annualProjectedIncome: result.TDS.TaxableIncome + staticConfig.StandardDeduction,
+                    annualProjectedIncome: result.TDS.TotalProjectedIncome,
                     standardDeduction: staticConfig.StandardDeduction,
                     taxableIncome: result.TDS.TaxableIncome,
                     taxBeforeRebate: result.TDS.TaxBeforeRebate,

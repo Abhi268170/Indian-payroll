@@ -315,7 +315,7 @@ public sealed class PayrollFnfOrchestrator(
             employeeId: pe.EmployeeId,
             tenantId: pe.TenantId,
             fiscalYear: fnf.LwdFiscalYear,
-            annualProjectedIncome: result.TDS.TaxableIncome + fnf.StaticConfig.StandardDeduction,
+            annualProjectedIncome: result.TDS.TotalProjectedIncome,
             standardDeduction: fnf.StaticConfig.StandardDeduction,
             taxableIncome: result.TDS.TaxableIncome,
             taxBeforeRebate: result.TDS.TaxBeforeRebate,

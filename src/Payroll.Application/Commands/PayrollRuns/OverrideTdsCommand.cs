@@ -83,8 +83,10 @@ public sealed class OverrideTdsHandler(
 
         payrunEmployeeRepo.Update(payrunEmp);
 
-        // Sync TdsWorksheet to reflect the override (worksheet already fetched above for cap check)
-        worksheet?.UpdateTdsThisMonth(req.OverrideAmount, req.ActorId);
+        // The worksheet intentionally keeps the ENGINE-computed TdsThisMonth —
+        // the override lives on PayrunEmployee (TdsOverrideAmount) and every
+        // consumer derives effective TDS as override ?? engine. Overwriting the
+        // worksheet would destroy the audit trail of what the engine computed.
 
         await uow.SaveChangesAsync(ct);
     }
