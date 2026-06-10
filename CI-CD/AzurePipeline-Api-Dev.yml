@@ -1,5 +1,5 @@
 trigger:
-- none
+- develop
 
 variables:
 - group: BE-DEV
