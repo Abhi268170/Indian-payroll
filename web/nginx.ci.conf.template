@@ -23,6 +23,10 @@ http {
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
+            # Tenant provisioning runs schema migrations and can exceed the
+            # 60s default; without this nginx returns 504 and aborts the API.
+            proxy_read_timeout 300s;
+            proxy_send_timeout 300s;
         }
 
         location /connect/ {
@@ -31,6 +35,8 @@ http {
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_read_timeout 300s;
+            proxy_send_timeout 300s;
         }
 
         location /health {
