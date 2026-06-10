@@ -108,14 +108,7 @@ public sealed class SeedDataService(
         string clientSecret,
         CancellationToken cancellationToken)
     {
-        object? existing = await appManager.FindByClientIdAsync("payroll-api", cancellationToken);
-        if (existing is not null)
-        {
-            logger.LogDebug("OpenIddict client 'payroll-api' already exists");
-            return;
-        }
-
-        await appManager.CreateAsync(new OpenIddictApplicationDescriptor
+        OpenIddictApplicationDescriptor descriptor = new()
         {
             ClientId = "payroll-api",
             ClientSecret = clientSecret,
@@ -132,8 +125,19 @@ public sealed class SeedDataService(
                 $"{Permissions.Prefixes.Scope}payroll.api",
                 $"{Permissions.Prefixes.Scope}{Scopes.OfflineAccess}",
             },
-        }, cancellationToken);
+        };
 
+        object? existing = await appManager.FindByClientIdAsync("payroll-api", cancellationToken);
+        if (existing is not null)
+        {
+            // Keep the client secret/permissions in sync with config — config is
+            // authoritative, so rotating OPENIDDICT_CLIENT_SECRET takes effect on deploy.
+            await appManager.UpdateAsync(existing, descriptor, cancellationToken);
+            logger.LogInformation("Updated OpenIddict client 'payroll-api'");
+            return;
+        }
+
+        await appManager.CreateAsync(descriptor, cancellationToken);
         logger.LogInformation("Created OpenIddict client 'payroll-api'");
     }
 
