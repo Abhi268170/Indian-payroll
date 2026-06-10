@@ -112,6 +112,7 @@ public sealed class SeedDataService(
         {
             ClientId = "payroll-api",
             ClientSecret = clientSecret,
+            ClientType = ClientTypes.Confidential,
             DisplayName = "Indian Payroll API",
             Permissions =
             {
