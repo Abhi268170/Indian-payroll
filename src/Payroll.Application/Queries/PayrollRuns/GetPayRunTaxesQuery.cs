@@ -42,7 +42,7 @@ public sealed class GetPayRunTaxesHandler(
             worksheets.Select(w => w.EmployeeId), ct);
         Dictionary<Guid, Domain.Entities.Employee> employeeMap = employees.ToDictionary(e => e.Id);
 
-        var result = new List<PayRunTaxLineDto>(worksheets.Count);
+        List<PayRunTaxLineDto> result = new List<PayRunTaxLineDto>(worksheets.Count);
         foreach (Domain.Entities.TdsWorksheet ws in worksheets)
         {
             if (!employeeMap.TryGetValue(ws.EmployeeId, out Domain.Entities.Employee? emp)) continue;

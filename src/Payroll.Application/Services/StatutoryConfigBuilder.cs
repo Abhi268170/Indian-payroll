@@ -25,15 +25,15 @@ public static class StatutoryConfigBuilder
                 $"No income tax slabs found for FY '{taxConfig.FiscalYear}' ({taxConfig.Regime} regime). " +
                 "Seed income_tax_slabs before running payroll.");
 
-        var newRegimeSlabs = taxSlabs
+        List<TaxSlab> newRegimeSlabs = taxSlabs
             .Select(s => new TaxSlab(s.BracketMin, s.BracketMax, s.Rate))
             .ToList();
 
-        var surchargeConfig = surchargeSlabs
+        List<SurchargeConfig> surchargeConfig = surchargeSlabs
             .Select(s => new SurchargeConfig(s.IncomeFrom, s.IncomeTo, s.SurchargeRate))
             .ToList();
 
-        var ptSlabInputs = ptSlabs
+        List<PTSlab> ptSlabInputs = ptSlabs
             .Select(s => new PTSlab(
                 s.StateCode, s.MinGross, s.MaxGross, s.PtAmount, s.EffectiveDate,
                 s.Frequency,
@@ -42,7 +42,7 @@ public static class StatutoryConfigBuilder
                 s.FebruaryAmount))
             .ToList();
 
-        var lwfStates = lwfConfigs
+        List<LwfStateInput> lwfStates = lwfConfigs
             .Select(l => new LwfStateInput(
                 l.StateCode,
                 l.EmployeeAmount, l.EmployerAmount,

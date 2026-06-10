@@ -13,7 +13,7 @@ public static class PTCalculator
     {
         if (!config.PTEnabled || !emp.PtApplicable) return new PTResult(0m, IsExempt: true);
 
-        var today = new DateOnly(run.Year, run.Month, 1);
+        DateOnly today = new DateOnly(run.Year, run.Month, 1);
 
         // HalfYearlySplit: deduct every month, slab on half-year gross, Option-A rounding.
         decimal halfYearGrossForLookup = grossWage * emp.HalfYearTotalMonths;

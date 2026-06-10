@@ -20,7 +20,7 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
 
     public byte[] Generate(PayslipData data)
     {
-        var document = Document.Create(container =>
+        Document document = Document.Create(container =>
         {
             container.Page(page =>
             {
@@ -142,7 +142,7 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
 
     private static void ComposeEarningsDeductions(IContainer container, PayslipData data)
     {
-        var earnings = data.Components.Where(c => c.IsEarning).ToList();
+        List<PayslipComponentDto> earnings = data.Components.Where(c => c.IsEarning).ToList();
 
         container.Border(1).BorderColor(BorderColor).Table(table =>
         {
@@ -166,13 +166,13 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
             foreach (string label in new[] { "Component", "Amount (₹)", "YTD (₹)" })
                 table.Cell().Background(Color.FromHex("#e2e8f0")).Padding(4).Text(label).Bold().FontSize(8);
 
-            var deductions = new List<(string Name, decimal Amount, decimal Ytd)>();
-            if (data.EmployeePf > 0m)   deductions.Add(("Employee PF", data.EmployeePf, data.YtdPf));
-            if (data.VpfAmount > 0m)    deductions.Add(("Voluntary PF", data.VpfAmount, 0m));
-            if (data.EmployeeEsi > 0m)  deductions.Add(("Employee ESI", data.EmployeeEsi, 0m));
-            if (data.PtAmount > 0m)     deductions.Add(("Professional Tax", data.PtAmount, 0m));
+            List<(string Name, decimal Amount, decimal Ytd)> deductions = new List<(string Name, decimal Amount, decimal Ytd)>();
+            if (data.EmployeePf > 0m) deductions.Add(("Employee PF", data.EmployeePf, data.YtdPf));
+            if (data.VpfAmount > 0m) deductions.Add(("Voluntary PF", data.VpfAmount, 0m));
+            if (data.EmployeeEsi > 0m) deductions.Add(("Employee ESI", data.EmployeeEsi, 0m));
+            if (data.PtAmount > 0m) deductions.Add(("Professional Tax", data.PtAmount, 0m));
             if (data.LwfEmployeeAmount > 0m) deductions.Add(("Labour Welfare Fund", data.LwfEmployeeAmount, 0m));
-            if (data.TdsAmount > 0m)    deductions.Add(("Income Tax (TDS)", data.TdsAmount, data.YtdTds));
+            if (data.TdsAmount > 0m) deductions.Add(("Income Tax (TDS)", data.TdsAmount, data.YtdTds));
             // Component-level deductions (notice recovery, loan recovery, withheld
             // salary…) — listed so the printed rows actually sum to Total Deductions.
             foreach (PayslipComponentDto d in data.Components.Where(c => !c.IsEarning && !c.IsBenefit))
@@ -183,7 +183,7 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
             {
                 if (i < earnings.Count)
                 {
-                    var e = earnings[i];
+                    PayslipComponentDto e = earnings[i];
                     table.Cell().BorderBottom(1).BorderColor(BorderColor).Padding(3).Text(e.ComponentName).FontSize(8);
                     table.Cell().BorderBottom(1).BorderColor(BorderColor).Padding(3).AlignRight().Text(FormatAmount(e.Amount)).FontSize(8);
                     table.Cell().BorderBottom(1).BorderColor(BorderColor).Padding(3).AlignRight().Text(FormatAmount(e.YtdAmount)).FontSize(8);
@@ -197,7 +197,7 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
 
                 if (i < deductions.Count)
                 {
-                    var (name, amount, ytd) = deductions[i];
+                    (string name, decimal amount, decimal ytd) = deductions[i];
                     table.Cell().BorderBottom(1).BorderColor(BorderColor).Padding(3).Text(name).FontSize(8);
                     table.Cell().BorderBottom(1).BorderColor(BorderColor).Padding(3).AlignRight().Text(FormatAmount(amount)).FontSize(8);
                     table.Cell().BorderBottom(1).BorderColor(BorderColor).Padding(3).AlignRight().Text(FormatAmount(ytd)).FontSize(8);

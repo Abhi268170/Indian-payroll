@@ -36,7 +36,7 @@ internal sealed class PayrunEmployeeRepository(PayrollDbContext db) : IPayrunEmp
 
     public Task<IReadOnlyList<PayrunEmployee>> GetByEmployeeAndRunIdsAsync(Guid employeeId, IEnumerable<Guid> runIds, CancellationToken ct = default)
     {
-        var ids = runIds.ToList();
+        List<Guid> ids = runIds.ToList();
         return db.PayrunEmployees
             .Where(e => e.EmployeeId == employeeId && ids.Contains(e.PayrollRunId))
             .ToListAsync(ct)
@@ -46,7 +46,7 @@ internal sealed class PayrunEmployeeRepository(PayrollDbContext db) : IPayrunEmp
     public async Task<Dictionary<Guid, (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds)>> GetCurrentEmployerYtdAsync(
         IEnumerable<Guid> employeeIds, int fiscalYear, CancellationToken ct = default)
     {
-        var empIds = employeeIds.ToList();
+        List<Guid> empIds = employeeIds.ToList();
         var rows = await (
             from pe in db.PayrunEmployees
             join run in db.PayrollRuns on pe.PayrollRunId equals run.Id
@@ -85,7 +85,7 @@ internal sealed class PayrunEmployeeRepository(PayrollDbContext db) : IPayrunEmp
         int windowStart = startYear * 100 + startMonth;
         int currentKey = year * 100 + month;
 
-        var empIds = employeeIds.ToList();
+        List<Guid> empIds = employeeIds.ToList();
         List<Guid> ids = await (
             from pe in db.PayrunEmployees
             join run in db.PayrollRuns on pe.PayrollRunId equals run.Id

@@ -107,7 +107,7 @@ public class GrossCalculatorTests
         GrossResult result = GrossCalculator.Compute(MakeEmployee(lop: 2, calendarDays: 31), Run31());
 
         decimal expectedBasic = Math.Round(28000m * 29m / 31m, 2, MidpointRounding.AwayFromZero);
-        decimal expectedHra   = Math.Round(14000m * 29m / 31m, 2, MidpointRounding.AwayFromZero);
+        decimal expectedHra = Math.Round(14000m * 29m / 31m, 2, MidpointRounding.AwayFromZero);
         decimal expectedFixed = Math.Round(28000m * 29m / 31m, 2, MidpointRounding.AwayFromZero);
 
         ComponentAmountResult basic = result.ComponentBreakdown.First(c => c.Code == "BASIC");
@@ -125,7 +125,7 @@ public class GrossCalculatorTests
         GrossResult result = GrossCalculator.Compute(MakeEmployee(lop: 1.5m, calendarDays: 30), Run30());
 
         decimal expectedBasic = Math.Round(28000m * 28.5m / 30m, 2, MidpointRounding.AwayFromZero);
-        decimal expectedHra   = Math.Round(14000m * 28.5m / 30m, 2, MidpointRounding.AwayFromZero);
+        decimal expectedHra = Math.Round(14000m * 28.5m / 30m, 2, MidpointRounding.AwayFromZero);
         decimal expectedFixed = Math.Round(28000m * 28.5m / 30m, 2, MidpointRounding.AwayFromZero);
 
         result.ComponentBreakdown.First(c => c.Code == "BASIC").ProratedAmount.Should().Be(expectedBasic);
@@ -164,7 +164,7 @@ public class GrossCalculatorTests
             MakeEmployee(lop: 2, calendarDays: 31, components: WithDa()), Run31());
 
         decimal expectedBasic = Math.Round(20000m * 29m / 31m, 2, MidpointRounding.AwayFromZero);
-        decimal expectedDa    = Math.Round(5000m  * 29m / 31m, 2, MidpointRounding.AwayFromZero);
+        decimal expectedDa = Math.Round(5000m * 29m / 31m, 2, MidpointRounding.AwayFromZero);
         result.PFWage.Should().Be(expectedBasic + expectedDa);
         result.FullPFWage.Should().Be(25000m); // full structure amount, no proration
     }

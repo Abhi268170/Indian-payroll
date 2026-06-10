@@ -27,13 +27,13 @@ public sealed class UndoSkipEmployeeHandler(
 {
     public async Task Handle(UndoSkipEmployeeCommand req, CancellationToken ct)
     {
-        var run = await runRepo.GetByIdAsync(req.RunId, ct)
+        Domain.Entities.PayrollRun run = await runRepo.GetByIdAsync(req.RunId, ct)
             ?? throw new NotFoundException($"Payroll run {req.RunId} not found.");
 
         if (run.Status != PayrollRunStatus.Draft)
             throw new InvalidOperationException("Skip can only be undone on a Draft payroll run.");
 
-        var payrunEmp = await payrunEmployeeRepo.GetByRunAndEmployeeAsync(req.RunId, req.EmployeeId, ct)
+        Domain.Entities.PayrunEmployee payrunEmp = await payrunEmployeeRepo.GetByRunAndEmployeeAsync(req.RunId, req.EmployeeId, ct)
             ?? throw new NotFoundException($"Employee {req.EmployeeId} not in this payroll run.");
 
         payrunEmp.UndoSkip(req.ActorId);

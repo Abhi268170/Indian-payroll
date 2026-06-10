@@ -44,9 +44,11 @@ public sealed class IncomeTaxConfig : AuditableEntity
         decimal epfAdminRate = 0m, decimal pan206AARate = 0m) =>
         new()
         {
-            FiscalYear = fiscalYear, Regime = regime,
+            FiscalYear = fiscalYear,
+            Regime = regime,
             StandardDeduction = standardDeduction,
-            Rebate87ALimit = rebate87ALimit, Rebate87AAmount = rebate87AAmount,
+            Rebate87ALimit = rebate87ALimit,
+            Rebate87AAmount = rebate87AAmount,
             EmployerStatutoryCap = employerStatutoryCap,
             NpsEmployerMaxRate = npsEmployerMaxRate,
             CessRate = cessRate,

@@ -73,7 +73,7 @@ public class ESICalculatorTests
     // ── Rate math ─────────────────────────────────────────────────────────────
 
     [Theory]
-    [InlineData(10_000, 75,  325)]  // exact rupee values stay as-is
+    [InlineData(10_000, 75, 325)]  // exact rupee values stay as-is
     [InlineData(15_000, 113, 488)]  // 112.50 / 487.50 → rounded UP to next rupee
     [InlineData(20_000, 150, 650)]
     public void StandardRates_AppliedToFullWage(decimal wage, decimal expEmp, decimal expEmpr)

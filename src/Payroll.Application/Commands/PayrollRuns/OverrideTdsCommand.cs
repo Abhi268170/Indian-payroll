@@ -29,13 +29,13 @@ public sealed class OverrideTdsHandler(
 {
     public async Task Handle(OverrideTdsCommand req, CancellationToken ct)
     {
-        var run = await runRepo.GetByIdAsync(req.RunId, ct)
+        Domain.Entities.PayrollRun run = await runRepo.GetByIdAsync(req.RunId, ct)
             ?? throw new NotFoundException($"Payroll run {req.RunId} not found.");
 
         if (run.Status != PayrollRunStatus.Draft)
             throw new InvalidOperationException("Variable inputs can only be changed on a Draft payroll run.");
 
-        var payrunEmp = await payrunEmployeeRepo.GetByRunAndEmployeeAsync(req.RunId, req.EmployeeId, ct)
+        Domain.Entities.PayrunEmployee payrunEmp = await payrunEmployeeRepo.GetByRunAndEmployeeAsync(req.RunId, req.EmployeeId, ct)
             ?? throw new NotFoundException($"Employee {req.EmployeeId} not in this payroll run.");
 
         if (payrunEmp.Status == PayrunEmployeeStatus.Skipped)
@@ -44,10 +44,10 @@ public sealed class OverrideTdsHandler(
         // Cap: override cannot exceed total annual tax liability still owed.
         // YTD uses effective deducted amounts (TdsOverrideAmount ?? TdsAmount) from
         // already-approved/paid runs — the current Draft run is excluded by the query.
-        var ytdMap = await payrunEmployeeRepo.GetCurrentEmployerYtdAsync(
+        Dictionary<Guid, (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds)> ytdMap = await payrunEmployeeRepo.GetCurrentEmployerYtdAsync(
             [req.EmployeeId], run.PayPeriod.FiscalYear, ct);
-        ytdMap.TryGetValue(req.EmployeeId, out var ytd);
-        var worksheet = await tdsWorksheetRepo.GetByRunAndEmployeeAsync(req.RunId, req.EmployeeId, ct);
+        ytdMap.TryGetValue(req.EmployeeId, out (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds) ytd);
+        Domain.Entities.TdsWorksheet? worksheet = await tdsWorksheetRepo.GetByRunAndEmployeeAsync(req.RunId, req.EmployeeId, ct);
         if (worksheet is not null)
         {
             decimal maxAllowed = Math.Max(0m, worksheet.AnnualTaxLiability - ytd.YtdTds);

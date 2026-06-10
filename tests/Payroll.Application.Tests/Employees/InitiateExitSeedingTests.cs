@@ -1,3 +1,4 @@
+using System.Reflection;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -9,9 +10,7 @@ using Payroll.Domain.Entities;
 using Payroll.Domain.Enums;
 using Payroll.Domain.Interfaces;
 using Payroll.Engine.Inputs;
-using System.Reflection;
 using Xunit;
-
 using DomainPayrollRun = Payroll.Domain.Entities.PayrollRun;
 using DomainPaySchedule = Payroll.Domain.Entities.PaySchedule;
 
@@ -130,7 +129,7 @@ public class InitiateExitSeedingTests
     [Fact]
     public void BasicSalary_ConsiderForEpf_True_IsPreserved()
     {
-        var (template, structure) = BuildFixture(1_200_000m);
+        (SalaryStructureTemplate template, EmployeeSalaryStructure structure) = BuildFixture(1_200_000m);
         IReadOnlyList<SalaryComponentInput> inputs =
             BuildInputs(structure, template, [], MinimalConfig());
 
@@ -140,7 +139,7 @@ public class InitiateExitSeedingTests
     [Fact]
     public void Hra_ConsiderForEpf_False_IsPreserved()
     {
-        var (template, structure) = BuildFixture(1_200_000m);
+        (SalaryStructureTemplate template, EmployeeSalaryStructure structure) = BuildFixture(1_200_000m);
         IReadOnlyList<SalaryComponentInput> inputs =
             BuildInputs(structure, template, [], MinimalConfig());
 
@@ -150,7 +149,7 @@ public class InitiateExitSeedingTests
     [Fact]
     public void BasicSalary_ConsiderForEsi_True_IsPreserved()
     {
-        var (template, structure) = BuildFixture(1_200_000m);
+        (SalaryStructureTemplate template, EmployeeSalaryStructure structure) = BuildFixture(1_200_000m);
         IReadOnlyList<SalaryComponentInput> inputs =
             BuildInputs(structure, template, [], MinimalConfig());
 
@@ -160,7 +159,7 @@ public class InitiateExitSeedingTests
     [Fact]
     public void Hra_ConsiderForEsi_False_IsPreserved()
     {
-        var (template, structure) = BuildFixture(1_200_000m);
+        (SalaryStructureTemplate template, EmployeeSalaryStructure structure) = BuildFixture(1_200_000m);
         IReadOnlyList<SalaryComponentInput> inputs =
             BuildInputs(structure, template, [], MinimalConfig());
 
@@ -170,7 +169,7 @@ public class InitiateExitSeedingTests
     [Fact]
     public void AllComponents_IsTaxable_IsPreserved()
     {
-        var (template, structure) = BuildFixture(1_200_000m);
+        (SalaryStructureTemplate template, EmployeeSalaryStructure structure) = BuildFixture(1_200_000m);
         IReadOnlyList<SalaryComponentInput> inputs =
             BuildInputs(structure, template, [], MinimalConfig());
 
@@ -180,7 +179,7 @@ public class InitiateExitSeedingTests
     [Fact]
     public void AllComponents_CalculateOnProRata_IsPreserved()
     {
-        var (template, structure) = BuildFixture(1_200_000m);
+        (SalaryStructureTemplate template, EmployeeSalaryStructure structure) = BuildFixture(1_200_000m);
         IReadOnlyList<SalaryComponentInput> inputs =
             BuildInputs(structure, template, [], MinimalConfig());
 
@@ -193,7 +192,7 @@ public class InitiateExitSeedingTests
     public void BasicSalary_Amount_IsPercentOfCtc()
     {
         decimal annualCtc = 1_200_000m;
-        var (template, structure) = BuildFixture(annualCtc);
+        (SalaryStructureTemplate template, EmployeeSalaryStructure structure) = BuildFixture(annualCtc);
         IReadOnlyList<SalaryComponentInput> inputs =
             BuildInputs(structure, template, [], MinimalConfig());
 
@@ -205,7 +204,7 @@ public class InitiateExitSeedingTests
     public void TotalComponents_SumToMonthlyGross()
     {
         decimal annualCtc = 1_200_000m;
-        var (template, structure) = BuildFixture(annualCtc);
+        (SalaryStructureTemplate template, EmployeeSalaryStructure structure) = BuildFixture(annualCtc);
         IReadOnlyList<SalaryComponentInput> inputs =
             BuildInputs(structure, template, [], MinimalConfig());
 
@@ -226,7 +225,7 @@ public class InitiateExitSeedingTests
             isNpsGovernmentSector: null,
             TenantId, ActorId);
 
-        var (template, structure) = BuildFixture(1_200_000m);
+        (SalaryStructureTemplate template, EmployeeSalaryStructure structure) = BuildFixture(1_200_000m);
 
         EmployeeSalaryComponentOverride benefitOverride = EmployeeSalaryComponentOverride.Create(
             structure.Id, benefit.Id,
@@ -265,7 +264,7 @@ public class InitiateExitSeedingTests
     [Fact]
     public async Task Handle_NoActiveSalaryStructure_ThrowsDomainException()
     {
-        var (handler, _, _, _) = BuildHandlerWithStubs(salaryStructure: null);
+        (InitiateExitHandler handler, IPayrunComponentBreakdownRepository _, IPayrunEmployeeRepository _, IPayrollRunRepository _) = BuildHandlerWithStubs(salaryStructure: null);
 
         Func<Task> act = () => handler.Handle(MakeCmd(), CancellationToken.None);
 
@@ -278,7 +277,7 @@ public class InitiateExitSeedingTests
     [Fact]
     public async Task Handle_WithSalaryStructure_SeedsThreeRecurringBreakdowns()
     {
-        var (addedBreakdowns, _) = await RunHandlerCapture();
+        (List<PayrunComponentBreakdown> addedBreakdowns, List<PayrunEmployee> _) = await RunHandlerCapture();
 
         addedBreakdowns.Should().HaveCount(3,
             "Basic, HRA, and residual allowance must be seeded as recurring components");
@@ -290,7 +289,7 @@ public class InitiateExitSeedingTests
     [Fact]
     public async Task Handle_WithSalaryStructure_Basic_EpfFlagTrue()
     {
-        var (addedBreakdowns, _) = await RunHandlerCapture();
+        (List<PayrunComponentBreakdown> addedBreakdowns, List<PayrunEmployee> _) = await RunHandlerCapture();
 
         addedBreakdowns.Single(b => b.ComponentCode == "BASICSALARY")
             .ConsiderForEpf.Should().BeTrue(
@@ -300,7 +299,7 @@ public class InitiateExitSeedingTests
     [Fact]
     public async Task Handle_WithSalaryStructure_Hra_EpfFlagFalse()
     {
-        var (addedBreakdowns, _) = await RunHandlerCapture();
+        (List<PayrunComponentBreakdown> addedBreakdowns, List<PayrunEmployee> _) = await RunHandlerCapture();
 
         addedBreakdowns.Single(b => b.ComponentCode == "HRA")
             .ConsiderForEpf.Should().BeFalse(
@@ -310,7 +309,7 @@ public class InitiateExitSeedingTests
     [Fact]
     public async Task Handle_WithSalaryStructure_Basic_EsiFlagTrue()
     {
-        var (addedBreakdowns, _) = await RunHandlerCapture();
+        (List<PayrunComponentBreakdown> addedBreakdowns, List<PayrunEmployee> _) = await RunHandlerCapture();
 
         addedBreakdowns.Single(b => b.ComponentCode == "BASICSALARY")
             .ConsiderForEsi.Should().BeTrue(
@@ -320,7 +319,7 @@ public class InitiateExitSeedingTests
     [Fact]
     public async Task Handle_WithSalaryStructure_Hra_EsiFlagFalse()
     {
-        var (addedBreakdowns, _) = await RunHandlerCapture();
+        (List<PayrunComponentBreakdown> addedBreakdowns, List<PayrunEmployee> _) = await RunHandlerCapture();
 
         addedBreakdowns.Single(b => b.ComponentCode == "HRA")
             .ConsiderForEsi.Should().BeFalse();
@@ -329,7 +328,7 @@ public class InitiateExitSeedingTests
     [Fact]
     public async Task Handle_WithSalaryStructure_AllBreakdowns_AreRecurring()
     {
-        var (addedBreakdowns, _) = await RunHandlerCapture();
+        (List<PayrunComponentBreakdown> addedBreakdowns, List<PayrunEmployee> _) = await RunHandlerCapture();
 
         addedBreakdowns.Should().OnlyContain(b => !b.IsOneTimeEarning,
             "recurring salary components must not be flagged as one-time FnF earnings");
@@ -338,7 +337,7 @@ public class InitiateExitSeedingTests
     [Fact]
     public async Task Handle_WithSalaryStructure_BasicAmount_IsNonZero()
     {
-        var (addedBreakdowns, _) = await RunHandlerCapture();
+        (List<PayrunComponentBreakdown> addedBreakdowns, List<PayrunEmployee> _) = await RunHandlerCapture();
 
         addedBreakdowns.Single(b => b.ComponentCode == "BASICSALARY")
             .FullAmount.Should().BeGreaterThan(0m);
@@ -349,7 +348,7 @@ public class InitiateExitSeedingTests
     {
         // Exact amount math is covered by BuildComponentInputsTests (unit).
         // Here we assert seeding wrote actual non-zero amounts, not defaults.
-        var (addedBreakdowns, _) = await RunHandlerCapture();
+        (List<PayrunComponentBreakdown> addedBreakdowns, List<PayrunEmployee> _) = await RunHandlerCapture();
 
         addedBreakdowns.Sum(b => b.FullAmount).Should().BeGreaterThan(0m,
             "salary components must be seeded with actual computed amounts, not zero");
@@ -359,7 +358,7 @@ public class InitiateExitSeedingTests
     public async Task Handle_WithSalaryStructure_MonthlyCTC_SetOnPayrunEmployee()
     {
         decimal annualCtc = 1_200_000m;
-        var (_, capturedPEs) = await RunHandlerCapture(annualCtc);
+        (List<PayrunComponentBreakdown> _, List<PayrunEmployee> capturedPEs) = await RunHandlerCapture(annualCtc);
 
         capturedPEs.Should().ContainSingle().Which
             .MonthlyCTC.Should().Be(annualCtc / 12m);
@@ -370,8 +369,8 @@ public class InitiateExitSeedingTests
     [Fact]
     public async Task Handle_AppendToExistingBulkRun_CallsRunRepoUpdate_WithIncrementedCount()
     {
-        var (template, structure) = BuildFixture(1_200_000m);
-        var (handler, _, _, runRepo) =
+        (SalaryStructureTemplate template, EmployeeSalaryStructure structure) = BuildFixture(1_200_000m);
+        (InitiateExitHandler handler, IPayrunComponentBreakdownRepository _, IPayrunEmployeeRepository _, IPayrollRunRepository runRepo) =
             BuildHandlerWithStubs(salaryStructure: structure);
 
         // An existing bulk FnF run with one employee already appended.
@@ -417,22 +416,22 @@ public class InitiateExitSeedingTests
                     IPayrollRunRepository RunRepo)
         BuildHandlerWithStubs(EmployeeSalaryStructure? salaryStructure = null, decimal annualCtc = 1_200_000m)
     {
-        var employeeRepo = Substitute.For<IEmployeeRepository>();
-        var exitRepo = Substitute.For<IEmployeeExitRepository>();
-        var orgProfileRepo = Substitute.For<IOrgProfileRepository>();
-        var runRepo = Substitute.For<IPayrollRunRepository>();
-        var payrunEmpRepo = Substitute.For<IPayrunEmployeeRepository>();
+        IEmployeeRepository employeeRepo = Substitute.For<IEmployeeRepository>();
+        IEmployeeExitRepository exitRepo = Substitute.For<IEmployeeExitRepository>();
+        IOrgProfileRepository orgProfileRepo = Substitute.For<IOrgProfileRepository>();
+        IPayrollRunRepository runRepo = Substitute.For<IPayrollRunRepository>();
+        IPayrunEmployeeRepository payrunEmpRepo = Substitute.For<IPayrunEmployeeRepository>();
         payrunEmpRepo.GetCurrentEmployerYtdAsync(Arg.Any<IEnumerable<Guid>>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new Dictionary<Guid, (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds)>());
-        var payScheduleRepo = Substitute.For<IPayScheduleRepository>();
-        var statutoryRepo = Substitute.For<IStatutoryConfigRepository>();
-        var workLocationRepo = Substitute.For<IWorkLocationRepository>();
-        var salaryStructureRepo = Substitute.For<IEmployeeSalaryStructureRepository>();
-        var templateRepo = Substitute.For<ISalaryStructureTemplateRepository>();
-        var salaryComponentRepo = Substitute.For<ISalaryComponentRepository>();
-        var breakdownRepo = Substitute.For<IPayrunComponentBreakdownRepository>();
-        var tenantContext = Substitute.For<ITenantContext>();
-        var uow = Substitute.For<IUnitOfWork>();
+        IPayScheduleRepository payScheduleRepo = Substitute.For<IPayScheduleRepository>();
+        IStatutoryConfigRepository statutoryRepo = Substitute.For<IStatutoryConfigRepository>();
+        IWorkLocationRepository workLocationRepo = Substitute.For<IWorkLocationRepository>();
+        IEmployeeSalaryStructureRepository salaryStructureRepo = Substitute.For<IEmployeeSalaryStructureRepository>();
+        ISalaryStructureTemplateRepository templateRepo = Substitute.For<ISalaryStructureTemplateRepository>();
+        ISalaryComponentRepository salaryComponentRepo = Substitute.For<ISalaryComponentRepository>();
+        IPayrunComponentBreakdownRepository breakdownRepo = Substitute.For<IPayrunComponentBreakdownRepository>();
+        ITenantContext tenantContext = Substitute.For<ITenantContext>();
+        IUnitOfWork uow = Substitute.For<IUnitOfWork>();
 
         tenantContext.TenantId.Returns(TenantId);
 
@@ -471,7 +470,7 @@ public class InitiateExitSeedingTests
 
             if (salaryStructure.SalaryStructureTemplateId.HasValue)
             {
-                var (template, _) = BuildFixture(annualCtc);
+                (SalaryStructureTemplate template, EmployeeSalaryStructure _) = BuildFixture(annualCtc);
                 templateRepo.GetByIdWithComponentsAsync(
                     salaryStructure.SalaryStructureTemplateId.Value, Arg.Any<CancellationToken>())
                     .Returns(template);
@@ -522,13 +521,13 @@ public class InitiateExitSeedingTests
         runRepo.FindDraftRegularRunsCoveringDateAsync(Arg.Any<DateOnly>(), Arg.Any<CancellationToken>())
             .Returns(new List<DomainPayrollRun>());
 
-        var auditLogRepo = Substitute.For<IAuditLogRepository>();
-        var documentRepo = Substitute.For<IEmployeeDocumentRepository>();
-        var exitDocGenerator = Substitute.For<IExitDocumentGenerator>();
+        IAuditLogRepository auditLogRepo = Substitute.For<IAuditLogRepository>();
+        IEmployeeDocumentRepository documentRepo = Substitute.For<IEmployeeDocumentRepository>();
+        IExitDocumentGenerator exitDocGenerator = Substitute.For<IExitDocumentGenerator>();
         exitDocGenerator.GenerateRelievingLetter(Arg.Any<Employee>(), Arg.Any<EmployeeExit>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(new byte[] { 1, 2, 3 });
-        var fileStorage = Substitute.For<IFileStorageService>();
-        var handler = new InitiateExitHandler(
+        IFileStorageService fileStorage = Substitute.For<IFileStorageService>();
+        InitiateExitHandler handler = new InitiateExitHandler(
             employeeRepo, exitRepo, orgProfileRepo, runRepo, payrunEmpRepo,
             payScheduleRepo, statutoryRepo, workLocationRepo,
             salaryStructureRepo, templateRepo, salaryComponentRepo, breakdownRepo,
@@ -541,9 +540,9 @@ public class InitiateExitSeedingTests
     private async Task<(List<PayrunComponentBreakdown> Breakdowns, List<PayrunEmployee> PayrunEmps)>
         RunHandlerCapture(decimal annualCtc = 1_200_000m)
     {
-        var (template, structure) = BuildFixture(annualCtc);
+        (SalaryStructureTemplate template, EmployeeSalaryStructure structure) = BuildFixture(annualCtc);
 
-        var (handler, breakdownRepo, payrunEmpRepo, _) =
+        (InitiateExitHandler handler, IPayrunComponentBreakdownRepository breakdownRepo, IPayrunEmployeeRepository payrunEmpRepo, IPayrollRunRepository _) =
             BuildHandlerWithStubs(salaryStructure: structure, annualCtc: annualCtc);
 
         List<PayrunComponentBreakdown> addedBreakdowns = [];

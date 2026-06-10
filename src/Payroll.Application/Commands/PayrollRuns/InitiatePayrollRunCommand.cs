@@ -1,3 +1,4 @@
+using System.Text.Json;
 using FluentValidation;
 using MediatR;
 using Payroll.Application.DTOs;
@@ -10,7 +11,6 @@ using Payroll.Domain.Interfaces;
 using Payroll.Domain.ValueObjects;
 using Payroll.Engine;
 using Payroll.Engine.Inputs;
-using System.Text.Json;
 
 namespace Payroll.Application.Commands.PayrollRuns;
 
@@ -45,15 +45,15 @@ public sealed class InitiatePayrollRunHandler(
 {
     public async Task<PayrollRunSummaryDto> Handle(InitiatePayrollRunCommand req, CancellationToken ct)
     {
-        var paySchedule = await payScheduleRepo.GetAsync(ct)
+        Domain.Entities.PaySchedule paySchedule = await payScheduleRepo.GetAsync(ct)
             ?? throw new DomainException("Pay Schedule not configured. Configure Pay Schedule before initiating a payroll run.");
 
         // Determine next payable period
-        var latestPaid = await payrollRunRepo.GetLatestPaidAsync(PayrollRunType.Regular, ct);
+        PayrollRun? latestPaid = await payrollRunRepo.GetLatestPaidAsync(PayrollRunType.Regular, ct);
         PayPeriod period;
         if (latestPaid is not null)
         {
-            var next = latestPaid.PayPeriod.StartDate.AddMonths(1);
+            DateOnly next = latestPaid.PayPeriod.StartDate.AddMonths(1);
             period = new PayPeriod(next.Year, next.Month);
         }
         else if (paySchedule.FirstPayPeriodMonth.HasValue && paySchedule.FirstPayPeriodYear.HasValue)
@@ -62,7 +62,7 @@ public sealed class InitiatePayrollRunHandler(
         }
         else
         {
-            var now = DateTimeOffset.UtcNow;
+            DateTimeOffset now = DateTimeOffset.UtcNow;
             period = new PayPeriod(now.Year, now.Month);
         }
 
@@ -72,28 +72,28 @@ public sealed class InitiatePayrollRunHandler(
             throw new DomainException($"A payroll run already exists for {period}. Delete or complete it before initiating a new one.");
 
         // Build StatutoryConfig snapshot
-        var orgConfig = await statutoryRepo.GetByTenantAsync(ct)
+        StatutoryOrgConfig orgConfig = await statutoryRepo.GetByTenantAsync(ct)
             ?? throw new DomainException("Statutory configuration not found. Configure EPF/ESI settings first.");
 
         string fiscalYear = period.FiscalYearKey;
-        var taxConfig = await statutoryRepo.GetIncomeTaxConfigAsync(fiscalYear, "New", ct);
-        var taxSlabs = await statutoryRepo.GetIncomeTaxSlabsAsync(fiscalYear, "New", ct);
-        var surchargeSlabs = await statutoryRepo.GetSurchargeSlabsAsync(fiscalYear, "New", ct);
+        IncomeTaxConfig? taxConfig = await statutoryRepo.GetIncomeTaxConfigAsync(fiscalYear, "New", ct);
+        IReadOnlyList<IncomeTaxSlab> taxSlabs = await statutoryRepo.GetIncomeTaxSlabsAsync(fiscalYear, "New", ct);
+        IReadOnlyList<IncomeTaxSurchargeSlab> surchargeSlabs = await statutoryRepo.GetSurchargeSlabsAsync(fiscalYear, "New", ct);
 
-        var employees = await employeeRepo.ListAsync(ct);
+        IReadOnlyList<Employee> employees = await employeeRepo.ListAsync(ct);
         // Exclude employees whose last working day already falls in or before this
         // pay period — their pay flows through a Final Settlement / Bulk Final
         // Settlement run, never through the regular run. Status==Active alone is
         // insufficient because the Exited flip happens overnight (MarkExitedOnLwdJob),
         // leaving a window where DateOfLeaving is set but status is still Active.
         DateOnly periodEnd = period.EndDate;
-        var activeEmployees = employees
+        List<Employee> activeEmployees = employees
             .Where(e => e.Status == EmployeeStatus.Active
                 && (e.DateOfLeaving == null || e.DateOfLeaving > periodEnd))
             .ToList();
 
-        var workLocations = await workLocationRepo.ListAsync(ct);
-        var workLocationStateMap = workLocations.ToDictionary(wl => wl.Id, wl => wl.State.ToIsoCode());
+        IReadOnlyList<WorkLocation> workLocations = await workLocationRepo.ListAsync(ct);
+        Dictionary<Guid, string> workLocationStateMap = workLocations.ToDictionary(wl => wl.Id, wl => wl.State.ToIsoCode());
 
         // Resolve pay day and salary divisor from pay schedule settings
         EngineWorkWeekDay workWeek = (EngineWorkWeekDay)(int)paySchedule.WorkWeekDays;
@@ -111,25 +111,25 @@ public sealed class InitiatePayrollRunHandler(
         int workingDaysInMonth = PayScheduleHelpers.GetPayableDaysInMonth(workWeek, period.Year, period.Month);
 
         // Load PT and LWF slabs for all employee work location states
-        var stateCodes = activeEmployees
+        List<string> stateCodes = activeEmployees
             .Select(e => workLocationStateMap.TryGetValue(e.WorkLocationId, out string? s) ? s : null)
             .Where(s => s is not null)
             .Select(s => s!)
             .Distinct()
             .ToList();
 
-        var ptSlabs = new List<ProfessionalTaxSlab>();
-        foreach (var state in stateCodes)
+        List<ProfessionalTaxSlab> ptSlabs = new List<ProfessionalTaxSlab>();
+        foreach (string? state in stateCodes)
         {
-            var slabs = await statutoryRepo.GetPtSlabsAsync(state, new DateOnly(period.Year, period.Month, 1), ct);
+            IReadOnlyList<ProfessionalTaxSlab> slabs = await statutoryRepo.GetPtSlabsAsync(state, new DateOnly(period.Year, period.Month, 1), ct);
             ptSlabs.AddRange(slabs);
         }
 
-        var lwfConfigs = stateCodes.Count > 0
+        IReadOnlyList<LwfStateConfig> lwfConfigs = stateCodes.Count > 0
             ? await statutoryRepo.GetLwfConfigsAsync(stateCodes, ct)
             : [];
 
-        var staticConfig = StatutoryConfigBuilder.Build(orgConfig, taxConfig, taxSlabs, surchargeSlabs, ptSlabs, lwfConfigs);
+        StatutoryConfig staticConfig = StatutoryConfigBuilder.Build(orgConfig, taxConfig, taxSlabs, surchargeSlabs, ptSlabs, lwfConfigs);
         string snapshot = JsonSerializer.Serialize(staticConfig);
 
         // Load prior employer YTD for mid-year joiners (bulk, keyed by employeeId)
@@ -151,7 +151,7 @@ public sealed class InitiatePayrollRunHandler(
             await fyOpeningRepo.GetByEmployeesAndFiscalYearAsync(employeeIds, period.FiscalYear, ct);
         foreach (EmployeeFyOpening opening in openings)
         {
-            currentYtdByEmployee.TryGetValue(opening.EmployeeId, out var existing);
+            currentYtdByEmployee.TryGetValue(opening.EmployeeId, out (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds) existing);
             currentYtdByEmployee[opening.EmployeeId] = (
                 existing.YtdGross + opening.GrossSalary,
                 existing.YtdTaxableGross + opening.GrossSalary,
@@ -164,18 +164,18 @@ public sealed class InitiatePayrollRunHandler(
         // even if their wage crossed the limit mid-period.
         HashSet<Guid> esiLockedEmployees = await payrunEmployeeRepo.GetEsiContributedInPeriodAsync(
             employeeIds, period.Year, period.Month, ct);
-        var vpfPercentByEmployee = new Dictionary<Guid, decimal>();
+        Dictionary<Guid, decimal> vpfPercentByEmployee = new Dictionary<Guid, decimal>();
 
-        var engineInputs = new List<EmployeeInput>();
-        var eligibleMap = new Dictionary<Guid, (EmployeeSalaryStructure structure, SalaryStructureTemplate? template, string? skipReason)>();
+        List<EmployeeInput> engineInputs = new List<EmployeeInput>();
+        Dictionary<Guid, (EmployeeSalaryStructure structure, SalaryStructureTemplate? template, string? skipReason)> eligibleMap = new Dictionary<Guid, (EmployeeSalaryStructure structure, SalaryStructureTemplate? template, string? skipReason)>();
 
         // Collect override-only component IDs for batch load
-        var addedComponentIds = new HashSet<Guid>();
-        var structureOverrideMap = new Dictionary<Guid, EmployeeSalaryStructure>();
+        HashSet<Guid> addedComponentIds = new HashSet<Guid>();
+        Dictionary<Guid, EmployeeSalaryStructure> structureOverrideMap = new Dictionary<Guid, EmployeeSalaryStructure>();
 
-        foreach (var emp in activeEmployees)
+        foreach (Employee? emp in activeEmployees)
         {
-            var salaryStructure = await salaryStructureRepo.GetActiveWithOverridesAsync(emp.Id, ct);
+            EmployeeSalaryStructure? salaryStructure = await salaryStructureRepo.GetActiveWithOverridesAsync(emp.Id, ct);
             if (salaryStructure is null)
             {
                 eligibleMap[emp.Id] = (null!, null, "No active salary structure");
@@ -191,8 +191,8 @@ public sealed class InitiatePayrollRunHandler(
             // Identify override-only components (not in template)
             if (salaryStructure.ComponentOverrides.Count > 0 && template is not null)
             {
-                var templateCompIds = new HashSet<Guid>(template.Components.Select(c => c.ComponentId));
-                foreach (var ov in salaryStructure.ComponentOverrides)
+                HashSet<Guid> templateCompIds = new HashSet<Guid>(template.Components.Select(c => c.ComponentId));
+                foreach (EmployeeSalaryComponentOverride ov in salaryStructure.ComponentOverrides)
                 {
                     if (!templateCompIds.Contains(ov.SalaryComponentId))
                         addedComponentIds.Add(ov.SalaryComponentId);
@@ -213,10 +213,10 @@ public sealed class InitiatePayrollRunHandler(
             ? (await salaryComponentRepo.GetByIdsAsync([.. addedComponentIds], ct)).ToDictionary(c => c.Id)
             : [];
 
-        foreach (var emp in activeEmployees)
+        foreach (Employee? emp in activeEmployees)
         {
-            if (!eligibleMap.TryGetValue(emp.Id, out var entry)) continue;
-            var (salaryStructure, template, skipReason) = entry;
+            if (!eligibleMap.TryGetValue(emp.Id, out (EmployeeSalaryStructure structure, SalaryStructureTemplate? template, string? skipReason) entry)) continue;
+            (EmployeeSalaryStructure salaryStructure, SalaryStructureTemplate? template, string? skipReason) = entry;
             if (salaryStructure is null) continue;
 
             if (skipReason is null)
@@ -225,9 +225,9 @@ public sealed class InitiatePayrollRunHandler(
                 IReadOnlyList<SalaryComponentInput> components = build.Components;
                 bool hasPan = !string.IsNullOrWhiteSpace(emp.EncryptedPAN);
                 string workState = workLocationStateMap.TryGetValue(emp.WorkLocationId, out string? wls) ? wls : "MH";
-                var (hyIndex, hyTotal) = period.HalfYearPosition(emp.DateOfJoining);
-                currentYtdByEmployee.TryGetValue(emp.Id, out var curYtd);
-                priorYtdByEmployee.TryGetValue(emp.Id, out var ytd);
+                (int hyIndex, int hyTotal) = period.HalfYearPosition(emp.DateOfJoining);
+                currentYtdByEmployee.TryGetValue(emp.Id, out (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds) curYtd);
+                priorYtdByEmployee.TryGetValue(emp.Id, out PriorEmployerYtd? ytd);
                 engineInputs.Add(new EmployeeInput(
                     EmployeeId: emp.Id,
                     EmployeeCode: emp.EmployeeCode,
@@ -258,7 +258,7 @@ public sealed class InitiatePayrollRunHandler(
             }
         }
 
-        var runInput = new PayrollRunInput(
+        PayrollRunInput runInput = new PayrollRunInput(
             Year: period.Year,
             Month: period.Month,
             CalendarDaysInMonth: calendarDays,
@@ -267,23 +267,23 @@ public sealed class InitiatePayrollRunHandler(
             FiscalYearLabel: period.FiscalYearLabel);
 
         // Run engine for eligible employees
-        var results = engineInputs.Count > 0
+        IReadOnlyList<Engine.Outputs.PayrollResult> results = engineInputs.Count > 0
             ? PayrollEngine.Compute(engineInputs, runInput, staticConfig)
             : [];
 
-        var resultMap = results.ToDictionary(r => r.EmployeeId);
-        var epfFlagByComponent = engineInputs
+        Dictionary<Guid, Engine.Outputs.PayrollResult> resultMap = results.ToDictionary(r => r.EmployeeId);
+        Dictionary<Guid, bool> epfFlagByComponent = engineInputs
             .SelectMany(e => e.Components)
             .GroupBy(c => c.ComponentId)
             .ToDictionary(g => g.Key, g => g.First().ConsiderForEpf);
-        var showInPayslipByComponent = engineInputs
+        Dictionary<Guid, bool> showInPayslipByComponent = engineInputs
             .SelectMany(e => e.Components)
             .GroupBy(c => c.ComponentId)
             .ToDictionary(g => g.Key, g => g.First().ShowInPayslip);
 
         // Create PayrollRun
         int employeeCount = activeEmployees.Count;
-        var payrollRun = PayrollRun.Create(
+        PayrollRun payrollRun = PayrollRun.Create(
             tenantId: tenantContext.TenantId,
             payPeriod: period,
             type: PayrollRunType.Regular,
@@ -295,21 +295,21 @@ public sealed class InitiatePayrollRunHandler(
         await payrollRunRepo.AddAsync(payrollRun, ct);
 
         // Create PayrunEmployee + PayrunComponentBreakdown rows
-        var createdPayrunEmployees = new List<PayrunEmployee>();
-        var tdsWorksheets = new List<TdsWorksheet>();
+        List<PayrunEmployee> createdPayrunEmployees = new List<PayrunEmployee>();
+        List<TdsWorksheet> tdsWorksheets = new List<TdsWorksheet>();
 
-        foreach (var emp in activeEmployees)
+        foreach (Employee? emp in activeEmployees)
         {
-            if (!eligibleMap.TryGetValue(emp.Id, out var info)) continue;
+            if (!eligibleMap.TryGetValue(emp.Id, out (EmployeeSalaryStructure structure, SalaryStructureTemplate? template, string? skipReason) info)) continue;
 
-            var payrunEmp = PayrunEmployee.Create(
+            PayrunEmployee payrunEmp = PayrunEmployee.Create(
                 payrollRun.Id, emp.Id, tenantContext.TenantId, calendarDays, req.ActorId);
 
             if (info.skipReason is not null || info.structure is null)
             {
                 payrunEmp.Skip(info.skipReason ?? "No active salary structure", req.ActorId);
             }
-            else if (resultMap.TryGetValue(emp.Id, out var result))
+            else if (resultMap.TryGetValue(emp.Id, out Engine.Outputs.PayrollResult? result))
             {
                 payrunEmp.UpdateComputedAmounts(
                     grossPay: result.Gross.GrossWage,
@@ -335,8 +335,8 @@ public sealed class InitiatePayrollRunHandler(
                     payrunEmp.SetVpfPercent(vpfPct, req.ActorId);
 
                 // Build TdsWorksheet for this employee
-                priorYtdByEmployee.TryGetValue(emp.Id, out var empYtd);
-                currentYtdByEmployee.TryGetValue(emp.Id, out var wsYtd);
+                priorYtdByEmployee.TryGetValue(emp.Id, out PriorEmployerYtd? empYtd);
+                currentYtdByEmployee.TryGetValue(emp.Id, out (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds) wsYtd);
                 decimal ytdTdsDeducted = (empYtd?.TdsDeducted ?? 0m) + wsYtd.YtdTds;
                 tdsWorksheets.Add(TdsWorksheet.Create(
                     payrollRunId: payrollRun.Id,
@@ -358,9 +358,9 @@ public sealed class InitiatePayrollRunHandler(
                     createdBy: req.ActorId));
 
                 // Component breakdowns
-                foreach (var comp in result.Gross.ComponentBreakdown)
+                foreach (Engine.Outputs.ComponentAmountResult comp in result.Gross.ComponentBreakdown)
                 {
-                    var breakdown = PayrunComponentBreakdown.Create(
+                    PayrunComponentBreakdown breakdown = PayrunComponentBreakdown.Create(
                         payrollRun.Id, emp.Id, tenantContext.TenantId,
                         comp.ComponentId, comp.Code, comp.Code,
                         comp.FullAmount, comp.ProratedAmount,
@@ -418,7 +418,7 @@ public sealed class InitiatePayrollRunHandler(
 
         // Run-level financial summary computed via shared calculator so initiation,
         // LOP, one-time entries, and reimbursement imports all use the same formula.
-        var activePayrunEmployees = createdPayrunEmployees
+        List<PayrunEmployee> activePayrunEmployees = createdPayrunEmployees
             .Where(p => p.Status == PayrunEmployeeStatus.Active)
             .ToList();
         PayrollCostSnapshot snapshot2 = costCalculator.Calculate(activePayrunEmployees);
@@ -479,14 +479,14 @@ public sealed class InitiatePayrollRunHandler(
             structure.ComponentOverrides.ToDictionary(o => o.SalaryComponentId);
 
         decimal monthlyCTC = structure.AnnualCTC / 12m;
-        var raw = new List<(Guid Id, string Code, decimal Amount, bool IsTaxable, bool ConsiderForEpf, EpfInclusionRule EpfRule, bool ConsiderForEsi, bool CalculateOnProRata, bool IsFlat, bool ShowInPayslip)>();
+        List<(Guid Id, string Code, decimal Amount, bool IsTaxable, bool ConsiderForEpf, EpfInclusionRule EpfRule, bool ConsiderForEsi, bool CalculateOnProRata, bool IsFlat, bool ShowInPayslip)> raw = new List<(Guid Id, string Code, decimal Amount, bool IsTaxable, bool ConsiderForEpf, EpfInclusionRule EpfRule, bool ConsiderForEsi, bool CalculateOnProRata, bool IsFlat, bool ShowInPayslip)>();
         decimal basicMonthly = 0m;
         decimal daMonthly = 0m;
         decimal nonResidualSum = 0m;
         decimal vpfPercent = 0m;
 
-        var ordered = template.Components.OrderBy(c => c.DisplayOrder).ToList();
-        var templateCompIds = new HashSet<Guid>(ordered.Select(c => c.ComponentId));
+        List<SalaryStructureComponent> ordered = template.Components.OrderBy(c => c.DisplayOrder).ToList();
+        HashSet<Guid> templateCompIds = new HashSet<Guid>(ordered.Select(c => c.ComponentId));
 
         // Pass 1: non-residual, non-PercentOfGross components (CTC/Basic/Fixed — no Gross dependency)
         foreach (SalaryStructureComponent comp in ordered)

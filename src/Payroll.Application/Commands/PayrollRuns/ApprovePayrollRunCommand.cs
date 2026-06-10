@@ -30,19 +30,19 @@ public sealed class ApprovePayrollRunHandler(
 {
     public async Task Handle(ApprovePayrollRunCommand req, CancellationToken ct)
     {
-        var run = await runRepo.GetByIdAsync(req.RunId, ct)
+        PayrollRun run = await runRepo.GetByIdAsync(req.RunId, ct)
             ?? throw new NotFoundException($"Payroll run {req.RunId} not found.");
 
         if (run.Status != PayrollRunStatus.Draft)
             throw new InvalidOperationException("Only a Draft payroll run can be approved.");
 
         // Guard: no hard blocks
-        var pending = await sender.Send(new GetPendingTasksQuery(req.RunId), ct);
+        DTOs.PendingTasksDto pending = await sender.Send(new GetPendingTasksQuery(req.RunId), ct);
         if (pending.HasAnyHardBlocks)
             throw new PayrollRunHasBlockingTasksException(pending.HardBlocks.Count);
 
-        var payrunEmployees = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
-        var activeEmployees = payrunEmployees.Where(pe => pe.Status == PayrunEmployeeStatus.Active).ToList();
+        IReadOnlyList<PayrunEmployee> payrunEmployees = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
+        List<PayrunEmployee> activeEmployees = payrunEmployees.Where(pe => pe.Status == PayrunEmployeeStatus.Active).ToList();
 
         bool isFnf = run.Type == PayrollRunType.FinalSettlement
                   || run.Type == PayrollRunType.BulkFinalSettlement;
@@ -51,7 +51,7 @@ public sealed class ApprovePayrollRunHandler(
         // FnF runs use the FnF orchestrator (MonthsRemainingInFY=1, gratuity
         // as flat component, LWF half-year dedup). Regular runs use the
         // shared recompute service which also upserts TDS worksheets.
-        foreach (var pe in activeEmployees)
+        foreach (PayrunEmployee? pe in activeEmployees)
         {
             if (isFnf)
             {
@@ -83,7 +83,7 @@ public sealed class ApprovePayrollRunHandler(
             }
         }
 
-        var snapshot = costCalculator.Calculate(activeEmployees);
+        PayrollCostSnapshot snapshot = costCalculator.Calculate(activeEmployees);
         run.UpdateFinancialSummary(
             payrollCost: snapshot.PayrollCost,
             totalNetPay: snapshot.TotalNet,
@@ -102,7 +102,7 @@ public sealed class ApprovePayrollRunHandler(
         run.Approve(req.ActorId);
         runRepo.Update(run);
 
-        var auditEntry = PayrollRunAuditLog.Create(
+        PayrollRunAuditLog auditEntry = PayrollRunAuditLog.Create(
             req.RunId, run.TenantId, PayrollRunStatus.Draft, PayrollRunStatus.Approved, req.ActorId, null);
         await auditLogRepo.AddAsync(auditEntry, ct);
 
@@ -120,7 +120,7 @@ public sealed class ApprovePayrollRunHandler(
     private async Task<string> WriteVariableInputsArtifactAsync(
         PayrollRun run, IReadOnlyList<PayrunEmployee> payrunEmployees, CancellationToken ct)
     {
-        var breakdowns = await breakdownRepo.GetByRunIdAsync(run.Id, ct);
+        IReadOnlyList<PayrunComponentBreakdown> breakdowns = await breakdownRepo.GetByRunIdAsync(run.Id, ct);
         var oneTimeRows = breakdowns
             .Where(b => b.IsOneTimeEarning)
             .Select(b => new

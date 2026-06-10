@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Payroll.Application.Commands.PayrollRuns;
 using Payroll.Domain.Common;
 using Payroll.Domain.Entities;
@@ -7,7 +8,6 @@ using Payroll.Domain.Interfaces;
 using Payroll.Engine;
 using Payroll.Engine.Inputs;
 using Payroll.Engine.Outputs;
-using System.Text.Json;
 
 namespace Payroll.Application.Services;
 
@@ -84,15 +84,15 @@ public sealed class PayrollRecomputeService(
             : (await salaryComponentRepo.GetByIdsAsync(componentIds, ct))
                 .ToDictionary(c => c.Id, c => c.Category);
 
-        var reimbursementRows = new List<PayrunComponentBreakdown>();
-        var deductionRows = new List<PayrunComponentBreakdown>();
-        var engineRows = new List<PayrunComponentBreakdown>();
+        List<PayrunComponentBreakdown> reimbursementRows = new List<PayrunComponentBreakdown>();
+        List<PayrunComponentBreakdown> deductionRows = new List<PayrunComponentBreakdown>();
+        List<PayrunComponentBreakdown> engineRows = new List<PayrunComponentBreakdown>();
         foreach (PayrunComponentBreakdown b in breakdowns)
         {
             if (IsReimbursement(b))
                 reimbursementRows.Add(b);
             else if (b.SalaryComponentId.HasValue
-                && categoryById.TryGetValue(b.SalaryComponentId.Value, out var cat)
+                && categoryById.TryGetValue(b.SalaryComponentId.Value, out ComponentCategory cat)
                 && cat == ComponentCategory.Deduction)
                 deductionRows.Add(b);
             else
@@ -123,9 +123,9 @@ public sealed class PayrollRecomputeService(
         bool hasPan = !string.IsNullOrWhiteSpace(employee.EncryptedPAN);
         HashSet<Guid> esiLocked = await payrunEmployeeRepo.GetEsiContributedInPeriodAsync(
             [employee.Id], run.PayPeriod.Year, run.PayPeriod.Month, ct);
-        var (hyIndex, hyTotal) = run.PayPeriod.HalfYearPosition(employee.DateOfJoining);
+        (int hyIndex, int hyTotal) = run.PayPeriod.HalfYearPosition(employee.DateOfJoining);
 
-        var empInput = new EmployeeInput(
+        EmployeeInput empInput = new EmployeeInput(
             EmployeeId: employee.Id,
             EmployeeCode: employee.EmployeeCode,
             WorkStateCode: workStateCode,
@@ -152,7 +152,7 @@ public sealed class PayrollRecomputeService(
             PtApplicable: employee.PtEnabled,
             LwfApplicable: employee.LwfEnabled);
 
-        var runInput = new PayrollRunInput(
+        PayrollRunInput runInput = new PayrollRunInput(
             Year: run.PayPeriod.Year,
             Month: run.PayPeriod.Month,
             CalendarDaysInMonth: payrunEmp.BaseDays,
@@ -191,14 +191,14 @@ public sealed class PayrollRecomputeService(
         EmployeeFyOpening? opening = await fyOpeningRepo.GetAsync(employeeId, fiscalYear, ct);
         if (opening is not null)
         {
-            ytdMap.TryGetValue(employeeId, out var existing);
+            ytdMap.TryGetValue(employeeId, out (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds) existing);
             ytdMap[employeeId] = (
                 existing.YtdGross + opening.GrossSalary,
                 existing.YtdTaxableGross + opening.GrossSalary,
                 existing.YtdTds + opening.TdsDeducted);
         }
 
-        ytdMap.TryGetValue(employeeId, out var ytd);
+        ytdMap.TryGetValue(employeeId, out (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds) ytd);
         return (ytd.YtdGross, ytd.YtdTaxableGross, ytd.YtdTds);
     }
 

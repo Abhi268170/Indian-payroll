@@ -22,10 +22,10 @@ public sealed class GetPayrollRunEmployeesHandler(
 {
     public async Task<PagedResult<PayrunEmployeeDto>> Handle(GetPayrollRunEmployeesQuery req, CancellationToken ct)
     {
-        var run = await runRepo.GetByIdAsync(req.RunId, ct)
+        Domain.Entities.PayrollRun run = await runRepo.GetByIdAsync(req.RunId, ct)
             ?? throw new NotFoundException($"Payroll run {req.RunId} not found.");
 
-        var pagination = req.Pagination ?? new PaginationParams();
+        PaginationParams pagination = req.Pagination ?? new PaginationParams();
 
         // WI-24: for FnF runs, surface each employee's LWD + exit reason inline
         // so HR can verify a bulk settlement without opening every row.
@@ -35,35 +35,35 @@ public sealed class GetPayrollRunEmployeesHandler(
             ? (await exitRepo.GetByFnfRunIdsAsync(new[] { req.RunId }, ct)).ToDictionary(e => e.EmployeeId)
             : new();
 
-        var payrunEmps = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
+        IReadOnlyList<Domain.Entities.PayrunEmployee> payrunEmps = await payrunEmployeeRepo.GetByRunIdAsync(req.RunId, ct);
 
-        var filteredEmps = req.Filter?.ToLowerInvariant() switch
+        List<Domain.Entities.PayrunEmployee> filteredEmps = req.Filter?.ToLowerInvariant() switch
         {
             "active" => payrunEmps.Where(e => e.Status == PayrunEmployeeStatus.Active).ToList(),
             "skipped" => payrunEmps.Where(e => e.Status == PayrunEmployeeStatus.Skipped).ToList(),
             _ => payrunEmps.ToList(),
         };
 
-        var designations = await designationRepo.ListAsync(ct);
-        var departments = await departmentRepo.ListAsync(ct);
-        var designationMap = designations.ToDictionary(d => d.Id, d => d.Name);
-        var departmentMap = departments.ToDictionary(d => d.Id, d => d.Name);
+        IReadOnlyList<Domain.Entities.Designation> designations = await designationRepo.ListAsync(ct);
+        IReadOnlyList<Domain.Entities.Department> departments = await departmentRepo.ListAsync(ct);
+        Dictionary<Guid, string> designationMap = designations.ToDictionary(d => d.Id, d => d.Name);
+        Dictionary<Guid, string> departmentMap = departments.ToDictionary(d => d.Id, d => d.Name);
 
         IReadOnlyList<Domain.Entities.Employee> employees = await employeeRepo.GetManyByIdsAsync(
             filteredEmps.Select(e => e.EmployeeId), ct);
         Dictionary<Guid, Domain.Entities.Employee> employeeMap = employees.ToDictionary(e => e.Id);
 
-        var ordered = filteredEmps
+        List<Domain.Entities.PayrunEmployee> ordered = filteredEmps
             .Where(pe => employeeMap.ContainsKey(pe.EmployeeId))
             .OrderBy(pe => employeeMap[pe.EmployeeId].EmployeeCode)
             .ToList();
 
-        var pageRows = ordered
+        List<PayrunEmployeeDto> pageRows = ordered
             .Skip(pagination.SkipCount)
             .Take(pagination.TakeCount)
             .Select(pe =>
             {
-                var emp = employeeMap[pe.EmployeeId];
+                Domain.Entities.Employee emp = employeeMap[pe.EmployeeId];
                 return new PayrunEmployeeDto(
                     EmployeeId: emp.Id,
                     EmployeeCode: emp.EmployeeCode,

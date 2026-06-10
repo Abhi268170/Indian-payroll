@@ -2,6 +2,7 @@ using FluentAssertions;
 using MediatR;
 using NSubstitute;
 using Payroll.Application.Commands.PayrollRuns;
+using Payroll.Application.DTOs;
 using Payroll.Application.Interfaces;
 using Payroll.Application.Queries.PayrollRuns;
 using Payroll.Application.Services;
@@ -9,11 +10,9 @@ using Payroll.Domain.Common;
 using Payroll.Domain.Entities;
 using Payroll.Domain.Enums;
 using Payroll.Domain.Interfaces;
-using Payroll.Application.DTOs;
 using Payroll.Engine.Inputs;
 using Payroll.Engine.Outputs;
 using Xunit;
-
 using DomainPayrollRun = Payroll.Domain.Entities.PayrollRun;
 
 namespace Payroll.Application.Tests.PayrollRun;
@@ -33,7 +32,7 @@ public class ApproveFnfRunTests
     [Fact]
     public async Task Approve_FnfRun_CallsFnfOrchestrator_NotRecomputeService()
     {
-        var (handler, deps) = BuildHandler(PayrollRunType.BulkFinalSettlement);
+        (ApprovePayrollRunHandler handler, Deps deps) = BuildHandler(PayrollRunType.BulkFinalSettlement);
 
         await handler.Handle(new ApprovePayrollRunCommand(RunId, ActorId), CancellationToken.None);
 
@@ -45,7 +44,7 @@ public class ApproveFnfRunTests
     [Fact]
     public async Task Approve_FinalSettlementRun_CallsFnfOrchestrator_NotRecomputeService()
     {
-        var (handler, deps) = BuildHandler(PayrollRunType.FinalSettlement);
+        (ApprovePayrollRunHandler handler, Deps deps) = BuildHandler(PayrollRunType.FinalSettlement);
 
         await handler.Handle(new ApprovePayrollRunCommand(RunId, ActorId), CancellationToken.None);
 
@@ -57,7 +56,7 @@ public class ApproveFnfRunTests
     [Fact]
     public async Task Approve_RegularRun_CallsRecomputeService_NotFnfOrchestrator()
     {
-        var (handler, deps) = BuildHandler(PayrollRunType.Regular);
+        (ApprovePayrollRunHandler handler, Deps deps) = BuildHandler(PayrollRunType.Regular);
 
         await handler.Handle(new ApprovePayrollRunCommand(RunId, ActorId), CancellationToken.None);
 
@@ -72,7 +71,7 @@ public class ApproveFnfRunTests
     [Fact]
     public async Task Approve_FnfRun_WritesTdsWorksheet()
     {
-        var (handler, deps) = BuildHandler(PayrollRunType.BulkFinalSettlement);
+        (ApprovePayrollRunHandler handler, Deps deps) = BuildHandler(PayrollRunType.BulkFinalSettlement);
 
         await handler.Handle(new ApprovePayrollRunCommand(RunId, ActorId), CancellationToken.None);
 
@@ -86,7 +85,7 @@ public class ApproveFnfRunTests
     public async Task Approve_RegularRun_DoesNotWriteTdsWorksheetDirectly()
     {
         // Regular path uses recomputeService which handles its own worksheet.
-        var (handler, deps) = BuildHandler(PayrollRunType.Regular);
+        (ApprovePayrollRunHandler handler, Deps deps) = BuildHandler(PayrollRunType.Regular);
 
         await handler.Handle(new ApprovePayrollRunCommand(RunId, ActorId), CancellationToken.None);
 
@@ -97,7 +96,7 @@ public class ApproveFnfRunTests
     [Fact]
     public async Task Approve_FnfRun_UpdatesPayrunEmployeeAmounts()
     {
-        var (handler, deps) = BuildHandler(PayrollRunType.BulkFinalSettlement);
+        (ApprovePayrollRunHandler handler, Deps deps) = BuildHandler(PayrollRunType.BulkFinalSettlement);
 
         await handler.Handle(new ApprovePayrollRunCommand(RunId, ActorId), CancellationToken.None);
 
@@ -219,16 +218,16 @@ public class ApproveFnfRunTests
 
     private (ApprovePayrollRunHandler Handler, Deps Deps) BuildHandler(PayrollRunType runType)
     {
-        var runRepo = Substitute.For<IPayrollRunRepository>();
-        var payrunEmpRepo = Substitute.For<IPayrunEmployeeRepository>();
-        var auditLogRepo = Substitute.For<IPayrollRunAuditLogRepository>();
-        var recomputeService = Substitute.For<IPayrollRecomputeService>();
-        var fnfOrchestrator = Substitute.For<IPayrollFnfOrchestrator>();
-        var tdsWorksheetRepo = Substitute.For<ITdsWorksheetRepository>();
-        var costCalculator = Substitute.For<IPayrollCostCalculator>();
-        var uow = Substitute.For<IUnitOfWork>();
-        var sender = Substitute.For<ISender>();
-        var jobDispatcher = Substitute.For<IPayrollJobDispatcher>();
+        IPayrollRunRepository runRepo = Substitute.For<IPayrollRunRepository>();
+        IPayrunEmployeeRepository payrunEmpRepo = Substitute.For<IPayrunEmployeeRepository>();
+        IPayrollRunAuditLogRepository auditLogRepo = Substitute.For<IPayrollRunAuditLogRepository>();
+        IPayrollRecomputeService recomputeService = Substitute.For<IPayrollRecomputeService>();
+        IPayrollFnfOrchestrator fnfOrchestrator = Substitute.For<IPayrollFnfOrchestrator>();
+        ITdsWorksheetRepository tdsWorksheetRepo = Substitute.For<ITdsWorksheetRepository>();
+        IPayrollCostCalculator costCalculator = Substitute.For<IPayrollCostCalculator>();
+        IUnitOfWork uow = Substitute.For<IUnitOfWork>();
+        ISender sender = Substitute.For<ISender>();
+        IPayrollJobDispatcher jobDispatcher = Substitute.For<IPayrollJobDispatcher>();
 
         DomainPayrollRun run = MakeRun(runType);
         runRepo.GetByIdAsync(RunId, Arg.Any<CancellationToken>()).Returns(run);
@@ -266,15 +265,15 @@ public class ApproveFnfRunTests
                 EmployeeCount: 1,
                 PayrollCost: 105_000m));
 
-        var exitRepo = Substitute.For<IEmployeeExitRepository>();
+        IEmployeeExitRepository exitRepo = Substitute.For<IEmployeeExitRepository>();
         exitRepo.GetActiveByEmployeeAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns((Payroll.Domain.Entities.EmployeeExit?)null);
 
-        var breakdownRepo = Substitute.For<IPayrunComponentBreakdownRepository>();
+        IPayrunComponentBreakdownRepository breakdownRepo = Substitute.For<IPayrunComponentBreakdownRepository>();
         breakdownRepo.GetByRunIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(new List<Payroll.Domain.Entities.PayrunComponentBreakdown>());
-        var fileStorage = Substitute.For<Payroll.Application.Interfaces.IFileStorageService>();
-        var handler = new ApprovePayrollRunHandler(
+        IFileStorageService fileStorage = Substitute.For<Payroll.Application.Interfaces.IFileStorageService>();
+        ApprovePayrollRunHandler handler = new ApprovePayrollRunHandler(
             runRepo, payrunEmpRepo, auditLogRepo, recomputeService,
             fnfOrchestrator, tdsWorksheetRepo, exitRepo,
             costCalculator, breakdownRepo, fileStorage, uow, sender, jobDispatcher);
@@ -316,7 +315,7 @@ public class ApproveFnfRunTests
         decimal engineMonthlyTds = 15_000m,
         decimal ytdTdsDeducted = 30_000m)
     {
-        var engine = new PayrollResult(
+        PayrollResult engine = new PayrollResult(
             EmployeeId: EmployeeId,
             Gross: new GrossResult(
                 GrossWage: 100_000m,

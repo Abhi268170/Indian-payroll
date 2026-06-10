@@ -1,3 +1,4 @@
+using System.Text.Json;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,6 @@ using Payroll.Domain.Interfaces;
 using Payroll.Domain.ValueObjects;
 using Payroll.Engine;
 using Payroll.Engine.Inputs;
-using System.Text.Json;
 
 namespace Payroll.Application.Commands.Employees;
 
@@ -76,35 +76,35 @@ public sealed class InitiateExitHandler(
 {
     public async Task<EmployeeExitDto> Handle(InitiateExitCommand req, CancellationToken ct)
     {
-        var employee = await employeeRepo.GetByIdAsync(req.EmployeeId, ct)
+        Employee employee = await employeeRepo.GetByIdAsync(req.EmployeeId, ct)
             ?? throw new NotFoundException($"Employee {req.EmployeeId} not found.");
 
         if (employee.Status != EmployeeStatus.Active)
             throw new DomainException($"Cannot initiate exit: employee status is {employee.Status}.");
 
         // WI-02: salary structure must exist before FnF run can be created.
-        var salaryStructure = await salaryStructureRepo.GetActiveWithOverridesAsync(req.EmployeeId, ct)
+        EmployeeSalaryStructure salaryStructure = await salaryStructureRepo.GetActiveWithOverridesAsync(req.EmployeeId, ct)
             ?? throw new DomainException("Employee has no active salary structure. Assign one before initiating exit.");
 
-        var existingExit = await exitRepo.GetActiveByEmployeeAsync(req.EmployeeId, ct);
+        EmployeeExit? existingExit = await exitRepo.GetActiveByEmployeeAsync(req.EmployeeId, ct);
         if (existingExit != null)
             throw new DomainException("An exit is already in progress for this employee.");
 
         // Tax deductor gate: only blocks when the deductor was set to this employee
         // via the new DeductorEmployeeId FK. v1 leaves the FK null until the
         // Settings → Taxes page is rebuilt to mirror Zoho.
-        var orgProfile = await orgProfileRepo.GetAsync(ct);
+        Domain.Entities.OrgProfile? orgProfile = await orgProfileRepo.GetAsync(ct);
         if (orgProfile?.DeductorEmployeeId == req.EmployeeId)
             throw new DomainException(
                 "Cannot initiate exit: this employee is the organisation's Tax Deductor. "
                 + "Reassign in Settings → Taxes first.");
 
         // Resolve target pay date for the FnF run.
-        var paySchedule = await payScheduleRepo.GetAsync(ct)
+        Domain.Entities.PaySchedule paySchedule = await payScheduleRepo.GetAsync(ct)
             ?? throw new DomainException("Pay Schedule not configured.");
         DateOnly fnfPayDate = ResolveFnfPayDate(req, paySchedule);
 
-        var exit = EmployeeExit.Create(
+        EmployeeExit exit = EmployeeExit.Create(
             employeeId: req.EmployeeId,
             lastWorkingDay: req.LastWorkingDay,
             reason: req.Reason,
@@ -124,10 +124,10 @@ public sealed class InitiateExitHandler(
         }
 
         // Strip from any open Draft regular runs that would otherwise double-pay.
-        var openDraftRuns = await runRepo.FindDraftRegularRunsCoveringDateAsync(req.LastWorkingDay, ct);
-        foreach (var r in openDraftRuns)
+        IReadOnlyList<PayrollRun> openDraftRuns = await runRepo.FindDraftRegularRunsCoveringDateAsync(req.LastWorkingDay, ct);
+        foreach (PayrollRun r in openDraftRuns)
         {
-            var pe = await payrunEmpRepo.GetByRunAndEmployeeAsync(r.Id, req.EmployeeId, ct);
+            PayrunEmployee? pe = await payrunEmpRepo.GetByRunAndEmployeeAsync(r.Id, req.EmployeeId, ct);
             if (pe != null) payrunEmpRepo.Remove(pe);
         }
 
@@ -147,7 +147,7 @@ public sealed class InitiateExitHandler(
         if (req.SettlementMode == ExitSettlementMode.CustomDate)
             await runRepo.AddAsync(fnfRun, ct);
 
-        var payrunEmp = PayrunEmployee.Create(
+        PayrunEmployee payrunEmp = PayrunEmployee.Create(
             payrollRunId: fnfRun.Id,
             employeeId: req.EmployeeId,
             tenantId: tenantContext.TenantId,
@@ -172,8 +172,8 @@ public sealed class InitiateExitHandler(
         // TDS sweep is deterministic even if a prior-month run is approved later.
         // Fiscal year is the LWD month's FY (matches the orchestrator).
         int lwdFiscalYear = req.LastWorkingDay.Month >= 4 ? req.LastWorkingDay.Year : req.LastWorkingDay.Year - 1;
-        var ytdMap = await payrunEmpRepo.GetCurrentEmployerYtdAsync([req.EmployeeId], lwdFiscalYear, ct);
-        ytdMap.TryGetValue(req.EmployeeId, out var ytd);
+        Dictionary<Guid, (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds)> ytdMap = await payrunEmpRepo.GetCurrentEmployerYtdAsync([req.EmployeeId], lwdFiscalYear, ct);
+        ytdMap.TryGetValue(req.EmployeeId, out (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds) ytd);
         exit.SetYtdSnapshot(ytd.YtdGross, ytd.YtdTaxableGross, ytd.YtdTds, req.ActorId);
 
         // WI-28: audit trail for the exit event (HR/compliance hook).
@@ -235,7 +235,7 @@ public sealed class InitiateExitHandler(
     private async Task<PayrollRun> GetOrCreateBulkFnfRunAsync(
         DateOnly payDate, string snapshot, InitiateExitCommand req, CancellationToken ct)
     {
-        var existing = await runRepo.FindDraftBulkFnfByPayDateAsync(payDate, ct);
+        PayrollRun? existing = await runRepo.FindDraftBulkFnfByPayDateAsync(payDate, ct);
         if (existing != null)
         {
             // WI-11: appending another employee to a re-used bulk run. The entity
@@ -247,7 +247,7 @@ public sealed class InitiateExitHandler(
             return existing;
         }
 
-        var fresh = PayrollRun.CreateBulkFinalSettlement(
+        PayrollRun fresh = PayrollRun.CreateBulkFinalSettlement(
             tenantId: tenantContext.TenantId,
             payPeriod: new PayPeriod(payDate.Year, payDate.Month),
             payDay: payDate,
@@ -324,19 +324,19 @@ public sealed class InitiateExitHandler(
     private async Task<(string Json, StatutoryConfig Config)> BuildStatutoryConfigSnapshotAsync(
         CancellationToken ct, Employee employee, DateOnly periodStart)
     {
-        var orgConfig = await statutoryRepo.GetByTenantAsync(ct)
+        StatutoryOrgConfig orgConfig = await statutoryRepo.GetByTenantAsync(ct)
             ?? throw new DomainException("Statutory configuration not found. Configure EPF/ESI settings first.");
 
         int fiscalYear = periodStart.Month >= 4 ? periodStart.Year : periodStart.Year - 1;
         string fyLabel = Payroll.Domain.ValueObjects.PayPeriod.FiscalYearKeyFor(fiscalYear);
-        var taxConfig = await statutoryRepo.GetIncomeTaxConfigAsync(fyLabel, "New", ct);
-        var taxSlabs = await statutoryRepo.GetIncomeTaxSlabsAsync(fyLabel, "New", ct);
-        var surchargeSlabs = await statutoryRepo.GetSurchargeSlabsAsync(fyLabel, "New", ct);
+        IncomeTaxConfig? taxConfig = await statutoryRepo.GetIncomeTaxConfigAsync(fyLabel, "New", ct);
+        IReadOnlyList<IncomeTaxSlab> taxSlabs = await statutoryRepo.GetIncomeTaxSlabsAsync(fyLabel, "New", ct);
+        IReadOnlyList<IncomeTaxSurchargeSlab> surchargeSlabs = await statutoryRepo.GetSurchargeSlabsAsync(fyLabel, "New", ct);
 
-        var workLocation = await workLocationRepo.GetByIdAsync(employee.WorkLocationId, ct);
+        WorkLocation? workLocation = await workLocationRepo.GetByIdAsync(employee.WorkLocationId, ct);
         string stateCode = workLocation?.State.ToIsoCode() ?? "MH";
-        var ptSlabs = await statutoryRepo.GetPtSlabsAsync(stateCode, periodStart, ct);
-        var lwfConfigs = await statutoryRepo.GetLwfConfigsAsync(new[] { stateCode }, ct);
+        IReadOnlyList<ProfessionalTaxSlab> ptSlabs = await statutoryRepo.GetPtSlabsAsync(stateCode, periodStart, ct);
+        IReadOnlyList<LwfStateConfig> lwfConfigs = await statutoryRepo.GetLwfConfigsAsync(new[] { stateCode }, ct);
 
         StatutoryConfig staticConfig = StatutoryConfigBuilder.Build(orgConfig, taxConfig, taxSlabs, surchargeSlabs, ptSlabs, lwfConfigs);
         return (JsonSerializer.Serialize(staticConfig), staticConfig);
@@ -355,11 +355,11 @@ public sealed class InitiateExitHandler(
             : null;
 
         // Identify override-only component IDs not present in the template.
-        var addedComponentIds = new HashSet<Guid>();
+        HashSet<Guid> addedComponentIds = new HashSet<Guid>();
         if (salaryStructure.ComponentOverrides.Count > 0 && template is not null)
         {
-            var templateCompIds = new HashSet<Guid>(template.Components.Select(c => c.ComponentId));
-            foreach (var ov in salaryStructure.ComponentOverrides)
+            HashSet<Guid> templateCompIds = new HashSet<Guid>(template.Components.Select(c => c.ComponentId));
+            foreach (EmployeeSalaryComponentOverride ov in salaryStructure.ComponentOverrides)
             {
                 if (!templateCompIds.Contains(ov.SalaryComponentId))
                     addedComponentIds.Add(ov.SalaryComponentId);

@@ -25,32 +25,32 @@ public sealed class GetPayslipDataHandler(
 {
     public async Task<PayslipData> Handle(GetPayslipDataQuery req, CancellationToken ct)
     {
-        var run = await runRepo.GetByIdAsync(req.PayrollRunId, ct)
+        Domain.Entities.PayrollRun run = await runRepo.GetByIdAsync(req.PayrollRunId, ct)
             ?? throw new NotFoundException($"Payroll run {req.PayrollRunId} not found.");
 
-        var payrunEmp = await payrunEmployeeRepo.GetByRunAndEmployeeAsync(req.PayrollRunId, req.EmployeeId, ct)
+        Domain.Entities.PayrunEmployee payrunEmp = await payrunEmployeeRepo.GetByRunAndEmployeeAsync(req.PayrollRunId, req.EmployeeId, ct)
             ?? throw new NotFoundException($"Employee {req.EmployeeId} not in payroll run {req.PayrollRunId}.");
 
-        var employee = await employeeRepo.GetByIdAsync(req.EmployeeId, ct)
+        Domain.Entities.Employee employee = await employeeRepo.GetByIdAsync(req.EmployeeId, ct)
             ?? throw new NotFoundException($"Employee {req.EmployeeId} not found.");
 
-        var breakdowns = await breakdownRepo.GetByRunAndEmployeeAsync(req.PayrollRunId, req.EmployeeId, ct);
+        IReadOnlyList<Domain.Entities.PayrunComponentBreakdown> breakdowns = await breakdownRepo.GetByRunAndEmployeeAsync(req.PayrollRunId, req.EmployeeId, ct);
 
-        var allComponents = await componentRepo.ListByTenantAsync(run.TenantId, ct: ct);
-        var deductionIds = allComponents
+        List<Domain.Entities.SalaryComponent> allComponents = await componentRepo.ListByTenantAsync(run.TenantId, ct: ct);
+        HashSet<Guid> deductionIds = allComponents
             .Where(c => c.Category == ComponentCategory.Deduction)
             .Select(c => c.Id)
             .ToHashSet();
 
-        var designation = await designationRepo.GetByIdAsync(employee.DesignationId, ct);
-        var department = await departmentRepo.GetByIdAsync(employee.DepartmentId, ct);
-        var orgProfile = await orgProfileRepo.GetAsync(ct);
+        Domain.Entities.Designation? designation = await designationRepo.GetByIdAsync(employee.DesignationId, ct);
+        Domain.Entities.Department? department = await departmentRepo.GetByIdAsync(employee.DepartmentId, ct);
+        Domain.Entities.OrgProfile? orgProfile = await orgProfileRepo.GetAsync(ct);
 
         // YTD: sum across Approved + Paid runs in the same fiscal year
         int fiscalYear = run.PayPeriod.FiscalYear;
-        var ytdRunIds = await runRepo.GetPaidIdsForFiscalYearAsync(fiscalYear, ct);
-        var ytdPayrunEmps = await payrunEmployeeRepo.GetByEmployeeAndRunIdsAsync(req.EmployeeId, ytdRunIds, ct);
-        var ytdBreakdowns = await breakdownRepo.GetByEmployeeAndRunIdsAsync(req.EmployeeId, ytdRunIds, ct);
+        IReadOnlyList<Guid> ytdRunIds = await runRepo.GetPaidIdsForFiscalYearAsync(fiscalYear, ct);
+        IReadOnlyList<Domain.Entities.PayrunEmployee> ytdPayrunEmps = await payrunEmployeeRepo.GetByEmployeeAndRunIdsAsync(req.EmployeeId, ytdRunIds, ct);
+        IReadOnlyList<Domain.Entities.PayrunComponentBreakdown> ytdBreakdowns = await breakdownRepo.GetByEmployeeAndRunIdsAsync(req.EmployeeId, ytdRunIds, ct);
 
         decimal ytdGross = ytdPayrunEmps.Sum(e => e.GrossPay);
         decimal ytdNetPay = ytdPayrunEmps.Sum(e => e.NetPay);
@@ -58,11 +58,11 @@ public sealed class GetPayslipDataHandler(
         decimal ytdPf = ytdPayrunEmps.Sum(e => e.EmployeePf);
 
         // Build per-component YTD map from YTD breakdowns (keyed by ComponentCode)
-        var ytdByComponent = ytdBreakdowns
+        Dictionary<string, decimal> ytdByComponent = ytdBreakdowns
             .GroupBy(b => b.ComponentCode)
             .ToDictionary(g => g.Key, g => g.Sum(b => b.ProratedAmount));
 
-        var components = breakdowns
+        List<PayslipComponentDto> components = breakdowns
             .Where(b => b.ShowInPayslip)
             .Select(b => new PayslipComponentDto(
             b.ComponentCode,
@@ -78,7 +78,7 @@ public sealed class GetPayslipDataHandler(
         // FnF context: an exit may exist for this employee. PayslipPdfGenerator
         // branches on IsFinalSettlement to render the Exit Details block.
         bool isFnf = run.Type == PayrollRunType.FinalSettlement || run.Type == PayrollRunType.BulkFinalSettlement;
-        var exit = isFnf ? await exitRepo.GetActiveByEmployeeAsync(req.EmployeeId, ct) : null;
+        Domain.Entities.EmployeeExit? exit = isFnf ? await exitRepo.GetActiveByEmployeeAsync(req.EmployeeId, ct) : null;
 
         string maskedBankAccount = MaskBankAccount(employee.EncryptedBankAccount, encryption);
         string? ifscCode = employee.EncryptedIFSC is not null

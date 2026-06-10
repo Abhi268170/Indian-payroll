@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Payroll.Domain.Entities;
 using Payroll.Domain.Enums;
 using Payroll.Domain.Extensions;
@@ -5,7 +6,6 @@ using Payroll.Domain.Interfaces;
 using Payroll.Engine;
 using Payroll.Engine.Inputs;
 using Payroll.Engine.Outputs;
-using System.Text.Json;
 
 namespace Payroll.Application.Services;
 
@@ -84,7 +84,7 @@ public sealed class PayrollFnfOrchestrator(
 
         // Persisted breakdowns (recurring + saved FnF one-time), unless the caller
         // supplied an in-memory set for a preview (WI-22).
-        var breakdowns = breakdownOverride
+        IReadOnlyList<PayrunComponentBreakdown> breakdowns = breakdownOverride
             ?? await breakdownRepo.GetByRunAndEmployeeAsync(fnfRunId, employeeId, ct);
 
         WorkLocation? workLocation = await workLocationRepo.GetByIdAsync(employee.WorkLocationId, ct);
@@ -125,8 +125,8 @@ public sealed class PayrollFnfOrchestrator(
         // WI-17: IsBenefit rows are employer-borne (already netted out of CTC) and
         // must NOT flow into gross/net/PF/ESI — exclude them from engine inputs,
         // same as reimbursements. They persist for payslip display only.
-        var reimbursementRows = breakdowns.Where(IsReimbursement).ToList();
-        var engineRows = breakdowns.Where(b => !IsReimbursement(b) && !b.IsBenefit).ToList();
+        List<PayrunComponentBreakdown> reimbursementRows = breakdowns.Where(IsReimbursement).ToList();
+        List<PayrunComponentBreakdown> engineRows = breakdowns.Where(b => !IsReimbursement(b) && !b.IsBenefit).ToList();
         decimal reimbursementsAmount = reimbursementRows.Sum(b => b.FullAmount);
 
         IReadOnlyList<SalaryComponentInput> components = engineRows
@@ -137,7 +137,7 @@ public sealed class PayrollFnfOrchestrator(
             .FirstOrDefault(b => b.ComponentCode == "BASICSALARY")?.FullAmount ?? 0m;
 
         bool hasPan = !string.IsNullOrWhiteSpace(employee.EncryptedPAN);
-        var (hyIndex, hyTotal) = lwdPeriod.HalfYearPosition(employee.DateOfJoining);
+        (int hyIndex, int hyTotal) = lwdPeriod.HalfYearPosition(employee.DateOfJoining);
         HashSet<Guid> esiLocked = await payrunEmpRepo.GetEsiContributedInPeriodAsync(
             [employeeId], lwdPeriod.Year, lwdPeriod.Month, ct);
 
@@ -188,7 +188,7 @@ public sealed class PayrollFnfOrchestrator(
         int lopFromExit = Math.Max(0, salaryDivisor - workedDays);
         decimal effectiveLopDays = Math.Min(lopFromExit + payrunEmp.LopDays, salaryDivisor);
 
-        var empInput = new EmployeeInput(
+        EmployeeInput empInput = new EmployeeInput(
             EmployeeId: employee.Id,
             EmployeeCode: employee.EmployeeCode,
             WorkStateCode: workStateCode,
@@ -216,7 +216,7 @@ public sealed class PayrollFnfOrchestrator(
             PtApplicable: employee.PtEnabled,
             LwfApplicable: employee.LwfEnabled);
 
-        var runInput = new PayrollRunInput(
+        PayrollRunInput runInput = new PayrollRunInput(
             Year: lwdPeriod.Year,
             Month: lwdPeriod.Month,
             CalendarDaysInMonth: workedDays, // unused by engine; kept for audit/context
@@ -245,7 +245,7 @@ public sealed class PayrollFnfOrchestrator(
     {
         Dictionary<Guid, (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds)> ytdMap =
             await payrunEmpRepo.GetCurrentEmployerYtdAsync([employeeId], fiscalYear, ct);
-        ytdMap.TryGetValue(employeeId, out var ytd);
+        ytdMap.TryGetValue(employeeId, out (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds) ytd);
         return (ytd.YtdGross, ytd.YtdTaxableGross, ytd.YtdTds);
     }
 

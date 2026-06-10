@@ -27,13 +27,13 @@ public sealed class SkipEmployeeHandler(
 {
     public async Task Handle(SkipEmployeeCommand req, CancellationToken ct)
     {
-        var run = await runRepo.GetByIdAsync(req.RunId, ct)
+        Domain.Entities.PayrollRun run = await runRepo.GetByIdAsync(req.RunId, ct)
             ?? throw new NotFoundException($"Payroll run {req.RunId} not found.");
 
         if (run.Status != PayrollRunStatus.Draft)
             throw new InvalidOperationException("Employees can only be skipped on a Draft payroll run.");
 
-        var payrunEmp = await payrunEmployeeRepo.GetByRunAndEmployeeAsync(req.RunId, req.EmployeeId, ct)
+        Domain.Entities.PayrunEmployee payrunEmp = await payrunEmployeeRepo.GetByRunAndEmployeeAsync(req.RunId, req.EmployeeId, ct)
             ?? throw new NotFoundException($"Employee {req.EmployeeId} not in this payroll run.");
 
         payrunEmp.Skip(req.Reason, req.ActorId);
@@ -53,10 +53,10 @@ public sealed class SkipEmployeeHandler(
     {
         // Same formula and same Active-only filter as every other handler —
         // PayrollCostCalculator is the single source of truth for run totals.
-        var allEmployees = await payrunEmployeeRepo.GetByRunIdAsync(runId);
-        var active = allEmployees.Where(e => e.Status == PayrunEmployeeStatus.Active).ToList();
+        IReadOnlyList<Domain.Entities.PayrunEmployee> allEmployees = await payrunEmployeeRepo.GetByRunIdAsync(runId);
+        List<Domain.Entities.PayrunEmployee> active = allEmployees.Where(e => e.Status == PayrunEmployeeStatus.Active).ToList();
 
-        var snapshot = new Services.PayrollCostCalculator().Calculate(active);
+        Services.PayrollCostSnapshot snapshot = new Services.PayrollCostCalculator().Calculate(active);
         run.UpdateFinancialSummary(
             snapshot.PayrollCost, snapshot.TotalNet, snapshot.TotalEmployerPf,
             snapshot.TotalEmployerEsi, snapshot.TotalTds, snapshot.TotalPt,

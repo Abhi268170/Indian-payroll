@@ -12,7 +12,7 @@ public static class GrossCalculator
         // or operator-entered FnF LOP) — clamp so pro-rata never goes negative.
         decimal payableDays = Math.Max(0m, baseDays - employee.LOPDays);
 
-        var breakdown = new List<ComponentAmountResult>(employee.Components.Count);
+        List<ComponentAmountResult> breakdown = new List<ComponentAmountResult>(employee.Components.Count);
         decimal grossWage = 0m;
         decimal pfWage = 0m;
         decimal fullPfWage = 0m;

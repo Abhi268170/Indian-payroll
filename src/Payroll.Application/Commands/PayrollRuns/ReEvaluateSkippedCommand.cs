@@ -1,3 +1,4 @@
+using System.Text.Json;
 using FluentValidation;
 using MediatR;
 using Payroll.Application.Services;
@@ -9,7 +10,6 @@ using Payroll.Domain.Interfaces;
 using Payroll.Domain.ValueObjects;
 using Payroll.Engine;
 using Payroll.Engine.Inputs;
-using System.Text.Json;
 
 namespace Payroll.Application.Commands.PayrollRuns;
 
@@ -56,7 +56,7 @@ public sealed class ReEvaluateSkippedHandler(
 
         PayPeriod period = payrollRun.PayPeriod;
 
-        var paySchedule = await payScheduleRepo.GetAsync(ct)
+        Domain.Entities.PaySchedule paySchedule = await payScheduleRepo.GetAsync(ct)
             ?? throw new DomainException("Pay schedule not configured.");
 
         EngineWorkWeekDay workWeek = (EngineWorkWeekDay)(int)paySchedule.WorkWeekDays;
@@ -68,7 +68,7 @@ public sealed class ReEvaluateSkippedHandler(
         int salaryDivisor = PayScheduleHelpers.GetDivisor(engineCalcMethod, paySchedule.FixedWorkingDaysPerMonth, period.Year, period.Month);
         int workingDaysInMonth = PayScheduleHelpers.GetPayableDaysInMonth(workWeek, period.Year, period.Month);
 
-        var workLocations = await workLocationRepo.ListAsync(ct);
+        IReadOnlyList<WorkLocation> workLocations = await workLocationRepo.ListAsync(ct);
         Dictionary<Guid, string> workLocationStateMap = workLocations.ToDictionary(wl => wl.Id, wl => wl.State.ToIsoCode());
 
         IReadOnlyList<PayrunEmployee> skipped = await payrunEmployeeRepo.GetByRunIdWithStatusAsync(
@@ -99,15 +99,15 @@ public sealed class ReEvaluateSkippedHandler(
             await fyOpeningRepo.GetByEmployeesAndFiscalYearAsync(targetIds, period.FiscalYear, ct);
         foreach (EmployeeFyOpening opening in openings)
         {
-            currentYtdByEmployee.TryGetValue(opening.EmployeeId, out var existing);
+            currentYtdByEmployee.TryGetValue(opening.EmployeeId, out (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds) existing);
             currentYtdByEmployee[opening.EmployeeId] = (
                 existing.YtdGross + opening.GrossSalary,
                 existing.YtdTaxableGross + opening.GrossSalary,
                 existing.YtdTds + opening.TdsDeducted);
         }
 
-        var addedComponentIds = new HashSet<Guid>();
-        var processedMap = new Dictionary<Guid, (PayrunEmployee PayrunEmp, EmployeeSalaryStructure Structure, SalaryStructureTemplate? Template)>();
+        HashSet<Guid> addedComponentIds = new HashSet<Guid>();
+        Dictionary<Guid, (PayrunEmployee PayrunEmp, EmployeeSalaryStructure Structure, SalaryStructureTemplate? Template)> processedMap = new Dictionary<Guid, (PayrunEmployee PayrunEmp, EmployeeSalaryStructure Structure, SalaryStructureTemplate? Template)>();
 
         foreach (PayrunEmployee payrunEmp in onboardingBlocked)
         {
@@ -167,9 +167,9 @@ public sealed class ReEvaluateSkippedHandler(
 
         HashSet<Guid> esiLockedEmployees = await payrunEmployeeRepo.GetEsiContributedInPeriodAsync(
             processedMap.Keys, period.Year, period.Month, ct);
-        var vpfPercentByEmployee = new Dictionary<Guid, decimal>();
+        Dictionary<Guid, decimal> vpfPercentByEmployee = new Dictionary<Guid, decimal>();
 
-        var engineInputs = new List<EmployeeInput>();
+        List<EmployeeInput> engineInputs = new List<EmployeeInput>();
         foreach ((Guid empId, (PayrunEmployee _, EmployeeSalaryStructure salaryStructure, SalaryStructureTemplate? template)) in processedMap)
         {
             if (!empById.TryGetValue(empId, out Employee? emp)) continue;
@@ -181,8 +181,8 @@ public sealed class ReEvaluateSkippedHandler(
             string workState = workLocationStateMap.TryGetValue(emp.WorkLocationId, out string? wls) ? wls : "MH";
             (int hyIndex, int hyTotal) = period.HalfYearPosition(emp.DateOfJoining);
 
-            priorYtdByEmployee.TryGetValue(emp.Id, out var ytd);
-            currentYtdByEmployee.TryGetValue(emp.Id, out var curYtd);
+            priorYtdByEmployee.TryGetValue(emp.Id, out PriorEmployerYtd? ytd);
+            currentYtdByEmployee.TryGetValue(emp.Id, out (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds) curYtd);
             engineInputs.Add(new EmployeeInput(
                 EmployeeId: emp.Id,
                 EmployeeCode: emp.EmployeeCode,
@@ -212,7 +212,7 @@ public sealed class ReEvaluateSkippedHandler(
             vpfPercentByEmployee[empId] = build.VpfPercent;
         }
 
-        var runInput = new PayrollRunInput(
+        PayrollRunInput runInput = new PayrollRunInput(
             Year: period.Year,
             Month: period.Month,
             CalendarDaysInMonth: calendarDays,
@@ -220,8 +220,8 @@ public sealed class ReEvaluateSkippedHandler(
             MonthsRemainingInFY: period.MonthsRemainingInFiscalYear(),
             FiscalYearLabel: period.FiscalYearLabel);
 
-        var results = PayrollEngine.Compute(engineInputs, runInput, staticConfig);
-        var resultMap = results.ToDictionary(r => r.EmployeeId);
+        IReadOnlyList<Engine.Outputs.PayrollResult> results = PayrollEngine.Compute(engineInputs, runInput, staticConfig);
+        Dictionary<Guid, Engine.Outputs.PayrollResult> resultMap = results.ToDictionary(r => r.EmployeeId);
 
         Dictionary<Guid, bool> epfFlagByComponent = engineInputs
             .SelectMany(e => e.Components)
@@ -239,7 +239,7 @@ public sealed class ReEvaluateSkippedHandler(
 
         foreach ((Guid empId, (PayrunEmployee payrunEmp, EmployeeSalaryStructure salaryStructure, SalaryStructureTemplate? _)) in processedMap)
         {
-            if (!resultMap.TryGetValue(empId, out var result)) continue;
+            if (!resultMap.TryGetValue(empId, out Engine.Outputs.PayrollResult? result)) continue;
 
             payrunEmp.UndoSkip(req.ActorId);
             payrunEmp.UpdateComputedAmounts(
@@ -269,8 +269,8 @@ public sealed class ReEvaluateSkippedHandler(
 
             // Upsert TDS worksheet
             await tdsWorksheetRepo.DeleteByRunAndEmployeeAsync(req.PayrollRunId, empId, ct);
-            priorYtdByEmployee.TryGetValue(empId, out var empYtd);
-            currentYtdByEmployee.TryGetValue(empId, out var wsCurYtd);
+            priorYtdByEmployee.TryGetValue(empId, out PriorEmployerYtd? empYtd);
+            currentYtdByEmployee.TryGetValue(empId, out (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds) wsCurYtd);
             await tdsWorksheetRepo.AddAsync(TdsWorksheet.Create(
                 payrollRunId: req.PayrollRunId,
                 employeeId: empId,
@@ -291,7 +291,7 @@ public sealed class ReEvaluateSkippedHandler(
                 createdBy: req.ActorId), ct);
 
             await breakdownRepo.RemoveRangeByRunAndEmployeeAsync(req.PayrollRunId, empId, ct);
-            foreach (var comp in result.Gross.ComponentBreakdown)
+            foreach (Engine.Outputs.ComponentAmountResult comp in result.Gross.ComponentBreakdown)
             {
                 PayrunComponentBreakdown breakdown = PayrunComponentBreakdown.Create(
                     req.PayrollRunId, empId, payrunEmp.TenantId,

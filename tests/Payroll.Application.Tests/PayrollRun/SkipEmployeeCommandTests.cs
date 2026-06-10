@@ -24,7 +24,7 @@ public class SkipEmployeeCommandTests
 
     private static PayrunEmployee CreateActiveEmployee(decimal grossPay = 50_000m, decimal netPay = 44_000m)
     {
-        var emp = PayrunEmployee.Create(RunId, EmpId, TenantId, 31, ActorId);
+        PayrunEmployee emp = PayrunEmployee.Create(RunId, EmpId, TenantId, 31, ActorId);
         emp.UpdateComputedAmounts(grossPay, grossPay, netPay, 6_000m, 0m, 0m, 0m, 0m, 0m, 0m, 0m, 6_000m, 0m, 0m, 0m, 0m, 0m, ActorId);
         return emp;
     }
@@ -32,17 +32,17 @@ public class SkipEmployeeCommandTests
     [Fact]
     public async Task Skip_ValidReason_SetsStatusToSkipped()
     {
-        var run = CreateDraft();
-        var payrunEmp = CreateActiveEmployee();
+        Domain.Entities.PayrollRun run = CreateDraft();
+        PayrunEmployee payrunEmp = CreateActiveEmployee();
 
-        var runRepo = Substitute.For<IPayrollRunRepository>();
+        IPayrollRunRepository runRepo = Substitute.For<IPayrollRunRepository>();
         runRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(run);
 
-        var empRepo = Substitute.For<IPayrunEmployeeRepository>();
+        IPayrunEmployeeRepository empRepo = Substitute.For<IPayrunEmployeeRepository>();
         empRepo.GetByRunAndEmployeeAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(payrunEmp);
         empRepo.GetByRunIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(new List<PayrunEmployee> { payrunEmp });
 
-        var handler = new SkipEmployeeHandler(runRepo, empRepo, Substitute.For<IUnitOfWork>());
+        SkipEmployeeHandler handler = new SkipEmployeeHandler(runRepo, empRepo, Substitute.For<IUnitOfWork>());
 
         await handler.Handle(new SkipEmployeeCommand(RunId, EmpId, "Missing bank details", ActorId), CancellationToken.None);
 
@@ -53,13 +53,13 @@ public class SkipEmployeeCommandTests
     [Fact]
     public async Task Skip_OnApprovedRun_ThrowsInvalidOperation()
     {
-        var run = CreateDraft();
+        Domain.Entities.PayrollRun run = CreateDraft();
         run.Approve(ActorId);
 
-        var runRepo = Substitute.For<IPayrollRunRepository>();
+        IPayrollRunRepository runRepo = Substitute.For<IPayrollRunRepository>();
         runRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(run);
 
-        var handler = new SkipEmployeeHandler(runRepo, Substitute.For<IPayrunEmployeeRepository>(), Substitute.For<IUnitOfWork>());
+        SkipEmployeeHandler handler = new SkipEmployeeHandler(runRepo, Substitute.For<IPayrunEmployeeRepository>(), Substitute.For<IUnitOfWork>());
 
         Func<Task> act = () => handler.Handle(new SkipEmployeeCommand(RunId, EmpId, "reason", ActorId), CancellationToken.None);
 
@@ -69,21 +69,21 @@ public class SkipEmployeeCommandTests
     [Fact]
     public async Task UndoSkip_PreviouslySkipped_SetsStatusToActive()
     {
-        var run = CreateDraft();
-        var payrunEmp = CreateActiveEmployee();
+        Domain.Entities.PayrollRun run = CreateDraft();
+        PayrunEmployee payrunEmp = CreateActiveEmployee();
         payrunEmp.Skip("Test skip", ActorId);
 
-        var runRepo = Substitute.For<IPayrollRunRepository>();
+        IPayrollRunRepository runRepo = Substitute.For<IPayrollRunRepository>();
         runRepo.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(run);
 
-        var empRepo = Substitute.For<IPayrunEmployeeRepository>();
+        IPayrunEmployeeRepository empRepo = Substitute.For<IPayrunEmployeeRepository>();
         empRepo.GetByRunAndEmployeeAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(payrunEmp);
         empRepo.GetByRunIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(new List<PayrunEmployee> { payrunEmp });
 
-        var recompute = Substitute.For<Payroll.Application.Services.IPayrollRecomputeService>();
+        Application.Services.IPayrollRecomputeService recompute = Substitute.For<Payroll.Application.Services.IPayrollRecomputeService>();
         recompute.RecomputeEmployeeAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromResult(MakeRecomputeResult()));
-        var handler = new UndoSkipEmployeeHandler(runRepo, empRepo, recompute, Substitute.For<IUnitOfWork>());
+        UndoSkipEmployeeHandler handler = new UndoSkipEmployeeHandler(runRepo, empRepo, recompute, Substitute.For<IUnitOfWork>());
 
         await handler.Handle(new UndoSkipEmployeeCommand(RunId, EmpId, ActorId), CancellationToken.None);
 
@@ -96,7 +96,7 @@ public class SkipEmployeeCommandTests
     [Fact]
     public void UndoSkip_OnActiveEmployee_ThrowsInvalidOperation()
     {
-        var emp = PayrunEmployee.Create(RunId, EmpId, TenantId, 31, ActorId);
+        PayrunEmployee emp = PayrunEmployee.Create(RunId, EmpId, TenantId, 31, ActorId);
 
         Action act = () => emp.UndoSkip(ActorId);
 
@@ -105,12 +105,12 @@ public class SkipEmployeeCommandTests
 
     private static Payroll.Application.Services.RecomputeResult MakeRecomputeResult()
     {
-        var gross = new Payroll.Engine.Outputs.GrossResult(
+        Engine.Outputs.GrossResult gross = new Payroll.Engine.Outputs.GrossResult(
             GrossWage: 10_000m, PFWage: 10_000m, FullPFWage: 10_000m,
             AnnualProjectedGross: 1_20_000m, LOPDeduction: 0m, ArrearAmount: 0m,
             ComponentBreakdown: [], TaxableGrossWage: 10_000m,
             AnnualProjectedTaxableGross: 1_20_000m, ESIWage: 10_000m);
-        var result = new Payroll.Engine.Outputs.PayrollResult(
+        Engine.Outputs.PayrollResult result = new Payroll.Engine.Outputs.PayrollResult(
             EmpId, gross,
             new Payroll.Engine.Outputs.TDSResult(0m, 0m, 0m, 0m, 0m, 0m, false, false),
             new Payroll.Engine.Outputs.PFResult(1200m, 0m, 367m, 833m, false),

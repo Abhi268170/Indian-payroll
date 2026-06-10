@@ -22,7 +22,7 @@ public class PayrollRunEntityTests
     [Fact]
     public void Approve_OnDraft_SetsApprovedStatus()
     {
-        var run = CreateDraft();
+        Domain.Entities.PayrollRun run = CreateDraft();
         run.Approve(ActorId);
         run.Status.Should().Be(PayrollRunStatus.Approved);
         run.ApprovedAt.Should().NotBeNull();
@@ -32,7 +32,7 @@ public class PayrollRunEntityTests
     [Fact]
     public void Approve_OnPaid_Throws()
     {
-        var run = CreateDraft();
+        Domain.Entities.PayrollRun run = CreateDraft();
         run.Approve(ActorId);
         run.RecordPayment(new DateOnly(2025, 5, 31), "BankTransfer", null, ActorId);
 
@@ -45,7 +45,7 @@ public class PayrollRunEntityTests
     [Fact]
     public void RejectApproval_OnApproved_RevertsToDraft()
     {
-        var run = CreateDraft();
+        Domain.Entities.PayrollRun run = CreateDraft();
         run.Approve(ActorId);
         run.RejectApproval("Salary mismatch", ActorId);
 
@@ -56,7 +56,7 @@ public class PayrollRunEntityTests
     [Fact]
     public void RejectApproval_WithNullReason_Accepted()
     {
-        var run = CreateDraft();
+        Domain.Entities.PayrollRun run = CreateDraft();
         run.Approve(ActorId);
         run.RejectApproval(null, ActorId);
         run.Status.Should().Be(PayrollRunStatus.Draft);
@@ -65,7 +65,7 @@ public class PayrollRunEntityTests
     [Fact]
     public void RejectApproval_OnDraft_Throws()
     {
-        var run = CreateDraft();
+        Domain.Entities.PayrollRun run = CreateDraft();
         Action act = () => run.RejectApproval("reason", ActorId);
         act.Should().Throw<InvalidOperationException>();
     }
@@ -75,9 +75,9 @@ public class PayrollRunEntityTests
     [Fact]
     public void RecordPayment_OnApproved_SetsPaidStatus()
     {
-        var run = CreateDraft();
+        Domain.Entities.PayrollRun run = CreateDraft();
         run.Approve(ActorId);
-        var payDate = new DateOnly(2025, 5, 31);
+        DateOnly payDate = new DateOnly(2025, 5, 31);
         run.RecordPayment(payDate, "BankTransfer", "REF001", ActorId);
 
         run.Status.Should().Be(PayrollRunStatus.Paid);
@@ -90,7 +90,7 @@ public class PayrollRunEntityTests
     [Fact]
     public void RecordPayment_OnDraft_Throws()
     {
-        var run = CreateDraft();
+        Domain.Entities.PayrollRun run = CreateDraft();
         Action act = () => run.RecordPayment(new DateOnly(2025, 5, 31), "BankTransfer", null, ActorId);
         act.Should().Throw<InvalidOperationException>();
     }
@@ -100,7 +100,7 @@ public class PayrollRunEntityTests
     [Fact]
     public void DeletePayment_OnPaid_RevertsToApproved()
     {
-        var run = CreateDraft();
+        Domain.Entities.PayrollRun run = CreateDraft();
         run.Approve(ActorId);
         run.RecordPayment(new DateOnly(2025, 5, 31), "BankTransfer", "REF001", ActorId);
         run.DeletePayment(ActorId);
@@ -115,7 +115,7 @@ public class PayrollRunEntityTests
     [Fact]
     public void RejectApproval_AfterPaymentDeleted_Throws_RunIsImmutable()
     {
-        var run = CreateDraft();
+        Domain.Entities.PayrollRun run = CreateDraft();
         run.Approve(ActorId);
         run.RecordPayment(new DateOnly(2025, 5, 31), "BankTransfer", "REF001", ActorId);
         run.DeletePayment(ActorId);
@@ -128,7 +128,7 @@ public class PayrollRunEntityTests
     [Fact]
     public void DeletePayment_OnDraft_Throws()
     {
-        var run = CreateDraft();
+        Domain.Entities.PayrollRun run = CreateDraft();
         Action act = () => run.DeletePayment(ActorId);
         act.Should().Throw<InvalidOperationException>();
     }
@@ -138,7 +138,7 @@ public class PayrollRunEntityTests
     [Fact]
     public void Delete_OnDraft_SetsDeletedStatus()
     {
-        var run = CreateDraft();
+        Domain.Entities.PayrollRun run = CreateDraft();
         run.Delete(ActorId);
         run.Status.Should().Be(PayrollRunStatus.Deleted);
     }
@@ -146,7 +146,7 @@ public class PayrollRunEntityTests
     [Fact]
     public void Delete_OnApproved_Throws()
     {
-        var run = CreateDraft();
+        Domain.Entities.PayrollRun run = CreateDraft();
         run.Approve(ActorId);
         Action act = () => run.Delete(ActorId);
         act.Should().Throw<InvalidOperationException>();

@@ -15,7 +15,7 @@ internal sealed class PayrollRunRepository(PayrollDbContext db) : IPayrollRunRep
 
     public Task<PayrollRun?> GetLatestPaidAsync(Domain.Enums.PayrollRunType? type = null, CancellationToken ct = default)
     {
-        var q = db.PayrollRuns.Where(r => r.Status == Domain.Enums.PayrollRunStatus.Paid);
+        IQueryable<PayrollRun> q = db.PayrollRuns.Where(r => r.Status == Domain.Enums.PayrollRunStatus.Paid);
         if (type.HasValue) q = q.Where(r => r.Type == type.Value);
         return q.OrderByDescending(r => r.PayPeriod.Year)
             .ThenByDescending(r => r.PayPeriod.Month)
@@ -24,7 +24,7 @@ internal sealed class PayrollRunRepository(PayrollDbContext db) : IPayrollRunRep
 
     public async Task<IReadOnlyList<PayrollRun>> GetHistoryAsync(int skip, int take, Domain.Enums.PayrollRunType? type = null, CancellationToken ct = default)
     {
-        var q = db.PayrollRuns.Where(r => r.Status == Domain.Enums.PayrollRunStatus.Paid);
+        IQueryable<PayrollRun> q = db.PayrollRuns.Where(r => r.Status == Domain.Enums.PayrollRunStatus.Paid);
         if (type.HasValue) q = q.Where(r => r.Type == type.Value);
         return await q
             .OrderByDescending(r => r.PaymentDate)
@@ -37,7 +37,7 @@ internal sealed class PayrollRunRepository(PayrollDbContext db) : IPayrollRunRep
 
     public Task<int> GetHistoryCountAsync(Domain.Enums.PayrollRunType? type = null, CancellationToken ct = default)
     {
-        var q = db.PayrollRuns.Where(r => r.Status == Domain.Enums.PayrollRunStatus.Paid);
+        IQueryable<PayrollRun> q = db.PayrollRuns.Where(r => r.Status == Domain.Enums.PayrollRunStatus.Paid);
         if (type.HasValue) q = q.Where(r => r.Type == type.Value);
         return q.CountAsync(ct);
     }
@@ -50,14 +50,14 @@ internal sealed class PayrollRunRepository(PayrollDbContext db) : IPayrollRunRep
 
     public Task<bool> ExistsForPeriodAsync(PayPeriod period, Domain.Enums.PayrollRunType? type = null, CancellationToken ct = default)
     {
-        var q = db.PayrollRuns.Where(r => r.PayPeriod.Year == period.Year && r.PayPeriod.Month == period.Month);
+        IQueryable<PayrollRun> q = db.PayrollRuns.Where(r => r.PayPeriod.Year == period.Year && r.PayPeriod.Month == period.Month);
         if (type.HasValue) q = q.Where(r => r.Type == type.Value);
         return q.AnyAsync(ct);
     }
 
     public Task<PayrollRun?> GetActiveForPeriodAsync(PayPeriod period, Domain.Enums.PayrollRunType? type = null, CancellationToken ct = default)
     {
-        var q = db.PayrollRuns.Where(r =>
+        IQueryable<PayrollRun> q = db.PayrollRuns.Where(r =>
             r.PayPeriod.Year == period.Year &&
             r.PayPeriod.Month == period.Month &&
             r.Status != Domain.Enums.PayrollRunStatus.Deleted);
@@ -80,7 +80,7 @@ internal sealed class PayrollRunRepository(PayrollDbContext db) : IPayrollRunRep
         // Fiscal year Apr-fiscalYear to Mar-(fiscalYear+1). Approved counts too:
         // payslips are generated at approval, and YTD must not change between the
         // Approve-time and Paid-time renderings of the same immutable run.
-        var result = await db.PayrollRuns
+        List<Guid> result = await db.PayrollRuns
             .Where(r => (r.Status == Domain.Enums.PayrollRunStatus.Paid
                          || r.Status == Domain.Enums.PayrollRunStatus.Approved) &&
                         ((r.PayPeriod.Month >= 4 && r.PayPeriod.Year == fiscalYear) ||
@@ -101,7 +101,7 @@ internal sealed class PayrollRunRepository(PayrollDbContext db) : IPayrollRunRep
         // A regular Draft run "covers" a date when its PayPeriod (year, month) wraps
         // around it. We match on (year, month) for simplicity since PayPeriod is
         // monthly.
-        var rows = await db.PayrollRuns
+        List<PayrollRun> rows = await db.PayrollRuns
             .Where(r =>
                 r.Type == Domain.Enums.PayrollRunType.Regular &&
                 r.Status == Domain.Enums.PayrollRunStatus.Draft &&
