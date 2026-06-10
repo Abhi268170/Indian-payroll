@@ -264,7 +264,11 @@ export default function EmployeeSummaryTable({
                       </td>
                       <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">
                         {formatINR(
-                          emp.employeePf + emp.employeeEsi + emp.ptAmount + emp.lwfEmployeeAmount,
+                          emp.employeePf +
+                            (emp.vpfAmount ?? 0) +
+                            emp.employeeEsi +
+                            emp.ptAmount +
+                            emp.lwfEmployeeAmount,
                         )}
                       </td>
                       <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">

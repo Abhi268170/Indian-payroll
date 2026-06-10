@@ -132,6 +132,7 @@ export default function EmployeePayBreakdown({
   const effectiveTds = data ? (data.tdsOverrideAmount ?? data.tdsAmount) : 0
   const explicitDeductions = data
     ? data.employeePf +
+      (data.vpfAmount ?? 0) +
       data.employeeEsi +
       data.ptAmount +
       data.lwfEmployeeAmount +

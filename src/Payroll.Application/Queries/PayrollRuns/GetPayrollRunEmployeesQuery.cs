@@ -76,6 +76,7 @@ public sealed class GetPayrollRunEmployeesHandler(
                     GrossPay: pe.GrossPay,
                     NetPay: pe.NetPay,
                     EmployeePf: pe.EmployeePf,
+                    VpfAmount: pe.VpfAmount,
                     EmployeeEsi: pe.EmployeeEsi,
                     PtAmount: pe.PtAmount,
                     LwfEmployeeAmount: pe.LwfEmployeeAmount,

@@ -562,10 +562,11 @@ public sealed class InitiatePayrollRunHandler(
             if (sc.Category != ComponentCategory.Benefit) continue;
 
             // VPF-type benefit: employee-side, percent of PF wage. The engine
-            // deducts it from net pay — it is NOT an employer CTC cost.
+            // deducts it from net pay — it is NOT an employer CTC cost. The
+            // per-employee override percent (if set) wins over the plan default.
             if (sc.BenefitPercentage is not null)
             {
-                vpfPercent = sc.BenefitPercentage.Value;
+                vpfPercent = ov.Percentage ?? sc.BenefitPercentage.Value;
                 continue;
             }
 

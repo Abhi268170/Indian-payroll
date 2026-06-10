@@ -1,13 +1,13 @@
-// Shared salary-structure preview math, mirrors backend
-// `Payroll.Application.Services.SalaryStructurePreviewCalculator`.
+// Local fallback for the salary-structure preview while the backend
+// `POST /api/v1/salary-structure-templates/preview` response is in flight.
 //
-// Both the settings builder and the employee hire wizard compute their preview
-// client-side (so the operator can see the residual update as they type). This
-// module is the single TS implementation — until it existed, each page had its
-// own slightly-different copy that drifted from the backend and from each other.
-//
-// Inputs deliberately match the backend record shape so a future PR can collapse
-// both into a single `POST /preview` endpoint without changing call sites.
+// The fallback computes EARNINGS ROWS ONLY (percent-of-CTC, percent-of-basic,
+// percent-of-gross, fixed). Everything statutory — employer EPF, gratuity,
+// the Special Allowance residual, employee deductions, net pay, benefits —
+// is server-authoritative and intentionally NOT computed here: the local
+// math drifted from the backend (hardcoded caps, unconditional PF cap,
+// ignored benefits). Those fields come back as null/empty so consumers can
+// render a loading placeholder ("—") until the server preview arrives.
 
 export type FormulaType = 'Fixed' | 'PercentOfCTC' | 'PercentOfBasic' | 'PercentOfGross' | 'ResidualCTC'
 
@@ -15,8 +15,8 @@ export interface PreviewComponent {
   componentId: string
   code: string
   name: string
-  // EarningType.Basic identifies the basic-wage row that drives gratuity accrual
-  // and PercentOfBasic computations. Match the backend enum values exactly.
+  // EarningType.Basic identifies the basic-wage row that drives
+  // PercentOfBasic computations. Match the backend enum values exactly.
   earningType: string | null
   considerForEpf: boolean
   // Template defaults; overrides applied via the `overrides` map.
@@ -51,36 +51,6 @@ export interface EmployeeStatutoryFlags {
   gratuityEnabled: boolean
 }
 
-export interface StatutoryOrgFlags {
-  epfEnabled: boolean
-  epfIncludeEmployerInCtc: boolean
-  gratuityIncludedInCtc: boolean
-}
-
-export interface StatutoryCaps {
-  pfWageCap: number
-  epfEmployerRate: number
-}
-
-export const DEFAULT_CAPS: StatutoryCaps = {
-  pfWageCap: 15_000,
-  epfEmployerRate: 0.12,
-}
-
-export const DEFAULT_ORG_FLAGS: StatutoryOrgFlags = {
-  epfEnabled: true,
-  epfIncludeEmployerInCtc: true,
-  gratuityIncludedInCtc: true,
-}
-
-export const DEFAULT_EMPLOYEE_FLAGS: EmployeeStatutoryFlags = {
-  epfEnabled: true,
-  esiEnabled: true,
-  ptEnabled: true,
-  lwfEnabled: true,
-  gratuityEnabled: true,
-}
-
 export interface PreviewRow {
   componentId: string
   code: string
@@ -88,8 +58,9 @@ export interface PreviewRow {
   formulaType: FormulaType
   percentage: number | null
   fixedAmount: number | null
-  monthlyAmount: number
-  annualAmount: number
+  // null while the server preview is pending (residual row in the local fallback).
+  monthlyAmount: number | null
+  annualAmount: number | null
   isResidual: boolean
   isAdded: boolean
   isOverride: boolean
@@ -136,15 +107,13 @@ export interface PreviewInputs {
   addedComponents: AddedComponent[]
   benefits?: BenefitInput[]
   employeeFlags?: EmployeeStatutoryFlags
-  orgFlags?: StatutoryOrgFlags
-  caps?: StatutoryCaps
   workStateCode?: string | null
   year?: number
   month?: number
 }
 
 function round2(n: number): number {
-  return Math.round(n * 100) / 100
+  return Math.round((n + Number.EPSILON) * 100) / 100
 }
 
 function evaluateMonthly(
@@ -186,14 +155,9 @@ export interface PreviewApiResponse {
 export function computePreview(inputs: PreviewInputs): PreviewOutput {
   const annualCtc = inputs.annualCtc
   const monthlyGross = annualCtc / 12
-  const employeeFlags = inputs.employeeFlags ?? DEFAULT_EMPLOYEE_FLAGS
-  const orgFlags = inputs.orgFlags ?? DEFAULT_ORG_FLAGS
-  const caps = inputs.caps ?? DEFAULT_CAPS
 
   const rows: PreviewRow[] = []
   let basicMonthly = 0
-  let nonResidualMonthly = 0
-  let pfWageMonthly = 0
 
   const ordered = [...inputs.templateComponents].sort((a, b) => a.displayOrder - b.displayOrder)
   let residual: PreviewComponent | null = null
@@ -211,8 +175,6 @@ export function computePreview(inputs: PreviewInputs): PreviewOutput {
     const monthly = evaluateMonthly(type, pct, fixedAmount, annualCtc, basicMonthly, monthlyGross)
 
     if (comp.earningType === 'Basic') basicMonthly = monthly
-    nonResidualMonthly += monthly
-    if (comp.considerForEpf) pfWageMonthly += monthly
 
     rows.push({
       componentId: comp.componentId,
@@ -235,8 +197,6 @@ export function computePreview(inputs: PreviewInputs): PreviewOutput {
     const pct = ov?.percentage ?? added.percentage
     const fixedAmount = ov?.fixedAmount ?? added.fixedAmount
     const monthly = evaluateMonthly(type, pct, fixedAmount, annualCtc, basicMonthly, monthlyGross)
-    nonResidualMonthly += monthly
-    if (added.considerForEpf) pfWageMonthly += monthly
 
     rows.push({
       componentId: added.componentId,
@@ -253,23 +213,10 @@ export function computePreview(inputs: PreviewInputs): PreviewOutput {
     })
   }
 
-  // Employer statutory load — both org and employee must agree before deducting from CTC.
-  let employerEpfMonthly = 0
-  let gratuityMonthly = 0
-
-  if (employeeFlags.epfEnabled && orgFlags.epfEnabled && orgFlags.epfIncludeEmployerInCtc && pfWageMonthly > 0) {
-    const cappedPfWage = Math.min(pfWageMonthly, caps.pfWageCap)
-    employerEpfMonthly = round2(cappedPfWage * caps.epfEmployerRate)
-  }
-
-  if (employeeFlags.gratuityEnabled && orgFlags.gratuityIncludedInCtc && basicMonthly > 0) {
-    gratuityMonthly = round2((basicMonthly * 15) / 26 / 12)
-  }
-
-  const employerStatutoryMonthly = employerEpfMonthly + gratuityMonthly
-
   if (residual) {
-    const residualMonthly = Math.max(0, monthlyGross - nonResidualMonthly - employerStatutoryMonthly)
+    // Residual ("Special Allowance") depends on the employer statutory load —
+    // server-only. Emit the row with null amounts so the UI shows a loading
+    // placeholder instead of a number that disagrees with the backend.
     rows.push({
       componentId: residual.componentId,
       code: residual.code,
@@ -277,34 +224,15 @@ export function computePreview(inputs: PreviewInputs): PreviewOutput {
       formulaType: 'ResidualCTC',
       percentage: null,
       fixedAmount: null,
-      monthlyAmount: round2(residualMonthly),
-      annualAmount: round2(residualMonthly * 12),
+      monthlyAmount: null,
+      annualAmount: null,
       isResidual: true,
       isAdded: false,
       isOverride: false,
     })
   }
 
-  const employerContributions: EmployerContribution[] = []
-  if (employerEpfMonthly > 0) {
-    employerContributions.push({
-      code: 'EPF_EMPLOYER',
-      name: 'Employer EPF + EPS',
-      monthlyAmount: employerEpfMonthly,
-      annualAmount: round2(employerEpfMonthly * 12),
-    })
-  }
-  if (gratuityMonthly > 0) {
-    employerContributions.push({
-      code: 'GRATUITY_ACCRUAL',
-      name: 'Gratuity accrual',
-      monthlyAmount: gratuityMonthly,
-      annualAmount: round2(gratuityMonthly * 12),
-    })
-  }
-
-  // Local fallback computes earnings + employer-side only. Employee deductions,
-  // net pay, and benefits arrive from the backend (state-dependent + delegates to
-  // engine calculators that aren't worth porting). Defaults keep callers safe.
-  return { rows, employerContributions, employeeDeductions: [], netPayMonthly: 0, benefits: [] }
+  // Employer contributions, employee deductions, net pay, and benefits are
+  // server-authoritative — empty/zero here means "pending", not "₹0".
+  return { rows, employerContributions: [], employeeDeductions: [], netPayMonthly: 0, benefits: [] }
 }

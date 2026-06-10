@@ -38,7 +38,12 @@ function WorksheetRow({ row }: { row: PayRunTaxLineDto }): React.ReactElement {
           {formatINR(row.annualTaxLiability)}
         </td>
         <td className="px-3 py-3 text-right font-semibold text-[var(--color-text-primary)] tabular-nums">
-          {formatINR(row.tdsThisMonth)}
+          {formatINR(row.effectiveTds)}
+          {row.tdsOverrideAmount != null && (
+            <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-50 text-amber-700 border border-amber-200 align-middle">
+              Overridden
+            </span>
+          )}
         </td>
         <td className="px-3 py-3 text-center">
           {row.hasPanOverride ? (
@@ -64,7 +69,11 @@ function WorksheetRow({ row }: { row: PayRunTaxLineDto }): React.ReactElement {
               {row.surcharge > 0 && <WorksheetLine label="Surcharge" value={row.surcharge} />}
               {row.cess > 0 && <WorksheetLine label="Health & Education Cess (4%)" value={row.cess} />}
               <WorksheetLine label="Annual Tax Liability" value={row.annualTaxLiability} bold />
-              <WorksheetLine label="TDS This Month" value={row.tdsThisMonth} bold highlight />
+              {/* tdsThisMonth is always the engine figure; the override (when set) is what's deducted. */}
+              <WorksheetLine label="TDS This Month" value={row.tdsThisMonth} bold highlight={row.tdsOverrideAmount == null} />
+              {row.tdsOverrideAmount != null && (
+                <WorksheetLine label="TDS Override (Applied)" value={row.effectiveTds} bold highlight />
+              )}
             </div>
           </td>
         </tr>

@@ -42,6 +42,7 @@ function makeEmployee(overrides: Partial<PayrunEmployeeDto> = {}): PayrunEmploye
     grossPay: 50000,
     netPay: 47000,
     employeePf: 1800,
+    vpfAmount: 0,
     employeeEsi: 0,
     ptAmount: 200,
     lwfEmployeeAmount: 10,

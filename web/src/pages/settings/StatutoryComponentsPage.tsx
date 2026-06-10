@@ -8,7 +8,6 @@ import EpfTab from './statutory/EpfTab'
 import EsiTab from './statutory/EsiTab'
 import PtTab from './statutory/PtTab'
 import LwfTab from './statutory/LwfTab'
-import StatutoryBonusTab from './statutory/StatutoryBonusTab'
 
 export interface StatutoryConfig {
   epfEnabled: boolean
@@ -34,7 +33,8 @@ const TABS = [
   { id: 'esi', label: 'ESI' },
   { id: 'pt', label: 'Professional Tax' },
   { id: 'lwf', label: 'Labour Welfare Fund' },
-  { id: 'bonus', label: 'Statutory Bonus' },
+  // Statutory Bonus tab hidden — deferred feature, see audit June 2026.
+  // StatutoryBonusTab component is kept in ./statutory/StatutoryBonusTab.tsx.
 ]
 
 export default function StatutoryComponentsPage(): ReactElement {
@@ -69,7 +69,7 @@ export default function StatutoryComponentsPage(): ReactElement {
           Statutory Components
         </h2>
         <p className="text-[13px] text-[var(--color-text-muted)] mt-1">
-          Configure mandatory statutory deductions — EPF, ESI, Professional Tax, LWF, and Statutory Bonus.
+          Configure mandatory statutory deductions — EPF, ESI, Professional Tax, and LWF.
         </p>
       </div>
 
@@ -99,7 +99,6 @@ export default function StatutoryComponentsPage(): ReactElement {
           {tab === 'esi' && <EsiTab config={config} />}
           {tab === 'pt' && <PtTab />}
           {tab === 'lwf' && <LwfTab />}
-          {tab === 'bonus' && <StatutoryBonusTab config={config} />}
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Plus, RotateCcw, Trash2 } from 'lucide-react'
+import { AlertTriangle, Plus, RotateCcw, Trash2 } from 'lucide-react'
 import { api } from '@/lib/api'
 import { formatINR } from '@/lib/format'
 import type { SalaryStructureTemplateSummaryDto, SalaryStructureTemplateDetailDto, ComponentOverrideRequest, EmployeeSalaryStructureDto, EmployeeDto } from '@/types/api'
@@ -10,10 +10,8 @@ import type {
   EmployeeStatutoryFlags,
   EmployerContribution,
   FormulaType,
-  StatutoryOrgFlags,
 } from '@/lib/salaryStructurePreview'
 import { useSalaryStructurePreview } from '@/lib/useSalaryStructurePreview'
-import type { StatutoryConfig } from '@/pages/settings/StatutoryComponentsPage'
 
 interface Props {
   employeeId: string
@@ -44,6 +42,8 @@ interface SalaryComponentSummary {
   formulaType: string
   fixedAmount: number | null
   percentage: number | null
+  // Non-null for VPF-type benefits: employee-side contribution as % of PF wage.
+  benefitPercentage: number | null
   earningType: string | null
   considerForEpf: boolean
 }
@@ -64,8 +64,9 @@ interface ComponentRow {
   formulaType: string
   percentage: number | null
   fixedAmount: number | null
-  monthlyAmount: number
-  annualAmount: number
+  // null while the server preview is pending (residual row).
+  monthlyAmount: number | null
+  annualAmount: number | null
   isResidual: boolean
   isAdded: boolean  // true for override-only (added earning)
 }
@@ -78,7 +79,6 @@ function buildPreviewInputs(
   overrides: OverrideMap,
   addedComps: SalaryComponentSummary[],
   flags: EmployeeStatutoryFlags,
-  orgFlags: StatutoryOrgFlags | undefined,
   workStateCode: string | null,
   benefits: { componentId: string; annualAmount: number }[],
 ): {
@@ -88,7 +88,6 @@ function buildPreviewInputs(
   addedComponents: PreviewAddedComponent[]
   benefits: { componentId: string; annualAmount: number }[]
   employeeFlags: EmployeeStatutoryFlags
-  orgFlags: StatutoryOrgFlags | undefined
   workStateCode: string | null
 } {
   const templateComponents: PreviewComponent[] = template
@@ -135,7 +134,6 @@ function buildPreviewInputs(
     addedComponents: previewAdded,
     benefits,
     employeeFlags: flags,
-    orgFlags,
     workStateCode,
   }
 }
@@ -181,14 +179,6 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
   const { data: activeBenefits = [] } = useQuery<SalaryComponentSummary[]>({
     queryKey: ['active-benefits'],
     queryFn: () => api.get<SalaryComponentSummary[]>('/api/v1/salary-components/active-benefits').then(r => r.data),
-  })
-
-  // Tenant statutory config — drives the orgFlags passed to the preview so
-  // the residual reflects what this tenant has actually configured.
-  const { data: statutoryConfig } = useQuery<StatutoryConfig>({
-    queryKey: ['statutory-config'],
-    queryFn: () => api.get<StatutoryConfig>('/api/v1/statutory/config').then(r => r.data),
-    retry: false,
   })
 
   useEffect(() => {
@@ -249,11 +239,6 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
   const employeeFlags: EmployeeStatutoryFlags = {
     epfEnabled, esiEnabled, ptEnabled, lwfEnabled, gratuityEnabled: true,
   }
-  const orgFlags: StatutoryOrgFlags | undefined = statutoryConfig ? {
-    epfEnabled: statutoryConfig.epfEnabled,
-    epfIncludeEmployerInCtc: statutoryConfig.epfIncludeEmployerInCtc,
-    gratuityIncludedInCtc: statutoryConfig.gratuityIncludedInCtc,
-  } : undefined
 
   // Resolve employee's work-location state for PT + LWF preview deductions.
   // Engine reads work_locations.state as an enum; map enum name to ISO code
@@ -268,14 +253,18 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
 
   // Thread addedBenefits into the preview as annual amounts. Wizard tracks
   // benefits separately from earnings; preview needs them for the Benefits
-  // section render.
-  const benefitsForPreview = addedBenefits.map(b => ({
-    componentId: b.id,
-    annualAmount: (benefitOverrides[b.id] ?? b.fixedAmount ?? 0) * 12,
-  }))
+  // section render. VPF-type benefits (benefitPercentage != null) are excluded:
+  // they are employee-side deductions (% of PF wage), not employer CTC costs,
+  // so they must not shrink the residual.
+  const benefitsForPreview = addedBenefits
+    .filter(b => b.benefitPercentage == null)
+    .map(b => ({
+      componentId: b.id,
+      annualAmount: (benefitOverrides[b.id] ?? b.fixedAmount ?? 0) * 12,
+    }))
 
   const previewInputs = buildPreviewInputs(
-    templateDetail, ctcNum, overrides, addedComps, employeeFlags, orgFlags,
+    templateDetail, ctcNum, overrides, addedComps, employeeFlags,
     workStateCode, benefitsForPreview)
   const preview = useSalaryStructurePreview(previewInputs)
   const employeeDeductions = preview.data.employeeDeductions
@@ -295,6 +284,18 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
   }))
   const employerContributions: EmployerContribution[] = preview.data.employerContributions
   const monthlyGross = ctcNum > 0 ? ctcNum / 12 : 0
+
+  // Over-allocation check on the SERVER preview: residual squashed to ₹0 while
+  // components + employer statutory + benefits exceed CTC. The backend rejects
+  // payroll run initiation for such structures. The local fallback emits a null
+  // residual, so this can only trigger once server data is in.
+  const residualRow = preview.data.rows.find(r => r.isResidual)
+  const allocatedMonthly =
+    preview.data.rows.filter(r => !r.isResidual).reduce((s, r) => s + (r.monthlyAmount ?? 0), 0) +
+    preview.data.employerContributions.reduce((s, c) => s + c.monthlyAmount, 0) +
+    preview.data.benefits.reduce((s, b) => s + b.monthlyAmount, 0)
+  const isOverAllocated =
+    residualRow?.monthlyAmount === 0 && allocatedMonthly > monthlyGross + 1
 
   const templateCompIds = new Set(templateDetail?.components.map(c => c.componentId) ?? [])
 
@@ -363,11 +364,15 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
 
   const addedBenefitIds = new Set(addedBenefits.map(b => b.id))
   const availableBenefits = activeBenefits.filter(b => !addedBenefitIds.has(b.id))
+  // VPF-type benefits carry a percent of PF wage, not a ₹/month amount.
+  const selectedBenefit = availableBenefits.find(b => b.id === addBenefitId)
+  const selectedBenefitIsVpf = selectedBenefit?.benefitPercentage != null
 
   function handleAddBenefit(): void {
     const sc = availableBenefits.find(b => b.id === addBenefitId)
     if (!sc) return
-    const amount = parseFloat(addBenefitAmount) || 0
+    // For VPF the value is a percent of PF wage; fall back to the component default.
+    const amount = parseFloat(addBenefitAmount) || (sc.benefitPercentage ?? 0)
     setAddedBenefits(prev => [...prev, sc])
     setBenefitOverrides(prev => ({ ...prev, [sc.id]: amount }))
     setAddBenefitId('')
@@ -416,6 +421,20 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
 
       // Collect added benefits
       for (const sc of addedBenefits) {
+        if (sc.benefitPercentage != null) {
+          // VPF-type benefit: employee-side deduction as a PERCENT of PF wage.
+          // The payroll run reads the percent from the component's
+          // benefitPercentage — never save a Fixed ₹ amount for these.
+          // (No PercentOfPfWage formula type exists; PercentOfBasic is the
+          // closest marker and its value is ignored at run time.)
+          overridesPayload.push({
+            salaryComponentId: sc.id,
+            formulaType: 'PercentOfBasic',
+            percentage: benefitOverrides[sc.id] ?? sc.benefitPercentage,
+            fixedAmount: null,
+          })
+          continue
+        }
         overridesPayload.push({
           salaryComponentId: sc.id,
           formulaType: 'Fixed',
@@ -519,6 +538,17 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
           </div>
         </div>
 
+        {isOverAllocated && (
+          <div className="flex items-start gap-2.5 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 mb-4">
+            <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+            <p className="text-[12px] text-amber-800">
+              <span className="font-semibold">This structure over-allocates the CTC.</span>{' '}
+              Components plus employer statutory contributions exceed the annual CTC, so the
+              residual allowance is ₹0. Payroll runs for this employee will be blocked.
+            </p>
+          </div>
+        )}
+
         {/* Component breakdown table */}
         {rows.length > 0 && (
           <div className="border border-[var(--color-border)] rounded-lg overflow-hidden">
@@ -574,8 +604,12 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                           />
                         )}
                       </td>
-                      <td className="px-4 py-2 text-right text-[var(--color-text-primary)]">{formatINR(row.monthlyAmount)}</td>
-                      <td className="px-4 py-2 text-right text-[var(--color-text-primary)]">{formatINR(row.annualAmount)}</td>
+                      <td className="px-4 py-2 text-right text-[var(--color-text-primary)]">
+                        {row.monthlyAmount != null ? formatINR(row.monthlyAmount) : '—'}
+                      </td>
+                      <td className="px-4 py-2 text-right text-[var(--color-text-primary)]">
+                        {row.annualAmount != null ? formatINR(row.annualAmount) : '—'}
+                      </td>
                       <td className="px-2 py-2 text-center">
                         {!row.isResidual && isChanged && !row.isAdded && (
                           <button
@@ -773,7 +807,7 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                 <thead>
                   <tr className="bg-[var(--color-page-bg)] border-b border-[var(--color-border)]">
                     <th className="text-left px-4 py-2.5 font-medium text-[var(--color-text-secondary)]">Benefit</th>
-                    <th className="text-right px-4 py-2.5 font-medium text-[var(--color-text-secondary)]">Monthly (₹)</th>
+                    <th className="text-right px-4 py-2.5 font-medium text-[var(--color-text-secondary)]">Value</th>
                     <th className="w-8"></th>
                   </tr>
                 </thead>
@@ -782,17 +816,23 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                     <tr key={b.id} className="border-b border-[var(--color-border)] last:border-0">
                       <td className="px-4 py-2 text-[var(--color-text-primary)]">{b.name}</td>
                       <td className="px-4 py-2 text-right">
-                        <input
-                          type="number"
-                          min={0}
-                          step={100}
-                          value={benefitOverrides[b.id] ?? ''}
-                          onChange={e => {
-                            const val = parseFloat(e.target.value)
-                            setBenefitOverrides(prev => ({ ...prev, [b.id]: isNaN(val) ? 0 : val }))
-                          }}
-                          className="w-28 h-7 px-2 text-[12px] border border-[var(--color-border)] rounded text-right bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
-                        />
+                        <div className="inline-flex items-center gap-1">
+                          <input
+                            type="number"
+                            min={0}
+                            max={b.benefitPercentage != null ? 100 : undefined}
+                            step={b.benefitPercentage != null ? 0.5 : 100}
+                            value={benefitOverrides[b.id] ?? ''}
+                            onChange={e => {
+                              const val = parseFloat(e.target.value)
+                              setBenefitOverrides(prev => ({ ...prev, [b.id]: isNaN(val) ? 0 : val }))
+                            }}
+                            className="w-28 h-7 px-2 text-[12px] border border-[var(--color-border)] rounded text-right bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
+                          />
+                          <span className="text-[11px] text-[var(--color-text-secondary)] whitespace-nowrap w-20 text-left">
+                            {b.benefitPercentage != null ? '% of PF wage' : '₹/month'}
+                          </span>
+                        </div>
                       </td>
                       <td className="px-2 py-2 text-center">
                         <button
@@ -813,7 +853,13 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                 <div className="flex items-center gap-2">
                   <select
                     value={addBenefitId}
-                    onChange={e => setAddBenefitId(e.target.value)}
+                    onChange={e => {
+                      const id = e.target.value
+                      setAddBenefitId(id)
+                      // VPF: default the percent from the component's benefitPercentage.
+                      const sc = availableBenefits.find(b => b.id === id)
+                      setAddBenefitAmount(sc?.benefitPercentage != null ? String(sc.benefitPercentage) : '')
+                    }}
                     className="h-8 px-2 text-[12px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] flex-1"
                   >
                     <option value="">Select benefit</option>
@@ -821,15 +867,31 @@ export default function WizardStep2Salary({ employeeId, onSuccess, onSkip, isRev
                       <option key={b.id} value={b.id}>{b.name}</option>
                     ))}
                   </select>
-                  <input
-                    type="number"
-                    min={0}
-                    step={100}
-                    placeholder="Amount ₹/month"
-                    value={addBenefitAmount}
-                    onChange={e => setAddBenefitAmount(e.target.value)}
-                    className="w-32 h-8 px-2 text-[12px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
-                  />
+                  {selectedBenefitIsVpf ? (
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        min={0}
+                        max={100}
+                        step={0.5}
+                        placeholder="%"
+                        value={addBenefitAmount}
+                        onChange={e => setAddBenefitAmount(e.target.value)}
+                        className="w-20 h-8 px-2 text-[12px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
+                      />
+                      <span className="text-[11px] text-[var(--color-text-secondary)] whitespace-nowrap">% of PF wage</span>
+                    </div>
+                  ) : (
+                    <input
+                      type="number"
+                      min={0}
+                      step={100}
+                      placeholder="Amount ₹/month"
+                      value={addBenefitAmount}
+                      onChange={e => setAddBenefitAmount(e.target.value)}
+                      className="w-32 h-8 px-2 text-[12px] border border-[var(--color-border)] rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)]"
+                    />
+                  )}
                   <button
                     type="button"
                     onClick={handleAddBenefit}

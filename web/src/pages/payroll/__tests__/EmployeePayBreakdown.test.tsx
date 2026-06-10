@@ -56,6 +56,7 @@ function makeData(overrides: Partial<EmployeeVariableInputsDto> = {}): EmployeeV
     tdsOverrideAmount: null,
     tdsOverrideReason: null,
     employeePf: 1800,
+    vpfAmount: 0,
     employerPf: 1800,
     employeeEsi: 0,
     employerEsi: 0,

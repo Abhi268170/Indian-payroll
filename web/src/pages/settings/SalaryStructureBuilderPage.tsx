@@ -1,16 +1,15 @@
 import { useState, useMemo, type ReactElement } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Plus, Trash2, ChevronDown, ChevronRight } from 'lucide-react'
+import { AlertTriangle, Plus, Trash2, ChevronDown, ChevronRight } from 'lucide-react'
 import { api } from '@/lib/api'
 import { Button } from '@/components/ui/Button'
 import { Spinner } from '@/components/ui/Spinner'
 import { useToast } from '@/components/ui/useToast'
 import { formatINR } from '@/lib/format'
 import type { SalaryComponentSummary } from './SalaryComponentsPage'
-import type { EmployerContribution, PreviewComponent, StatutoryOrgFlags } from '@/lib/salaryStructurePreview'
+import type { EmployerContribution, PreviewComponent } from '@/lib/salaryStructurePreview'
 import { useSalaryStructurePreview } from '@/lib/useSalaryStructurePreview'
-import type { StatutoryConfig } from './StatutoryComponentsPage'
 
 type ComponentCategory = 'Earning' | 'Deduction' | 'Reimbursement' | 'Benefit' | 'Correction'
 type FormulaType = 'Fixed' | 'PercentOfBasic' | 'PercentOfGross' | 'PercentOfCTC' | 'ResidualCTC'
@@ -110,15 +109,6 @@ export default function SalaryStructureBuilderPage(): ReactElement {
   const [templatePtEnabled, setTemplatePtEnabled] = useState(true)
   const [templateLwfEnabled, setTemplateLwfEnabled] = useState(true)
 
-  // Load tenant statutory config so the residual preview reflects what this
-  // tenant has actually enabled (employer-EPF-in-CTC, gratuity-in-CTC). Without
-  // this the preview falls back to defaults and over- or under-states the residual.
-  const { data: statutoryConfig } = useQuery<StatutoryConfig>({
-    queryKey: ['statutory-config'],
-    queryFn: () => api.get<StatutoryConfig>('/api/v1/statutory/config').then(r => r.data),
-    retry: false,
-  })
-
   // Load all components for the picker.
   // GET /api/v1/salary-components returns a PagedResult<T> ({items,total,page,pageSize})
   // after pagination shipped. Pull a large page so the builder sees every component
@@ -213,28 +203,33 @@ export default function SalaryStructureBuilderPage(): ReactElement {
     },
   })
 
-  const orgFlags: StatutoryOrgFlags | undefined = statutoryConfig ? {
-    epfEnabled: statutoryConfig.epfEnabled,
-    epfIncludeEmployerInCtc: statutoryConfig.epfIncludeEmployerInCtc,
-    gratuityIncludedInCtc: statutoryConfig.gratuityIncludedInCtc,
-  } : undefined
-
   const previewComponents = useMemo(() => toPreviewComponents(rows), [rows])
   const preview = useSalaryStructurePreview({
     annualCtc: parseFloat(previewCtc) || 0,
     templateComponents: previewComponents,
     overrides: {},
     addedComponents: [],
-    orgFlags,
   })
   const amounts = useMemo(() => {
-    const m = new Map<string, number>()
+    const m = new Map<string, number | null>()
     for (const r of preview.data.rows) m.set(r.componentId, r.annualAmount)
     return m
   }, [preview.data.rows])
   const employerContributions: EmployerContribution[] = preview.data.employerContributions
   const employeeDeductions = preview.data.employeeDeductions
   const netPayMonthly = preview.data.netPayMonthly
+
+  // Over-allocation check on the SERVER preview: residual squashed to ₹0 while
+  // components + employer statutory exceed CTC. The backend rejects payroll run
+  // initiation for such structures, so surface it here. The local fallback emits
+  // a null residual, so this can only trigger once server data is in.
+  const previewMonthlyCtc = (parseFloat(previewCtc) || 0) / 12
+  const residualRow = preview.data.rows.find(r => r.isResidual)
+  const allocatedMonthly =
+    preview.data.rows.filter(r => !r.isResidual).reduce((s, r) => s + (r.monthlyAmount ?? 0), 0) +
+    preview.data.employerContributions.reduce((s, c) => s + c.monthlyAmount, 0)
+  const isOverAllocated =
+    residualRow?.monthlyAmount === 0 && allocatedMonthly > previewMonthlyCtc + 1
 
   const alreadyAdded = new Set(rows.map(r => r.componentId))
 
@@ -421,6 +416,17 @@ export default function SalaryStructureBuilderPage(): ReactElement {
               ))}
             </div>
           </div>
+
+          {isOverAllocated && (
+            <div className="flex items-start gap-2.5 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 mb-4">
+              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+              <p className="text-[12px] text-amber-800">
+                <span className="font-semibold">This structure over-allocates the CTC.</span>{' '}
+                Components plus employer statutory contributions exceed the annual CTC, so the
+                residual allowance is ₹0. Payroll runs for employees on this structure will be blocked.
+              </p>
+            </div>
+          )}
 
           {rows.length === 0 ? (
             <div className="border-2 border-dashed border-[var(--color-border)] rounded-xl py-16 text-center">

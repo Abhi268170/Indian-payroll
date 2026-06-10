@@ -91,6 +91,7 @@ public sealed record PayrunEmployeeDto(
     decimal GrossPay,
     decimal NetPay,
     decimal EmployeePf,
+    decimal VpfAmount,
     decimal EmployeeEsi,
     decimal PtAmount,
     decimal LwfEmployeeAmount,

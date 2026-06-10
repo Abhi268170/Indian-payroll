@@ -14,9 +14,11 @@ import {
 // disagrees with what payroll will actually produce at run time.
 //
 // While the request is in flight (or before annual CTC is set), the hook falls
-// back to the local TS computePreview so the user still gets instant feedback
-// as they type. Once the server response lands, that wins. An equivalence test
-// in the backend guarantees the two implementations agree on the same inputs.
+// back to the local TS computePreview for the earnings rows only. All
+// statutory-dependent figures (residual, employer contributions, deductions,
+// net pay, benefits) stay null/empty until the server response lands, so
+// consumers render a loading placeholder instead of numbers that may drift
+// from the backend.
 export function useSalaryStructurePreview(inputs: PreviewInputs): {
   data: PreviewOutput
   isPending: boolean
@@ -67,9 +69,8 @@ export function useSalaryStructurePreview(inputs: PreviewInputs): {
   })
 
   // Fallback to local compute while pending. The local TS calculator covers
-  // earnings + employer-side; employee deductions + benefits + net pay come
-  // from the backend (state-dependent + engine-delegated). The fallback
-  // surfaces empty arrays for those so the UI doesn't render stale numbers.
+  // earnings rows only; the residual row carries null amounts and the
+  // statutory sections are empty so the UI doesn't render stale numbers.
   const fallback = computePreview(inputs)
   const data: PreviewOutput = query.data
     ? {

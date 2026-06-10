@@ -59,12 +59,8 @@ export default function EmployeeSalaryTab({ employeeId }: Props): React.ReactEle
               <p className="text-[12px] text-[var(--color-text-secondary)]">Template: {data.templateName}</p>
             )}
             <p className="text-[11px] text-[var(--color-text-secondary)] mt-1">Effective {fmtDate(data.effectiveFrom)}</p>
-            <button
-              onClick={() => navigate(`/employees/${employeeId}/wizard/salary?revise=1`)}
-              className="mt-2 h-8 px-3 text-[12px] text-[var(--color-primary)] border border-[var(--color-primary)]/40 rounded-lg hover:bg-[var(--color-primary)]/5 transition-colors"
-            >
-              Revise
-            </button>
+            {/* Salary revision entry point hidden — deferred feature, see audit June 2026.
+                The wizard's ?revise=1 mode is kept in code. */}
           </div>
         </div>
       </div>

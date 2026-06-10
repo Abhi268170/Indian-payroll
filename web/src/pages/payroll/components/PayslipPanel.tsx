@@ -175,6 +175,13 @@ export default function PayslipPanel({ runId, employeeId, employeeName, onClose 
                           <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-secondary)]">{formatINR(data.ytdPf)}</td>
                         </tr>
                       )}
+                      {data.vpfAmount > 0 && (
+                        <tr>
+                          <td className="px-3 py-2 text-[13px] text-[var(--color-text-primary)]">Voluntary PF</td>
+                          <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-primary)]">{formatINR(data.vpfAmount)}</td>
+                          <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-secondary)]">—</td>
+                        </tr>
+                      )}
                       {data.employeeEsi > 0 && (
                         <tr>
                           <td className="px-3 py-2 text-[13px] text-[var(--color-text-primary)]">Employee ESI</td>
@@ -206,7 +213,8 @@ export default function PayslipPanel({ runId, employeeId, employeeName, onClose 
                       <tr className="bg-[var(--color-page-bg)]">
                         <td className="px-3 py-2 text-[13px] font-semibold text-[var(--color-text-primary)]">Total Deductions</td>
                         <td className="px-3 py-2 text-[13px] text-right font-semibold text-[var(--color-text-primary)]">
-                          {formatINR(data.employeePf + data.employeeEsi + data.ptAmount + data.lwfEmployeeAmount + data.tdsAmount)}
+                          {/* Server-computed (statutory + VPF + component deductions) — never re-summed client-side. */}
+                          {formatINR(data.totalDeductions)}
                         </td>
                         <td className="px-3 py-2 text-[13px] text-right text-[var(--color-text-secondary)]">—</td>
                       </tr>

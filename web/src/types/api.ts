@@ -276,6 +276,7 @@ export interface PayrunEmployeeDto {
   grossPay: number
   netPay: number
   employeePf: number
+  vpfAmount: number
   employeeEsi: number
   ptAmount: number
   lwfEmployeeAmount: number
@@ -298,8 +299,12 @@ export interface PayRunTaxLineDto {
   surcharge: number
   cess: number
   annualTaxLiability: number
+  // Engine-computed TDS for the month — never mutated by overrides.
   tdsThisMonth: number
   hasPanOverride: boolean
+  tdsOverrideAmount: number | null
+  // Override when set, engine figure otherwise. Use this for totals.
+  effectiveTds: number
 }
 
 export interface PendingTaskItemDto {
@@ -338,6 +343,7 @@ export interface EmployeeVariableInputsDto {
   tdsOverrideAmount: number | null
   tdsOverrideReason: string | null
   employeePf: number
+  vpfAmount: number
   employerPf: number
   employeeEsi: number
   employerEsi: number
@@ -384,6 +390,11 @@ export interface PayslipData {
   ptAmount: number
   lwfEmployeeAmount: number
   tdsAmount: number
+  // Voluntary PF (employee-side, % of PF wage). 0 when not opted in.
+  vpfAmount: number
+  reimbursementsAmount: number
+  // Server-computed: statutory + VPF + component deductions. Never re-derive client-side.
+  totalDeductions: number
   ytdGross: number
   ytdNetPay: number
   ytdTds: number
