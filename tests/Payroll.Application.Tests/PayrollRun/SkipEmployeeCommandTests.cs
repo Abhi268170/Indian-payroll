@@ -80,11 +80,17 @@ public class SkipEmployeeCommandTests
         empRepo.GetByRunAndEmployeeAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(payrunEmp);
         empRepo.GetByRunIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(new List<PayrunEmployee> { payrunEmp });
 
-        var handler = new UndoSkipEmployeeHandler(runRepo, empRepo, Substitute.For<IUnitOfWork>());
+        var recompute = Substitute.For<Payroll.Application.Services.IPayrollRecomputeService>();
+        recompute.RecomputeEmployeeAsync(Arg.Any<Guid>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult(MakeRecomputeResult()));
+        var handler = new UndoSkipEmployeeHandler(runRepo, empRepo, recompute, Substitute.For<IUnitOfWork>());
 
         await handler.Handle(new UndoSkipEmployeeCommand(RunId, EmpId, ActorId), CancellationToken.None);
 
         payrunEmp.Status.Should().Be(PayrunEmployeeStatus.Active);
+        // Undo-skip must recompute — a row skipped at initiation would otherwise
+        // come back Active with all-zero amounts.
+        await recompute.Received(1).RecomputeEmployeeAsync(RunId, EmpId, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -95,5 +101,24 @@ public class SkipEmployeeCommandTests
         Action act = () => emp.UndoSkip(ActorId);
 
         act.Should().Throw<InvalidOperationException>();
+    }
+
+    private static Payroll.Application.Services.RecomputeResult MakeRecomputeResult()
+    {
+        var gross = new Payroll.Engine.Outputs.GrossResult(
+            GrossWage: 10_000m, PFWage: 10_000m, FullPFWage: 10_000m,
+            AnnualProjectedGross: 1_20_000m, LOPDeduction: 0m, ArrearAmount: 0m,
+            ComponentBreakdown: [], TaxableGrossWage: 10_000m,
+            AnnualProjectedTaxableGross: 1_20_000m, ESIWage: 10_000m);
+        var result = new Payroll.Engine.Outputs.PayrollResult(
+            EmpId, gross,
+            new Payroll.Engine.Outputs.TDSResult(0m, 0m, 0m, 0m, 0m, 0m, false, false),
+            new Payroll.Engine.Outputs.PFResult(1200m, 0m, 367m, 833m, false),
+            new Payroll.Engine.Outputs.ESIResult(75m, 325m, false),
+            new Payroll.Engine.Outputs.PTResult(0m, true),
+            new Payroll.Engine.Outputs.LWFResult(0m, 0m, true),
+            NetPay: 8_725m,
+            new Payroll.Engine.Outputs.GratuityResult(0m, true));
+        return new Payroll.Application.Services.RecomputeResult(result, 0m, 0m, 8_725m);
     }
 }

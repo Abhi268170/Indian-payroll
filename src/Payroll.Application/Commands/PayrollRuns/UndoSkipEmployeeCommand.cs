@@ -21,6 +21,7 @@ public sealed class UndoSkipEmployeeCommandValidator : AbstractValidator<UndoSki
 public sealed class UndoSkipEmployeeHandler(
     IPayrollRunRepository runRepo,
     IPayrunEmployeeRepository payrunEmployeeRepo,
+    Services.IPayrollRecomputeService recomputeService,
     IUnitOfWork uow)
     : IRequestHandler<UndoSkipEmployeeCommand>
 {
@@ -36,6 +37,13 @@ public sealed class UndoSkipEmployeeHandler(
             ?? throw new NotFoundException($"Employee {req.EmployeeId} not in this payroll run.");
 
         payrunEmp.UndoSkip(req.ActorId);
+
+        // An employee skipped at initiation was never computed — without this
+        // recompute they return Active with all-zero amounts and can be approved
+        // at ₹0 pay.
+        Services.RecomputeResult recompute =
+            await recomputeService.RecomputeEmployeeAsync(req.RunId, req.EmployeeId, ct);
+        Services.RecomputeResultApplier.Apply(payrunEmp, recompute, req.ActorId);
         payrunEmployeeRepo.Update(payrunEmp);
 
         await SkipEmployeeHandler.RecalculateRunTotals(run, req.RunId, req.ActorId, payrunEmployeeRepo);

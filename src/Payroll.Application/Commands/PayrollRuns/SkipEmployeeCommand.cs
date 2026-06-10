@@ -51,18 +51,15 @@ public sealed class SkipEmployeeHandler(
         Guid actorId,
         IPayrunEmployeeRepository payrunEmployeeRepo)
     {
+        // Same formula and same Active-only filter as every other handler —
+        // PayrollCostCalculator is the single source of truth for run totals.
         var allEmployees = await payrunEmployeeRepo.GetByRunIdAsync(runId);
-        var active = allEmployees.Where(e => e.Status != PayrunEmployeeStatus.Skipped).ToList();
+        var active = allEmployees.Where(e => e.Status == PayrunEmployeeStatus.Active).ToList();
 
-        decimal totalNetPay = active.Sum(e => e.NetPay);
-        decimal totalEmployerPf = active.Sum(e => e.EmployerPf);
-        decimal totalEmployerEsi = active.Sum(e => e.EmployerEsi);
-        decimal totalTds = active.Sum(e => e.TdsAmount);
-        decimal totalPt = active.Sum(e => e.PtAmount);
-        decimal payrollCost = totalNetPay + totalEmployerPf + totalEmployerEsi;
-
+        var snapshot = new Services.PayrollCostCalculator().Calculate(active);
         run.UpdateFinancialSummary(
-            payrollCost, totalNetPay, totalEmployerPf, totalEmployerEsi,
-            totalTds, totalPt, allEmployees.Count, actorId);
+            snapshot.PayrollCost, snapshot.TotalNet, snapshot.TotalEmployerPf,
+            snapshot.TotalEmployerEsi, snapshot.TotalTds, snapshot.TotalPt,
+            snapshot.EmployeeCount, actorId);
     }
 }

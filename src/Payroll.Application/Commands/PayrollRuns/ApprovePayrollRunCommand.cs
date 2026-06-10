@@ -71,7 +71,13 @@ public sealed class ApprovePayrollRunHandler(
             }
             else
             {
-                await recomputeService.RecomputeEmployeeAsync(req.RunId, pe.EmployeeId, ct);
+                // Apply the result — recompute rewrites worksheets/breakdowns with
+                // live YTD; discarding it let paid amounts diverge from the audit
+                // worksheet whenever YTD shifted after the last draft edit.
+                Services.RecomputeResult recompute =
+                    await recomputeService.RecomputeEmployeeAsync(req.RunId, pe.EmployeeId, ct);
+                Services.RecomputeResultApplier.Apply(pe, recompute, req.ActorId);
+                payrunEmployeeRepo.Update(pe);
             }
         }
 

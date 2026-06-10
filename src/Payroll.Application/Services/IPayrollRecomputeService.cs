@@ -36,3 +36,33 @@ public sealed record RecomputeResult(
     decimal ReimbursementsAmount,
     decimal DeductionsAmount,
     decimal NetPayWithAdjustments);
+
+// Applies a recompute result to the stored PayrunEmployee amounts — the same
+// mapping every mutation handler uses, so what gets PAID always matches the
+// worksheet/breakdowns the recompute just rewrote.
+public static class RecomputeResultApplier
+{
+    public static void Apply(Domain.Entities.PayrunEmployee payrunEmp, RecomputeResult recompute, Guid actorId)
+    {
+        PayrollResult result = recompute.Engine;
+        payrunEmp.UpdateComputedAmounts(
+            grossPay: result.Gross.GrossWage,
+            taxableGrossPay: result.Gross.TaxableGrossWage,
+            netPay: recompute.NetPayWithAdjustments,
+            taxesAmount: result.TDS.MonthlyTDS + result.PT.Amount,
+            benefitsAmount: result.PF.EPFEmployerContribution + result.ESI.EmployerContribution,
+            reimbursementsAmount: recompute.ReimbursementsAmount,
+            employeePf: result.PF.EmployeeContribution,
+            employerPf: result.PF.EPFEmployerContribution,
+            employeeEsi: result.ESI.EmployeeContribution,
+            employerEsi: result.ESI.EmployerContribution,
+            ptAmount: result.PT.Amount,
+            tdsAmount: payrunEmp.TdsOverrideAmount ?? result.TDS.MonthlyTDS,
+            lwfEmployeeAmount: result.LWF.EmployeeAmount,
+            lwfEmployerAmount: result.LWF.EmployerAmount,
+            gratuityAmount: result.Gratuity.MonthlyAccrual,
+            epsAmount: result.PF.EPSEmployerContribution,
+            monthlyCTC: payrunEmp.MonthlyCTC,
+            actorId: actorId);
+    }
+}

@@ -51,6 +51,10 @@ internal sealed class PayrunEmployeeRepository(PayrollDbContext db) : IPayrunEmp
             from pe in db.PayrunEmployees
             join run in db.PayrollRuns on pe.PayrollRunId equals run.Id
             where empIds.Contains(pe.EmployeeId)
+                // Skipped/Withheld rows keep their computed amounts for reference
+                // but were never paid — counting them inflates the YTD basis and
+                // skews TDS for every later month in the FY.
+                && pe.Status == PayrunEmployeeStatus.Active
                 && (run.Status == PayrollRunStatus.Approved || run.Status == PayrollRunStatus.Paid)
                 && ((run.PayPeriod.Year == fiscalYear && run.PayPeriod.Month >= 4)
                     || (run.PayPeriod.Year == fiscalYear + 1 && run.PayPeriod.Month <= 3))
