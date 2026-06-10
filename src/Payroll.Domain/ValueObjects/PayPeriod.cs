@@ -10,6 +10,13 @@ public sealed record PayPeriod(int Year, int Month)
     public int FiscalYear => Month >= 4 ? Year : Year - 1;
     public string FiscalYearLabel => $"FY{FiscalYear + 1}";
 
+    // Canonical key for statutory config rows ("2025-26"). Every reader and
+    // seeder MUST use this one format — mixed formats made TDS silently zero.
+    public string FiscalYearKey => FiscalYearKeyFor(FiscalYear);
+
+    public static string FiscalYearKeyFor(int fiscalYearStart) =>
+        $"{fiscalYearStart}-{(fiscalYearStart + 1) % 100:D2}";
+
     // Months remaining in FY including current month: April = 12, March = 1
     public int MonthsRemainingInFiscalYear() =>
         Month >= 4 ? 12 - (Month - 4) : 4 - Month;

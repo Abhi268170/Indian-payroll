@@ -63,12 +63,12 @@ public class GetSalaryStructurePreviewHandlerTests
 
         IStatutoryConfigRepository statutoryRepo = Substitute.For<IStatutoryConfigRepository>();
         statutoryRepo.GetByTenantAsync(Arg.Any<CancellationToken>()).Returns(org);
-        // Handler builds engine config via StatutoryConfigBuilder which tolerates
-        // null taxConfig + empty slabs. NSubstitute returns null for Task<X?> by
-        // default, but stubbing the list-returning calls keeps the calculator from
-        // tripping on `null` Task returns.
+        // StatutoryConfigBuilder hard-fails on missing config/empty slabs, so the
+        // handler stubs must return real seeded values.
+        statutoryRepo.GetIncomeTaxConfigAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(TestData.StatutoryTestFixtures.IncomeTaxConfig2526());
         statutoryRepo.GetIncomeTaxSlabsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(new List<IncomeTaxSlab>());
+            .Returns(TestData.StatutoryTestFixtures.Slabs2526());
         statutoryRepo.GetSurchargeSlabsAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new List<IncomeTaxSurchargeSlab>());
         statutoryRepo.GetPtSlabsAsync(Arg.Any<string>(), Arg.Any<DateOnly>(), Arg.Any<CancellationToken>())

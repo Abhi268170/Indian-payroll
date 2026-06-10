@@ -16,6 +16,9 @@ public sealed class ProfessionalTaxSlab : AuditableEntity
     public decimal? MaxGross { get; private set; }
     public decimal PtAmount { get; private set; }
     public bool IsFebruarySurcharge { get; private set; }
+    // Amount deducted in February instead of PtAmount (e.g. MH/KA ₹300 to land
+    // exactly on the ₹2,500 Article 276 annual cap). Null = no override.
+    public decimal? FebruaryAmount { get; private set; }
     public bool IsActive { get; private set; } = true;
 
     public static ProfessionalTaxSlab Create(
@@ -28,7 +31,8 @@ public sealed class ProfessionalTaxSlab : AuditableEntity
         decimal ptAmount,
         bool isFebruarySurcharge,
         Guid createdBy,
-        string? deductionMonthsCsv = null) =>
+        string? deductionMonthsCsv = null,
+        decimal? februaryAmount = null) =>
         new()
         {
             StateCode = stateCode,
@@ -40,6 +44,7 @@ public sealed class ProfessionalTaxSlab : AuditableEntity
             MaxGross = maxGross,
             PtAmount = ptAmount,
             IsFebruarySurcharge = isFebruarySurcharge,
+            FebruaryAmount = februaryAmount,
             CreatedBy = createdBy,
         };
 }

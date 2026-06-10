@@ -14,6 +14,17 @@ public static class StatutoryConfigBuilder
         IReadOnlyList<ProfessionalTaxSlab> ptSlabs,
         IReadOnlyList<LwfStateConfig> lwfConfigs)
     {
+        // Hard fail. Computing payroll with fallback constants or empty slabs
+        // silently produces ₹0 TDS — an unseeded fiscal year must be loud.
+        if (taxConfig is null)
+            throw new InvalidOperationException(
+                "Income tax config not found for the requested fiscal year/regime. " +
+                "Seed income_tax_configs before running payroll.");
+        if (taxSlabs.Count == 0)
+            throw new InvalidOperationException(
+                $"No income tax slabs found for FY '{taxConfig.FiscalYear}' ({taxConfig.Regime} regime). " +
+                "Seed income_tax_slabs before running payroll.");
+
         var newRegimeSlabs = taxSlabs
             .Select(s => new TaxSlab(s.BracketMin, s.BracketMax, s.Rate))
             .ToList();
@@ -27,7 +38,8 @@ public static class StatutoryConfigBuilder
                 s.StateCode, s.MinGross, s.MaxGross, s.PtAmount, s.EffectiveDate,
                 s.Frequency,
                 ParseDeductionMonths(s.DeductionMonthsCsv),
-                s.Gender))
+                s.Gender,
+                s.FebruaryAmount))
             .ToList();
 
         var lwfStates = lwfConfigs
@@ -44,28 +56,33 @@ public static class StatutoryConfigBuilder
         return new StatutoryConfig(
             NewRegimeSlabs: newRegimeSlabs,
             SurchargeSlabs: surchargeConfig,
-            StandardDeduction: taxConfig?.StandardDeduction ?? 75_000m,
-            Rebate87ALimit: taxConfig?.Rebate87ALimit ?? 1_200_000m,
-            Rebate87AAmount: taxConfig?.Rebate87AAmount ?? 60_000m,
-            CessRate: taxConfig?.CessRate ?? 0.04m,
-            PFWageCap: taxConfig?.PfWageCap ?? 15_000m,
-            EPFEmployeeRate: taxConfig?.EpfEmployeeRate ?? 0.12m,
-            EPSEmployerRate: taxConfig?.EpsEmployerRate ?? 0.0833m,
-            EPSCap: taxConfig?.EpsCap ?? 1_250m,
+            StandardDeduction: taxConfig.StandardDeduction,
+            Rebate87ALimit: taxConfig.Rebate87ALimit,
+            Rebate87AAmount: taxConfig.Rebate87AAmount,
+            CessRate: taxConfig.CessRate,
+            PFWageCap: taxConfig.PfWageCap,
+            EPFEmployeeRate: taxConfig.EpfEmployeeRate,
+            EPSEmployerRate: taxConfig.EpsEmployerRate,
+            EPSCap: taxConfig.EpsCap,
             EpfRestrictEmployerWage: orgConfig.EpfEmployerContributionRate == "RestrictedWage12",
             EpfConsiderSalaryOnLop: orgConfig.EpfConsiderSalaryOnLop,
             EpfProRateRestrictedPfWage: orgConfig.EpfProRateRestrictedPfWage,
-            ESIWageLimit: taxConfig?.EsiWageLimit ?? 21_000m,
-            ESIPWDWageLimit: taxConfig?.EsiPwdWageLimit ?? 25_000m,
-            ESIEmployeeRate: taxConfig?.EsiEmployeeRate ?? 0.0075m,
-            ESIEmployerRate: taxConfig?.EsiEmployerRate ?? 0.0325m,
+            ESIWageLimit: taxConfig.EsiWageLimit,
+            ESIPWDWageLimit: taxConfig.EsiPwdWageLimit,
+            ESIEmployeeRate: taxConfig.EsiEmployeeRate,
+            ESIEmployerRate: taxConfig.EsiEmployerRate,
             PTSlabs: ptSlabInputs,
             LWFStates: lwfStates,
             PFEnabled: orgConfig.EpfEnabled,
             ESIEnabled: orgConfig.EsiEnabled,
             PTEnabled: true,
             EpfIncludeEmployerInCtc: orgConfig.EpfIncludeEmployerInCtc,
-            GratuityIncludedInCtc: orgConfig.GratuityIncludedInCtc
+            GratuityIncludedInCtc: orgConfig.GratuityIncludedInCtc,
+            EdliRate: taxConfig.EdliRate,
+            EdliWageCap: taxConfig.EdliWageCap,
+            EdliMaxAmount: taxConfig.EdliMaxAmount,
+            EpfAdminRate: taxConfig.EpfAdminRate,
+            Pan206AARate: taxConfig.Pan206AARate
         );
     }
 

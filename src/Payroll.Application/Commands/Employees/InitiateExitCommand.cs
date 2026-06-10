@@ -279,7 +279,7 @@ public sealed class InitiateExitHandler(
             ?? throw new DomainException("Statutory configuration not found. Configure EPF/ESI settings first.");
 
         int fiscalYear = periodStart.Month >= 4 ? periodStart.Year : periodStart.Year - 1;
-        string fyLabel = $"{fiscalYear}-{(fiscalYear + 1) % 100:D2}";
+        string fyLabel = Payroll.Domain.ValueObjects.PayPeriod.FiscalYearKeyFor(fiscalYear);
         var taxConfig = await statutoryRepo.GetIncomeTaxConfigAsync(fyLabel, "New", ct);
         var taxSlabs = await statutoryRepo.GetIncomeTaxSlabsAsync(fyLabel, "New", ct);
         var surchargeSlabs = await statutoryRepo.GetSurchargeSlabsAsync(fyLabel, "New", ct);

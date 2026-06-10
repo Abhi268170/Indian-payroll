@@ -46,11 +46,13 @@ public class SalaryStructurePreviewCalculatorTests
         org.ConfigureEsi(enabled: true, establishmentCode: null, notifiedArea: true, updatedBy: Guid.Empty);
         org.ConfigureGratuity(includedInCtc: gratuityIncludedInCtc, updatedBy: Guid.Empty);
 
-        // Build engine StatutoryConfig from the same defaults the production
-        // StatutoryConfigBuilder uses, just without PT/LWF unless caller passes
-        // workStateCode. Tests for residual + employer EPF don't need slabs.
+        // Build engine StatutoryConfig with an explicit seeded IncomeTaxConfig —
+        // the builder hard-fails on missing config/slabs instead of falling back
+        // to constants, so tests must supply real values like production does.
+        IncomeTaxConfig taxCfg = TestData.StatutoryTestFixtures.IncomeTaxConfig2526();
+        IReadOnlyList<IncomeTaxSlab> slabs = TestData.StatutoryTestFixtures.Slabs2526();
         Payroll.Engine.Inputs.StatutoryConfig engineConfig = Payroll.Application.Services.StatutoryConfigBuilder.Build(
-            org, taxConfig: null, taxSlabs: [], surchargeSlabs: [], ptSlabs: [], lwfConfigs: []);
+            org, taxCfg, slabs, surchargeSlabs: [], ptSlabs: [], lwfConfigs: []);
 
         return new SalaryStructurePreviewCalculator.Inputs(
             AnnualCtc: annualCtc,

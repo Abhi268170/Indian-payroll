@@ -123,6 +123,11 @@ namespace Payroll.Infrastructure.Migrations.PayrollDb
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            // The 9 statutory-rate columns added with IF NOT EXISTS in Up are kept:
+            // they exist in the prior migration's model snapshot. cost_centres is
+            // not recreated (entity removed from the model before this migration).
+            migrationBuilder.Sql(@"DROP INDEX IF EXISTS ix_payroll_runs_tenant_period;");
+
             migrationBuilder.Sql(@"DELETE FROM income_tax_surcharge_slabs WHERE fiscal_year = '2026-27' AND regime = 'New';");
             migrationBuilder.Sql(@"DELETE FROM income_tax_slabs WHERE fiscal_year = '2026-27' AND regime = 'New';");
             migrationBuilder.Sql(@"DELETE FROM income_tax_configs WHERE fiscal_year = '2026-27' AND regime = 'New';");

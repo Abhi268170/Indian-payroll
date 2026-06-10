@@ -44,12 +44,12 @@ VALUES
 INSERT INTO professional_tax_slabs
     (id, state_code, effective_date, frequency, deduction_months_csv, gender,
      min_gross, max_gross, pt_amount, is_february_surcharge, is_active,
-     created_at, updated_at, created_by, updated_by)
+     created_at, updated_at, created_by, updated_by, is_deleted)
 VALUES
-    (gen_random_uuid(), 'KL', {eff}, 'HalfYearly', '9,3', NULL,     0,  11999,   0, false, true, NOW(), NOW(), {sys}, {sys}),
-    (gen_random_uuid(), 'KL', {eff}, 'HalfYearly', '9,3', NULL, 12000,  17999, 120, false, true, NOW(), NOW(), {sys}, {sys}),
-    (gen_random_uuid(), 'KL', {eff}, 'HalfYearly', '9,3', NULL, 18000,  29999, 180, false, true, NOW(), NOW(), {sys}, {sys}),
-    (gen_random_uuid(), 'KL', {eff}, 'HalfYearly', '9,3', NULL, 30000,   NULL, 240, false, true, NOW(), NOW(), {sys}, {sys});
+    (gen_random_uuid(), 'KL', {eff}, 'HalfYearly', '9,3', NULL,     0,  11999,   0, false, true, NOW(), NOW(), {sys}, {sys}, false),
+    (gen_random_uuid(), 'KL', {eff}, 'HalfYearly', '9,3', NULL, 12000,  17999, 120, false, true, NOW(), NOW(), {sys}, {sys}, false),
+    (gen_random_uuid(), 'KL', {eff}, 'HalfYearly', '9,3', NULL, 18000,  29999, 180, false, true, NOW(), NOW(), {sys}, {sys}, false),
+    (gen_random_uuid(), 'KL', {eff}, 'HalfYearly', '9,3', NULL, 30000,   NULL, 240, false, true, NOW(), NOW(), {sys}, {sys}, false);
 ");
     }
 }

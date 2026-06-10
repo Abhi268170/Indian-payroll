@@ -27,6 +27,11 @@ internal sealed class IncomeTaxConfigConfiguration : IEntityTypeConfiguration<In
         builder.Property(s => s.EsiPwdWageLimit).HasColumnType("numeric(18,4)").IsRequired();
         builder.Property(s => s.EsiEmployeeRate).HasColumnType("numeric(7,4)").IsRequired();
         builder.Property(s => s.EsiEmployerRate).HasColumnType("numeric(7,4)").IsRequired();
+        builder.Property(s => s.EdliRate).HasColumnType("numeric(7,4)").HasDefaultValue(0m).IsRequired();
+        builder.Property(s => s.EdliWageCap).HasColumnType("numeric(18,4)").HasDefaultValue(0m).IsRequired();
+        builder.Property(s => s.EdliMaxAmount).HasColumnType("numeric(18,4)").HasDefaultValue(0m).IsRequired();
+        builder.Property(s => s.EpfAdminRate).HasColumnType("numeric(7,4)").HasDefaultValue(0m).IsRequired();
+        builder.Property(s => s.Pan206AARate).HasColumnType("numeric(7,4)").HasDefaultValue(0m).IsRequired();
 
         builder.Property(s => s.CreatedAt).HasColumnType("timestamptz").IsRequired();
         builder.Property(s => s.UpdatedAt).HasColumnType("timestamptz");

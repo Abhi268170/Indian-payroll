@@ -350,7 +350,9 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
             changed = true;
         }
 
-        string[] fyKeys = ["2026", "2027"];
+        // Canonical FY key format "YYYY-YY" (PayPeriod.FiscalYearKey) — the run,
+        // FnF, and preview paths all read with this key.
+        string[] fyKeys = ["2025-26", "2026-27"];
         foreach (string fy in fyKeys)
         {
             if (!await db.IncomeTaxSlabs.AnyAsync(s => s.FiscalYear == fy, ct))
@@ -366,70 +368,89 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
 
     private static void SeedProfessionalTaxSlabs(PayrollDbContext db, DateOnly eff, Guid sys)
     {
-        // Professional Tax slabs (FY2025-26, monthly states only for v1)
-            // Maharashtra — monthly, gender-split, Feb surcharge in top bracket
+        // Professional Tax slabs. Ranges are half-open [MinGross, MaxGross) and
+        // contiguous — the engine matches MinGross <= wage < MaxGross, so there are
+        // no gaps for fractional prorated wages and no overlapping boundaries.
+        // FebruaryAmount carries the Article 276 remainder month (MH/KA ₹300).
+            // Maharashtra — monthly, gender-split. Women exempt below ₹25,000
+            // (amendment effective Apr 2023).
             db.ProfessionalTaxSlabs.AddRange(
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("MH", eff, "Monthly", "Male",    0m,      7499m,   0m,    false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("MH", eff, "Monthly", "Male",    7500m,   9999m,   175m,  false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("MH", eff, "Monthly", "Male",    10000m,  null,    200m,  true,  sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("MH", eff, "Monthly", "Female",  0m,      9999m,   0m,    false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("MH", eff, "Monthly", "Female",  10000m,  null,    200m,  true,  sys),
-                // Karnataka — monthly
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KA", eff, "Monthly", null, 0m,      14999m,  0m,    false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KA", eff, "Monthly", null, 15000m,  24999m,  150m,  false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KA", eff, "Monthly", null, 25000m,  null,    200m,  true,  sys),
-                // Andhra Pradesh — monthly
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("AP", eff, "Monthly", null, 0m,      14999m,  0m,    false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("AP", eff, "Monthly", null, 15000m,  19999m,  150m,  false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("AP", eff, "Monthly", null, 20000m,  null,    200m,  false, sys),
-                // Telangana — monthly
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TS", eff, "Monthly", null, 0m,      14999m,  0m,    false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TS", eff, "Monthly", null, 15000m,  19999m,  150m,  false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TS", eff, "Monthly", null, 20000m,  null,    200m,  false, sys),
-                // West Bengal — monthly
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("WB", eff, "Monthly", null, 0m,      8499m,   0m,    false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("WB", eff, "Monthly", null, 8500m,   9999m,   90m,   false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("WB", eff, "Monthly", null, 10000m,  14999m,  110m,  false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("WB", eff, "Monthly", null, 15000m,  24999m,  130m,  false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("WB", eff, "Monthly", null, 25000m,  39999m,  150m,  false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("WB", eff, "Monthly", null, 40000m,  null,    200m,  false, sys),
-                // Tamil Nadu — half-yearly (September=9, March=3)
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TN", eff, "HalfYearly", null, 0m,     21000m,  0m,    false, sys, "9,3"),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TN", eff, "HalfYearly", null, 21001m, null,    510m,  false, sys, "9,3"),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("MH", eff, "Monthly", "Male",    0m,      7500m,  0m,    false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("MH", eff, "Monthly", "Male",    7500m,   10000m, 175m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("MH", eff, "Monthly", "Male",    10000m,  null,   200m,  true,  sys, null, 300m),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("MH", eff, "Monthly", "Female",  0m,      25000m, 0m,    false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("MH", eff, "Monthly", "Female",  25000m,  null,   200m,  true,  sys, null, 300m),
+                // Karnataka — exemption raised to ₹25,000 (Amendment Act 2025, eff Apr 2025);
+                // ₹300 in February to reach the ₹2,500 annual cap.
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KA", eff, "Monthly", null, 0m,      25000m, 0m,    false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KA", eff, "Monthly", null, 25000m,  null,   200m,  true,  sys, null, 300m),
+                // Andhra Pradesh — monthly (nil ≤ 15,000)
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("AP", eff, "Monthly", null, 0m,      15001m, 0m,    false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("AP", eff, "Monthly", null, 15001m,  20001m, 150m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("AP", eff, "Monthly", null, 20001m,  null,   200m,  false, sys),
+                // Telangana — monthly (same schedule as AP)
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TS", eff, "Monthly", null, 0m,      15001m, 0m,    false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TS", eff, "Monthly", null, 15001m,  20001m, 150m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TS", eff, "Monthly", null, 20001m,  null,   200m,  false, sys),
+                // West Bengal — monthly (nil ≤ 10,000; the old 8,500–9,999 ₹90 band is defunct)
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("WB", eff, "Monthly", null, 0m,      10001m, 0m,    false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("WB", eff, "Monthly", null, 10001m,  15001m, 110m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("WB", eff, "Monthly", null, 15001m,  25001m, 130m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("WB", eff, "Monthly", null, 25001m,  40001m, 150m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("WB", eff, "Monthly", null, 40001m,  null,   200m,  false, sys),
+                // Tamil Nadu — slabs are on HALF-YEARLY income (Greater Chennai schedule,
+                // revision eff. H2 FY24-25), deducted monthly via HalfYearlySplit like Kerala.
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TN", eff, "HalfYearlySplit", null, 0m,      21001m,  0m,     false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TN", eff, "HalfYearlySplit", null, 21001m,  30001m,  180m,   false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TN", eff, "HalfYearlySplit", null, 30001m,  45001m,  425m,   false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TN", eff, "HalfYearlySplit", null, 45001m,  60001m,  930m,   false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TN", eff, "HalfYearlySplit", null, 60001m,  75001m,  1025m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("TN", eff, "HalfYearlySplit", null, 75001m,  null,    1250m,  false, sys),
                 // Kerala — HalfYearlySplit: deduct every month, slab on half-year gross (monthly × months-in-half).
                 // Option A rounding: floor each month, last month absorbs remainder.
                 // Amounts are per half-year (Apr–Sep, Oct–Mar). Source: PIT Solutions reference manual.
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 1m,       11999m,   0m,    false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 12000m,   17999m,   120m,  false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 18000m,   29999m,   180m,  false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 30000m,   44999m,   300m,  false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 45000m,   59999m,   450m,  false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 60000m,   74999m,   600m,  false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 75000m,   99999m,   750m,  false, sys),
-                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 100000m,  124999m,  1000m, false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 0m,       12000m,   0m,    false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 12000m,   18000m,   120m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 18000m,   30000m,   180m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 30000m,   45000m,   300m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 45000m,   60000m,   450m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 60000m,   75000m,   600m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 75000m,   100000m,  750m,  false, sys),
+                Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 100000m,  125000m,  1000m, false, sys),
                 Payroll.Domain.Entities.ProfessionalTaxSlab.Create("KL", eff, "HalfYearlySplit", null, 125000m,  null,     1250m, false, sys));
     }
 
     private static void SeedLwfStateConfigs(PayrollDbContext db, DateOnly eff, Guid sys)
     {
-        // LWF state configs (select active states)
+        // LWF state configs — amounts/frequencies per 2025-26 state rules.
+        // HalfYearly = engine deducts in June + December.
         db.LwfStateConfigs.AddRange(
-            Payroll.Domain.Entities.LwfStateConfig.Create("MH", eff, 6m,  12m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
-            Payroll.Domain.Entities.LwfStateConfig.Create("KA", eff, 20m, 40m,  false, null, null, null, null, "Annual",    12,   31,   null,   sys),
-            Payroll.Domain.Entities.LwfStateConfig.Create("AP", eff, 20m, 40m,  false, null, null, null, null, "Annual",    12,   31,   null,   sys),
-            Payroll.Domain.Entities.LwfStateConfig.Create("TS", eff, 20m, 40m,  false, null, null, null, null, "Annual",    12,   31,   null,   sys),
-            Payroll.Domain.Entities.LwfStateConfig.Create("WB", eff, 3m,  15m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
-            Payroll.Domain.Entities.LwfStateConfig.Create("GJ", eff, 6m,  12m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
-            Payroll.Domain.Entities.LwfStateConfig.Create("MP", eff, 10m, 10m,  false, null, null, null, null, "Monthly",   null, null, 10000m, sys),
-            Payroll.Domain.Entities.LwfStateConfig.Create("CH", eff, 25m, 25m,  false, null, null, null, null, "Monthly",   null, null, null,   sys),
-            Payroll.Domain.Entities.LwfStateConfig.Create("HR", eff, 0m,  0m,   true,  0.002m, 0.002m, 25m, 25m, "Monthly", null, null, 25000m, sys),
+            // Maharashtra: ₹25/₹75 half-yearly (2024 amendment)
+            Payroll.Domain.Entities.LwfStateConfig.Create("MH", eff, 25m, 75m,  false, null, null, null, null, "HalfYearly", null, null, null,   sys),
+            // Karnataka: ₹50/₹100 annual (December)
+            Payroll.Domain.Entities.LwfStateConfig.Create("KA", eff, 50m, 100m, false, null, null, null, null, "Annual",     12,   31,   null,   sys),
+            // Andhra Pradesh: ₹30/₹70 annual
+            Payroll.Domain.Entities.LwfStateConfig.Create("AP", eff, 30m, 70m,  false, null, null, null, null, "Annual",     12,   31,   null,   sys),
+            // Telangana: ₹2/₹5 annual
+            Payroll.Domain.Entities.LwfStateConfig.Create("TS", eff, 2m,  5m,   false, null, null, null, null, "Annual",     12,   31,   null,   sys),
+            // West Bengal: ₹3/₹30 half-yearly (employer share revised Jan 2024)
+            Payroll.Domain.Entities.LwfStateConfig.Create("WB", eff, 3m,  30m,  false, null, null, null, null, "HalfYearly", null, null, null,   sys),
+            // Gujarat: ₹6/₹12 half-yearly
+            Payroll.Domain.Entities.LwfStateConfig.Create("GJ", eff, 6m,  12m,  false, null, null, null, null, "HalfYearly", null, null, null,   sys),
+            // Madhya Pradesh: ₹10/₹30 half-yearly, wage threshold ₹10,000
+            Payroll.Domain.Entities.LwfStateConfig.Create("MP", eff, 10m, 30m,  false, null, null, null, null, "HalfYearly", null, null, 10000m, sys),
+            // Chandigarh (Punjab Act): ₹5/₹20 monthly
+            Payroll.Domain.Entities.LwfStateConfig.Create("CH", eff, 5m,  20m,  false, null, null, null, null, "Monthly",    null, null, null,   sys),
+            // Haryana: 0.2% of wages capped ₹35 employee; employer pays double (cap ₹70)
+            Payroll.Domain.Entities.LwfStateConfig.Create("HR", eff, 0m,  0m,   true,  0.002m, 0.004m, 35m, 70m, "Monthly",  null, null, null,   sys),
+            // Kerala: employer share intentionally 0 (business decision — see audit notes)
             Payroll.Domain.Entities.LwfStateConfig.Create("KL", eff, 50m, 0m,   false, null, null, null, null, "Monthly",    null, null, null,   sys));
     }
 
     private static void SeedIncomeTaxForFy(PayrollDbContext db, string fy, Guid sys)
     {
-        // Income Tax — keyed by FiscalYearLabel.Replace("FY","") — e.g. April 2026 → FY2027 → "2027".
-        // Same Budget-2025 New Regime slabs apply to FY2026 (2025-26) and FY2027 (2026-27).
+        // Same Budget-2025 New Regime slabs apply to FY 2025-26 and FY 2026-27
+        // (Budget 2026 left slabs unchanged).
         db.IncomeTaxSlabs.AddRange(
             Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 0m,       400000m,    0m,     sys),
             Payroll.Domain.Entities.IncomeTaxSlab.Create(fy, "New", 400000m,  800000m,    0.05m,  sys),
@@ -462,7 +483,12 @@ internal sealed class TenantSchemaProvisioner(IConfiguration configuration) : IT
                 esiPwdWageLimit: 25000m,
                 esiEmployeeRate: 0.0075m,
                 esiEmployerRate: 0.0325m,
-                createdBy: sys));
+                createdBy: sys,
+                edliRate: 0.005m,
+                edliWageCap: 15000m,
+                edliMaxAmount: 75m,
+                epfAdminRate: 0.005m,
+                pan206AARate: 0.20m));
     }
 
     public async Task DropAsync(string schemaName, CancellationToken cancellationToken = default)

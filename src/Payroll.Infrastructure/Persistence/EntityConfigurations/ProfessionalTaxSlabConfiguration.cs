@@ -17,6 +17,7 @@ internal sealed class ProfessionalTaxSlabConfiguration : IEntityTypeConfiguratio
         builder.Property(s => s.MinGross).HasColumnType("numeric(18,4)").IsRequired();
         builder.Property(s => s.MaxGross).HasColumnType("numeric(18,4)");
         builder.Property(s => s.PtAmount).HasColumnType("numeric(18,4)").IsRequired();
+        builder.Property(s => s.FebruaryAmount).HasColumnType("numeric(18,4)");
 
         builder.Property(s => s.CreatedAt).HasColumnType("timestamptz").IsRequired();
         builder.Property(s => s.UpdatedAt).HasColumnType("timestamptz");

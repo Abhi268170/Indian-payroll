@@ -75,7 +75,7 @@ public sealed class InitiatePayrollRunHandler(
         var orgConfig = await statutoryRepo.GetByTenantAsync(ct)
             ?? throw new DomainException("Statutory configuration not found. Configure EPF/ESI settings first.");
 
-        string fiscalYear = $"{period.FiscalYear}-{(period.FiscalYear + 1) % 100:D2}";
+        string fiscalYear = period.FiscalYearKey;
         var taxConfig = await statutoryRepo.GetIncomeTaxConfigAsync(fiscalYear, "New", ct);
         var taxSlabs = await statutoryRepo.GetIncomeTaxSlabsAsync(fiscalYear, "New", ct);
         var surchargeSlabs = await statutoryRepo.GetSurchargeSlabsAsync(fiscalYear, "New", ct);

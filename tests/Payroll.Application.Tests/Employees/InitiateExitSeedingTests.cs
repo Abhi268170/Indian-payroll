@@ -492,10 +492,10 @@ public class InitiateExitSeedingTests
         statutoryRepo.GetByTenantAsync(Arg.Any<CancellationToken>()).Returns(orgConfig);
         statutoryRepo.GetIncomeTaxConfigAsync(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns((IncomeTaxConfig?)null);
+            .Returns(TestData.StatutoryTestFixtures.IncomeTaxConfig2526());
         statutoryRepo.GetIncomeTaxSlabsAsync(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(new List<IncomeTaxSlab>());
+            .Returns(TestData.StatutoryTestFixtures.Slabs2526());
         statutoryRepo.GetSurchargeSlabsAsync(
             Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(new List<IncomeTaxSurchargeSlab>());

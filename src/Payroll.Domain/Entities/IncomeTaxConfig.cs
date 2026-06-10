@@ -24,6 +24,14 @@ public sealed class IncomeTaxConfig : AuditableEntity
     public decimal EsiEmployeeRate { get; private set; }
     public decimal EsiEmployerRate { get; private set; }
 
+    // Employer-side EPF charges (EDLI 0.5% capped, admin 0.5%) and the
+    // Section 206AA no-PAN rate. Stored per FY so engine never hardcodes them.
+    public decimal EdliRate { get; private set; }
+    public decimal EdliWageCap { get; private set; }
+    public decimal EdliMaxAmount { get; private set; }
+    public decimal EpfAdminRate { get; private set; }
+    public decimal Pan206AARate { get; private set; }
+
     public static IncomeTaxConfig Create(
         string fiscalYear, string regime,
         decimal standardDeduction, decimal rebate87ALimit, decimal rebate87AAmount,
@@ -31,7 +39,9 @@ public sealed class IncomeTaxConfig : AuditableEntity
         decimal cessRate,
         decimal pfWageCap, decimal epfEmployeeRate, decimal epsEmployerRate, decimal epsCap,
         decimal esiWageLimit, decimal esiPwdWageLimit, decimal esiEmployeeRate, decimal esiEmployerRate,
-        Guid createdBy) =>
+        Guid createdBy,
+        decimal edliRate = 0m, decimal edliWageCap = 0m, decimal edliMaxAmount = 0m,
+        decimal epfAdminRate = 0m, decimal pan206AARate = 0m) =>
         new()
         {
             FiscalYear = fiscalYear, Regime = regime,
@@ -48,6 +58,11 @@ public sealed class IncomeTaxConfig : AuditableEntity
             EsiPwdWageLimit = esiPwdWageLimit,
             EsiEmployeeRate = esiEmployeeRate,
             EsiEmployerRate = esiEmployerRate,
+            EdliRate = edliRate,
+            EdliWageCap = edliWageCap,
+            EdliMaxAmount = edliMaxAmount,
+            EpfAdminRate = epfAdminRate,
+            Pan206AARate = pan206AARate,
             CreatedBy = createdBy,
         };
 }

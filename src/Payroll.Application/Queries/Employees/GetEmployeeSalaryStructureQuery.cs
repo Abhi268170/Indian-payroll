@@ -188,7 +188,7 @@ public sealed class GetEmployeeSalaryStructureHandler(
 
         DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
         int fiscalYear = today.Month >= 4 ? today.Year : today.Year - 1;
-        string fyKey = (fiscalYear + 1).ToString(System.Globalization.CultureInfo.InvariantCulture);
+        string fyKey = Payroll.Domain.ValueObjects.PayPeriod.FiscalYearKeyFor(fiscalYear);
 
         IncomeTaxConfig? taxConfig = await statutoryRepo.GetIncomeTaxConfigAsync(fyKey, "New", ct);
         IReadOnlyList<IncomeTaxSlab> taxSlabs = await statutoryRepo.GetIncomeTaxSlabsAsync(fyKey, "New", ct);
