@@ -46,7 +46,12 @@ public sealed record PayslipData(
     DateOnly? LastWorkingDay = null,
     string? ExitReason = null,
     string? TenureLabel = null,
-    string? ExitNotes = null);
+    string? ExitNotes = null,
+    decimal VpfAmount = 0m,
+    decimal ReimbursementsAmount = 0m,
+    // Single source of truth for the payslip "Total Deductions" line:
+    // statutory + VPF + component deductions. Renderers must not re-derive it.
+    decimal TotalDeductions = 0m);
 
 public sealed record PayslipSummaryDto(
     Guid Id,

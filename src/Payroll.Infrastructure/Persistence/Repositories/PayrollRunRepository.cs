@@ -77,9 +77,12 @@ internal sealed class PayrollRunRepository(PayrollDbContext db) : IPayrollRunRep
 
     public async Task<IReadOnlyList<Guid>> GetPaidIdsForFiscalYearAsync(int fiscalYear, CancellationToken ct = default)
     {
-        // Fiscal year Apr-fiscalYear to Mar-(fiscalYear+1)
+        // Fiscal year Apr-fiscalYear to Mar-(fiscalYear+1). Approved counts too:
+        // payslips are generated at approval, and YTD must not change between the
+        // Approve-time and Paid-time renderings of the same immutable run.
         var result = await db.PayrollRuns
-            .Where(r => r.Status == Domain.Enums.PayrollRunStatus.Paid &&
+            .Where(r => (r.Status == Domain.Enums.PayrollRunStatus.Paid
+                         || r.Status == Domain.Enums.PayrollRunStatus.Approved) &&
                         ((r.PayPeriod.Month >= 4 && r.PayPeriod.Year == fiscalYear) ||
                          (r.PayPeriod.Month < 4 && r.PayPeriod.Year == fiscalYear + 1)))
             .Select(r => r.Id)

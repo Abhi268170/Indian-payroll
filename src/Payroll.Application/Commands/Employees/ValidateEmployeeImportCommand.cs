@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using MediatR;
 using Payroll.Application.Interfaces;
+using Payroll.Application.Services;
 using Payroll.Domain.Common;
 using Payroll.Domain.Enums;
 using Payroll.Domain.Interfaces;
@@ -104,9 +105,9 @@ public sealed class ValidateEmployeeImportHandler(
         else if (!row.WorkEmail.Contains('@'))
             errs.Add($"WorkEmail '{row.WorkEmail}' is not a valid email address.");
 
-        if (string.IsNullOrWhiteSpace(row.DateOfJoining) || !DateOnly.TryParse(row.DateOfJoining, out _))
+        if (string.IsNullOrWhiteSpace(row.DateOfJoining) || !ImportParsers.TryParseDate(row.DateOfJoining, out _))
             errs.Add("DateOfJoining must be a valid date (YYYY-MM-DD).");
-        if (string.IsNullOrWhiteSpace(row.DateOfBirth) || !DateOnly.TryParse(row.DateOfBirth, out _))
+        if (string.IsNullOrWhiteSpace(row.DateOfBirth) || !ImportParsers.TryParseDate(row.DateOfBirth, out _))
             errs.Add("DateOfBirth must be a valid date (YYYY-MM-DD).");
 
         if (!Enum.TryParse<Gender>(row.Gender, ignoreCase: true, out _))
@@ -141,7 +142,7 @@ public sealed class ValidateEmployeeImportHandler(
         if (row.SalaryStructureTemplate is not null && !templates.ContainsKey(row.SalaryStructureTemplate))
             errs.Add($"Salary structure template '{row.SalaryStructureTemplate}' not found.");
 
-        if (row.AnnualCTC is not null && (!decimal.TryParse(row.AnnualCTC, out decimal ctc) || ctc <= 0))
+        if (row.AnnualCTC is not null && (!ImportParsers.TryParseAmount(row.AnnualCTC, out decimal ctc) || ctc <= 0))
             errs.Add("AnnualCTC must be a positive number.");
 
         // PaymentMode is mandatory in the import. Without it, CommitEmployeeImportCommand

@@ -168,10 +168,15 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
 
             var deductions = new List<(string Name, decimal Amount, decimal Ytd)>();
             if (data.EmployeePf > 0m)   deductions.Add(("Employee PF", data.EmployeePf, data.YtdPf));
+            if (data.VpfAmount > 0m)    deductions.Add(("Voluntary PF", data.VpfAmount, 0m));
             if (data.EmployeeEsi > 0m)  deductions.Add(("Employee ESI", data.EmployeeEsi, 0m));
             if (data.PtAmount > 0m)     deductions.Add(("Professional Tax", data.PtAmount, 0m));
             if (data.LwfEmployeeAmount > 0m) deductions.Add(("Labour Welfare Fund", data.LwfEmployeeAmount, 0m));
             if (data.TdsAmount > 0m)    deductions.Add(("Income Tax (TDS)", data.TdsAmount, data.YtdTds));
+            // Component-level deductions (notice recovery, loan recovery, withheld
+            // salary…) — listed so the printed rows actually sum to Total Deductions.
+            foreach (PayslipComponentDto d in data.Components.Where(c => !c.IsEarning && !c.IsBenefit))
+                deductions.Add((d.ComponentName, d.Amount, d.YtdAmount));
 
             int maxRows = Math.Max(earnings.Count, deductions.Count);
             for (int i = 0; i < maxRows; i++)
@@ -205,7 +210,8 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
                 }
             }
 
-            decimal totalDeductions = data.EmployeePf + data.EmployeeEsi + data.PtAmount + data.LwfEmployeeAmount + data.TdsAmount;
+            // Server-computed: statutory + VPF + component deductions.
+            decimal totalDeductions = data.TotalDeductions;
             table.Cell().BorderBottom(1).BorderColor(BorderColor).Padding(3).Text("Gross Pay").Bold().FontSize(8);
             table.Cell().BorderBottom(1).BorderColor(BorderColor).Padding(3).AlignRight().Text(FormatAmount(data.GrossPay)).Bold().FontSize(8);
             table.Cell().BorderBottom(1).BorderColor(BorderColor).Padding(3).Text(string.Empty);
@@ -224,6 +230,9 @@ public sealed class PayslipPdfGenerator : IPayslipPdfGenerator
                 {
                     col.Item().Text("Net Pay").Bold().FontSize(11);
                     col.Item().Text(data.NetPayInWords).FontSize(8).Italic();
+                    if (data.ReimbursementsAmount > 0m)
+                        col.Item().Text($"Includes reimbursements of ₹ {data.ReimbursementsAmount:N2} (not part of Gross Pay)")
+                            .FontSize(7).Italic();
                 });
                 row.ConstantItem(120).AlignRight()
                     .Text($"₹ {data.NetPay:N2}").Bold().FontSize(14);

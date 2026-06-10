@@ -35,11 +35,6 @@ public static class IndianNumberToWords
 
         string words = "";
 
-        if (number >= 10_00_00_000L)
-        {
-            words += ConvertToWords(number / 10_00_00_000L) + " Hundred Crore ";
-            number %= 10_00_00_000L;
-        }
         if (number >= 1_00_00_000L)
         {
             words += ConvertToWords(number / 1_00_00_000L) + " Crore ";

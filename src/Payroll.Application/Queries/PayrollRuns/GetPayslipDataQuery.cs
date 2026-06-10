@@ -46,7 +46,7 @@ public sealed class GetPayslipDataHandler(
         var department = await departmentRepo.GetByIdAsync(employee.DepartmentId, ct);
         var orgProfile = await orgProfileRepo.GetAsync(ct);
 
-        // YTD: sum across all Paid runs in the same fiscal year
+        // YTD: sum across Approved + Paid runs in the same fiscal year
         int fiscalYear = run.PayPeriod.FiscalYear;
         var ytdRunIds = await runRepo.GetPaidIdsForFiscalYearAsync(fiscalYear, ct);
         var ytdPayrunEmps = await payrunEmployeeRepo.GetByEmployeeAndRunIdsAsync(req.EmployeeId, ytdRunIds, ct);
@@ -90,6 +90,17 @@ public sealed class GetPayslipDataHandler(
 
         string companyAddress = BuildAddress(orgProfile?.AddressLine1, orgProfile?.AddressLine2);
 
+        // Component-level deductions (notice recovery, loan recovery, withheld
+        // salary…) are part of total deductions even though they're not statutory.
+        decimal componentDeductions = breakdowns
+            .Where(b => !b.IsBenefit && b.SalaryComponentId is not null
+                && deductionIds.Contains(b.SalaryComponentId.Value))
+            .Sum(b => b.ProratedAmount);
+        decimal effectiveTds = payrunEmp.TdsOverrideAmount ?? payrunEmp.TdsAmount;
+        decimal totalDeductions = payrunEmp.EmployeePf + payrunEmp.VpfAmount
+            + payrunEmp.EmployeeEsi + payrunEmp.PtAmount + payrunEmp.LwfEmployeeAmount
+            + effectiveTds + componentDeductions;
+
         return new PayslipData(
             PayrollRunId: req.PayrollRunId,
             EmployeeId: req.EmployeeId,
@@ -127,7 +138,10 @@ public sealed class GetPayslipDataHandler(
             LastWorkingDay: exit?.LastWorkingDay,
             ExitReason: exit?.Reason.ToString(),
             TenureLabel: exit is null ? null : employee.TenureAt(exit.LastWorkingDay).ToString(),
-            ExitNotes: exit?.Notes);
+            ExitNotes: exit?.Notes,
+            VpfAmount: payrunEmp.VpfAmount,
+            ReimbursementsAmount: payrunEmp.ReimbursementsAmount,
+            TotalDeductions: totalDeductions);
     }
 
     private static string MaskBankAccount(string? encryptedBankAccount, IEncryptionService encryption)

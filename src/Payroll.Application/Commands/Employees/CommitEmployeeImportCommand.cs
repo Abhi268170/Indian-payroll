@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using MediatR;
 using Payroll.Application.Interfaces;
+using Payroll.Application.Services;
 using Payroll.Domain.Common;
 using Payroll.Domain.Entities;
 using Payroll.Domain.Enums;
@@ -114,7 +115,7 @@ public sealed class CommitEmployeeImportHandler(
                 row.WorkEmail,
                 row.MobileNumber,
                 Enum.Parse<Gender>(row.Gender, ignoreCase: true),
-                DateOnly.Parse(row.DateOfJoining),
+                ImportParsers.ParseDate(row.DateOfJoining),
                 Enum.Parse<EmploymentType>(row.EmploymentType, ignoreCase: true),
                 isDirector: false,
                 enablePortalAccess: false,
@@ -123,7 +124,7 @@ public sealed class CommitEmployeeImportHandler(
                 designations[row.Designation],
                 locations[row.WorkLocation],
                 businessUnitId: null,
-                DateOnly.Parse(row.DateOfBirth),
+                ImportParsers.ParseDate(row.DateOfBirth),
                 req.ActorId);
 
             ApplyPersonalDetails(emp, row, req.ActorId, existing: null);
@@ -133,7 +134,7 @@ public sealed class CommitEmployeeImportHandler(
             await employeeRepo.AddAsync(emp, ct);
 
             bool addedStructure = false;
-            if (row.AnnualCTC is not null && decimal.TryParse(row.AnnualCTC, out decimal ctc))
+            if (row.AnnualCTC is not null && ImportParsers.TryParseAmount(row.AnnualCTC, out decimal ctc))
             {
                 Guid? templateId = row.SalaryStructureTemplate is not null && templates.TryGetValue(row.SalaryStructureTemplate, out Guid tid)
                     ? tid
@@ -164,7 +165,7 @@ public sealed class CommitEmployeeImportHandler(
             employeeRepo.Update(existing);
 
             bool hasActiveStructure;
-            if (row.AnnualCTC is not null && decimal.TryParse(row.AnnualCTC, out decimal ctc))
+            if (row.AnnualCTC is not null && ImportParsers.TryParseAmount(row.AnnualCTC, out decimal ctc))
             {
                 EmployeeSalaryStructure? current = await salaryRepo.GetActiveAsync(existing.Id, ct);
                 if (current is not null)
