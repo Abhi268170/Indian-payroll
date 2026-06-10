@@ -607,11 +607,18 @@ public sealed class InitiatePayrollRunHandler(
                 comp.Component.ShowInPayslip ?? true));
         }
 
-        // Residual: Special Allowance = Gross − all other components
+        // Residual: Special Allowance = Gross − all other components.
+        // Over-allocated structures (components + employer statutory > CTC) must
+        // fail loudly — the preview clamps to 0, and paying a hidden NEGATIVE
+        // earning the operator never saw is worse than blocking the run.
         SalaryStructureComponent? residual = ordered.FirstOrDefault(c => c.FormulaType == ComponentFormulaType.ResidualCTC);
         if (residual?.Component is not null)
         {
             decimal residualMonthly = Math.Round(monthlyGross - nonResidualSum, 2, MidpointRounding.AwayFromZero);
+            if (residualMonthly < 0m)
+                throw new Payroll.Domain.Common.DomainException(
+                    $"Salary structure over-allocates CTC: fixed components plus employer statutory cost exceed " +
+                    $"monthly CTC by {Math.Abs(residualMonthly):0.00}. Fix the structure before running payroll.");
             raw.Add((residual.ComponentId, residual.Component.Code, residualMonthly,
                 residual.Component.IsTaxable ?? true,
                 residual.Component.ConsiderForEpf ?? false,

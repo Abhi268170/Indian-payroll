@@ -270,10 +270,14 @@ public class ApproveFnfRunTests
         exitRepo.GetActiveByEmployeeAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns((Payroll.Domain.Entities.EmployeeExit?)null);
 
+        var breakdownRepo = Substitute.For<IPayrunComponentBreakdownRepository>();
+        breakdownRepo.GetByRunIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(new List<Payroll.Domain.Entities.PayrunComponentBreakdown>());
+        var fileStorage = Substitute.For<Payroll.Application.Interfaces.IFileStorageService>();
         var handler = new ApprovePayrollRunHandler(
             runRepo, payrunEmpRepo, auditLogRepo, recomputeService,
             fnfOrchestrator, tdsWorksheetRepo, exitRepo,
-            costCalculator, uow, sender, jobDispatcher);
+            costCalculator, breakdownRepo, fileStorage, uow, sender, jobDispatcher);
 
         return (handler, new Deps(fnfOrchestrator, recomputeService, tdsWorksheetRepo, payrunEmpRepo));
     }

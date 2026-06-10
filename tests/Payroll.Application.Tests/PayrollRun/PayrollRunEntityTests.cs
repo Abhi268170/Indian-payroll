@@ -108,7 +108,21 @@ public class PayrollRunEntityTests
         run.Status.Should().Be(PayrollRunStatus.Approved);
         run.PaymentDate.Should().BeNull();
         run.PaymentMode.Should().BeNull();
-        run.PaidAt.Should().BeNull();
+        // PaidAt is retained as the permanent once-paid marker.
+        run.PaidAt.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void RejectApproval_AfterPaymentDeleted_Throws_RunIsImmutable()
+    {
+        var run = CreateDraft();
+        run.Approve(ActorId);
+        run.RecordPayment(new DateOnly(2025, 5, 31), "BankTransfer", "REF001", ActorId);
+        run.DeletePayment(ActorId);
+
+        Action act = () => run.RejectApproval("trying to reopen", ActorId);
+
+        act.Should().Throw<InvalidOperationException>().WithMessage("*paid*");
     }
 
     [Fact]

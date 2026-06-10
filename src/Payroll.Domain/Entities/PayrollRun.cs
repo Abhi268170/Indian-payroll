@@ -28,8 +28,24 @@ public sealed class PayrollRun : AuditableEntity
     // Statutory config snapshot (JSON) — captured at initiation, read for all subsequent engine calls
     public string? StatutoryConfigSnapshot { get; private set; }
 
+    // Bulk FnF runs accumulate employees from multiple states — the snapshot
+    // must be re-written when a new state's PT/LWF slabs are merged in.
+    public void UpdateStatutoryConfigSnapshot(string snapshot, Guid actorId)
+    {
+        if (Status != Enums.PayrollRunStatus.Draft)
+            throw new InvalidOperationException("Statutory snapshot can only change on a Draft run.");
+        StatutoryConfigSnapshot = snapshot;
+        SetUpdated(actorId);
+    }
+
     // Variable inputs file
     public string? VariableInputsFileKey { get; private set; }
+
+    public void SetVariableInputsFileKey(string key, Guid actorId)
+    {
+        VariableInputsFileKey = key;
+        SetUpdated(actorId);
+    }
 
     // Approval
     public DateTimeOffset? ApprovedAt { get; private set; }
@@ -146,6 +162,11 @@ public sealed class PayrollRun : AuditableEntity
     {
         if (Status != PayrollRunStatus.Approved)
             throw new InvalidOperationException($"Cannot reject approval of a payroll run in {Status} status.");
+        // Paid→Approved→Draft would reopen a finalised run for editing.
+        // Once money moved, the run is immutable — corrections go through a new run.
+        if (PaidAt is not null || PaymentDate is not null)
+            throw new InvalidOperationException(
+                "This payroll run has been paid. A paid run cannot be reopened — create a correction in a subsequent run.");
 
         Status = PayrollRunStatus.Draft;
         ApprovalRejectionReason = reason;
@@ -174,7 +195,8 @@ public sealed class PayrollRun : AuditableEntity
         PaymentDate = null;
         PaymentMode = null;
         PaymentReference = null;
-        PaidAt = null;
+        // PaidAt is intentionally kept: it marks that money once moved, which
+        // permanently blocks RejectApproval from reopening this run to Draft.
         SetUpdated(actorId);
     }
 

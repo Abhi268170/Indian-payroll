@@ -31,11 +31,23 @@ public sealed class UpsertEmployeeFyOpeningValidator : AbstractValidator<UpsertE
 
 public sealed class UpsertEmployeeFyOpeningHandler(
     IEmployeeFyOpeningRepository repo,
+    IPayrunEmployeeRepository payrunEmployeeRepo,
     IUnitOfWork uow)
     : IRequestHandler<UpsertEmployeeFyOpeningCommand>
 {
     public async Task Handle(UpsertEmployeeFyOpeningCommand req, CancellationToken ct)
     {
+        // Openings merge into YTD on every recompute. Editing one after runs are
+        // approved in that FY retroactively shifts the employee's TDS basis and
+        // breaks reproducibility of past computations.
+        Dictionary<Guid, (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds)> ytd =
+            await payrunEmployeeRepo.GetCurrentEmployerYtdAsync([req.EmployeeId], req.FiscalYear, ct);
+        if (ytd.TryGetValue(req.EmployeeId, out (decimal YtdGross, decimal YtdTaxableGross, decimal YtdTds) existing0)
+            && (existing0.YtdGross != 0m || existing0.YtdTds != 0m))
+            throw new DomainException(
+                "FY opening balances cannot be changed once the employee has approved payroll runs in that fiscal year. " +
+                "Reject the approvals first, or use a TDS override for corrections.");
+
         EmployeeFyOpening? existing = await repo.GetAsync(req.EmployeeId, req.FiscalYear, ct);
         if (existing is null)
         {

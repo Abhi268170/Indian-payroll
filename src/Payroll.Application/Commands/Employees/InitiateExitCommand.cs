@@ -241,6 +241,7 @@ public sealed class InitiateExitHandler(
             // WI-11: appending another employee to a re-used bulk run. The entity
             // came from a query, so mark it explicitly so the count increment
             // persists under the repository pattern.
+            MergeSnapshotForAppendedEmployee(existing, snapshot, req.ActorId);
             existing.SetEmployeeCount(existing.EmployeeCount + 1, req.ActorId);
             runRepo.Update(existing);
             return existing;
@@ -257,6 +258,54 @@ public sealed class InitiateExitHandler(
         fresh.SetEmployeeCount(1, req.ActorId);
         await runRepo.AddAsync(fresh, ct);
         return fresh;
+    }
+
+    // A bulk FnF run's snapshot was historically built from the FIRST exiting
+    // employee only — a second employee in another state silently got PT = 0
+    // (no slabs for their state) and possibly another FY's tax config. Appending
+    // now merges the new employee's PT/LWF state data and refuses to mix
+    // employees whose LWDs fall under different income-tax configs.
+    private void MergeSnapshotForAppendedEmployee(PayrollRun existing, string newSnapshotJson, Guid actorId)
+    {
+        if (existing.StatutoryConfigSnapshot is null)
+        {
+            existing.UpdateStatutoryConfigSnapshot(newSnapshotJson, actorId);
+            return;
+        }
+
+        StatutoryConfig current = JsonSerializer.Deserialize<StatutoryConfig>(existing.StatutoryConfigSnapshot)!;
+        StatutoryConfig incoming = JsonSerializer.Deserialize<StatutoryConfig>(newSnapshotJson)!;
+
+        // Legacy/blank snapshot (no slabs): adopt the incoming one wholesale.
+        if (current.NewRegimeSlabs is null || current.NewRegimeSlabs.Count == 0)
+        {
+            existing.UpdateStatutoryConfigSnapshot(newSnapshotJson, actorId);
+            return;
+        }
+
+        bool sameTaxBasis =
+            current.StandardDeduction == incoming.StandardDeduction
+            && current.Rebate87ALimit == incoming.Rebate87ALimit
+            && current.Rebate87AAmount == incoming.Rebate87AAmount
+            && current.CessRate == incoming.CessRate
+            && current.NewRegimeSlabs.Count == incoming.NewRegimeSlabs.Count
+            && current.NewRegimeSlabs.Zip(incoming.NewRegimeSlabs)
+                .All(p => p.First == p.Second);
+        if (!sameTaxBasis)
+            throw new DomainException(
+                "This bulk settlement run was built with a different fiscal year's tax configuration. " +
+                "Use a custom settlement date to create a separate run for this employee.");
+
+        HashSet<string> knownPtStates = current.PTSlabs.Select(p => p.StateCode).ToHashSet();
+        HashSet<string> knownLwfStates = current.LWFStates.Select(l => l.StateCode).ToHashSet();
+        List<PTSlab> mergedPt = [.. current.PTSlabs, .. incoming.PTSlabs.Where(p => !knownPtStates.Contains(p.StateCode))];
+        List<LwfStateInput> mergedLwf = [.. current.LWFStates, .. incoming.LWFStates.Where(l => !knownLwfStates.Contains(l.StateCode))];
+
+        if (mergedPt.Count != current.PTSlabs.Count || mergedLwf.Count != current.LWFStates.Count)
+        {
+            StatutoryConfig merged = current with { PTSlabs = mergedPt, LWFStates = mergedLwf };
+            existing.UpdateStatutoryConfigSnapshot(JsonSerializer.Serialize(merged), actorId);
+        }
     }
 
     private static DateOnly ResolveFnfPayDate(InitiateExitCommand req, Payroll.Domain.Entities.PaySchedule paySchedule)

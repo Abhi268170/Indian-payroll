@@ -21,6 +21,8 @@ public sealed class ApprovePayrollRunHandler(
     ITdsWorksheetRepository tdsWorksheetRepo,
     IEmployeeExitRepository exitRepo,
     IPayrollCostCalculator costCalculator,
+    IPayrunComponentBreakdownRepository breakdownRepo,
+    IFileStorageService fileStorage,
     IUnitOfWork uow,
     ISender sender,
     IPayrollJobDispatcher jobDispatcher)
@@ -92,6 +94,11 @@ public sealed class ApprovePayrollRunHandler(
             employeeCount: snapshot.EmployeeCount,
             actorId: req.ActorId);
 
+        // Audit invariant: variable inputs (LOP, overrides, one-time entries,
+        // skip decisions) are frozen as an immutable artifact at approval.
+        string artifactKey = await WriteVariableInputsArtifactAsync(run, payrunEmployees, ct);
+        run.SetVariableInputsFileKey(artifactKey, req.ActorId);
+
         run.Approve(req.ActorId);
         runRepo.Update(run);
 
@@ -108,5 +115,46 @@ public sealed class ApprovePayrollRunHandler(
             jobDispatcher.EnqueueGeneratePayslipsThenNotify(req.RunId, run.TenantId);
         else
             jobDispatcher.EnqueueGeneratePayslips(req.RunId, run.TenantId);
+    }
+
+    private async Task<string> WriteVariableInputsArtifactAsync(
+        PayrollRun run, IReadOnlyList<PayrunEmployee> payrunEmployees, CancellationToken ct)
+    {
+        var breakdowns = await breakdownRepo.GetByRunIdAsync(run.Id, ct);
+        var oneTimeRows = breakdowns
+            .Where(b => b.IsOneTimeEarning)
+            .Select(b => new
+            {
+                b.EmployeeId,
+                b.ComponentCode,
+                b.ComponentName,
+                Amount = b.FullAmount,
+            })
+            .ToList();
+
+        var payload = new
+        {
+            RunId = run.Id,
+            run.PayPeriod.Year,
+            run.PayPeriod.Month,
+            RunType = run.Type.ToString(),
+            Employees = payrunEmployees.Select(pe => new
+            {
+                pe.EmployeeId,
+                Status = pe.Status.ToString(),
+                pe.SkipReason,
+                pe.LopDays,
+                pe.VpfPercent,
+                pe.TdsOverrideAmount,
+                pe.TdsOverrideReason,
+            }).ToList(),
+            OneTimeEntries = oneTimeRows,
+        };
+
+        string key = $"payroll-runs/{run.TenantId}/{run.Id}/variable-inputs.json";
+        byte[] bytes = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(payload);
+        using MemoryStream stream = new(bytes);
+        await fileStorage.UploadAsync(key, stream, "application/json", ct);
+        return key;
     }
 }
