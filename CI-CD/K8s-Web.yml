@@ -102,7 +102,7 @@ spec:
               service:
                 name: $(proj_branch)
                 port:
-                  number: 80
+                  number: $(proj_port)
 
     - host: "*.payroll.mypits.org"
       http:
