@@ -237,6 +237,10 @@ public sealed class EmployeesController(ISender sender, IEmployeeImportTemplateG
         {
             return BadRequest(new { errors = ex.Errors.Select(e => e.ErrorMessage) });
         }
+        catch (DomainException ex)
+        {
+            return UnprocessableEntity(new { error = ex.Message });
+        }
     }
 
     [HttpPost("{id:guid}/exit")]

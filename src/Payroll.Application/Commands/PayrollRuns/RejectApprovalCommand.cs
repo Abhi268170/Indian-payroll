@@ -36,8 +36,11 @@ public sealed class RejectApprovalHandler(
         if (run.Status != PayrollRunStatus.Approved)
             throw new InvalidOperationException("Only an Approved payroll run can have its approval rejected.");
 
-        await tdsWorksheetRepo.DeleteByRunIdAsync(req.RunId, ct);
+        // Guards first: RejectApproval throws on a once-paid run, and
+        // DeleteByRunIdAsync is an immediate ExecuteDelete — running it before
+        // the guard destroyed the worksheets of a run that then stayed Approved.
         run.RejectApproval(req.Reason, req.ActorId);
+        await tdsWorksheetRepo.DeleteByRunIdAsync(req.RunId, ct);
         runRepo.Update(run);
 
         var auditEntry = PayrollRunAuditLog.Create(

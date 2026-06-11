@@ -221,7 +221,19 @@ public sealed class InitiatePayrollRunHandler(
 
             if (skipReason is null)
             {
-                ComponentBuildResult build = BuildComponentInputs(salaryStructure, template, addedCompDetails, staticConfig);
+                ComponentBuildResult build;
+                try
+                {
+                    build = BuildComponentInputs(salaryStructure, template, addedCompDetails, staticConfig);
+                }
+                catch (Payroll.Domain.Common.DomainException ex)
+                {
+                    // Over-allocated structure: skip THIS employee with the reason
+                    // visible on the run — one bad structure must not block the
+                    // whole org's payroll initiation.
+                    eligibleMap[emp.Id] = (salaryStructure, template, ex.Message);
+                    continue;
+                }
                 IReadOnlyList<SalaryComponentInput> components = build.Components;
                 bool hasPan = !string.IsNullOrWhiteSpace(emp.EncryptedPAN);
                 string workState = workLocationStateMap.TryGetValue(emp.WorkLocationId, out string? wls) ? wls : "MH";
@@ -276,6 +288,17 @@ public sealed class InitiatePayrollRunHandler(
             .SelectMany(e => e.Components)
             .GroupBy(c => c.ComponentId)
             .ToDictionary(g => g.Key, g => g.First().ConsiderForEpf);
+        // ESI and taxability flags must persist with the same fidelity as EPF —
+        // the recompute path rebuilds engine inputs from these stored rows, and
+        // a dropped ESI flag silently zeroed ESI on every post-edit recompute.
+        Dictionary<Guid, bool> esiFlagByComponent = engineInputs
+            .SelectMany(e => e.Components)
+            .GroupBy(c => c.ComponentId)
+            .ToDictionary(g => g.Key, g => g.First().ConsiderForEsi);
+        Dictionary<Guid, bool> taxableFlagByComponent = engineInputs
+            .SelectMany(e => e.Components)
+            .GroupBy(c => c.ComponentId)
+            .ToDictionary(g => g.Key, g => g.First().IsTaxable);
         Dictionary<Guid, bool> showInPayslipByComponent = engineInputs
             .SelectMany(e => e.Components)
             .GroupBy(c => c.ComponentId)
@@ -367,7 +390,9 @@ public sealed class InitiatePayrollRunHandler(
                         comp.ComponentId, comp.Code, comp.Code,
                         comp.FullAmount, comp.ProratedAmount,
                         isOneTimeEarning: false,
+                        isTaxable: taxableFlagByComponent.GetValueOrDefault(comp.ComponentId, true),
                         considerForEpf: epfFlagByComponent.GetValueOrDefault(comp.ComponentId, false),
+                        considerForEsi: esiFlagByComponent.GetValueOrDefault(comp.ComponentId, false),
                         showInPayslip: showInPayslipByComponent.GetValueOrDefault(comp.ComponentId, true));
                     await breakdownRepo.AddAsync(breakdown, ct);
                 }
