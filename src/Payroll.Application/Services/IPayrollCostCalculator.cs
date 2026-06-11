@@ -18,4 +18,5 @@ public sealed record PayrollCostSnapshot(
     decimal TotalTds,
     decimal TotalPt,
     int EmployeeCount,
-    decimal PayrollCost);
+    decimal PayrollCost,
+    decimal TotalEdliAdmin = 0m);

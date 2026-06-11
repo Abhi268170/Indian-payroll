@@ -34,6 +34,10 @@ public sealed class PayrunEmployee : AuditableEntity
     // recompute) and the rupee amount the engine deducted from net pay.
     public decimal VpfPercent { get; private set; }
     public decimal VpfAmount { get; private set; }
+    // Employer-side EPF charges (EDLI 0.5% capped, admin 0.5%) — employer cost,
+    // not part of employee net pay.
+    public decimal EdliAmount { get; private set; }
+    public decimal AdminChargesAmount { get; private set; }
     public decimal EmployerPf { get; private set; }
     public decimal EmployeeEsi { get; private set; }
     public decimal EmployerEsi { get; private set; }
@@ -99,7 +103,9 @@ public sealed class PayrunEmployee : AuditableEntity
         decimal epsAmount,
         decimal monthlyCTC,
         Guid actorId,
-        decimal? vpfAmount = null)
+        decimal? vpfAmount = null,
+        decimal? edliAmount = null,
+        decimal? adminChargesAmount = null)
     {
         GrossPay = grossPay;
         TaxableGrossPay = taxableGrossPay;
@@ -119,6 +125,8 @@ public sealed class PayrunEmployee : AuditableEntity
         EpsAmount = epsAmount;
         MonthlyCTC = monthlyCTC;
         if (vpfAmount.HasValue) VpfAmount = vpfAmount.Value;
+        if (edliAmount.HasValue) EdliAmount = edliAmount.Value;
+        if (adminChargesAmount.HasValue) AdminChargesAmount = adminChargesAmount.Value;
         SetUpdated(actorId);
     }
 

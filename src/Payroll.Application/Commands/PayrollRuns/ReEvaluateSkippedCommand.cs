@@ -261,7 +261,9 @@ public sealed class ReEvaluateSkippedHandler(
                 epsAmount: result.PF.EPSEmployerContribution,
                 monthlyCTC: salaryStructure.AnnualCTC / 12m,
                 actorId: req.ActorId,
-                vpfAmount: result.PF.VPFContribution);
+                vpfAmount: result.PF.VPFContribution,
+                edliAmount: result.PF.EdliCharge,
+                adminChargesAmount: result.PF.AdminCharge);
             if (vpfPercentByEmployee.TryGetValue(empId, out decimal vpfPct) && vpfPct > 0m)
                 payrunEmp.SetVpfPercent(vpfPct, req.ActorId);
 

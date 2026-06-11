@@ -25,6 +25,8 @@ internal sealed class PayrunEmployeeConfiguration : IEntityTypeConfiguration<Pay
         builder.Property(e => e.VpfPercent).HasColumnType("numeric(7,2)");
 
         builder.Property(e => e.VpfAmount).HasColumnType("numeric(18,2)");
+        builder.Property(e => e.EdliAmount).HasColumnType("numeric(18,2)");
+        builder.Property(e => e.AdminChargesAmount).HasColumnType("numeric(18,2)");
         builder.Property(e => e.EmployerPf).HasColumnType("numeric(18,2)");
         builder.Property(e => e.EmployeeEsi).HasColumnType("numeric(18,2)");
         builder.Property(e => e.EmployerEsi).HasColumnType("numeric(18,2)");

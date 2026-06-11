@@ -18,6 +18,7 @@ public sealed class PayrollCostCalculator : IPayrollCostCalculator
         decimal totalGratuity = 0m;
         decimal totalTds = 0m;
         decimal totalPt = 0m;
+        decimal totalEdliAdmin = 0m;
 
         foreach (PayrunEmployee e in activeEmployees)
         {
@@ -28,6 +29,7 @@ public sealed class PayrollCostCalculator : IPayrollCostCalculator
             totalEmployerEsi += e.EmployerEsi;
             totalLwfEmployer += e.LwfEmployerAmount;
             totalGratuity += e.GratuityAmount;
+            totalEdliAdmin += e.EdliAmount + e.AdminChargesAmount;
             totalTds += e.TdsAmount;
             totalPt += e.PtAmount;
         }
@@ -37,7 +39,8 @@ public sealed class PayrollCostCalculator : IPayrollCostCalculator
             + totalEmployerEps
             + totalEmployerEsi
             + totalLwfEmployer
-            + totalGratuity;
+            + totalGratuity
+            + totalEdliAdmin;
 
         return new PayrollCostSnapshot(
             TotalGross: totalGross,
@@ -50,6 +53,7 @@ public sealed class PayrollCostCalculator : IPayrollCostCalculator
             TotalTds: totalTds,
             TotalPt: totalPt,
             EmployeeCount: activeEmployees.Count,
-            PayrollCost: payrollCost);
+            PayrollCost: payrollCost,
+            TotalEdliAdmin: totalEdliAdmin);
     }
 }

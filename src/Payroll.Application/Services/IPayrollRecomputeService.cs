@@ -63,6 +63,9 @@ public static class RecomputeResultApplier
             gratuityAmount: result.Gratuity.MonthlyAccrual,
             epsAmount: result.PF.EPSEmployerContribution,
             monthlyCTC: payrunEmp.MonthlyCTC,
-            actorId: actorId);
+            actorId: actorId,
+            vpfAmount: result.PF.VPFContribution,
+            edliAmount: result.PF.EdliCharge,
+            adminChargesAmount: result.PF.AdminCharge);
     }
 }

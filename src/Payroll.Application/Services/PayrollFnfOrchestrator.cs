@@ -308,7 +308,10 @@ public sealed class PayrollFnfOrchestrator(
             gratuityAmount: result.Gratuity.MonthlyAccrual,
             epsAmount: result.PF.EPSEmployerContribution,
             monthlyCTC: pe.MonthlyCTC,
-            actorId: actorId);
+            actorId: actorId,
+            vpfAmount: fnf.Engine.PF.VPFContribution,
+            edliAmount: fnf.Engine.PF.EdliCharge,
+            adminChargesAmount: fnf.Engine.PF.AdminCharge);
     }
 
     /// <summary>
