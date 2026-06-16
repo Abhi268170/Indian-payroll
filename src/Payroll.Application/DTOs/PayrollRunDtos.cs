@@ -97,6 +97,10 @@ public sealed record PayrunEmployeeDto(
     decimal LwfEmployeeAmount,
     decimal TdsAmount,
     decimal? TdsOverrideAmount,
+    // Server-authoritative deductions excluding TDS (statutory + component-level
+    // deductions). TDS is shown in its own column, so the summary "Deductions"
+    // column must render this rather than re-summing statutory fields client-side.
+    decimal DeductionsExTds,
     string? SkipReason,
     // WI-24: exit metadata for FnF run rows (null for regular runs).
     DateOnly? LastWorkingDay = null,

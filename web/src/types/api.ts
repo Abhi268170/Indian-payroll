@@ -282,6 +282,8 @@ export interface PayrunEmployeeDto {
   lwfEmployeeAmount: number
   tdsAmount: number
   tdsOverrideAmount: number | null
+  // Server-authoritative deductions excluding TDS (statutory + component-level).
+  deductionsExTds: number
   skipReason: string | null
   lastWorkingDay: string | null
   exitReason: string | null

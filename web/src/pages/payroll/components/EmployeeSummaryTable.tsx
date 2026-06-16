@@ -263,13 +263,7 @@ export default function EmployeeSummaryTable({
                         {formatINR(emp.grossPay)}
                       </td>
                       <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">
-                        {formatINR(
-                          emp.employeePf +
-                            (emp.vpfAmount ?? 0) +
-                            emp.employeeEsi +
-                            emp.ptAmount +
-                            emp.lwfEmployeeAmount,
-                        )}
+                        {formatINR(emp.deductionsExTds)}
                       </td>
                       <td className="px-4 py-3 text-right text-[13px] text-[var(--color-text-secondary)]">
                         {formatINR(emp.tdsOverrideAmount ?? emp.tdsAmount)}

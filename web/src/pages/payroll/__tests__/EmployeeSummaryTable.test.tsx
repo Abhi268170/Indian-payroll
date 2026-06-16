@@ -48,6 +48,7 @@ function makeEmployee(overrides: Partial<PayrunEmployeeDto> = {}): PayrunEmploye
     lwfEmployeeAmount: 10,
     tdsAmount: 1000,
     tdsOverrideAmount: null,
+    deductionsExTds: 2010,
     skipReason: null,
     lastWorkingDay: null,
     exitReason: null,

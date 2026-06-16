@@ -17,7 +17,9 @@ public sealed class GetPayrollRunEmployeesHandler(
     IEmployeeRepository employeeRepo,
     IEmployeeExitRepository exitRepo,
     IDesignationRepository designationRepo,
-    IDepartmentRepository departmentRepo)
+    IDepartmentRepository departmentRepo,
+    IPayrunComponentBreakdownRepository breakdownRepo,
+    ISalaryComponentRepository componentRepo)
     : IRequestHandler<GetPayrollRunEmployeesQuery, PagedResult<PayrunEmployeeDto>>
 {
     public async Task<PagedResult<PayrunEmployeeDto>> Handle(GetPayrollRunEmployeesQuery req, CancellationToken ct)
@@ -53,6 +55,21 @@ public sealed class GetPayrollRunEmployeesHandler(
             filteredEmps.Select(e => e.EmployeeId), ct);
         Dictionary<Guid, Domain.Entities.Employee> employeeMap = employees.ToDictionary(e => e.Id);
 
+        // Component-level deductions (notice/loan recovery, withheld salary…) are
+        // part of total deductions but not statutory, so the client cannot derive
+        // them. Sum them per employee here so the row's DeductionsExTds is complete.
+        HashSet<Guid> deductionIds = (await componentRepo.ListByTenantAsync(
+                run.TenantId, ComponentCategory.Deduction, ct))
+            .Select(c => c.Id)
+            .ToHashSet();
+        IReadOnlyList<Domain.Entities.PayrunComponentBreakdown> breakdowns =
+            await breakdownRepo.GetByRunIdAsync(req.RunId, ct);
+        Dictionary<Guid, decimal> componentDeductionsByEmployee = breakdowns
+            .Where(b => !b.IsBenefit && b.SalaryComponentId is not null
+                && deductionIds.Contains(b.SalaryComponentId.Value))
+            .GroupBy(b => b.EmployeeId)
+            .ToDictionary(g => g.Key, g => g.Sum(b => b.ProratedAmount));
+
         List<Domain.Entities.PayrunEmployee> ordered = filteredEmps
             .Where(pe => employeeMap.ContainsKey(pe.EmployeeId))
             .OrderBy(pe => employeeMap[pe.EmployeeId].EmployeeCode)
@@ -64,6 +81,9 @@ public sealed class GetPayrollRunEmployeesHandler(
             .Select(pe =>
             {
                 Domain.Entities.Employee emp = employeeMap[pe.EmployeeId];
+                decimal deductionsExTds = pe.EmployeePf + pe.VpfAmount + pe.EmployeeEsi
+                    + pe.PtAmount + pe.LwfEmployeeAmount
+                    + componentDeductionsByEmployee.GetValueOrDefault(pe.EmployeeId, 0m);
                 return new PayrunEmployeeDto(
                     EmployeeId: emp.Id,
                     EmployeeCode: emp.EmployeeCode,
@@ -82,6 +102,7 @@ public sealed class GetPayrollRunEmployeesHandler(
                     LwfEmployeeAmount: pe.LwfEmployeeAmount,
                     TdsAmount: pe.TdsAmount,
                     TdsOverrideAmount: pe.TdsOverrideAmount,
+                    DeductionsExTds: deductionsExTds,
                     SkipReason: pe.SkipReason,
                     LastWorkingDay: exitByEmployee.GetValueOrDefault(pe.EmployeeId)?.LastWorkingDay,
                     ExitReason: exitByEmployee.GetValueOrDefault(pe.EmployeeId)?.Reason.ToString());

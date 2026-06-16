@@ -49,8 +49,17 @@ public sealed class GetPayslipDataHandler(
         // YTD: sum across Approved + Paid runs in the same fiscal year
         int fiscalYear = run.PayPeriod.FiscalYear;
         IReadOnlyList<Guid> ytdRunIds = await runRepo.GetPaidIdsForFiscalYearAsync(fiscalYear, ct);
-        IReadOnlyList<Domain.Entities.PayrunEmployee> ytdPayrunEmps = await payrunEmployeeRepo.GetByEmployeeAndRunIdsAsync(req.EmployeeId, ytdRunIds, ct);
+        IReadOnlyList<Domain.Entities.PayrunEmployee> ytdPayrunEmpsAll = await payrunEmployeeRepo.GetByEmployeeAndRunIdsAsync(req.EmployeeId, ytdRunIds, ct);
         IReadOnlyList<Domain.Entities.PayrunComponentBreakdown> ytdBreakdowns = await breakdownRepo.GetByEmployeeAndRunIdsAsync(req.EmployeeId, ytdRunIds, ct);
+
+        // Skipped/Withheld rows keep their computed amounts for reference but were
+        // never paid — counting them overstates YTD. Mirror the TDS YTD basis
+        // (GetCurrentEmployerYtdAsync) by including only Active rows, then scope
+        // the per-component YTD to those same runs.
+        List<Domain.Entities.PayrunEmployee> ytdPayrunEmps = ytdPayrunEmpsAll
+            .Where(e => e.Status == PayrunEmployeeStatus.Active)
+            .ToList();
+        HashSet<Guid> ytdActiveRunIds = ytdPayrunEmps.Select(e => e.PayrollRunId).ToHashSet();
 
         decimal ytdGross = ytdPayrunEmps.Sum(e => e.GrossPay);
         decimal ytdNetPay = ytdPayrunEmps.Sum(e => e.NetPay);
@@ -59,6 +68,7 @@ public sealed class GetPayslipDataHandler(
 
         // Build per-component YTD map from YTD breakdowns (keyed by ComponentCode)
         Dictionary<string, decimal> ytdByComponent = ytdBreakdowns
+            .Where(b => ytdActiveRunIds.Contains(b.PayrollRunId))
             .GroupBy(b => b.ComponentCode)
             .ToDictionary(g => g.Key, g => g.Sum(b => b.ProratedAmount));
 
